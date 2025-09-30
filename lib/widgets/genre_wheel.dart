@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../constants/app_constants.dart';
 import '../theme/app_theme.dart';
 
 class GenreWheel extends StatefulWidget {
@@ -23,176 +22,247 @@ class GenreWheel extends StatefulWidget {
 
 class _GenreWheelState extends State<GenreWheel>
     with TickerProviderStateMixin {
-  late AnimationController _rotationController;
-  late Animation<double> _rotationAnimation;
+  late AnimationController _scrollController;
+  late AnimationController _pendulumController;
+  late Animation<double> _scrollAnimation;
+  late Animation<double> _pendulumAnimation;
   
-  double _currentRotation = 0.0;
+  double _currentScroll = 0.0;
+  double _velocity = 0.0;
   bool _isSpinning = false;
+  bool _isPendulumActive = false;
 
   @override
   void initState() {
     super.initState();
-    _rotationController = AnimationController(
-      duration: const Duration(seconds: 3),
+    
+    _scrollController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
     
-    _rotationAnimation = Tween<double>(
+    _pendulumController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    
+    _scrollAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
-      parent: _rotationController,
+      parent: _scrollController,
       curve: Curves.easeOutCubic,
     ));
     
-    _rotationController.addListener(() {
+    _pendulumAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _pendulumController,
+      curve: Curves.easeOutBack,
+    ));
+    
+    _scrollController.addListener(() {
       setState(() {
-        _currentRotation = _rotationAnimation.value;
+        _currentScroll = _scrollAnimation.value;
       });
     });
     
-    _rotationController.addStatusListener((status) {
+    _pendulumController.addListener(() {
+      if (_isPendulumActive) {
+        setState(() {
+          _currentScroll = _pendulumAnimation.value;
+        });
+      }
+    });
+    
+    _scrollController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         setState(() {
           _isSpinning = false;
         });
-        _selectGenreFromRotation();
+        // Ajusta a posição final para garantir centralização perfeita
+        _snapToCenter();
+        _selectCenterGenre();
+      }
+    });
+    
+    _pendulumController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          _isPendulumActive = false;
+        });
+        _selectCenterGenre();
       }
     });
   }
 
   @override
   void dispose() {
-    _rotationController.dispose();
+    _scrollController.dispose();
+    _pendulumController.dispose();
     super.dispose();
   }
 
-  void _spinWheel() {
-    if (_isSpinning) return;
+  void _spinFilmReel() {
+    if (_isSpinning || widget.genres.isEmpty) return;
+    
+    // Para qualquer animação de pêndulo ativa
+    _pendulumController.stop();
     
     setState(() {
       _isSpinning = true;
+      _isPendulumActive = false;
     });
     
-    // Gera um número aleatório de voltas entre 3 e 8
+    // Seleciona um gênero aleatório
     final random = Random();
-    final spins = 3 + random.nextDouble() * 5;
-    final targetRotation = _currentRotation + spins;
+    final selectedGenreIndex = random.nextInt(widget.genres.length);
     
-    _rotationAnimation = Tween<double>(
-      begin: _currentRotation,
-      end: targetRotation,
+    // Calcula a posição atual em termos de "slots de gênero"
+    final currentPosition = _currentScroll;
+    
+    // Calcula voltas extras para dar efeito de rolagem (em número de gêneros)
+    final extraSpins = (3 + random.nextDouble() * 3) * widget.genres.length;
+    
+    // Calcula a posição final para centralizar o gênero selecionado
+    // A posição final deve ser um número inteiro para ficar perfeitamente centralizado
+    final targetPosition = currentPosition + extraSpins + (selectedGenreIndex - (currentPosition % widget.genres.length));
+    
+    _scrollAnimation = Tween<double>(
+      begin: _currentScroll,
+      end: targetPosition,
     ).animate(CurvedAnimation(
-      parent: _rotationController,
+      parent: _scrollController,
       curve: Curves.easeOutCubic,
     ));
     
-    _rotationController.reset();
-    _rotationController.forward();
+    _scrollController.reset();
+    _scrollController.forward();
     
     widget.onRandomSpin?.call();
   }
 
-  void _selectGenreFromRotation() {
-    // Calcula qual gênero está no topo após a rotação
-    final normalizedRotation = _currentRotation % 1.0;
-    final genreIndex = ((1.0 - normalizedRotation) * widget.genres.length).floor() % widget.genres.length;
-    final selectedGenre = widget.genres[genreIndex];
-    widget.onGenreSelected(selectedGenre);
+  void _selectCenterGenre() {
+    if (widget.genres.isEmpty) return;
+    
+    // Calcula qual gênero está centralizado baseado na posição atual
+    final currentIndex = _currentScroll.round();
+    final centerIndex = ((currentIndex % widget.genres.length) + widget.genres.length) % widget.genres.length;
+    
+    widget.onGenreSelected(widget.genres[centerIndex]);
   }
 
-  void _onGenreTap(String genre) {
+  void _snapToCenter() {
+    if (widget.genres.isEmpty) return;
+    
+    // Arredonda a posição atual para o gênero mais próximo
+    final nearestPosition = _currentScroll.round().toDouble();
+    
+    setState(() {
+      _currentScroll = nearestPosition;
+    });
+  }
+
+  void _handlePanStart(DragStartDetails details) {
     if (_isSpinning) return;
-    widget.onGenreSelected(genre);
+    
+    // Para qualquer animação de pêndulo ativa
+    _pendulumController.stop();
+    setState(() {
+      _isPendulumActive = false;
+      _velocity = 0.0;
+    });
+  }
+
+  void _handlePanUpdate(DragUpdateDetails details) {
+    if (_isSpinning) return;
+    
+    setState(() {
+      // Movimento horizontal - agora em unidades de gêneros
+      // Ajusta a sensibilidade para que o movimento seja proporcional ao espaçamento
+      final sensitivity = 0.005 * (120.0 / 120.0); // Normalizado para o espaçamento
+      final deltaScroll = -details.delta.dx * sensitivity;
+      _currentScroll += deltaScroll;
+      
+      // Calcula a velocidade para o efeito de momentum
+      _velocity = deltaScroll;
+    });
+    
+    _selectCenterGenre();
+  }
+
+  void _handlePanEnd(DragEndDetails details) {
+    if (_isSpinning) return;
+    
+    // Ativa o efeito de pêndulo baseado na velocidade
+    _startPendulumEffect();
+  }
+
+  void _startPendulumEffect() {
+    // Calcula a posição mais próxima do centro (efeito de gravidade)
+    final currentPosition = _currentScroll;
+    final nearestPosition = currentPosition.round().toDouble();
+    
+    // Considera a velocidade para o momentum
+    final momentumDistance = _velocity * 50; // Multiplica a velocidade para dar mais momentum
+    final targetWithMomentum = currentPosition + momentumDistance;
+    final finalTarget = targetWithMomentum.round().toDouble();
+    
+    // Se a diferença for pequena, vai direto para o centro
+    final difference = (currentPosition - nearestPosition).abs();
+    final target = difference < 0.1 ? nearestPosition : finalTarget;
+    
+    _pendulumAnimation = Tween<double>(
+      begin: currentPosition,
+      end: target,
+    ).animate(CurvedAnimation(
+      parent: _pendulumController,
+      curve: Curves.easeOutBack, // Curva de pêndulo com bounce
+    ));
+    
+    setState(() {
+      _isPendulumActive = true;
+    });
+    
+    _pendulumController.reset();
+    _pendulumController.forward();
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size.width * 0.8;
-    final wheelSize = size.clamp(280.0, 400.0);
-    final centerButtonSize = wheelSize * 0.2;
-    
-    return Center(
-      child: SizedBox(
-        width: wheelSize,
-        height: wheelSize,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Roleta
-            Transform.rotate(
-              angle: _currentRotation * 2 * pi,
-              child: CustomPaint(
-                size: Size(wheelSize, wheelSize),
-                painter: GenreWheelPainter(
-                  genres: widget.genres,
-                  selectedGenre: widget.selectedGenre,
-                ),
+    return Container(
+      height: 200,
+      width: double.infinity,
+      child: Stack(
+        children: [
+          // Rolo de filme principal
+          GestureDetector(
+            onPanStart: _handlePanStart,
+            onPanUpdate: _handlePanUpdate,
+            onPanEnd: _handlePanEnd,
+            child: CustomPaint(
+              size: Size(double.infinity, 200),
+              painter: FilmReelPainter(
+                genres: widget.genres,
+                scrollOffset: _currentScroll,
+                selectedGenre: widget.selectedGenre,
               ),
             ),
-            
-            // Área clicável da roleta
-            GestureDetector(
-              onTapDown: (details) {
-                if (_isSpinning) return;
-                
-                final center = Offset(wheelSize / 2, wheelSize / 2);
-                final tapPosition = details.localPosition - center;
-                final distance = tapPosition.distance;
-                
-                // Verifica se clicou na área da roleta (não no centro)
-                if (distance > wheelSize * 0.15 && distance < wheelSize * 0.45) {
-                  // Calcula qual segmento foi clicado
-                  final angle = atan2(tapPosition.dy, tapPosition.dx);
-                  final normalizedAngle = (angle + pi / 2 + 2 * pi) % (2 * pi);
-                  final segmentAngle = 2 * pi / widget.genres.length;
-                  final segmentIndex = (normalizedAngle / segmentAngle).floor() % widget.genres.length;
-                  
-                  _onGenreTap(widget.genres[segmentIndex]);
-                }
-              },
+          ),
+          
+          // Botão de sorteio
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: GestureDetector(
+              onTap: _spinFilmReel,
               child: Container(
-                width: wheelSize,
-                height: wheelSize,
-                color: Colors.transparent,
-              ),
-            ),
-            
-            // Indicador no topo
-            Positioned(
-              top: 0,
-              child: Container(
-                width: 0,
-                height: 0,
-                decoration: const BoxDecoration(
-                  border: Border(
-                    left: BorderSide(
-                      width: 15,
-                      color: Colors.transparent,
-                    ),
-                    right: BorderSide(
-                      width: 15,
-                      color: Colors.transparent,
-                    ),
-                    bottom: BorderSide(
-                      width: 25,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            
-            // Botão central
-            GestureDetector(
-              onTap: _spinWheel,
-              child: AnimatedContainer(
-                duration: AppConstants.fastAnimation,
-                width: centerButtonSize,
-                height: centerButtonSize,
+                width: 60,
+                height: 60,
                 decoration: BoxDecoration(
+                  color: AppColors.primary,
                   shape: BoxShape.circle,
-                  gradient: AppColors.primaryGradient,
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.primary.withOpacity(0.3),
@@ -200,221 +270,234 @@ class _GenreWheelState extends State<GenreWheel>
                       offset: const Offset(0, 4),
                     ),
                   ],
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 3,
-                  ),
                 ),
-                child: Icon(
-                  _isSpinning ? Icons.hourglass_empty : Icons.casino,
-                  color: Colors.white,
-                  size: centerButtonSize * 0.4,
-                ),
+                child: _isSpinning
+                    ? Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.backgroundDark,
+                            ),
+                            strokeWidth: 3,
+                          ),
+                        ),
+                      )
+                    : Icon(
+                        Icons.shuffle,
+                        color: AppColors.backgroundDark,
+                        size: 30,
+                      ),
               ),
             ),
-          ],
-        ),
+          ),
+          
+          // Indicador do centro
+          Center(
+            child: Container(
+              width: 4,
+              height: 120,
+              decoration: BoxDecoration(
+                color: AppColors.secondary,
+                borderRadius: BorderRadius.circular(2),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.secondary.withOpacity(0.5),
+                    blurRadius: 8,
+                    offset: const Offset(0, 0),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class GenreWheelPainter extends CustomPainter {
+class FilmReelPainter extends CustomPainter {
   final List<String> genres;
+  final double scrollOffset;
   final String? selectedGenre;
 
-  GenreWheelPainter({
+  FilmReelPainter({
     required this.genres,
+    required this.scrollOffset,
     this.selectedGenre,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2;
-    final segmentAngle = 2 * pi / genres.length;
+    if (genres.isEmpty) return;
     
-    // Cores cinematográficas para os segmentos
-    final colors = [
-      AppColors.primary,           // Gold
-      AppColors.secondary,         // Crimson Red
-      AppColors.accent,            // Popcorn Yellow
-      AppColors.curtainRed,        // Burgundy
-      AppColors.primaryDark,       // Dark Gold
-      AppColors.secondaryLight,    // Light Red
-      AppColors.accentDark,        // Banana Yellow
-      const Color(0xFF4A5568),     // Film Strip Gray
-      const Color(0xFF2D3748),     // Dark Charcoal
-      const Color(0xFF744210),     // Bronze
-      const Color(0xFF9B2C2C),     // Dark Red
-      const Color(0xFFD69E2E),     // Amber
-      const Color(0xFF553C9A),     // Purple
-      const Color(0xFF285E61),     // Teal
-      const Color(0xFF975A16),     // Orange
-      const Color(0xFF68D391),     // Green
-      const Color(0xFF667EEA),     // Blue
-      const Color(0xFFED8936),     // Orange
-    ];
+    final center = Offset(size.width / 2, size.height / 2);
+    
+    // Desenha o fundo do rolo de filme
+    _drawFilmBackground(canvas, size);
+    
+    // Desenha os círculos de gêneros
+    _drawGenreCircles(canvas, center, size);
+    
+    // Desenha os furos do filme
+    _drawFilmHoles(canvas, size);
+  }
 
-    for (int i = 0; i < genres.length; i++) {
-      final startAngle = i * segmentAngle - (pi / 2);
-      final color = colors[i % colors.length];
-      final isSelected = genres[i] == selectedGenre;
+  void _drawFilmBackground(Canvas canvas, Size size) {
+    // Fundo principal do filme
+    final filmPaint = Paint()
+      ..color = AppColors.surfaceVariantDark
+      ..style = PaintingStyle.fill;
+    
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, size.height * 0.2, size.width, size.height * 0.6),
+        const Radius.circular(8),
+      ),
+      filmPaint,
+    );
+    
+    // Bordas superior e inferior do filme
+    final borderPaint = Paint()
+      ..color = AppColors.primary
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+    
+    canvas.drawLine(
+      Offset(0, size.height * 0.2),
+      Offset(size.width, size.height * 0.2),
+      borderPaint,
+    );
+    
+    canvas.drawLine(
+      Offset(0, size.height * 0.8),
+      Offset(size.width, size.height * 0.8),
+      borderPaint,
+    );
+  }
+
+  void _drawGenreCircles(Canvas canvas, Offset center, Size size) {
+    final genreRadius = 40.0;
+    final genreSpacing = 120.0;
+    final yPosition = center.dy;
+    
+    // Calcula o offset horizontal baseado no scroll
+    // Agora scrollOffset representa diretamente a posição do gênero (0, 1, 2, etc.)
+    final scrollPixels = scrollOffset * genreSpacing;
+    
+    // Calcula quantos círculos são necessários para preencher a tela + buffer para rolagem suave
+    final screenWidth = size.width;
+    final circlesOnScreen = (screenWidth / genreSpacing).ceil();
+    final bufferCircles = 4; // Círculos extras de cada lado para rolagem suave
+    final totalCirclesToDraw = circlesOnScreen + (bufferCircles * 2);
+    
+    // Encontra o índice base baseado na posição atual
+    final baseIndex = scrollOffset.floor();
+    
+    // Desenha círculos em ambas as direções para criar rolagem infinita
+    for (int i = -bufferCircles; i < totalCirclesToDraw - bufferCircles; i++) {
+      final currentIndex = baseIndex + i;
       
-      // Desenha o segmento com gradiente cinematográfico
-      final paint = Paint()
-        ..shader = RadialGradient(
-          colors: isSelected
-              ? [color, color.withOpacity(0.9), color.withOpacity(0.7)]
-              : [color.withOpacity(0.8), color.withOpacity(0.6), color.withOpacity(0.4)],
-          stops: const [0.3, 0.7, 1.0],
-        ).createShader(Rect.fromCircle(center: center, radius: radius))
-        ..style = PaintingStyle.fill;
+      // Usa modulo para criar o loop infinito
+      final genreIndex = ((currentIndex % genres.length) + genres.length) % genres.length;
+      final genre = genres[genreIndex];
       
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        startAngle,
-        segmentAngle,
-        true,
-        paint,
-      );
+      final xPosition = center.dx + (currentIndex * genreSpacing) - scrollPixels;
       
-      // Desenha a borda dourada
-      final borderPaint = Paint()
-        ..color = isSelected ? AppColors.primary : AppColors.filmStrip
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = isSelected ? 4 : 2;
-      
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        startAngle,
-        segmentAngle,
-        true,
-        borderPaint,
-      );
-      
-      // Desenha o texto com estilo cinematográfico
-      final textAngle = startAngle + segmentAngle / 2;
-      final textRadius = radius * 0.6; // Posição mais próxima do centro para evitar extrapolar
-      final textCenter = Offset(
-        center.dx + cos(textAngle) * textRadius,
-        center.dy + sin(textAngle) * textRadius,
-      );
-      
-      // Ajusta o texto para caber no segmento
-      String displayText = genres[i];
-      double fontSize = isSelected ? 12 : 10;
-      
-      // Para textos muito longos, usa abreviação
-      if (displayText.length > 10) {
-        fontSize = isSelected ? 10 : 8;
-        if (displayText.length > 12) {
-          displayText = '${displayText.substring(0, 8)}...';
-        }
+      // Só desenha se estiver próximo da área visível (com uma margem maior)
+      if (xPosition > -genreRadius * 2 && xPosition < screenWidth + genreRadius * 2) {
+        final position = Offset(xPosition, yPosition);
+        
+        // Determina se é o gênero central (destacado) - usa critério mais rigoroso
+        final distanceFromCenter = (xPosition - center.dx).abs();
+        final isHighlighted = distanceFromCenter < genreSpacing * 0.3; // Reduzido para ser mais preciso
+        
+        _drawGenreCircle(canvas, position, genreRadius, genre, isHighlighted);
       }
-      
-      // Ajusta o tamanho da fonte baseado no número de segmentos
-      if (genres.length > 12) {
-        fontSize *= 0.9;
+    }
+  }
+
+  void _drawGenreCircle(Canvas canvas, Offset center, double radius, String genre, bool isHighlighted) {
+    // Círculo do gênero
+    final circlePaint = Paint()
+      ..color = isHighlighted ? AppColors.primary : AppColors.backgroundDark
+      ..style = PaintingStyle.fill;
+    
+    canvas.drawCircle(center, radius, circlePaint);
+    
+    // Borda do círculo
+    final borderPaint = Paint()
+      ..color = isHighlighted ? AppColors.backgroundDark : AppColors.primary
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = isHighlighted ? 4 : 2;
+    
+    canvas.drawCircle(center, radius, borderPaint);
+    
+    // Texto do gênero
+    final textSpan = TextSpan(
+      text: genre,
+      style: TextStyle(
+        color: isHighlighted ? AppColors.backgroundDark : AppColors.textPrimary,
+        fontWeight: isHighlighted ? FontWeight.bold : FontWeight.w600,
+        fontSize: isHighlighted ? 12 : 10,
+      ),
+    );
+    
+    final textPainter = TextPainter(
+      text: textSpan,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+      maxLines: 2,
+    );
+    
+    textPainter.layout(maxWidth: radius * 1.8);
+    
+    final textOffset = Offset(
+      center.dx - textPainter.width / 2,
+      center.dy - textPainter.height / 2,
+    );
+    
+    textPainter.paint(canvas, textOffset);
+  }
+
+  void _drawFilmHoles(Canvas canvas, Size size) {
+    // Desenha os furos característicos do filme com rolagem infinita
+    final holePaint = Paint()
+      ..color = AppColors.backgroundDark
+      ..style = PaintingStyle.fill;
+    
+    final holeRadius = 8.0;
+    final holeSpacing = 30.0;
+    final scrollPixels = scrollOffset * 120.0;
+    
+    // Calcula o offset dos furos para rolagem infinita
+    final holeOffset = scrollPixels % holeSpacing;
+    
+    // Calcula quantos furos são necessários para cobrir a largura + buffer
+    final holesNeeded = (size.width / holeSpacing).ceil() + 4;
+    
+    // Furos superiores
+    for (int i = 0; i < holesNeeded; i++) {
+      final x = (i * holeSpacing) - holeOffset - holeSpacing;
+      if (x > -holeRadius && x < size.width + holeRadius) {
+        canvas.drawCircle(
+          Offset(x, size.height * 0.1),
+          holeRadius,
+          holePaint,
+        );
       }
-      if (genres.length > 16) {
-        fontSize *= 0.8;
-      }
-      
-      final textSpan = TextSpan(
-        text: displayText,
-        style: AppTextStyles.genreLabel.copyWith(
-          color: isSelected ? AppColors.backgroundDark : AppColors.textPrimary,
-          fontWeight: FontWeight.w800,
-          fontSize: fontSize,
-          letterSpacing: 0.5,
-          shadows: [
-            Shadow(
-              blurRadius: 3,
-              color: AppColors.backgroundDark.withOpacity(0.9),
-              offset: const Offset(1, 1),
-            ),
-            Shadow(
-              blurRadius: 1,
-              color: isSelected ? AppColors.primary.withOpacity(0.5) : AppColors.backgroundDark.withOpacity(0.7),
-              offset: const Offset(0, 0),
-            ),
-          ],
-        ),
-      );
-      
-      final textPainter = TextPainter(
-        text: textSpan,
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr,
-        maxLines: 1,
-      );
-      
-      textPainter.layout();
-      
-      // Verifica se o texto é muito largo para o segmento e ajusta
-      final maxWidth = radius * 0.8; // Largura máxima permitida
-      if (textPainter.width > maxWidth) {
-        // Cria um novo textSpan com texto menor
-        final adjustedTextSpan = TextSpan(
-          text: displayText,
-          style: AppTextStyles.genreLabel.copyWith(
-            color: isSelected ? AppColors.backgroundDark : AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
-            fontSize: fontSize * 0.8, // Reduz ainda mais o tamanho
-            letterSpacing: 0.3,
-            shadows: [
-              Shadow(
-                blurRadius: 2,
-                color: AppColors.backgroundDark.withOpacity(0.8),
-                offset: const Offset(0.5, 0.5),
-              ),
-            ],
-          ),
+    }
+    
+    // Furos inferiores
+    for (int i = 0; i < holesNeeded; i++) {
+      final x = (i * holeSpacing) - holeOffset - holeSpacing;
+      if (x > -holeRadius && x < size.width + holeRadius) {
+        canvas.drawCircle(
+          Offset(x, size.height * 0.9),
+          holeRadius,
+          holePaint,
         );
-        
-        final adjustedTextPainter = TextPainter(
-          text: adjustedTextSpan,
-          textAlign: TextAlign.center,
-          textDirection: TextDirection.ltr,
-          maxLines: 1,
-        );
-        
-        adjustedTextPainter.layout();
-        
-        canvas.save();
-        canvas.translate(textCenter.dx, textCenter.dy);
-        
-        // Rotação para ficar paralelo ao raio
-        double rotation = textAngle;
-        if (textAngle > pi / 2 && textAngle < 3 * pi / 2) {
-          rotation += pi;
-        }
-        
-        canvas.rotate(rotation);
-        
-        adjustedTextPainter.paint(
-          canvas,
-          Offset(-adjustedTextPainter.width / 2, -adjustedTextPainter.height / 2),
-        );
-        canvas.restore();
-      } else {
-        canvas.save();
-        canvas.translate(textCenter.dx, textCenter.dy);
-        
-        // Rotação para ficar paralelo ao raio
-        double rotation = textAngle;
-        if (textAngle > pi / 2 && textAngle < 3 * pi / 2) {
-          rotation += pi;
-        }
-        
-        canvas.rotate(rotation);
-        
-        textPainter.paint(
-          canvas,
-          Offset(-textPainter.width / 2, -textPainter.height / 2),
-        );
-        canvas.restore();
       }
     }
   }
