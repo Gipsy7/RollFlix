@@ -6,6 +6,7 @@ import '../models/watch_providers.dart';
 import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
+import 'actor_details_screen.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
   final Movie movie;
@@ -150,6 +151,18 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         );
       }
     }
+  }
+
+  void _navigateToActorDetails(CastMember actor) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ActorDetailsScreen(
+          actorId: actor.id,
+          actorName: actor.name,
+        ),
+      ),
+    );
   }
 
   @override
@@ -391,65 +404,68 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         itemCount: (credits!.cast.length > 10) ? 10 : credits!.cast.length,
                         itemBuilder: (context, index) {
                           final actor = credits!.cast[index];
-                          return Container(
-                            width: 100,
-                            margin: const EdgeInsets.only(right: 12),
-                            child: Column(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: actor.fullProfileUrl.isNotEmpty
-                                      ? Image.network(
-                                          actor.fullProfileUrl,
-                                          width: 80,
-                                          height: 120,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) {
-                                            return Container(
-                                              width: 80,
-                                              height: 120,
-                                              color: Colors.grey.shade300,
-                                              child: const Icon(
-                                                Icons.person,
-                                                size: 40,
-                                                color: Colors.grey,
-                                              ),
-                                            );
-                                          },
-                                        )
-                                      : Container(
-                                          width: 80,
-                                          height: 120,
-                                          color: Colors.grey.shade300,
-                                          child: const Icon(
-                                            Icons.person,
-                                            size: 40,
-                                            color: Colors.grey,
+                          return GestureDetector(
+                            onTap: () => _navigateToActorDetails(actor),
+                            child: Container(
+                              width: 100,
+                              margin: const EdgeInsets.only(right: 12),
+                              child: Column(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: actor.fullProfileUrl.isNotEmpty
+                                        ? Image.network(
+                                            actor.fullProfileUrl,
+                                            width: 80,
+                                            height: 120,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Container(
+                                                width: 80,
+                                                height: 120,
+                                                color: Colors.grey.shade300,
+                                                child: const Icon(
+                                                  Icons.person,
+                                                  size: 40,
+                                                  color: Colors.grey,
+                                                ),
+                                              );
+                                            },
+                                          )
+                                        : Container(
+                                            width: 80,
+                                            height: 120,
+                                            color: Colors.grey.shade300,
+                                            child: const Icon(
+                                              Icons.person,
+                                              size: 40,
+                                              color: Colors.grey,
+                                            ),
                                           ),
-                                        ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  actor.name,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
                                   ),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  actor.character,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.grey.shade600,
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    actor.name,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                                  Text(
+                                    actor.character,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },

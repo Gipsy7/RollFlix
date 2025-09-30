@@ -6,6 +6,7 @@ import '../models/cast.dart';
 import '../models/watch_providers.dart';
 import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
+import '../models/actor_details.dart';
 
 class MovieService {
   // API Key do TMDb (para uso em demonstração - em produção deve ser protegida)
@@ -396,5 +397,78 @@ class MovieService {
       themeSongSpotifyId: soundtrackData?['themeSongSpotifyId'],
       themeSongYoutubeId: soundtrackData?['themeSongYoutubeId'],
     );
+  }
+
+  // Método para obter detalhes do ator
+  static Future<ActorDetails> getActorDetails(int actorId) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/person/$actorId?api_key=$_apiKey&language=pt-BR'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final actorDetails = ActorDetails.fromJson(data);
+        
+        // Buscar filmes conhecidos do ator
+        final knownForMovies = await getActorMovies(actorId);
+        
+        return ActorDetails(
+          id: actorDetails.id,
+          name: actorDetails.name,
+          biography: actorDetails.biography,
+          profilePath: actorDetails.profilePath,
+          birthday: actorDetails.birthday,
+          deathday: actorDetails.deathday,
+          placeOfBirth: actorDetails.placeOfBirth,
+          knownForDepartment: actorDetails.knownForDepartment,
+          popularity: actorDetails.popularity,
+          knownFor: knownForMovies,
+        );
+      } else {
+        throw Exception('Falha ao carregar detalhes do ator');
+      }
+    } catch (e) {
+      throw Exception('Erro ao buscar detalhes do ator: $e');
+    }
+  }
+
+  // Método para obter filmes do ator
+  static Future<List<ActorMovie>> getActorMovies(int actorId) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/person/$actorId/movie_credits?api_key=$_apiKey&language=pt-BR'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> castList = data['cast'] ?? [];
+        
+        // Ordenar por popularidade e data de lançamento
+        final movies = castList
+            .map((movieData) => ActorMovie.fromJson(movieData))
+            .where((movie) => movie.posterPath != null && movie.releaseDate != null)
+            .toList();
+            
+        movies.sort((a, b) {
+          // Primeiro por data de lançamento (mais recente primeiro)
+          final dateComparison = (b.releaseDate ?? '').compareTo(a.releaseDate ?? '');
+          if (dateComparison != 0) return dateComparison;
+          // Depois por avaliação
+          return b.voteAverage.compareTo(a.voteAverage);
+        });
+        
+        // Retornar os 20 filmes mais relevantes
+        return movies.take(20).toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
   }
 }
