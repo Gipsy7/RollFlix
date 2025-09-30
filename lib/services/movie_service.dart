@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import '../models/movie.dart';
+import '../models/cast.dart';
+import '../models/watch_providers.dart';
 
 class MovieService {
   // API Key do TMDb (para uso em demonstração - em produção deve ser protegida)
@@ -62,6 +64,74 @@ class MovieService {
     
     final randomIndex = Random().nextInt(movies.length);
     return movies[randomIndex];
+  }
+
+  static Future<Movie> getMovieDetails(int movieId) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/movie/$movieId?api_key=$_apiKey&language=pt-BR'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        return Movie.fromJson(jsonData);
+      } else {
+        throw Exception('Erro ao buscar detalhes do filme: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar detalhes: $e');
+      rethrow;
+    }
+  }
+
+  static Future<MovieCredits> getMovieCredits(int movieId) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/movie/$movieId/credits?api_key=$_apiKey'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        return MovieCredits.fromJson(jsonData);
+      } else {
+        throw Exception('Erro ao buscar elenco: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar elenco: $e');
+      return MovieCredits(cast: [], crew: []);
+    }
+  }
+
+  static Future<WatchProviders?> getWatchProviders(int movieId) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/movie/$movieId/watch/providers?api_key=$_apiKey'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final results = jsonData['results'] as Map<String, dynamic>?;
+        
+        // Verifica primeiro BR (Brasil), depois US (Estados Unidos)
+        if (results?['BR'] != null) {
+          return WatchProviders.fromJson(results!['BR']);
+        } else if (results?['US'] != null) {
+          return WatchProviders.fromJson(results!['US']);
+        }
+        return null;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Erro ao buscar provedores: $e');
+      return null;
+    }
   }
 
   // Lista de fallback caso a API não funcione

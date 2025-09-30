@@ -7,6 +7,9 @@ class Movie {
   final double voteAverage;
   final String releaseDate;
   final List<int> genreIds;
+  final int runtime;
+  final String originalLanguage;
+  final List<String> productionCompanies;
 
   Movie({
     required this.id,
@@ -17,6 +20,9 @@ class Movie {
     required this.voteAverage,
     required this.releaseDate,
     required this.genreIds,
+    this.runtime = 0,
+    this.originalLanguage = '',
+    this.productionCompanies = const [],
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) {
@@ -29,6 +35,14 @@ class Movie {
       voteAverage: (json['vote_average'] ?? 0).toDouble(),
       releaseDate: json['release_date'] ?? '',
       genreIds: List<int>.from(json['genre_ids'] ?? []),
+      runtime: json['runtime'] ?? 0,
+      originalLanguage: json['original_language'] ?? '',
+      productionCompanies: json['production_companies'] != null
+          ? (json['production_companies'] as List)
+              .map((company) => company['name']?.toString() ?? '')
+              .where((name) => name.isNotEmpty)
+              .toList()
+          : [],
     );
   }
 
@@ -39,11 +53,31 @@ class Movie {
     return '';
   }
 
+  String get fullBackdropUrl {
+    if (backdropPath != null) {
+      return 'https://image.tmdb.org/t/p/w1280$backdropPath';
+    }
+    return '';
+  }
+
   String get year {
     if (releaseDate.isNotEmpty) {
       return releaseDate.split('-')[0];
     }
     return '';
+  }
+
+  String get formattedRuntime {
+    if (runtime > 0) {
+      final hours = runtime ~/ 60;
+      final minutes = runtime % 60;
+      if (hours > 0) {
+        return '${hours}h ${minutes}min';
+      } else {
+        return '${minutes}min';
+      }
+    }
+    return 'Duração não disponível';
   }
 }
 
