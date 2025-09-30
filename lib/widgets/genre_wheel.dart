@@ -234,26 +234,26 @@ class GenreWheelPainter extends CustomPainter {
     final radius = size.width / 2;
     final segmentAngle = 2 * pi / genres.length;
     
-    // Cores para os segmentos
+    // Cores cinematográficas para os segmentos
     final colors = [
-      AppColors.primary,
-      AppColors.secondary,
-      AppColors.accent,
-      const Color(0xFF10B981),
-      const Color(0xFFF59E0B),
-      const Color(0xFFEF4444),
-      const Color(0xFF8B5CF6),
-      const Color(0xFF06B6D4),
-      const Color(0xFFF97316),
-      const Color(0xFF84CC16),
-      const Color(0xFFEC4899),
-      const Color(0xFF6366F1),
-      const Color(0xFF14B8A6),
-      const Color(0xFFFBBF24),
-      const Color(0xFFF472B6),
-      const Color(0xFF9333EA),
-      const Color(0xFF0EA5E9),
-      const Color(0xFF22C55E),
+      AppColors.primary,           // Gold
+      AppColors.secondary,         // Crimson Red
+      AppColors.accent,            // Popcorn Yellow
+      AppColors.curtainRed,        // Burgundy
+      AppColors.primaryDark,       // Dark Gold
+      AppColors.secondaryLight,    // Light Red
+      AppColors.accentDark,        // Banana Yellow
+      const Color(0xFF4A5568),     // Film Strip Gray
+      const Color(0xFF2D3748),     // Dark Charcoal
+      const Color(0xFF744210),     // Bronze
+      const Color(0xFF9B2C2C),     // Dark Red
+      const Color(0xFFD69E2E),     // Amber
+      const Color(0xFF553C9A),     // Purple
+      const Color(0xFF285E61),     // Teal
+      const Color(0xFF975A16),     // Orange
+      const Color(0xFF68D391),     // Green
+      const Color(0xFF667EEA),     // Blue
+      const Color(0xFFED8936),     // Orange
     ];
 
     for (int i = 0; i < genres.length; i++) {
@@ -261,9 +261,14 @@ class GenreWheelPainter extends CustomPainter {
       final color = colors[i % colors.length];
       final isSelected = genres[i] == selectedGenre;
       
-      // Desenha o segmento
+      // Desenha o segmento com gradiente cinematográfico
       final paint = Paint()
-        ..color = isSelected ? color : color.withOpacity(0.8)
+        ..shader = RadialGradient(
+          colors: isSelected
+              ? [color, color.withOpacity(0.9), color.withOpacity(0.7)]
+              : [color.withOpacity(0.8), color.withOpacity(0.6), color.withOpacity(0.4)],
+          stops: const [0.3, 0.7, 1.0],
+        ).createShader(Rect.fromCircle(center: center, radius: radius))
         ..style = PaintingStyle.fill;
       
       canvas.drawArc(
@@ -274,11 +279,11 @@ class GenreWheelPainter extends CustomPainter {
         paint,
       );
       
-      // Desenha a borda
+      // Desenha a borda dourada
       final borderPaint = Paint()
-        ..color = Colors.white
+        ..color = isSelected ? AppColors.primary : AppColors.filmStrip
         ..style = PaintingStyle.stroke
-        ..strokeWidth = isSelected ? 3 : 1;
+        ..strokeWidth = isSelected ? 4 : 2;
       
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
@@ -288,31 +293,51 @@ class GenreWheelPainter extends CustomPainter {
         borderPaint,
       );
       
-      // Desenha o texto
+      // Desenha o texto com estilo cinematográfico
       final textAngle = startAngle + segmentAngle / 2;
-      final textRadius = radius * 0.7; // Posição média no segmento
+      final textRadius = radius * 0.6; // Posição mais próxima do centro para evitar extrapolar
       final textCenter = Offset(
         center.dx + cos(textAngle) * textRadius,
         center.dy + sin(textAngle) * textRadius,
       );
       
+      // Ajusta o texto para caber no segmento
+      String displayText = genres[i];
+      double fontSize = isSelected ? 12 : 10;
+      
+      // Para textos muito longos, usa abreviação
+      if (displayText.length > 10) {
+        fontSize = isSelected ? 10 : 8;
+        if (displayText.length > 12) {
+          displayText = '${displayText.substring(0, 8)}...';
+        }
+      }
+      
+      // Ajusta o tamanho da fonte baseado no número de segmentos
+      if (genres.length > 12) {
+        fontSize *= 0.9;
+      }
+      if (genres.length > 16) {
+        fontSize *= 0.8;
+      }
+      
       final textSpan = TextSpan(
-        text: genres[i],
-        style: AppTextStyles.labelMedium.copyWith(
-          color: Colors.white,
+        text: displayText,
+        style: AppTextStyles.genreLabel.copyWith(
+          color: isSelected ? AppColors.backgroundDark : AppColors.textPrimary,
           fontWeight: FontWeight.w800,
-          fontSize: 11,
-          letterSpacing: 0.3,
+          fontSize: fontSize,
+          letterSpacing: 0.5,
           shadows: [
             Shadow(
               blurRadius: 3,
-              color: Colors.black.withOpacity(0.8),
-              offset: const Offset(0, 0),
+              color: AppColors.backgroundDark.withOpacity(0.9),
+              offset: const Offset(1, 1),
             ),
             Shadow(
               blurRadius: 1,
-              color: Colors.black.withOpacity(0.9),
-              offset: const Offset(1, 1),
+              color: isSelected ? AppColors.primary.withOpacity(0.5) : AppColors.backgroundDark.withOpacity(0.7),
+              offset: const Offset(0, 0),
             ),
           ],
         ),
@@ -327,26 +352,70 @@ class GenreWheelPainter extends CustomPainter {
       
       textPainter.layout();
       
-      canvas.save();
-      canvas.translate(textCenter.dx, textCenter.dy);
-      
-      // Rotação para ficar paralelo ao raio, mas ajustando a orientação
-      // para evitar texto de cabeça para baixo na parte inferior
-      double rotation = textAngle;
-      
-      // Se o texto estiver na metade inferior do círculo, 
-      // adiciona 180 graus para não ficar invertido
-      if (textAngle > pi / 2 && textAngle < 3 * pi / 2) {
-        rotation += pi;
+      // Verifica se o texto é muito largo para o segmento e ajusta
+      final maxWidth = radius * 0.8; // Largura máxima permitida
+      if (textPainter.width > maxWidth) {
+        // Cria um novo textSpan com texto menor
+        final adjustedTextSpan = TextSpan(
+          text: displayText,
+          style: AppTextStyles.genreLabel.copyWith(
+            color: isSelected ? AppColors.backgroundDark : AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
+            fontSize: fontSize * 0.8, // Reduz ainda mais o tamanho
+            letterSpacing: 0.3,
+            shadows: [
+              Shadow(
+                blurRadius: 2,
+                color: AppColors.backgroundDark.withOpacity(0.8),
+                offset: const Offset(0.5, 0.5),
+              ),
+            ],
+          ),
+        );
+        
+        final adjustedTextPainter = TextPainter(
+          text: adjustedTextSpan,
+          textAlign: TextAlign.center,
+          textDirection: TextDirection.ltr,
+          maxLines: 1,
+        );
+        
+        adjustedTextPainter.layout();
+        
+        canvas.save();
+        canvas.translate(textCenter.dx, textCenter.dy);
+        
+        // Rotação para ficar paralelo ao raio
+        double rotation = textAngle;
+        if (textAngle > pi / 2 && textAngle < 3 * pi / 2) {
+          rotation += pi;
+        }
+        
+        canvas.rotate(rotation);
+        
+        adjustedTextPainter.paint(
+          canvas,
+          Offset(-adjustedTextPainter.width / 2, -adjustedTextPainter.height / 2),
+        );
+        canvas.restore();
+      } else {
+        canvas.save();
+        canvas.translate(textCenter.dx, textCenter.dy);
+        
+        // Rotação para ficar paralelo ao raio
+        double rotation = textAngle;
+        if (textAngle > pi / 2 && textAngle < 3 * pi / 2) {
+          rotation += pi;
+        }
+        
+        canvas.rotate(rotation);
+        
+        textPainter.paint(
+          canvas,
+          Offset(-textPainter.width / 2, -textPainter.height / 2),
+        );
+        canvas.restore();
       }
-      
-      canvas.rotate(rotation);
-      
-      textPainter.paint(
-        canvas,
-        Offset(-textPainter.width / 2, -textPainter.height / 2),
-      );
-      canvas.restore();
     }
   }
 
