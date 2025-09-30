@@ -7,11 +7,13 @@ import 'movie_details_screen.dart';
 class ActorDetailsScreen extends StatefulWidget {
   final int actorId;
   final String actorName;
+  final bool isDirector;
 
   const ActorDetailsScreen({
     super.key,
     required this.actorId,
     required this.actorName,
+    this.isDirector = false,
   });
 
   @override
@@ -30,7 +32,27 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
 
   Future<void> _loadActorDetails() async {
     try {
-      final details = await MovieService.getActorDetails(widget.actorId);
+      // Carregar detalhes básicos da pessoa
+      final basicDetails = await MovieService.getActorDetails(widget.actorId);
+      
+      // Carregar filmografia baseada no tipo (ator ou diretor)
+      final filmography = widget.isDirector 
+        ? await MovieService.getDirectorMovies(widget.actorId)
+        : await MovieService.getActorMovies(widget.actorId);
+      
+      final details = ActorDetails(
+        id: basicDetails.id,
+        name: basicDetails.name,
+        biography: basicDetails.biography,
+        profilePath: basicDetails.profilePath,
+        birthday: basicDetails.birthday,
+        deathday: basicDetails.deathday,
+        placeOfBirth: basicDetails.placeOfBirth,
+        knownForDepartment: basicDetails.knownForDepartment,
+        popularity: basicDetails.popularity,
+        knownFor: filmography,
+      );
+      
       setState(() {
         actorDetails = details;
         isLoading = false;
@@ -239,11 +261,14 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                     if (actorDetails!.knownFor.isNotEmpty) ...[
                       Row(
                         children: [
-                          Icon(Icons.movie, color: Colors.purple.shade600),
+                          Icon(
+                            widget.isDirector ? Icons.movie_filter : Icons.movie, 
+                            color: Colors.purple.shade600
+                          ),
                           const SizedBox(width: 8),
-                          const Text(
-                            'Filmografia',
-                            style: TextStyle(
+                          Text(
+                            widget.isDirector ? 'Filmografia como Diretor' : 'Filmografia como Ator',
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Colors.purple,

@@ -165,6 +165,19 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     );
   }
 
+  void _navigateToDirectorDetails(CrewMember director) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ActorDetailsScreen(
+          actorId: director.id,
+          actorName: director.name,
+          isDirector: true,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final movie = detailedMovie ?? widget.movie;
@@ -379,9 +392,36 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      credits!.directors.map((d) => d.name).join(', '),
-                      style: const TextStyle(fontSize: 16),
+                    Wrap(
+                      spacing: 8.0,
+                      runSpacing: 4.0,
+                      children: credits!.directors.map((director) {
+                        return GestureDetector(
+                          onTap: () => _navigateToDirectorDetails(director),
+                          child: Chip(
+                            avatar: const Icon(
+                              Icons.movie_filter,
+                              size: 16,
+                              color: Colors.purple,
+                            ),
+                            label: Text(
+                              director.name,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            backgroundColor: Colors.purple.shade50,
+                            side: BorderSide(
+                              color: Colors.purple.shade200,
+                              width: 1,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
                     const SizedBox(height: 24),
                   ],

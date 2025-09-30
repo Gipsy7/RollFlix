@@ -471,4 +471,42 @@ class MovieService {
       return [];
     }
   }
+
+  // Método para obter filmes dirigidos por uma pessoa
+  static Future<List<ActorMovie>> getDirectorMovies(int directorId) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/person/$directorId/movie_credits?api_key=$_apiKey&language=pt-BR'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> crewList = data['crew'] ?? [];
+        
+        // Filtrar apenas filmes onde a pessoa foi diretora
+        final directorMovies = crewList
+            .where((movieData) => movieData['job'] == 'Director')
+            .map((movieData) => ActorMovie.fromJson(movieData))
+            .where((movie) => movie.posterPath != null && movie.releaseDate != null)
+            .toList();
+            
+        directorMovies.sort((a, b) {
+          // Primeiro por data de lançamento (mais recente primeiro)
+          final dateComparison = (b.releaseDate ?? '').compareTo(a.releaseDate ?? '');
+          if (dateComparison != 0) return dateComparison;
+          // Depois por avaliação
+          return b.voteAverage.compareTo(a.voteAverage);
+        });
+        
+        // Retornar os 20 filmes mais relevantes
+        return directorMovies.take(20).toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
 }
