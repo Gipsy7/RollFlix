@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:palette_generator/palette_generator.dart';
 import '../models/movie.dart';
 import '../models/cast.dart';
 import '../models/watch_providers.dart';
@@ -24,11 +25,51 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   MovieVideos? movieVideos;
   SoundtrackInfo? soundtrackInfo;
   bool isLoading = true;
+  
+  // Adaptive colors
+  Color primaryColor = const Color(0xFF6366F1);
+  Color backgroundColor = Colors.white;
+  Color surfaceColor = const Color(0xFFF8FAFC);
+  Color onSurfaceColor = const Color(0xFF1E293B);
+  Color secondaryColor = const Color(0xFF8B5CF6);
 
   @override
   void initState() {
     super.initState();
     _loadMovieDetails();
+    _extractColorsFromImage();
+  }
+
+  Future<void> _extractColorsFromImage() async {
+    final movie = widget.movie;
+    if (movie.fullPosterUrl.isNotEmpty) {
+      try {
+        final paletteGenerator = await PaletteGenerator.fromImageProvider(
+          NetworkImage(movie.fullPosterUrl),
+          maximumColorCount: 20,
+        );
+
+        if (mounted) {
+          setState(() {
+            final dominantColor = paletteGenerator.dominantColor?.color ?? const Color(0xFF6366F1);
+            final vibrantColor = paletteGenerator.vibrantColor?.color ?? const Color(0xFF8B5CF6);
+            
+            primaryColor = dominantColor;
+            secondaryColor = vibrantColor;
+            
+            // Calculate contrasting colors for text
+            final luminance = dominantColor.computeLuminance();
+            onSurfaceColor = luminance > 0.5 ? const Color(0xFF1E293B) : Colors.white;
+            
+            // Create a lighter version for surface
+            surfaceColor = Color.lerp(dominantColor, Colors.white, 0.85) ?? const Color(0xFFF8FAFC);
+            backgroundColor = Color.lerp(dominantColor, Colors.white, 0.95) ?? Colors.white;
+          });
+        }
+      } catch (e) {
+        // Keep default colors if extraction fails
+      }
+    }
   }
 
   Future<void> _loadMovieDetails() async {
@@ -183,25 +224,30 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     final movie = detailedMovie ?? widget.movie;
     
     return Scaffold(
+      backgroundColor: backgroundColor,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
+            backgroundColor: primaryColor,
+            foregroundColor: onSurfaceColor,
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                movie.title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(0, 1),
-                      blurRadius: 3,
-                      color: Colors.black54,
-                    ),
-                  ],
+              title: AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 500),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: onSurfaceColor,
+                    shadows: const [
+                      Shadow(
+                        offset: Offset(0, 1),
+                        blurRadius: 3,
+                        color: Colors.black54,
+                      ),
+                    ],
+                  ),
+                  child: Text(movie.title),
                 ),
-              ),
               background: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -363,13 +409,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ),
                   
                   // Sinopse
-                  const Text(
-                    'Sinopse',
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 500),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.purple,
+                      color: primaryColor,
                     ),
+                    child: const Text('Sinopse'),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -383,13 +430,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                   // Diretor
                   if (credits?.directors.isNotEmpty == true) ...[
-                    const Text(
-                      'Direção',
+                    AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 500),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.purple,
+                        color: primaryColor,
                       ),
+                      child: const Text('Direção'),
                     ),
                     const SizedBox(height: 8),
                     Wrap(
@@ -428,13 +476,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                   // Elenco principal
                   if (credits?.cast.isNotEmpty == true) ...[
-                    const Text(
-                      'Elenco Principal',
+                    AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 500),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.purple,
+                        color: primaryColor,
                       ),
+                      child: const Text('Elenco Principal'),
                     ),
                     const SizedBox(height: 12),
                     SizedBox(
@@ -619,13 +668,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                   // Onde assistir
                   if (watchProviders?.hasProviders == true) ...[
-                    const Text(
-                      'Onde Assistir',
+                    AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 500),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.purple,
+                        color: primaryColor,
                       ),
+                      child: const Text('Onde Assistir'),
                     ),
                     const SizedBox(height: 12),
                     

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:palette_generator/palette_generator.dart';
 import '../models/actor_details.dart';
 import '../models/movie.dart';
 import '../services/movie_service.dart';
@@ -23,11 +24,49 @@ class ActorDetailsScreen extends StatefulWidget {
 class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
   ActorDetails? actorDetails;
   bool isLoading = true;
+  
+  // Adaptive colors
+  Color primaryColor = const Color(0xFF6366F1);
+  Color backgroundColor = Colors.white;
+  Color surfaceColor = const Color(0xFFF8FAFC);
+  Color onSurfaceColor = const Color(0xFF1E293B);
+  Color secondaryColor = const Color(0xFF8B5CF6);
 
   @override
   void initState() {
     super.initState();
     _loadActorDetails();
+  }
+
+  Future<void> _extractColorsFromImage() async {
+    if (actorDetails?.fullProfileUrl.isNotEmpty == true) {
+      try {
+        final paletteGenerator = await PaletteGenerator.fromImageProvider(
+          NetworkImage(actorDetails!.fullProfileUrl),
+          maximumColorCount: 20,
+        );
+
+        if (mounted) {
+          setState(() {
+            final dominantColor = paletteGenerator.dominantColor?.color ?? const Color(0xFF6366F1);
+            final vibrantColor = paletteGenerator.vibrantColor?.color ?? const Color(0xFF8B5CF6);
+            
+            primaryColor = dominantColor;
+            secondaryColor = vibrantColor;
+            
+            // Calculate contrasting colors for text
+            final luminance = dominantColor.computeLuminance();
+            onSurfaceColor = luminance > 0.5 ? const Color(0xFF1E293B) : Colors.white;
+            
+            // Create a lighter version for surface
+            surfaceColor = Color.lerp(dominantColor, Colors.white, 0.85) ?? const Color(0xFFF8FAFC);
+            backgroundColor = Color.lerp(dominantColor, Colors.white, 0.95) ?? Colors.white;
+          });
+        }
+      } catch (e) {
+        // Keep default colors if extraction fails
+      }
+    }
   }
 
   Future<void> _loadActorDetails() async {
@@ -57,6 +96,9 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
         actorDetails = details;
         isLoading = false;
       });
+      
+      // Extract colors after loading details
+      _extractColorsFromImage();
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -64,162 +106,117 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
     }
   }
 
-  void _navigateToMovie(ActorMovie movie) {
-    final movieObj = Movie(
-      id: movie.id,
-      title: movie.title,
-      overview: '',
-      voteAverage: movie.voteAverage,
-      releaseDate: movie.year,
-      posterPath: movie.posterPath,
-      genreIds: [],
+  void _navigateToMovieDetails(ActorMovie actorMovie) {
+    // Convert ActorMovie to Movie
+    final movie = Movie(
+      id: actorMovie.id,
+      title: actorMovie.title,
+      overview: '', // Will be loaded in details
+      posterPath: actorMovie.posterPath,
+      backdropPath: null,
+      releaseDate: actorMovie.releaseDate ?? '',
+      voteAverage: actorMovie.voteAverage,
+      genreIds: [], // Empty for now, will be loaded in details
     );
-
+    
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MovieDetailsScreen(movie: movieObj),
+        builder: (context) => MovieDetailsScreen(movie: movie),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 300,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                widget.actorName,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 3,
-                      color: Colors.black54,
-                    ),
-                  ],
-                ),
-              ),
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (actorDetails?.fullProfileUrl.isNotEmpty == true)
-                    Image.network(
-                      actorDetails!.fullProfileUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey.shade300,
-                          child: const Icon(
-                            Icons.person,
-                            size: 100,
-                            color: Colors.grey,
-                          ),
-                        );
-                      },
-                    )
-                  else
-                    Container(
-                      color: Colors.grey.shade300,
-                      child: const Icon(
-                        Icons.person,
-                        size: 100,
-                        color: Colors.grey,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 500),
+      color: backgroundColor,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 300,
+              pinned: true,
+              backgroundColor: primaryColor,
+              foregroundColor: onSurfaceColor,
+              flexibleSpace: FlexibleSpaceBar(
+                title: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 500),
+                  style: TextStyle(
+                    color: onSurfaceColor,
+                    fontWeight: FontWeight.bold,
+                    shadows: const [
+                      Shadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 3,
+                        color: Colors.black54,
                       ),
-                    ),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withOpacity(0.7),
-                        ],
-                      ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ),
-          if (isLoading)
-            const SliverFillRemaining(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
-          else if (actorDetails == null)
-            const SliverFillRemaining(
-              child: Center(
-                child: Text(
-                  'Erro ao carregar informações do ator',
-                  style: TextStyle(fontSize: 16),
+                  child: Text(widget.actorName),
                 ),
-              ),
-            )
-          else
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                background: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    // Informações Básicas
-                    Card(
-                      elevation: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.info, color: Colors.blue.shade600),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  'Informações Básicas',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ],
+                    if (actorDetails?.fullProfileUrl.isNotEmpty == true)
+                      Image.network(
+                        actorDetails!.fullProfileUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey.shade300,
+                            child: const Icon(
+                              Icons.person,
+                              size: 100,
+                              color: Colors.grey,
                             ),
-                            const SizedBox(height: 12),
-                            if (actorDetails!.knownForDepartment != null) ...[
-                              _buildInfoRow('Conhecido por', actorDetails!.knownForDepartment!),
-                              const SizedBox(height: 8),
-                            ],
-                            if (actorDetails!.birthday != null) ...[
-                              _buildInfoRow('Nascimento', '${actorDetails!.formattedBirthday} ${actorDetails!.ageString}'),
-                              const SizedBox(height: 8),
-                            ],
-                            if (actorDetails!.placeOfBirth != null) ...[
-                              _buildInfoRow('Local de Nascimento', actorDetails!.placeOfBirth!),
-                              const SizedBox(height: 8),
-                            ],
-                            if (actorDetails!.deathday != null) ...[
-                              _buildInfoRow('Falecimento', actorDetails!.deathday!),
-                              const SizedBox(height: 8),
-                            ],
-                            _buildInfoRow('Popularidade', '${actorDetails!.popularity.toStringAsFixed(1)}/10'),
+                          );
+                        },
+                      )
+                    else
+                      Container(
+                        color: Colors.grey.shade300,
+                        child: const Icon(
+                          Icons.person,
+                          size: 100,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.7),
                           ],
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 16),
-
-                    // Biografia
-                    if (actorDetails!.biography != null && actorDetails!.biography!.isNotEmpty) ...[
+                  ],
+                ),
+              ),
+            ),
+            if (isLoading)
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(32.0),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              )
+            else
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Informações Básicas
                       Card(
                         elevation: 2,
                         child: Padding(
@@ -229,181 +226,193 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.description, color: Colors.green.shade600),
+                                  Icon(Icons.info, color: primaryColor),
                                   const SizedBox(width: 8),
-                                  const Text(
-                                    'Biografia',
+                                  AnimatedDefaultTextStyle(
+                                    duration: const Duration(milliseconds: 500),
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.green,
+                                      color: primaryColor,
                                     ),
+                                    child: const Text('Informações Básicas'),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 12),
-                              Text(
-                                actorDetails!.biography!,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  height: 1.5,
+                              if (actorDetails!.knownForDepartment != null) ...[
+                                Text(
+                                  '${widget.isDirector ? 'Diretor' : 'Ator'}: ${actorDetails!.knownForDepartment}',
+                                  style: const TextStyle(fontSize: 16),
                                 ),
-                                textAlign: TextAlign.justify,
-                              ),
+                                const SizedBox(height: 8),
+                              ],
+                              if (actorDetails!.birthday != null) ...[
+                                Text(
+                                  'Nascimento: ${actorDetails!.birthday}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              if (actorDetails!.deathday != null) ...[
+                                Text(
+                                  'Falecimento: ${actorDetails!.deathday}',
+                                  style: const TextStyle(fontSize: 16, color: Colors.red),
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              if (actorDetails!.placeOfBirth != null) ...[
+                                Text(
+                                  'Local de Nascimento: ${actorDetails!.placeOfBirth}',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ],
                             ],
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 16),
-                    ],
 
-                    // Filmografia
-                    if (actorDetails!.knownFor.isNotEmpty) ...[
-                      Row(
-                        children: [
-                          Icon(
-                            widget.isDirector ? Icons.movie_filter : Icons.movie, 
-                            color: Colors.purple.shade600
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            widget.isDirector ? 'Filmografia como Diretor' : 'Filmografia como Ator',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.purple,
+                      // Biografia
+                      if (actorDetails!.biography != null && actorDetails!.biography!.isNotEmpty) ...[
+                        Card(
+                          elevation: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.description, color: primaryColor),
+                                    const SizedBox(width: 8),
+                                    AnimatedDefaultTextStyle(
+                                      duration: const Duration(milliseconds: 500),
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryColor,
+                                      ),
+                                      child: const Text('Biografia'),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  actorDetails!.biography!,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 0.7,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
                         ),
-                        itemCount: actorDetails!.knownFor.length,
-                        itemBuilder: (context, index) {
-                          final movie = actorDetails!.knownFor[index];
-                          return GestureDetector(
-                            onTap: () => _navigateToMovie(movie),
-                            child: Card(
-                              elevation: 2,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(4),
-                                      ),
-                                      child: movie.fullPosterUrl.isNotEmpty
-                                          ? Image.network(
-                                              movie.fullPosterUrl,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (context, error, stackTrace) {
-                                                return Container(
-                                                  color: Colors.grey.shade300,
-                                                  child: const Icon(
-                                                    Icons.movie,
-                                                    color: Colors.grey,
-                                                  ),
-                                                );
-                                              },
-                                            )
-                                          : Container(
-                                              color: Colors.grey.shade300,
-                                              child: const Icon(
-                                                Icons.movie,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              movie.title,
-                                              style: const TextStyle(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          Text(
-                                            movie.year,
-                                            style: TextStyle(
-                                              fontSize: 9,
-                                              color: Colors.grey.shade600,
-                                            ),
-                                          ),
-                                          if (movie.character != null && movie.character!.isNotEmpty)
-                                            Text(
-                                              movie.character!,
-                                              style: TextStyle(
-                                                fontSize: 8,
-                                                color: Colors.blue.shade600,
-                                                fontStyle: FontStyle.italic,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
+                      ],
 
-                    const SizedBox(height: 32),
-                  ],
+                      // Filmografia
+                      if (actorDetails!.knownFor.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        Card(
+                          elevation: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.movie, color: primaryColor),
+                                    const SizedBox(width: 8),
+                                    AnimatedDefaultTextStyle(
+                                      duration: const Duration(milliseconds: 500),
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryColor,
+                                      ),
+                                      child: Text(widget.isDirector ? 'Filmografia como Diretor' : 'Filmografia'),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                SizedBox(
+                                  height: 200,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: actorDetails!.knownFor.length,
+                                    itemBuilder: (context, index) {
+                                      final movie = actorDetails!.knownFor[index];
+                                      return GestureDetector(
+                                        onTap: () => _navigateToMovieDetails(movie),
+                                        child: Container(
+                                          width: 120,
+                                          margin: const EdgeInsets.only(right: 12),
+                                          child: Column(
+                                            children: [
+                                              Expanded(
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  child: movie.fullPosterUrl.isNotEmpty
+                                                      ? Image.network(
+                                                          movie.fullPosterUrl,
+                                                          fit: BoxFit.cover,
+                                                          width: double.infinity,
+                                                          errorBuilder: (context, error, stackTrace) {
+                                                            return Container(
+                                                              color: Colors.grey.shade300,
+                                                              child: const Icon(
+                                                                Icons.movie,
+                                                                size: 50,
+                                                                color: Colors.grey,
+                                                              ),
+                                                            );
+                                                          },
+                                                        )
+                                                      : Container(
+                                                          color: Colors.grey.shade300,
+                                                          child: const Icon(
+                                                            Icons.movie,
+                                                            size: 50,
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                movie.title,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+
+                      const SizedBox(height: 32),
+                    ],
+                  ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 120,
-          child: Text(
-            '$label:',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(fontSize: 14),
-          ),
-        ),
-      ],
     );
   }
 }
