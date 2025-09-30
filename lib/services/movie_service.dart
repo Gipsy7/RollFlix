@@ -5,6 +5,7 @@ import '../models/movie.dart';
 import '../models/cast.dart';
 import '../models/watch_providers.dart';
 import '../models/movie_videos.dart';
+import '../models/soundtrack.dart';
 
 class MovieService {
   // API Key do TMDb (para uso em demonstração - em produção deve ser protegida)
@@ -322,5 +323,78 @@ class MovieService {
       releaseDate: data['year']!,
       genreIds: [],
     )).toList();
+  }
+
+  // Método para obter informações da trilha sonora
+  static SoundtrackInfo getSoundtrackInfo(Movie movie) {
+    // Base de dados de trilhas sonoras conhecidas
+    final Map<String, Map<String, String?>> knownSoundtracks = {
+      'The Lion King': {
+        'themeSongTitle': 'Can You Feel the Love Tonight',
+        'themeSongArtist': 'Elton John',
+        'spotifyPlaylistId': '37i9dQZF1DX8C9xQcOrE6T',
+        'youtubePlaylistId': 'PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI',
+      },
+      'Frozen': {
+        'themeSongTitle': 'Let It Go',
+        'themeSongArtist': 'Idina Menzel',
+        'spotifyPlaylistId': '1YcF3Sv0qKdNalcwVYkNyx',
+        'youtubePlaylistId': 'PLjaCx3bwu6PVvvVdWlHDqbNGfnJ7h7aE1',
+      },
+      'A Star Is Born': {
+        'themeSongTitle': 'Shallow',
+        'themeSongArtist': 'Lady Gaga & Bradley Cooper',
+        'spotifyPlaylistId': '37i9dQZF1DX7RnYsxJE1fK',
+        'youtubePlaylistId': 'PLmEpPMVhGBwI7zojhNGG2i-y3bQJ9xFyb',
+      },
+      'La La Land': {
+        'themeSongTitle': 'City of Stars',
+        'themeSongArtist': 'Ryan Gosling & Emma Stone',
+        'spotifyPlaylistId': '4LMZDj6mOg7PtjHQ5tMHe5',
+        'youtubePlaylistId': 'PL03A8764DA7AC1E2E',
+      },
+      'The Greatest Showman': {
+        'themeSongTitle': 'This Is Me',
+        'themeSongArtist': 'Keala Settle',
+        'spotifyPlaylistId': '37i9dQZF1DX5VFzFqQx0U6',
+        'youtubePlaylistId': 'PLtevNBhR1jwMHjD8PpKTpnBzJd6awfF0v',
+      },
+      'Guardians of the Galaxy': {
+        'themeSongTitle': 'Hooked on a Feeling',
+        'themeSongArtist': 'Blue Swede',
+        'spotifyPlaylistId': '3dTk3nRh12VZhQ8Ap4Z8Qh',
+        'youtubePlaylistId': 'PLdVvKp4wQKDrJrN2kqJPzP_qP-BvX0Kbv',
+      },
+      'Black Panther': {
+        'themeSongTitle': 'All the Stars',
+        'themeSongArtist': 'Kendrick Lamar & SZA',
+        'spotifyPlaylistId': '1YcF3Sv0qKdNalcwVYkNyx',
+        'youtubePlaylistId': 'PLjaCx3bwu6PVvvVdWlHDqbNGfnJ7h7aE1',
+      },
+      'Bohemian Rhapsody': {
+        'themeSongTitle': 'Bohemian Rhapsody',
+        'themeSongArtist': 'Queen',
+        'spotifyPlaylistId': '37i9dQZF1DX7RnYsxJE1fK',
+        'youtubePlaylistId': 'PLohG1MxSSIb3GVKoNBqhF-Zzl7jRhZMjQ',
+      },
+      'Moana': {
+        'themeSongTitle': 'How Far I\'ll Go',
+        'themeSongArtist': 'Auli\'i Cravalho',
+        'spotifyPlaylistId': '2nDYTwMb9M3ks5cDlKo6gZ',
+        'youtubePlaylistId': 'PLH6DZmEFObNKQ74W4I_tAczv8nJ48xw7E',
+      },
+    };
+
+    final soundtrackData = knownSoundtracks[movie.title];
+    
+    return SoundtrackInfo(
+      movieTitle: movie.title,
+      spotifyPlaylistId: soundtrackData?['spotifyPlaylistId'],
+      youtubePlaylistId: soundtrackData?['youtubePlaylistId'],
+      themeSongTitle: soundtrackData?['themeSongTitle'],
+      themeSongArtist: soundtrackData?['themeSongArtist'],
+      themeSongSpotifyId: soundtrackData?['themeSongSpotifyId'],
+      themeSongYoutubeId: soundtrackData?['themeSongYoutubeId'],
+    );
   }
 }
