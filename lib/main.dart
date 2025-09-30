@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'services/movie_service.dart';
 import 'models/movie.dart';
+import 'screens/movie_details_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -295,16 +296,29 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                                         ),
                                       ),
                                       const SizedBox(height: 4),
-                                      Text(
-                                        selectedMovie!.title,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.purple,
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => MovieDetailsScreen(
+                                                movie: selectedMovie!,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          selectedMovie!.title,
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.purple,
+                                            decoration: TextDecoration.underline,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
                                       ),
                                       if (selectedMovie!.year.isNotEmpty)
                                         Padding(
