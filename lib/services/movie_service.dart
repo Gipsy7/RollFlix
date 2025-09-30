@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
+import '../constants/app_constants.dart';
 import '../models/movie.dart';
 import '../models/cast.dart';
 import '../models/watch_providers.dart';
@@ -9,11 +10,11 @@ import '../models/soundtrack.dart';
 import '../models/actor_details.dart';
 
 class MovieService {
-  // API Key do TMDb (para uso em demonstração - em produção deve ser protegida)
-  static const String _apiKey = '4e44d9029b1270a757cddc766a1bcb63';
-  static const String _baseUrl = 'https://api.themoviedb.org/3';
+  // Use constants from AppConstants
+  static const String _apiKey = AppConstants.tmdbApiKey;
+  static const String _baseUrl = AppConstants.tmdbBaseUrl;
 
-  // Mapeamento de gêneros para IDs de gêneros do TMDb
+  // Use genre mapping from constants
   static const Map<String, List<int>> _genreMap = {
     'Ação': [28], // Action
     'Aventura': [12], // Adventure
@@ -30,9 +31,9 @@ class MovieService {
     'Mistério': [9648], // Mystery
     'Romance': [10749], // Romance
     'Ficção Científica': [878], // Science Fiction
-    'Thriller': [53], // Thriller
+    'Suspense': [53], // Thriller
     'Guerra': [10752], // War
-    'Faroeste': [37], // Western
+    'Western': [37], // Western
   };
 
   static Future<List<Movie>> getMoviesByGenre(String genre) async {
@@ -320,7 +321,10 @@ class MovieService {
       id: 0,
       title: data['title']!,
       overview: 'Filme clássico do gênero $genre',
+      posterPath: '',
+      backdropPath: '',
       voteAverage: 8.0,
+      voteCount: 1000,
       releaseDate: data['year']!,
       genreIds: [],
     )).toList();

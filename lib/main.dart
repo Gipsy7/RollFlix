@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart';
+import 'constants/app_constants.dart';
+import 'utils/app_utils.dart';
 import 'services/movie_service.dart';
 import 'models/movie.dart';
 import 'screens/movie_details_screen.dart';
@@ -13,36 +16,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'CineChoice',
+      title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1),
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        fontFamily: 'SF Pro Display',
-        textTheme: const TextTheme(
-          displayLarge: TextStyle(fontWeight: FontWeight.bold),
-          displayMedium: TextStyle(fontWeight: FontWeight.bold),
-          displaySmall: TextStyle(fontWeight: FontWeight.bold),
-          headlineLarge: TextStyle(fontWeight: FontWeight.w600),
-          headlineMedium: TextStyle(fontWeight: FontWeight.w600),
-          headlineSmall: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            elevation: 0,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          ),
-        ),
-        cardTheme: const CardThemeData(
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
-          color: Colors.white,
-        ),
-      ),
+      theme: AppTheme.lightTheme,
       home: const MovieSorterApp(),
     );
   }
@@ -62,32 +38,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   late AnimationController _animationController;
   late Animation<double> _animation;
 
-  final List<String> genres = [
-    'Ação',
-    'Aventura',
-    'Animação',
-    'Comédia',
-    'Crime',
-    'Documentário',
-    'Drama',
-    'Família',
-    'Fantasia',
-    'História',
-    'Terror',
-    'Música',
-    'Mistério',
-    'Romance',
-    'Ficção Científica',
-    'Thriller',
-    'Guerra',
-    'Faroeste',
-  ];
+  final List<String> genres = AppConstants.movieGenres;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: AppConstants.slowAnimation,
       vsync: this,
     );
     _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -143,12 +100,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isTablet = screenWidth > 768;
-    final isMobile = screenWidth <= 480;
+    final isMobile = ResponsiveUtils.isMobile(context);
+    final isTablet = ResponsiveUtils.isTablet(context);
     
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
           // Modern App Bar
@@ -160,20 +116,20 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             backgroundColor: Colors.transparent,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Color(0xFF6366F1),
-                      Color(0xFF8B5CF6),
-                      Color(0xFFEC4899),
+                      AppColors.primary,
+                      AppColors.secondary,
+                      AppColors.accent,
                     ],
                   ),
                 ),
                 child: SafeArea(
                   child: Padding(
-                    padding: EdgeInsets.all(isMobile ? 20 : 32),
+                    padding: EdgeInsets.all(isMobile ? AppConstants.spacingL : AppConstants.spacingXL),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -181,10 +137,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.all(AppConstants.spacingM),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(AppConstants.radiusL),
                               ),
                               child: const Icon(
                                 Icons.movie_outlined,
@@ -192,26 +148,22 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                                 size: 32,
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            const SizedBox(width: AppConstants.spacingL),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'CineChoice',
-                                    style: TextStyle(
-                                      fontSize: isMobile ? 28 : 36,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
+                                    AppConstants.appName,
+                                    style: isMobile 
+                                      ? AppTextStyles.displayMedium.copyWith(color: Colors.white)
+                                      : AppTextStyles.displayLarge.copyWith(color: Colors.white),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: AppConstants.spacingXS),
                                   Text(
                                     'Descubra seu próximo filme favorito',
-                                    style: TextStyle(
-                                      fontSize: isMobile ? 14 : 16,
+                                    style: AppTextStyles.bodyLarge.copyWith(
                                       color: Colors.white.withOpacity(0.9),
-                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ],
@@ -230,16 +182,16 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           // Content
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(isMobile ? 16 : 24),
+              padding: EdgeInsets.all(isMobile ? AppConstants.spacingL : AppConstants.spacingXL),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Genre Selection
                   Container(
-                    padding: EdgeInsets.all(isMobile ? 20 : 24),
+                    padding: EdgeInsets.all(isMobile ? AppConstants.spacingL : AppConstants.spacingXL),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(AppConstants.radiusXL),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.05),
@@ -254,48 +206,46 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(AppConstants.spacingS),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF6366F1).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
+                                color: AppColors.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(AppConstants.radiusM),
                               ),
                               child: const Icon(
                                 Icons.category_outlined,
-                                color: Color(0xFF6366F1),
+                                color: AppColors.primary,
                                 size: 20,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: AppConstants.spacingM),
                             Text(
                               'Escolha um Gênero',
-                              style: TextStyle(
-                                fontSize: isMobile ? 18 : 20,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1E293B),
-                              ),
+                              style: isMobile 
+                                ? AppTextStyles.headlineSmall
+                                : AppTextStyles.headlineMedium,
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: AppConstants.spacingL),
                         _buildGenreGrid(context, isMobile, isTablet),
                       ],
                     ),
                   ),
                   
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppConstants.spacingXL),
                   
                   // Sort Button
-                  Container(
+                  SizedBox(
                     height: isMobile ? 56 : 64,
                     child: ElevatedButton(
                       onPressed: selectedGenre != null ? _sortearFilme : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6366F1),
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        shadowColor: const Color(0xFF6366F1).withOpacity(0.3),
+                        shadowColor: AppColors.primary.withOpacity(0.3),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppConstants.spacingL),
                         ),
                       ),
                       child: isLoading
@@ -311,20 +261,19 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Icon(Icons.shuffle, size: 24),
-                                const SizedBox(width: 12),
+                                const SizedBox(width: AppConstants.spacingM),
                                 Text(
                                   'Sortear Filme',
-                                  style: TextStyle(
-                                    fontSize: isMobile ? 16 : 18,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style: isMobile 
+                                    ? AppTextStyles.labelLarge.copyWith(color: Colors.white)
+                                    : AppTextStyles.headlineMedium.copyWith(color: Colors.white),
                                 ),
                               ],
                             ),
                     ),
                   ),
                   
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppConstants.spacingXL),
                   
                   // Movie Result
                   if (selectedMovie != null) _buildMovieCard(context, isMobile),
@@ -338,14 +287,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildGenreGrid(BuildContext context, bool isMobile, bool isTablet) {
-    int crossAxisCount;
-    if (isMobile) {
-      crossAxisCount = 2;
-    } else if (isTablet) {
-      crossAxisCount = 4;
-    } else {
-      crossAxisCount = 6;
-    }
+    final crossAxisCount = ResponsiveUtils.getResponsiveGridColumns(context);
 
     return GridView.builder(
       shrinkWrap: true,
@@ -362,7 +304,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         final isSelected = selectedGenre == genre;
         
         return AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: AppConstants.fastAnimation,
           curve: Curves.easeInOut,
           child: InkWell(
             onTap: () {
@@ -371,26 +313,22 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                 selectedMovie = null;
               });
             },
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppConstants.radiusL),
             child: Container(
               decoration: BoxDecoration(
                 gradient: isSelected
-                    ? const LinearGradient(
-                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      )
+                    ? AppColors.primaryGradient
                     : null,
-                color: isSelected ? null : const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(16),
+                color: isSelected ? null : AppColors.surfaceVariant,
+                borderRadius: BorderRadius.circular(AppConstants.radiusL),
                 border: Border.all(
-                  color: isSelected ? Colors.transparent : const Color(0xFFE2E8F0),
+                  color: isSelected ? Colors.transparent : AppColors.textTertiary.withOpacity(0.3),
                   width: 1,
                 ),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: const Color(0xFF6366F1).withOpacity(0.3),
+                          color: AppColors.primary.withOpacity(0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -400,10 +338,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               child: Center(
                 child: Text(
                   genre,
-                  style: TextStyle(
-                    fontSize: isMobile ? 12 : 14,
+                  style: (isMobile ? AppTextStyles.labelMedium : AppTextStyles.labelLarge).copyWith(
+                    color: isSelected ? Colors.white : AppColors.textSecondary,
                     fontWeight: FontWeight.w600,
-                    color: isSelected ? Colors.white : const Color(0xFF475569),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -422,15 +359,15 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         return Transform.scale(
           scale: _animation.value,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 800),
+            duration: AppConstants.slowAnimation,
             curve: Curves.easeInOut,
-            padding: EdgeInsets.all(isMobile ? 20 : 24),
+            padding: EdgeInsets.all(isMobile ? AppConstants.spacingL : AppConstants.spacingXL),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(AppConstants.radiusXL),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF6366F1).withOpacity(0.1),
+                  color: AppColors.primary.withOpacity(0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -445,7 +382,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                   ),
                 );
               },
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppConstants.spacingL),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -454,7 +391,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                     width: isMobile ? 100 : 120,
                     height: isMobile ? 150 : 180,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppConstants.radiusL),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
@@ -464,53 +401,46 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                       ],
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: selectedMovie!.fullPosterUrl.isNotEmpty
-                          ? Image.network(
-                              selectedMovie!.fullPosterUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: const Color(0xFFF1F5F9),
-                                  child: const Icon(
-                                    Icons.movie_outlined,
-                                    size: 48,
-                                    color: Color(0xFF94A3B8),
-                                  ),
-                                );
-                              },
-                            )
-                          : Container(
-                              color: const Color(0xFFF1F5F9),
-                              child: const Icon(
-                                Icons.movie_outlined,
-                                size: 48,
-                                color: Color(0xFF94A3B8),
-                              ),
-                            ),
+                      borderRadius: BorderRadius.circular(AppConstants.radiusL),
+                      child: ImageUtils.buildNetworkImage(
+                        imageUrl: selectedMovie!.fullPosterUrl,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        errorWidget: Container(
+                          color: AppColors.surfaceVariant,
+                          child: const Icon(
+                            Icons.movie_outlined,
+                            size: 48,
+                            color: AppColors.textTertiary,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   
-                  const SizedBox(width: 20),
+                  const SizedBox(width: AppConstants.spacingL),
                   
                   // Movie Info
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 8),
+                        const SizedBox(height: AppConstants.spacingS),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.spacingS, 
+                            vertical: AppConstants.spacingXS,
+                          ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF6366F1).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            color: AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(AppConstants.spacingS),
                           ),
                           child: Text(
                             'Filme Sorteado',
-                            style: TextStyle(
-                              fontSize: isMobile ? 10 : 12,
+                            style: (isMobile ? AppTextStyles.labelSmall : AppTextStyles.labelMedium).copyWith(
+                              color: AppColors.primary,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF6366F1),
                             ),
                           ),
                         ),
@@ -518,13 +448,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                         const SizedBox(height: 12),
                         
                         AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 800),
-                          style: TextStyle(
-                            fontSize: isMobile ? 18 : 22,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1E293B),
-                            height: 1.2,
-                          ),
+                          duration: AppConstants.slowAnimation,
+                          style: isMobile 
+                            ? AppTextStyles.headlineMedium 
+                            : AppTextStyles.headlineLarge,
                           child: Text(
                             selectedMovie!.title,
                             maxLines: 2,
@@ -533,27 +460,28 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                         ),
                         
                         if (selectedMovie!.year.isNotEmpty) ...[
-                          const SizedBox(height: 8),
+                          const SizedBox(height: AppConstants.spacingS),
                           AnimatedDefaultTextStyle(
-                            duration: const Duration(milliseconds: 800),
-                            style: TextStyle(
-                              fontSize: isMobile ? 14 : 16,
-                              color: const Color(0xFF64748B),
-                              fontWeight: FontWeight.w500,
-                            ),
+                            duration: AppConstants.slowAnimation,
+                            style: isMobile 
+                              ? AppTextStyles.bodyMedium 
+                              : AppTextStyles.bodyLarge,
                             child: Text(selectedMovie!.year),
                           ),
                         ],
                         
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppConstants.spacingM),
                         
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppConstants.spacingS, 
+                                vertical: AppConstants.spacingXS,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.amber.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(AppConstants.spacingS),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -563,13 +491,12 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                                     color: Colors.amber,
                                     size: 16,
                                   ),
-                                  const SizedBox(width: 4),
+                                  const SizedBox(width: AppConstants.spacingXS),
                                   Text(
                                     selectedMovie!.voteAverage.toStringAsFixed(1),
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
+                                    style: AppTextStyles.labelMedium.copyWith(
                                       color: Colors.amber,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
@@ -578,17 +505,20 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                           ],
                         ),
                         
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppConstants.spacingL),
                         
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.spacingM, 
+                            vertical: AppConstants.spacingS,
+                          ),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [const Color(0xFF6366F1), const Color(0xFF6366F1).withOpacity(0.8)],
+                              colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
                               begin: Alignment.centerLeft,
                               end: Alignment.centerRight,
                             ),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppConstants.radiusM),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -598,13 +528,12 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                                 color: Colors.white,
                                 size: 16,
                               ),
-                              const SizedBox(width: 6),
+                              const SizedBox(width: AppConstants.spacingXS),
                               Text(
                                 'Ver Detalhes',
-                                style: TextStyle(
-                                  fontSize: isMobile ? 12 : 14,
-                                  fontWeight: FontWeight.w600,
+                                style: (isMobile ? AppTextStyles.labelMedium : AppTextStyles.labelLarge).copyWith(
                                   color: Colors.white,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],

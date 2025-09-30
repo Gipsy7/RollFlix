@@ -112,10 +112,11 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
       id: actorMovie.id,
       title: actorMovie.title,
       overview: '', // Will be loaded in details
-      posterPath: actorMovie.posterPath,
-      backdropPath: null,
+      posterPath: actorMovie.posterPath ?? '',
+      backdropPath: '',
       releaseDate: actorMovie.releaseDate ?? '',
       voteAverage: actorMovie.voteAverage,
+      voteCount: 0,
       genreIds: [], // Empty for now, will be loaded in details
     );
     
