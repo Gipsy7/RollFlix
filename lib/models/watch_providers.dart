@@ -26,6 +26,57 @@ class WatchProvider {
     }
     return '';
   }
+
+  // URLs dos principais provedores de streaming
+  String getProviderUrl(String movieTitle, int movieId) {
+    switch (providerId) {
+      // Netflix
+      case 8:
+        return 'https://www.netflix.com/search?q=${Uri.encodeComponent(movieTitle)}';
+      // Amazon Prime Video
+      case 119:
+        return 'https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${Uri.encodeComponent(movieTitle)}';
+      // Disney+
+      case 337:
+        return 'https://www.disneyplus.com/search?q=${Uri.encodeComponent(movieTitle)}';
+      // HBO Max
+      case 384:
+        return 'https://www.max.com/search?q=${Uri.encodeComponent(movieTitle)}';
+      // Apple TV+
+      case 350:
+        return 'https://tv.apple.com/search?term=${Uri.encodeComponent(movieTitle)}';
+      // Paramount+
+      case 531:
+        return 'https://www.paramountplus.com/search/?query=${Uri.encodeComponent(movieTitle)}';
+      // Globoplay
+      case 307:
+        return 'https://globoplay.globo.com/busca/?q=${Uri.encodeComponent(movieTitle)}';
+      // Crunchyroll
+      case 283:
+        return 'https://www.crunchyroll.com/search?q=${Uri.encodeComponent(movieTitle)}';
+      // YouTube
+      case 192:
+        return 'https://www.youtube.com/results?search_query=${Uri.encodeComponent(movieTitle)}+filme';
+      // Google Play Movies
+      case 3:
+        return 'https://play.google.com/store/search?q=${Uri.encodeComponent(movieTitle)}&c=movies';
+      // Apple iTunes
+      case 2:
+        return 'https://itunes.apple.com/search?term=${Uri.encodeComponent(movieTitle)}&media=movie';
+      // Microsoft Store
+      case 68:
+        return 'https://www.microsoft.com/search/shop/movies?q=${Uri.encodeComponent(movieTitle)}';
+      // Vudu
+      case 7:
+        return 'https://www.vudu.com/content/movies/search/${Uri.encodeComponent(movieTitle)}';
+      // Amazon Video
+      case 10:
+        return 'https://www.amazon.com/s?k=${Uri.encodeComponent(movieTitle)}&i=instant-video';
+      default:
+        // Busca genérica no Google para provedores não mapeados
+        return 'https://www.google.com/search?q=${Uri.encodeComponent(movieTitle)}+${Uri.encodeComponent(providerName)}+filme+assistir';
+    }
+  }
 }
 
 class WatchProviders {
