@@ -5,6 +5,7 @@ import 'utils/app_utils.dart';
 import 'services/movie_service.dart';
 import 'models/movie.dart';
 import 'screens/movie_details_screen.dart';
+import 'widgets/genre_wheel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -101,7 +102,6 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   @override
   Widget build(BuildContext context) {
     final isMobile = ResponsiveUtils.isMobile(context);
-    final isTablet = ResponsiveUtils.isTablet(context);
     
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -219,7 +219,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                             ),
                             const SizedBox(width: AppConstants.spacingM),
                             Text(
-                              'Escolha um Gênero',
+                              'Gire a Roleta dos Gêneros',
                               style: isMobile 
                                 ? AppTextStyles.headlineSmall
                                 : AppTextStyles.headlineMedium,
@@ -227,7 +227,20 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                           ],
                         ),
                         const SizedBox(height: AppConstants.spacingL),
-                        _buildGenreGrid(context, isMobile, isTablet),
+                        // Roleta de Gêneros
+                        GenreWheel(
+                          genres: genres,
+                          selectedGenre: selectedGenre,
+                          onGenreSelected: (genre) {
+                            setState(() {
+                              selectedGenre = genre;
+                              selectedMovie = null;
+                            });
+                          },
+                          onRandomSpin: () {
+                            // Opcional: adicionar efeitos visuais durante o giro
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -283,72 +296,6 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildGenreGrid(BuildContext context, bool isMobile, bool isTablet) {
-    final crossAxisCount = ResponsiveUtils.getResponsiveGridColumns(context);
-
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 2.5,
-      ),
-      itemCount: genres.length,
-      itemBuilder: (context, index) {
-        final genre = genres[index];
-        final isSelected = selectedGenre == genre;
-        
-        return AnimatedContainer(
-          duration: AppConstants.fastAnimation,
-          curve: Curves.easeInOut,
-          child: InkWell(
-            onTap: () {
-              setState(() {
-                selectedGenre = genre;
-                selectedMovie = null;
-              });
-            },
-            borderRadius: BorderRadius.circular(AppConstants.radiusL),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: isSelected
-                    ? AppColors.primaryGradient
-                    : null,
-                color: isSelected ? null : AppColors.surfaceVariant,
-                borderRadius: BorderRadius.circular(AppConstants.radiusL),
-                border: Border.all(
-                  color: isSelected ? Colors.transparent : AppColors.textTertiary.withOpacity(0.3),
-                  width: 1,
-                ),
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: AppColors.primary.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ]
-                    : [],
-              ),
-              child: Center(
-                child: Text(
-                  genre,
-                  style: (isMobile ? AppTextStyles.labelMedium : AppTextStyles.labelLarge).copyWith(
-                    color: isSelected ? Colors.white : AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 
