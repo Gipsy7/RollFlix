@@ -402,20 +402,31 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(AppConstants.radiusL),
-                      child: ImageUtils.buildNetworkImage(
-                        imageUrl: selectedMovie!.fullPosterUrl,
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                        errorWidget: Container(
-                          color: AppColors.surfaceVariant,
-                          child: const Icon(
-                            Icons.movie_outlined,
-                            size: 48,
-                            color: AppColors.textTertiary,
-                          ),
-                        ),
-                      ),
+                      child: selectedMovie!.fullPosterUrl.isNotEmpty
+                          ? Image.network(
+                              selectedMovie!.fullPosterUrl,
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: AppColors.surfaceVariant,
+                                  child: const Icon(
+                                    Icons.movie_outlined,
+                                    size: 48,
+                                    color: AppColors.textTertiary,
+                                  ),
+                                );
+                              },
+                            )
+                          : Container(
+                              color: AppColors.surfaceVariant,
+                              child: const Icon(
+                                Icons.movie_outlined,
+                                size: 48,
+                                color: AppColors.textTertiary,
+                              ),
+                            ),
                     ),
                   ),
                   
@@ -445,13 +456,15 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                           ),
                         ),
                         
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppConstants.spacingM),
                         
                         AnimatedDefaultTextStyle(
                           duration: AppConstants.slowAnimation,
-                          style: isMobile 
+                          style: (isMobile 
                             ? AppTextStyles.headlineMedium 
-                            : AppTextStyles.headlineLarge,
+                            : AppTextStyles.headlineLarge).copyWith(
+                              color: AppColors.textPrimary,
+                          ),
                           child: Text(
                             selectedMovie!.title,
                             maxLines: 2,
@@ -463,9 +476,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                           const SizedBox(height: AppConstants.spacingS),
                           AnimatedDefaultTextStyle(
                             duration: AppConstants.slowAnimation,
-                            style: isMobile 
+                            style: (isMobile 
                               ? AppTextStyles.bodyMedium 
-                              : AppTextStyles.bodyLarge,
+                              : AppTextStyles.bodyLarge).copyWith(
+                                color: AppColors.textSecondary,
+                            ),
                             child: Text(selectedMovie!.year),
                           ),
                         ],

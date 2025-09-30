@@ -36,9 +36,9 @@ class ResponsiveUtils {
   }
   
   static int getResponsiveGridColumns(BuildContext context) {
-    if (isMobile(context)) return 1;
-    if (isTablet(context)) return 2;
-    return 3;
+    if (isMobile(context)) return 2;
+    if (isTablet(context)) return 4;
+    return 6;
   }
 }
 

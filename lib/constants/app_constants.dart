@@ -4,7 +4,7 @@ class AppConstants {
   static const String appVersion = '1.0.0';
   
   // API Constants
-  static const String tmdbApiKey = '4ec1d89e9ba2223e7b0b55c6fbab00df';
+  static const String tmdbApiKey = '4e44d9029b1270a757cddc766a1bcb63';
   static const String tmdbBaseUrl = 'https://api.themoviedb.org/3';
   static const String tmdbImageBaseUrl = 'https://image.tmdb.org/t/p/w500';
   static const String tmdbBackdropBaseUrl = 'https://image.tmdb.org/t/p/w1280';
