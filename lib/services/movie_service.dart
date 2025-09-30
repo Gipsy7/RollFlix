@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../models/movie.dart';
 import '../models/cast.dart';
 import '../models/watch_providers.dart';
+import '../models/movie_videos.dart';
 
 class MovieService {
   // API Key do TMDb (para uso em demonstração - em produção deve ser protegida)
@@ -142,6 +143,41 @@ class MovieService {
       }
     } catch (e) {
       print('Erro ao buscar provedores: $e');
+      return null;
+    }
+  }
+
+  static Future<MovieVideos?> getMovieVideos(int movieId) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/movie/$movieId/videos?api_key=$_apiKey&language=pt-BR'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final movieVideos = MovieVideos.fromJson(jsonData);
+        
+        // Se não encontrar vídeos em português, tenta em inglês
+        if (movieVideos.results.isEmpty) {
+          final urlEn = Uri.parse(
+            '$_baseUrl/movie/$movieId/videos?api_key=$_apiKey&language=en-US'
+          );
+          
+          final responseEn = await http.get(urlEn);
+          if (responseEn.statusCode == 200) {
+            final jsonDataEn = json.decode(responseEn.body);
+            return MovieVideos.fromJson(jsonDataEn);
+          }
+        }
+        
+        return movieVideos;
+      } else {
+        throw Exception('Erro ao buscar vídeos: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar vídeos: $e');
       return null;
     }
   }

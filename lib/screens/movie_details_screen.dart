@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/movie.dart';
 import '../models/cast.dart';
 import '../models/watch_providers.dart';
+import '../models/movie_videos.dart';
 import '../services/movie_service.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
@@ -18,6 +19,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   Movie? detailedMovie;
   MovieCredits? credits;
   WatchProviders? watchProviders;
+  MovieVideos? movieVideos;
   bool isLoading = true;
 
   @override
@@ -32,12 +34,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         MovieService.getMovieDetails(widget.movie.id),
         MovieService.getMovieCredits(widget.movie.id),
         MovieService.getWatchProviders(widget.movie.id),
+        MovieService.getMovieVideos(widget.movie.id),
       ]);
 
       setState(() {
         detailedMovie = results[0] as Movie;
         credits = results[1] as MovieCredits;
         watchProviders = results[2] as WatchProviders?;
+        movieVideos = results[3] as MovieVideos?;
         isLoading = false;
       });
     } catch (e) {
@@ -72,6 +76,45 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
           const SnackBar(
             content: Text('Erro ao abrir o link'),
             backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _openTrailer() async {
+    final trailer = movieVideos?.officialTrailer;
+    if (trailer != null && trailer.youtubeUrl.isNotEmpty) {
+      try {
+        final uri = Uri.parse(trailer.youtubeUrl);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Não foi possível abrir o trailer'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Erro ao abrir o trailer'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Trailer não disponível'),
+            backgroundColor: Colors.orange,
           ),
         );
       }
@@ -234,6 +277,33 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
+
+                  // Botão do Trailer
+                  if (movieVideos?.hasTrailer == true)
+                    Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 24),
+                      child: ElevatedButton.icon(
+                        onPressed: _openTrailer,
+                        icon: const Icon(Icons.play_arrow, color: Colors.white),
+                        label: const Text(
+                          'Assistir Trailer',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
                   
                   // Sinopse
                   const Text(
@@ -349,6 +419,109 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+
+                  // Vídeos/Trailers adicionais
+                  if (movieVideos != null && movieVideos!.results.length > 1) ...[
+                    const Text(
+                      'Vídeos',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.purple,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 140,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: movieVideos!.results.where((video) => 
+                            video.isYouTube && (video.isTrailer || video.isTeaser)).length,
+                        itemBuilder: (context, index) {
+                          final videos = movieVideos!.results.where((video) => 
+                              video.isYouTube && (video.isTrailer || video.isTeaser)).toList();
+                          final video = videos[index];
+                          
+                          return Container(
+                            width: 160,
+                            margin: const EdgeInsets.only(right: 12),
+                            child: GestureDetector(
+                              onTap: () async {
+                                try {
+                                  final uri = Uri.parse(video.youtubeUrl);
+                                  if (await canLaunchUrl(uri)) {
+                                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                  }
+                                } catch (e) {
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Erro ao abrir vídeo'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Stack(
+                                      children: [
+                                        Image.network(
+                                          video.youtubeThumbnailUrl,
+                                          width: 160,
+                                          height: 90,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return Container(
+                                              width: 160,
+                                              height: 90,
+                                              color: Colors.grey.shade300,
+                                              child: const Icon(
+                                                Icons.play_circle_fill,
+                                                size: 40,
+                                                color: Colors.red,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        const Positioned.fill(
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.play_circle_fill,
+                                              size: 40,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Expanded(
+                                    child: Text(
+                                      video.name,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },

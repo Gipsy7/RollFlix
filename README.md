@@ -8,6 +8,7 @@ Um app Flutter que ajuda você a decidir que filme assistir! Escolha um gênero 
 - **API Real**: Integração com TMDb para buscar filmes atualizados
 - **Informações Detalhadas**: Exibe título, ano, nota e poster do filme
 - **Tela de Detalhes Completa**: Sinopse, elenco, direção e informações de produção
+- **Trailers e Vídeos**: Assista trailers oficiais diretamente do YouTube
 - **Redirecionamento para Streaming**: Clique nos provedores para abrir o serviço
 - **Sorteio Aleatório**: Cada busca traz filmes diferentes e atualizados
 - **Interface Intuitiva**: Design limpo e fácil de usar
@@ -54,12 +55,16 @@ O app utiliza a **The Movie Database (TMDb) API** para buscar filmes reais:
 5. **Veja o filme sorteado** com poster, nota e informações!
 6. **Clique no título** do filme para ver detalhes completos
 7. **Explore a sinopse**, elenco e informações de produção
-8. **Clique nos provedores** de streaming para ser redirecionado ao serviço
+8. **Assista ao trailer** clicando no botão vermelho "Assistir Trailer"
+9. **Veja vídeos adicionais** na seção de vídeos (se disponível)
+10. **Clique nos provedores** de streaming para ser redirecionado ao serviço
 
 ### 🎬 Detalhes do Filme
 - **Sinopse completa** e informações de produção
 - **Elenco principal** com fotos e personagens
 - **Direção** e equipe técnica
+- **Trailers oficiais** com acesso direto ao YouTube
+- **Vídeos adicionais** como teasers e making-of
 - **Onde assistir** com links diretos para os serviços
 
 ### 🔗 Redirecionamento Inteligente
