@@ -1,12 +1,14 @@
-# 🎬 Sorteador de Filmes
+# 🎬 Sorteador de Filmes por Gênero
 
-Um app Flutter que ajuda você a decidir que filme assistir! Escolha um tema e deixe o app sortear um filme aleatório para você usando dados reais da **API do The Movie Database (TMDb)**.
+Um app Flutter que ajuda você a decidir que filme assistir! Escolha um gênero e deixe o app sortear um filme aleatório para você usando dados reais da **API do The Movie Database (TMDb)**.
 
 ## 🎯 Funcionalidades
 
-- **6 Temas Disponíveis**: Ação, Comédia, Terror, Romance, Ficção Científica e Drama
+- **18 Gêneros Disponíveis**: Ação, Aventura, Animação, Comédia, Crime, Documentário, Drama, Família, Fantasia, História, Terror, Música, Mistério, Romance, Ficção Científica, Thriller, Guerra e Faroeste
 - **API Real**: Integração com TMDb para buscar filmes atualizados
 - **Informações Detalhadas**: Exibe título, ano, nota e poster do filme
+- **Tela de Detalhes Completa**: Sinopse, elenco, direção e informações de produção
+- **Redirecionamento para Streaming**: Clique nos provedores para abrir o serviço
 - **Sorteio Aleatório**: Cada busca traz filmes diferentes e atualizados
 - **Interface Intuitiva**: Design limpo e fácil de usar
 - **Animações**: Efeito de animação quando o filme é sorteado
@@ -25,19 +27,45 @@ O app utiliza a **The Movie Database (TMDb) API** para buscar filmes reais:
 
 ### Gêneros Mapeados:
 - 🔫 **Ação** → Gênero 28 (Action)
-- 😄 **Comédia** → Gênero 35 (Comedy)
+- �️ **Aventura** → Gênero 12 (Adventure)
+- 🎨 **Animação** → Gênero 16 (Animation)
+- �😄 **Comédia** → Gênero 35 (Comedy)
+- 🔪 **Crime** → Gênero 80 (Crime)
+- 📹 **Documentário** → Gênero 99 (Documentary)
+- 🎭 **Drama** → Gênero 18 (Drama)
+- 👨‍👩‍👧‍👦 **Família** → Gênero 10751 (Family)
+- 🧙‍♂️ **Fantasia** → Gênero 14 (Fantasy)
+- 🏛️ **História** → Gênero 36 (History)
 - 👻 **Terror** → Gênero 27 (Horror)
+- 🎵 **Música** → Gênero 10402 (Music)
+- 🕵️ **Mistério** → Gênero 9648 (Mystery)
 - 💕 **Romance** → Gênero 10749 (Romance)
 - 🚀 **Ficção Científica** → Gênero 878 (Science Fiction)
-- 🎭 **Drama** → Gênero 18 (Drama)
+- 😱 **Thriller** → Gênero 53 (Thriller)
+- ⚔️ **Guerra** → Gênero 10752 (War)
+- 🤠 **Faroeste** → Gênero 37 (Western)
 
 ## 🚀 Como usar
 
-1. Abra o app
-2. Escolha um dos 6 temas disponíveis
-3. Toque no botão "🎲 SORTEAR FILME"
-4. Aguarde o carregamento da API
-5. Veja o filme sorteado com poster, nota e informações!
+1. **Abra o app**
+2. **Escolha um dos 18 gêneros** disponíveis
+3. **Toque no botão "🎲 SORTEAR FILME"**
+4. **Aguarde o carregamento** da API
+5. **Veja o filme sorteado** com poster, nota e informações!
+6. **Clique no título** do filme para ver detalhes completos
+7. **Explore a sinopse**, elenco e informações de produção
+8. **Clique nos provedores** de streaming para ser redirecionado ao serviço
+
+### 🎬 Detalhes do Filme
+- **Sinopse completa** e informações de produção
+- **Elenco principal** com fotos e personagens
+- **Direção** e equipe técnica
+- **Onde assistir** com links diretos para os serviços
+
+### 🔗 Redirecionamento Inteligente
+- **Netflix, Prime Video, Disney+** e outros serviços populares
+- **Links diretos** para busca do filme no serviço
+- **Fallback** para busca no Google se o provedor não for reconhecido
 
 ## 🛠️ Tecnologias
 
@@ -55,6 +83,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   http: ^1.1.0
+  url_launcher: ^6.2.2
 ```
 
 ## 🛠️ Como executar

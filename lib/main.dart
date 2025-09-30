@@ -31,19 +31,31 @@ class MovieSorterApp extends StatefulWidget {
 }
 
 class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStateMixin {
-  String? selectedTheme;
+  String? selectedGenre;
   Movie? selectedMovie;
   bool isLoading = false;
   late AnimationController _animationController;
   late Animation<double> _animation;
 
-  final List<String> themes = [
+  final List<String> genres = [
     'Ação',
-    'Comédia', 
+    'Aventura',
+    'Animação',
+    'Comédia',
+    'Crime',
+    'Documentário',
+    'Drama',
+    'Família',
+    'Fantasia',
+    'História',
     'Terror',
+    'Música',
+    'Mistério',
     'Romance',
     'Ficção Científica',
-    'Drama',
+    'Thriller',
+    'Guerra',
+    'Faroeste',
   ];
 
   @override
@@ -65,10 +77,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   void _sortearFilme() async {
-    if (selectedTheme == null) {
+    if (selectedGenre == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor, selecione um tema primeiro!'),
+          content: Text('Por favor, selecione um gênero primeiro!'),
           backgroundColor: Colors.red,
         ),
       );
@@ -81,7 +93,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     });
 
     try {
-      final movie = await MovieService.getRandomMovieByTheme(selectedTheme!);
+      final movie = await MovieService.getRandomMovieByGenre(selectedGenre!);
       
       setState(() {
         selectedMovie = movie;
@@ -109,7 +121,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          '🎬 Sorteador de Filmes',
+          '🎬 Sorteador de Filmes por Gênero',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -121,7 +133,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'Escolha um tema:',
+              'Escolha um gênero:',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -133,20 +145,20 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               flex: 3,
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                  crossAxisCount: 3,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  childAspectRatio: 2.5,
+                  childAspectRatio: 2.2,
                 ),
-                itemCount: themes.length,
+                itemCount: genres.length,
                 itemBuilder: (context, index) {
-                  final theme = themes[index];
-                  final isSelected = selectedTheme == theme;
+                  final genre = genres[index];
+                  final isSelected = selectedGenre == genre;
                   
                   return InkWell(
                     onTap: () {
                       setState(() {
-                        selectedTheme = theme;
+                        selectedGenre = genre;
                         selectedMovie = null;
                       });
                     },
@@ -172,9 +184,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                       ),
                       child: Center(
                         child: Text(
-                          theme,
+                          genre,
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: isSelected 
                                 ? Colors.white
@@ -352,7 +364,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                        'Tema: $selectedTheme',
+                                        'Gênero: $selectedGenre',
                                         style: TextStyle(
                                           fontSize: 10,
                                           color: Colors.grey.shade600,

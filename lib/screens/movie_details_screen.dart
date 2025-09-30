@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/movie.dart';
 import '../models/cast.dart';
 import '../models/watch_providers.dart';
@@ -44,6 +45,36 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         detailedMovie = widget.movie;
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> _openProvider(WatchProvider provider) async {
+    final movie = detailedMovie ?? widget.movie;
+    final url = provider.getProviderUrl(movie.title, movie.id);
+    
+    try {
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Não foi possível abrir o link'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erro ao abrir o link'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -351,33 +382,38 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         spacing: 8,
                         runSpacing: 8,
                         children: watchProviders!.flatrate.map((provider) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.green.shade100,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.green),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (provider.fullLogoUrl.isNotEmpty)
-                                  Image.network(
-                                    provider.fullLogoUrl,
-                                    width: 20,
-                                    height: 20,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return const Icon(Icons.tv, size: 16);
-                                    },
-                                  )
-                                else
-                                  const Icon(Icons.tv, size: 16),
-                                const SizedBox(width: 4),
-                                Text(
-                                  provider.providerName,
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              ],
+                          return GestureDetector(
+                            onTap: () => _openProvider(provider),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.green.shade100,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Colors.green),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (provider.fullLogoUrl.isNotEmpty)
+                                    Image.network(
+                                      provider.fullLogoUrl,
+                                      width: 20,
+                                      height: 20,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return const Icon(Icons.tv, size: 16);
+                                      },
+                                    )
+                                  else
+                                    const Icon(Icons.tv, size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    provider.providerName,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.open_in_new, size: 12),
+                                ],
+                              ),
                             ),
                           );
                         }).toList(),
@@ -398,33 +434,38 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         spacing: 8,
                         runSpacing: 8,
                         children: watchProviders!.rent.map((provider) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.orange.shade100,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.orange),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (provider.fullLogoUrl.isNotEmpty)
-                                  Image.network(
-                                    provider.fullLogoUrl,
-                                    width: 20,
-                                    height: 20,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return const Icon(Icons.movie, size: 16);
-                                    },
-                                  )
-                                else
-                                  const Icon(Icons.movie, size: 16),
-                                const SizedBox(width: 4),
-                                Text(
-                                  provider.providerName,
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              ],
+                          return GestureDetector(
+                            onTap: () => _openProvider(provider),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.shade100,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Colors.orange),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (provider.fullLogoUrl.isNotEmpty)
+                                    Image.network(
+                                      provider.fullLogoUrl,
+                                      width: 20,
+                                      height: 20,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return const Icon(Icons.movie, size: 16);
+                                      },
+                                    )
+                                  else
+                                    const Icon(Icons.movie, size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    provider.providerName,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.open_in_new, size: 12),
+                                ],
+                              ),
                             ),
                           );
                         }).toList(),
@@ -445,33 +486,38 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         spacing: 8,
                         runSpacing: 8,
                         children: watchProviders!.buy.map((provider) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.shade100,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.blue),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (provider.fullLogoUrl.isNotEmpty)
-                                  Image.network(
-                                    provider.fullLogoUrl,
-                                    width: 20,
-                                    height: 20,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return const Icon(Icons.shopping_cart, size: 16);
-                                    },
-                                  )
-                                else
-                                  const Icon(Icons.shopping_cart, size: 16),
-                                const SizedBox(width: 4),
-                                Text(
-                                  provider.providerName,
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              ],
+                          return GestureDetector(
+                            onTap: () => _openProvider(provider),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade100,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Colors.blue),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (provider.fullLogoUrl.isNotEmpty)
+                                    Image.network(
+                                      provider.fullLogoUrl,
+                                      width: 20,
+                                      height: 20,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return const Icon(Icons.shopping_cart, size: 16);
+                                      },
+                                    )
+                                  else
+                                    const Icon(Icons.shopping_cart, size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    provider.providerName,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.open_in_new, size: 12),
+                                ],
+                              ),
                             ),
                           );
                         }).toList(),
