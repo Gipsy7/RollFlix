@@ -9,6 +9,7 @@ import 'widgets/genre_wheel.dart';
 import 'widgets/common_widgets.dart';
 import 'widgets/error_widgets.dart';
 import 'widgets/optimized_widgets.dart';
+import 'widgets/responsive_widgets.dart';
 import 'controllers/movie_controller.dart';
 import 'mixins/animation_mixin.dart';
 
@@ -87,7 +88,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = AppUtils.ResponsiveUtils.isMobile(context);
+    final isMobile = ResponsiveUtils.isMobile(context);
     
     return Scaffold(
       body: Container(
@@ -196,7 +197,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        SafeText(
           AppConstants.appName,
           style: AppTextStyles.headlineLarge.copyWith(
             fontSize: isMobile ? 28 : 36,
@@ -212,7 +213,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           ),
         ),
         const SizedBox(height: 8),
-        Text(
+        SafeText(
           'Roll and Chill',
           style: AppTextStyles.bodyLarge.copyWith(
             color: AppColors.textPrimary.withOpacity(0.9),
@@ -289,14 +290,16 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           ),
         ),
         const SizedBox(width: 16),
-        Text(
-          'Escolha um Gênero',
-          style: (isMobile 
-            ? AppTextStyles.headlineSmall
-            : AppTextStyles.headlineMedium).copyWith(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w600,
-            ),
+        Flexible(
+          child: SafeText(
+            'Escolha um Gênero',
+            style: (isMobile 
+              ? AppTextStyles.headlineSmall
+              : AppTextStyles.headlineMedium).copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+          ),
         ),
       ],
     );
@@ -409,7 +412,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildMovieTitle(Movie movie, bool isMobile) {
-    return Text(
+    return SafeText(
       movie.title,
       style: (isMobile 
           ? AppTextStyles.headlineSmall
@@ -437,11 +440,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           ),
         ),
         const SizedBox(width: 8),
-        Text(
-          AppUtils.DateUtils.formatReleaseDate(movie.releaseDate),
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: AppColors.textSecondary,
-            fontWeight: FontWeight.w500,
+        Flexible(
+          child: SafeText(
+            AppUtils.DateUtils.formatReleaseDate(movie.releaseDate),
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],
@@ -463,11 +468,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           ),
         ),
         const SizedBox(width: 8),
-        Text(
-          '${movie.voteAverage.toStringAsFixed(1)}/10',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: AppColors.textSecondary,
-            fontWeight: FontWeight.w600,
+        Flexible(
+          child: SafeText(
+            '${movie.voteAverage.toStringAsFixed(1)}/10',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],
@@ -475,7 +482,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildMovieOverview(Movie movie, bool isMobile) {
-    return Text(
+    return SafeText(
       movie.overview,
       style: AppTextStyles.bodyMedium.copyWith(
         color: AppColors.textSecondary,
@@ -502,11 +509,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             color: AppColors.backgroundDark,
           ),
           const SizedBox(width: 6),
-          Text(
-            'Toque para mais detalhes',
-            style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.backgroundDark,
-              fontWeight: FontWeight.w500,
+          Flexible(
+            child: SafeText(
+              'Toque para mais detalhes',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.backgroundDark,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
