@@ -510,12 +510,19 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           ),
           const SizedBox(width: 6),
           Flexible(
-            child: SafeText(
-              'Toque para mais detalhes',
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.backgroundDark,
-                fontWeight: FontWeight.w500,
-              ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Se há pouco espaço (menos de 120px) ou é mobile, usar texto curto
+                final isMobile = ResponsiveUtils.isMobile(context);
+                final useShortText = constraints.maxWidth < 120 || isMobile;
+                return SafeText(
+                  useShortText ? 'Toque para detalhes' : 'Toque para mais detalhes',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.backgroundDark,
+                    fontWeight: FontWeight.w500,
+                  ),
+                );
+              },
             ),
           ),
         ],
