@@ -32,6 +32,15 @@ class _GenreWheelState extends State<GenreWheel>
   bool _isSpinning = false;
   bool _isPendulumActive = false;
 
+  void _setInitialPosition() {
+    if (widget.selectedGenre != null && widget.genres.isNotEmpty) {
+      final selectedIndex = widget.genres.indexOf(widget.selectedGenre!);
+      if (selectedIndex != -1) {
+        _currentScroll = selectedIndex.toDouble();
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +54,9 @@ class _GenreWheelState extends State<GenreWheel>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
+    
+    // Configura posição inicial baseada no gênero selecionado
+    _setInitialPosition();
     
     _scrollAnimation = Tween<double>(
       begin: 0.0,
@@ -95,6 +107,19 @@ class _GenreWheelState extends State<GenreWheel>
         _selectCenterGenre();
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(GenreWheel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    // Se o gênero selecionado mudou externamente, atualiza a posição
+    if (widget.selectedGenre != oldWidget.selectedGenre && 
+        widget.selectedGenre != null && 
+        !_isSpinning && 
+        !_isPendulumActive) {
+      _setInitialPosition();
+    }
   }
 
   @override
@@ -149,8 +174,12 @@ class _GenreWheelState extends State<GenreWheel>
     // Calcula qual gênero está centralizado baseado na posição atual
     final currentIndex = _currentScroll.round();
     final centerIndex = ((currentIndex % widget.genres.length) + widget.genres.length) % widget.genres.length;
+    final selectedGenre = widget.genres[centerIndex];
     
-    widget.onGenreSelected(widget.genres[centerIndex]);
+    // Só chama onGenreSelected se o gênero realmente mudou
+    if (widget.selectedGenre != selectedGenre) {
+      widget.onGenreSelected(selectedGenre);
+    }
   }
 
   void _snapToCenter() {

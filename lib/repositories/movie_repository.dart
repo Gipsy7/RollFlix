@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/movie.dart';
@@ -32,10 +33,14 @@ class MovieRepository extends ChangeNotifier {
     // Busca dados da API
     debugPrint('Cache miss for genre: $genre - fetching from API');
     try {
-      // Por enquanto, usa o método existente que retorna um filme
-      // Em uma implementação real, buscaria uma lista
-      final movie = await MovieService.getRandomMovieByGenre(genre);
-      final movies = [movie]; // Simula uma lista
+      // Busca uma lista completa de filmes do gênero
+      final movies = await MovieService.getMoviesByGenre(genre);
+      
+      if (movies.isEmpty) {
+        throw Exception('Nenhum filme encontrado para o gênero $genre');
+      }
+      
+      debugPrint('Fetched ${movies.length} movies for genre: $genre');
       
       // Atualiza o cache
       _movieCache[cacheKey] = movies;
@@ -49,14 +54,34 @@ class MovieRepository extends ChangeNotifier {
   }
 
   /// Obtém um filme aleatório do cache ou API
-  Future<Movie> getRandomMovieByGenre(String genre) async {
+  Future<Movie> getRandomMovieByGenre(String genre, {int? excludeMovieId}) async {
+    debugPrint('Buscando filme aleatório do gênero: $genre (Excluindo: $excludeMovieId)');
     final movies = await getMoviesByGenre(genre);
     if (movies.isEmpty) {
       throw Exception('Nenhum filme encontrado para o gênero $genre');
     }
     
-    // Em uma implementação real, retornaria um filme aleatório da lista
-    return movies.first;
+    debugPrint('Encontrados ${movies.length} filmes do gênero $genre');
+    
+    // Se há um filme a excluir e há mais de um filme, remove da lista
+    List<Movie> availableMovies = movies;
+    if (excludeMovieId != null && movies.length > 1) {
+      availableMovies = movies.where((movie) => movie.id != excludeMovieId).toList();
+      debugPrint('Após excluir filme atual: ${availableMovies.length} filmes disponíveis');
+    }
+    
+    // Se não sobrou nenhum filme após exclusão, usa a lista original
+    if (availableMovies.isEmpty) {
+      availableMovies = movies;
+      debugPrint('Usando lista original pois não sobrou nenhum filme');
+    }
+    
+    // Retorna um filme verdadeiramente aleatório da lista
+    final random = Random();
+    final selectedMovie = availableMovies[random.nextInt(availableMovies.length)];
+    
+    debugPrint('Filme sorteado: ${selectedMovie.title}');
+    return selectedMovie;
   }
 
   /// Limpa o cache

@@ -51,7 +51,16 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     
     // Pré-carrega dados populares para melhor performance
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Limpa o cache para garantir busca de múltiplos filmes
+      _movieController.clearCache();
+      
       _movieController.preloadData();
+      
+      // Seleciona automaticamente o primeiro gênero ("Ação") para permitir rolar filme imediatamente
+      if (genres.isNotEmpty) {
+        _movieController.selectGenre(genres.first);
+        debugPrint('Gênero inicial selecionado automaticamente: ${genres.first}');
+      }
     });
   }
 
@@ -79,11 +88,24 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   /// Método simplificado para sortear filme
   Future<void> _handleRollMovie() async {
     if (!_movieController.canRollMovie) {
-      AppSnackBar.showInfo(context, 'Por favor, selecione um gênero primeiro!');
+      // Como o gênero já é selecionado automaticamente, este caso não deveria ocorrer
+      AppSnackBar.showInfo(context, 'Aguarde, carregando gêneros...');
       return;
     }
 
+    debugPrint('=== INICIANDO SORTEIO ===');
+    debugPrint('Gênero atual: ${_movieController.selectedGenre}');
+    debugPrint('Filme atual: ${_movieController.selectedMovie?.title ?? "nenhum"}');
+    debugPrint('Contador atual: ${_movieController.movieCount}');
+    
     await _movieController.rollMovie();
+    
+    // Feedback de sucesso
+    if (_movieController.selectedMovie != null) {
+      debugPrint('=== SORTEIO CONCLUÍDO ===');
+      debugPrint('Novo filme: ${_movieController.selectedMovie!.title}');
+      debugPrint('Novo contador: ${_movieController.movieCount}');
+    }
   }
 
   @override
@@ -260,13 +282,15 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         children: [
           _buildGenreHeader(isMobile),
           const SizedBox(height: 32),
-          SizedBox(
-            height: isMobile ? 400 : 450,
-            child: GenreWheel(
-              genres: genres,
-              selectedGenre: _movieController.selectedGenre,
-              onGenreSelected: _movieController.selectGenre,
-              onRandomSpin: () {},
+          Center(
+            child: SizedBox(
+              height: isMobile ? 400 : 450,
+              child: GenreWheel(
+                genres: genres,
+                selectedGenre: _movieController.selectedGenre,
+                onGenreSelected: _movieController.selectGenre,
+                onRandomSpin: () {},
+              ),
             ),
           ),
         ],
@@ -308,7 +332,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   Widget _buildActionButton() {
     return AppButton(
       onPressed: _movieController.canRollMovie ? _handleRollMovie : null,
-      text: _movieController.isLoading ? 'Rolando...' : 'Rolar Filme',
+      text: _movieController.isLoading 
+          ? 'Rolando...' 
+          : (_movieController.hasMovie ? 'Rolar Novo Filme' : 'Rolar Filme'),
       isLoading: _movieController.isLoading,
       icon: _movieController.isLoading ? null : Icons.local_movies,
     );
@@ -406,6 +432,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           _buildMovieOverview(movie, isMobile),
           const SizedBox(height: 16),
         ],
+        _buildMovieCounter(),
+        const SizedBox(height: 8),
         _buildDetailsHint(),
       ],
     );
@@ -490,6 +518,29 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       ),
       maxLines: isMobile ? 3 : 4,
       overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildMovieCounter() {
+    if (_movieController.movieCount <= 1) return const SizedBox.shrink();
+    
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.movie_filter,
+          size: 16,
+          color: AppColors.textSecondary,
+        ),
+        const SizedBox(width: 6),
+        SafeText(
+          'Filme ${_movieController.movieCount} sorteado',
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.textSecondary,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ],
     );
   }
 

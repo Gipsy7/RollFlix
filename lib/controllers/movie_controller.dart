@@ -11,6 +11,7 @@ class MovieController extends ChangeNotifier {
   Movie? _selectedMovie;
   bool _isLoading = false;
   String? _errorMessage;
+  int _movieCount = 0; // Contador de filmes sorteados
 
   // Getters
   String? get selectedGenre => _selectedGenre;
@@ -19,14 +20,19 @@ class MovieController extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get hasMovie => _selectedMovie != null;
   bool get canRollMovie => _selectedGenre != null && !_isLoading;
+  int get movieCount => _movieCount;
 
-  /// Seleciona um gênero e limpa o filme atual
+  /// Seleciona um gênero e limpa o filme atual apenas se for um gênero diferente
   void selectGenre(String? genre) {
     if (_selectedGenre != genre) {
+      debugPrint('Mudando gênero de "$_selectedGenre" para "$genre"');
       _selectedGenre = genre;
-      _selectedMovie = null;
+      _selectedMovie = null; // Só limpa o filme quando o gênero realmente muda
+      _movieCount = 0; // Reseta contador ao mudar de gênero
       _errorMessage = null;
       notifyListeners();
+    } else {
+      debugPrint('Gênero "$genre" já estava selecionado, mantendo filme atual');
     }
   }
 
@@ -34,12 +40,21 @@ class MovieController extends ChangeNotifier {
   Future<void> rollMovie() async {
     if (_selectedGenre == null || _isLoading) return;
 
+    debugPrint('Rolando filme do gênero: $_selectedGenre (Filme atual: ${_selectedMovie?.title ?? "nenhum"})');
     _setLoading(true);
     _errorMessage = null;
 
     try {
-      final movie = await _repository.getRandomMovieByGenre(_selectedGenre!);
-      _selectedMovie = movie;
+      // Passa o ID do filme atual para ser excluído da seleção
+      final currentMovieId = _selectedMovie?.id;
+      final newMovie = await _repository.getRandomMovieByGenre(
+        _selectedGenre!, 
+        excludeMovieId: currentMovieId
+      );
+      
+      _selectedMovie = newMovie;
+      _movieCount++; // Incrementa contador de filmes sorteados
+      debugPrint('Filme final selecionado: ${_selectedMovie!.title} (Gênero: $_selectedGenre) - Total sorteados: $_movieCount');
     } catch (e) {
       _errorMessage = 'Erro ao buscar filme: ${e.toString()}';
       _selectedMovie = null;
