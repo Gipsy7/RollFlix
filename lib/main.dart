@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'theme/app_theme.dart';
 import 'constants/app_constants.dart';
 import 'utils/app_utils.dart' as AppUtils;
@@ -40,6 +39,7 @@ class MovieSorterApp extends StatefulWidget {
 
 class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStateMixin, AnimationMixin {
   late final MovieController _movieController;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final List<String> genres = AppConstants.movieGenres;
 
@@ -113,6 +113,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     final isMobile = ResponsiveUtils.isMobile(context);
     
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: _buildDrawer(context, isMobile),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -146,6 +148,17 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       pinned: true,
       elevation: 0,
       backgroundColor: Colors.transparent,
+      leading: Builder(
+        builder: (context) => IconButton(
+          icon: Icon(
+            Icons.menu,
+            color: AppColors.textPrimary,
+            size: 28,
+          ),
+          onPressed: () => Scaffold.of(context).openDrawer(),
+          tooltip: 'Menu',
+        ),
+      ),
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: const BoxDecoration(
@@ -158,6 +171,182 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context, bool isMobile) {
+    return Drawer(
+      backgroundColor: AppColors.backgroundDark,
+      child: Column(
+        children: [
+          // Header do Drawer
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              gradient: AppColors.cinemaGradient,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.local_movies,
+                      color: AppColors.textPrimary,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 12),
+                    SafeText(
+                      'RollFlix',
+                      style: AppTextStyles.headlineMedium.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                SafeText(
+                  'Roll and chill',
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    color: AppColors.textSecondary,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Menu Items
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                _buildDrawerItem(
+                  icon: Icons.home,
+                  title: 'Início',
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.refresh,
+                  title: 'Limpar Cache',
+                  onTap: () {
+                    _movieController.clearCache();
+                    Navigator.pop(context);
+                    AppSnackBar.showSuccess(context, 'Cache limpo com sucesso!');
+                  },
+                ),
+                const Divider(color: AppColors.textSecondary),
+                _buildDrawerItem(
+                  icon: Icons.info_outline,
+                  title: 'Sobre o App',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showAboutDialog(context);
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.settings,
+                  title: 'Configurações',
+                  onTap: () {
+                    Navigator.pop(context);
+                    AppSnackBar.showInfo(context, 'Em breve: Configurações');
+                  },
+                ),
+              ],
+            ),
+          ),
+          
+          // Footer
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: SafeText(
+              'Versão ${AppConstants.appVersion}',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: AppColors.primary,
+        size: 24,
+      ),
+      title: SafeText(
+        title,
+        style: AppTextStyles.bodyLarge.copyWith(
+          color: AppColors.textPrimary,
+        ),
+      ),
+      onTap: onTap,
+      splashColor: AppColors.primary.withOpacity(0.1),
+      hoverColor: AppColors.primary.withOpacity(0.05),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.backgroundDark,
+        title: SafeText(
+          'Sobre o RollFlix',
+          style: AppTextStyles.headlineSmall.copyWith(
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SafeText(
+              'Aplicativo para descobrir filmes aleatórios por gênero.',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            SafeText(
+              'Desenvolvido com Flutter',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            SafeText(
+              'Dados fornecidos por The Movie Database (TMDb)',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: SafeText(
+              'Fechar',
+              style: AppTextStyles.labelLarge.copyWith(
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -198,19 +387,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: SvgPicture.asset(
-          'assets/images/rollflix_logo.svg',
-          fit: BoxFit.contain,
-          placeholderBuilder: (context) {
-            return Icon(
-              Icons.movie_filter,
-              color: AppColors.backgroundDark,
-              size: 32,
-            );
-          },
-        ),
+      child: Icon(
+        Icons.local_movies,
+        color: AppColors.textPrimary,
+        size: isMobile ? 40 : 48,
       ),
     );
   }
@@ -231,6 +411,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
+              
             ],
           ),
         ),
@@ -240,6 +421,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           style: AppTextStyles.bodyLarge.copyWith(
             color: AppColors.textPrimary.withOpacity(0.9),
             fontWeight: FontWeight.w400,
+            fontStyle: FontStyle.italic,
+            fontSize: isMobile ? 14 : 16,
             shadows: [
               Shadow(
                 color: AppColors.backgroundDark.withOpacity(0.3),
