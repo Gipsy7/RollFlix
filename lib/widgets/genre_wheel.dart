@@ -345,9 +345,9 @@ class FilmReelPainter extends CustomPainter {
   }
 
   void _drawFilmBackground(Canvas canvas, Size size) {
-    // Fundo principal do filme
+    // Fundo principal do filme - estilo cinema clássico
     final filmPaint = Paint()
-      ..color = AppColors.surfaceVariantDark
+      ..color = AppColors.backgroundDark.withOpacity(0.8)
       ..style = PaintingStyle.fill;
     
     canvas.drawRRect(
@@ -358,9 +358,9 @@ class FilmReelPainter extends CustomPainter {
       filmPaint,
     );
     
-    // Bordas superior e inferior do filme
+    // Bordas superior e inferior do filme - douradas
     final borderPaint = Paint()
-      ..color = AppColors.primary
+      ..color = AppColors.primary.withOpacity(0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
     
@@ -419,28 +419,68 @@ class FilmReelPainter extends CustomPainter {
   }
 
   void _drawGenreCircle(Canvas canvas, Offset center, double radius, String genre, bool isHighlighted) {
-    // Círculo do gênero
-    final circlePaint = Paint()
-      ..color = isHighlighted ? AppColors.primary : AppColors.backgroundDark
-      ..style = PaintingStyle.fill;
+    // Círculo do gênero com tema cinema clássico
+    if (isHighlighted) {
+      // Círculo destacado com gradiente dourado
+      final rect = Rect.fromCircle(center: center, radius: radius);
+      final gradient = LinearGradient(
+        colors: [AppColors.primaryDark, AppColors.primary, AppColors.primaryLight],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+      final paint = Paint()
+        ..shader = gradient.createShader(rect)
+        ..style = PaintingStyle.fill;
+      
+      canvas.drawCircle(center, radius, paint);
+      
+      // Borda escura para contraste
+      final borderPaint = Paint()
+        ..color = AppColors.backgroundDark
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 4;
+      
+      canvas.drawCircle(center, radius, borderPaint);
+      
+      // Efeito de brilho dourado
+      final glowPaint = Paint()
+        ..color = AppColors.primary.withOpacity(0.5)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2;
+      
+      canvas.drawCircle(center, radius + 2, glowPaint);
+    } else {
+      // Círculo normal com tema escuro
+      final circlePaint = Paint()
+        ..color = AppColors.surfaceDark.withOpacity(0.9)
+        ..style = PaintingStyle.fill;
+      
+      canvas.drawCircle(center, radius, circlePaint);
+      
+      // Borda dourada sutil
+      final borderPaint = Paint()
+        ..color = AppColors.primary.withOpacity(0.3)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2;
+      
+      canvas.drawCircle(center, radius, borderPaint);
+    }
     
-    canvas.drawCircle(center, radius, circlePaint);
-    
-    // Borda do círculo
-    final borderPaint = Paint()
-      ..color = isHighlighted ? AppColors.backgroundDark : AppColors.primary
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = isHighlighted ? 4 : 2;
-    
-    canvas.drawCircle(center, radius, borderPaint);
-    
-    // Texto do gênero
+    // Texto do gênero seguindo as regras de cores
     final textSpan = TextSpan(
       text: genre,
       style: TextStyle(
+        // Fundo amarelo = texto preto; Fundo preto = texto branco/amarelo
         color: isHighlighted ? AppColors.backgroundDark : AppColors.textPrimary,
-        fontWeight: isHighlighted ? FontWeight.bold : FontWeight.w600,
-        fontSize: isHighlighted ? 12 : 10,
+        fontWeight: isHighlighted ? FontWeight.w800 : FontWeight.w600,
+        fontSize: isHighlighted ? 13 : 11,
+        shadows: !isHighlighted ? [
+          Shadow(
+            color: AppColors.backgroundDark.withOpacity(0.8),
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ] : null,
       ),
     );
     
@@ -462,12 +502,12 @@ class FilmReelPainter extends CustomPainter {
   }
 
   void _drawFilmHoles(Canvas canvas, Size size) {
-    // Desenha os furos característicos do filme com rolagem infinita
+    // Desenha os furos característicos do filme - estilo clássico
     final holePaint = Paint()
-      ..color = AppColors.backgroundDark
+      ..color = AppColors.backgroundDark.withOpacity(0.8)
       ..style = PaintingStyle.fill;
     
-    final holeRadius = 8.0;
+    final holeRadius = 7.0;
     final holeSpacing = 30.0;
     final scrollPixels = scrollOffset * 120.0;
     
@@ -477,7 +517,7 @@ class FilmReelPainter extends CustomPainter {
     // Calcula quantos furos são necessários para cobrir a largura + buffer
     final holesNeeded = (size.width / holeSpacing).ceil() + 4;
     
-    // Furos superiores
+    // Furos superiores - estilo cinema clássico
     for (int i = 0; i < holesNeeded; i++) {
       final x = (i * holeSpacing) - holeOffset - holeSpacing;
       if (x > -holeRadius && x < size.width + holeRadius) {
@@ -486,10 +526,22 @@ class FilmReelPainter extends CustomPainter {
           holeRadius,
           holePaint,
         );
+        
+        // Borda dourada dos furos
+        final borderPaint = Paint()
+          ..color = AppColors.primary.withOpacity(0.4)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1;
+        
+        canvas.drawCircle(
+          Offset(x, size.height * 0.1),
+          holeRadius,
+          borderPaint,
+        );
       }
     }
     
-    // Furos inferiores
+    // Furos inferiores - estilo cinema clássico
     for (int i = 0; i < holesNeeded; i++) {
       final x = (i * holeSpacing) - holeOffset - holeSpacing;
       if (x > -holeRadius && x < size.width + holeRadius) {
@@ -497,6 +549,18 @@ class FilmReelPainter extends CustomPainter {
           Offset(x, size.height * 0.9),
           holeRadius,
           holePaint,
+        );
+        
+        // Borda dourada dos furos
+        final borderPaint = Paint()
+          ..color = AppColors.primary.withOpacity(0.4)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1;
+        
+        canvas.drawCircle(
+          Offset(x, size.height * 0.9),
+          holeRadius,
+          borderPaint,
         );
       }
     }

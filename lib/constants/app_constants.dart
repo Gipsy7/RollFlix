@@ -1,6 +1,6 @@
 class AppConstants {
   // App Information
-  static const String appName = 'CineChoice';
+  static const String appName = 'RollFlix';
   static const String appVersion = '1.0.0';
   
   // API Constants

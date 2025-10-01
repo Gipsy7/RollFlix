@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'constants/app_constants.dart';
-import 'utils/app_utils.dart';
+import 'utils/app_utils.dart' as AppUtils;
 import 'services/movie_service.dart';
 import 'models/movie.dart';
 import 'screens/movie_details_screen.dart';
 import 'widgets/genre_wheel.dart';
-import 'widgets/cinema_animations.dart';
+import 'widgets/common_widgets.dart';
 
 void main() {
   runApp(const MyApp());
@@ -102,7 +102,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = ResponsiveUtils.isMobile(context);
+    final isMobile = AppUtils.ResponsiveUtils.isMobile(context);
     
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -122,39 +122,75 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                 ),
                 child: SafeArea(
                   child: Padding(
-                    padding: EdgeInsets.all(isMobile ? AppConstants.spacingL : AppConstants.spacingXL),
+                    padding: EdgeInsets.all(isMobile ? 20 : 32),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Row(
                           children: [
-                            // Projector Animation
-                            const ProjectorAnimation(size: 60),
-                            const SizedBox(width: AppConstants.spacingL),
+                            // Modern Cinema Icon
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                gradient: AppColors.glassGradient,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                  width: 1,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.3),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                Icons.movie_filter,
+                                color: AppColors.backgroundDark, // Preto no fundo dourado
+                                size: 32,
+                              ),
+                            ),
+                            const SizedBox(width: 20),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     AppConstants.appName,
-                                    style: AppTextStyles.cinemaTitle.copyWith(
+                                    style: AppTextStyles.headlineLarge.copyWith(
                                       fontSize: isMobile ? 28 : 36,
-                                      color: AppColors.primary,
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w700,
+                                      shadows: [
+                                        Shadow(
+                                          color: AppColors.backgroundDark.withOpacity(0.5),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  const SizedBox(height: AppConstants.spacingXS),
+                                  const SizedBox(height: 8),
                                   Text(
-                                    'Cinema Clássico - Descubra Seu Próximo Filme',
+                                    'Roll and Chill',
                                     style: AppTextStyles.bodyLarge.copyWith(
-                                      color: AppColors.textSecondary,
+                                      color: AppColors.textPrimary.withOpacity(0.9),
+                                      fontWeight: FontWeight.w400,
+                                      shadows: [
+                                        Shadow(
+                                          color: AppColors.backgroundDark.withOpacity(0.3),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 1),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            // Popcorn Animation
-                            const PopcornAnimation(size: 50),
                           ],
                         ),
                       ],
@@ -168,140 +204,85 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           // Content
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(isMobile ? AppConstants.spacingL : AppConstants.spacingXL),
+              padding: EdgeInsets.all(isMobile ? 20 : 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Genre Selection - Film Strip Style
-                  FilmStripDecoration(
-                    height: isMobile ? 450 : 500,
-                    child: Container(
-                      padding: EdgeInsets.all(isMobile ? AppConstants.spacingL : AppConstants.spacingXL),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceDark,
-                        borderRadius: BorderRadius.circular(AppConstants.radiusXL),
-                        border: Border.all(
-                          color: AppColors.primary.withOpacity(0.3),
-                          width: 2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withOpacity(0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(AppConstants.spacingS),
-                                decoration: BoxDecoration(
-                                  gradient: AppColors.goldGradient,
-                                  borderRadius: BorderRadius.circular(AppConstants.radiusM),
-                                ),
-                                child: Icon(
-                                  Icons.casino,
-                                  color: AppColors.backgroundDark,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: AppConstants.spacingM),
-                              Text(
-                                'Gire a Roleta dos Gêneros',
-                                style: (isMobile 
-                                  ? AppTextStyles.headlineSmall
-                                  : AppTextStyles.headlineMedium).copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: AppConstants.spacingL),
-                          // Roleta de Gêneros
-                          Expanded(
-                            child: GenreWheel(
-                              genres: genres,
-                              selectedGenre: selectedGenre,
-                              onGenreSelected: (genre) {
-                                setState(() {
-                                  selectedGenre = genre;
-                                  selectedMovie = null;
-                                });
-                              },
-                              onRandomSpin: () {
-                                // Opcional: adicionar efeitos visuais durante o giro
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: AppConstants.spacingXL),
-                  
-                  // Cinema Ticket Button
-                  SizedBox(
-                    height: isMobile ? 66 : 74,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: AppColors.goldGradient,
-                        borderRadius: BorderRadius.circular(AppConstants.spacingL),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withOpacity(0.4),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        onPressed: selectedGenre != null ? _sortearFilme : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          foregroundColor: AppColors.backgroundDark,
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppConstants.spacingL),
-                          ),
-                        ),
-                        child: isLoading
-                            ? SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 3,
-                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.backgroundDark),
-                                ),
-                              )
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.local_movies, size: 28),
-                                  const SizedBox(width: AppConstants.spacingM),
-                                  Text(
-                                    '🎬 Sortear Filme',
-                                    style: (isMobile 
-                                      ? AppTextStyles.labelLarge
-                                      : AppTextStyles.headlineMedium).copyWith(
-                                        color: AppColors.backgroundDark,
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: 1.0,
-                                      ),
+                  // Genre Selection Card
+                  AppCard(
+                    padding: EdgeInsets.all(isMobile ? 24 : 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                gradient: AppColors.primaryGradient,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.4),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
                                   ),
                                 ],
                               ),
-                      ),
+                              child: Icon(
+                                Icons.casino,
+                                color: AppColors.backgroundDark, // Preto no fundo dourado
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              'Escolha um Gênero',
+                              style: (isMobile 
+                                ? AppTextStyles.headlineSmall
+                                : AppTextStyles.headlineMedium).copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                        // Genre Wheel Container - Invisível
+                        Container(
+                          height: isMobile ? 400 : 450,
+                          decoration: const BoxDecoration(
+                            color: Colors.transparent,
+                          ),
+                          child: GenreWheel(
+                            genres: genres,
+                            selectedGenre: selectedGenre,
+                            onGenreSelected: (genre) {
+                              setState(() {
+                                selectedGenre = genre;
+                                selectedMovie = null;
+                              });
+                            },
+                            onRandomSpin: () {
+                              // Opcional: adicionar efeitos visuais durante o giro
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   
-                  const SizedBox(height: AppConstants.spacingXL),
+                  const SizedBox(height: 24),
+                  
+                  // Modern Action Button
+                  AppButton(
+                    onPressed: selectedGenre != null ? _sortearFilme : null,
+                    text: isLoading ? 'Rolando...' : 'Rolar Filme',
+                    isLoading: isLoading,
+                    icon: isLoading ? null : Icons.local_movies,
+                  ),
+                  
+                  const SizedBox(height: 24),
                   
                   // Movie Result
                   if (selectedMovie != null) _buildMovieCard(context, isMobile),
@@ -320,246 +301,217 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       builder: (context, child) {
         return Transform.scale(
           scale: _animation.value,
-          child: CurtainAnimation(
-            isOpen: true,
-            child: AnimatedContainer(
-              duration: AppConstants.slowAnimation,
-              curve: Curves.easeInOut,
-              padding: EdgeInsets.all(isMobile ? AppConstants.spacingL : AppConstants.spacingXL),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.surfaceDark, AppColors.surfaceVariantDark],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+          child: AppCard(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MovieDetailsScreen(movie: selectedMovie!),
                 ),
-                borderRadius: BorderRadius.circular(AppConstants.radiusXL),
-                border: Border.all(
-                  color: AppColors.primary.withOpacity(0.5),
-                  width: 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withOpacity(0.3),
-                    blurRadius: 25,
-                    offset: const Offset(0, 8),
-                  ),
-                  BoxShadow(
-                    color: AppColors.backgroundDark.withOpacity(0.8),
-                    blurRadius: 40,
-                    offset: const Offset(0, 15),
-                  ),
-                ],
-              ),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MovieDetailsScreen(movie: selectedMovie!),
+              );
+            },
+            padding: EdgeInsets.all(isMobile ? 20 : 28),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Movie Poster with Modern Frame
+                Container(
+                  width: isMobile ? 100 : 120,
+                  height: isMobile ? 150 : 180,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: AppColors.glassGradient,
+                    border: Border.all(
+                      color: AppColors.interactive.withOpacity(0.3),
+                      width: 2,
                     ),
-                  );
-                },
-                borderRadius: BorderRadius.circular(AppConstants.spacingL),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Movie Poster with Film Frame
-                    Container(
-                      width: isMobile ? 100 : 120,
-                      height: isMobile ? 150 : 180,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppConstants.radiusL),
-                        border: Border.all(
-                          color: AppColors.filmStrip,
-                          width: 4,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.interactive.withOpacity(0.2),
+                        blurRadius: 15,
+                        offset: const Offset(0, 8),
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(AppConstants.radiusL - 4),
-                        child: selectedMovie!.fullPosterUrl.isNotEmpty
-                            ? Image.network(
-                                selectedMovie!.fullPosterUrl,
-                                width: double.infinity,
-                                height: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: AppColors.surfaceVariantDark,
-                                    child: Icon(
-                                      Icons.local_movies,
-                                      size: 48,
-                                      color: AppColors.primary,
-                                    ),
-                                  );
-                                },
-                              )
-                            : Container(
-                                color: AppColors.surfaceVariantDark,
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.1),
+                        blurRadius: 25,
+                        offset: const Offset(0, 12),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: selectedMovie!.posterPath.isNotEmpty
+                        ? Image.network(
+                            'https://image.tmdb.org/t/p/w500${selectedMovie!.posterPath}',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                decoration: const BoxDecoration(
+                                  gradient: AppColors.primaryGradient,
+                                ),
                                 child: Icon(
-                                  Icons.local_movies,
+                                  Icons.movie,
+                                  color: AppColors.backgroundDark, // Preto no fundo dourado
                                   size: 48,
-                                  color: AppColors.primary,
+                                ),
+                              );
+                            },
+                          )
+                        : Container(
+                            decoration: const BoxDecoration(
+                              gradient: AppColors.primaryGradient,
+                            ),
+                            child: Icon(
+                              Icons.movie,
+                              color: AppColors.backgroundDark, // Preto no fundo dourado
+                              size: 48,
+                            ),
+                          ),
+                  ),
+                ),
+                
+                const SizedBox(width: 20),
+                
+                // Movie Details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title with modern styling
+                      Text(
+                        selectedMovie!.title,
+                        style: (isMobile 
+                            ? AppTextStyles.headlineSmall
+                            : AppTextStyles.headlineMedium).copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      // Release Date with Icon
+                      if (selectedMovie!.releaseDate.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppColors.backgroundDark,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: AppColors.primary.withOpacity(0.3),
+                                  width: 1,
                                 ),
                               ),
-                      ),
-                    ),
-                    
-                    const SizedBox(width: AppConstants.spacingL),
-                    
-                    // Movie Info with Cinema Style
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: AppConstants.spacingS),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppConstants.spacingS, 
-                              vertical: AppConstants.spacingXS,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: AppColors.goldGradient,
-                              borderRadius: BorderRadius.circular(AppConstants.spacingS),
-                            ),
-                            child: Text(
-                              '🎟️ Filme Sorteado',
-                              style: (isMobile ? AppTextStyles.labelSmall : AppTextStyles.labelMedium).copyWith(
-                                color: AppColors.backgroundDark,
-                                fontWeight: FontWeight.w700,
+                              child: Icon(
+                                Icons.calendar_today,
+                                size: 16,
+                                color: AppColors.primary, // Amarelo no fundo preto
                               ),
                             ),
-                          ),
-                          
-                          const SizedBox(height: AppConstants.spacingM),
-                          
-                          AnimatedDefaultTextStyle(
-                            duration: AppConstants.slowAnimation,
-                            style: (isMobile 
-                              ? AppTextStyles.headlineMedium 
-                              : AppTextStyles.headlineLarge).copyWith(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w700,
-                                shadows: [
-                                  Shadow(
-                                    offset: const Offset(1, 1),
-                                    blurRadius: 2,
-                                    color: AppColors.backgroundDark.withOpacity(0.5),
-                                  ),
-                                ],
-                            ),
-                            child: Text(
-                              selectedMovie!.title,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          
-                          if (selectedMovie!.year.isNotEmpty) ...[
-                            const SizedBox(height: AppConstants.spacingS),
-                            AnimatedDefaultTextStyle(
-                              duration: AppConstants.slowAnimation,
-                              style: (isMobile 
-                                ? AppTextStyles.bodyMedium 
-                                : AppTextStyles.bodyLarge).copyWith(
-                                  color: AppColors.textSecondary,
+                            const SizedBox(width: 8),
+                            Text(
+                              AppUtils.DateUtils.formatReleaseDate(selectedMovie!.releaseDate),
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
                               ),
-                              child: Text('📅 ${selectedMovie!.year}'),
                             ),
                           ],
-                          
-                          const SizedBox(height: AppConstants.spacingM),
-                          
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: AppConstants.spacingS, 
-                                  vertical: AppConstants.spacingXS,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.accent.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(AppConstants.spacingS),
-                                  border: Border.all(
-                                    color: AppColors.accent,
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      Icons.star_rounded,
-                                      color: AppColors.accent,
-                                      size: 16,
-                                    ),
-                                    const SizedBox(width: AppConstants.spacingXS),
-                                    Text(
-                                      selectedMovie!.voteAverage.toStringAsFixed(1),
-                                      style: AppTextStyles.labelMedium.copyWith(
-                                        color: AppColors.accent,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          
-                          const SizedBox(height: AppConstants.spacingL),
-                          
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      
+                      // Rating with Stars
+                      Row(
+                        children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppConstants.spacingM, 
-                              vertical: AppConstants.spacingS,
-                            ),
+                            padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [AppColors.secondary, AppColors.secondary.withOpacity(0.8)],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
+                              color: AppColors.backgroundDark,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: AppColors.primary.withOpacity(0.3),
+                                width: 1,
                               ),
-                              borderRadius: BorderRadius.circular(AppConstants.radiusM),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.secondary.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.play_circle_outline,
-                                  color: AppColors.textPrimary,
-                                  size: 16,
-                                ),
-                                const SizedBox(width: AppConstants.spacingXS),
-                                Text(
-                                  'Ver Detalhes',
-                                  style: (isMobile ? AppTextStyles.labelMedium : AppTextStyles.labelLarge).copyWith(
-                                    color: AppColors.textPrimary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
+                            child: Icon(
+                              Icons.star,
+                              size: 16,
+                              color: AppColors.primary, // Sempre amarelo
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${selectedMovie!.voteAverage.toStringAsFixed(1)}/10',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Overview
+                      if (selectedMovie!.overview.isNotEmpty) ...[
+                        Text(
+                          selectedMovie!.overview,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.textSecondary,
+                            height: 1.5,
+                          ),
+                          maxLines: isMobile ? 3 : 4,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      
+                      // Action Hint
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.backgroundDark,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.primary.withOpacity(0.3),
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.touch_app,
+                              size: 16,
+                              color: AppColors.primary, // Amarelo no fundo preto
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Toque para mais detalhes',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.primary, // Amarelo no fundo preto
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         );

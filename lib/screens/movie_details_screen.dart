@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:palette_generator/palette_generator.dart';
 import '../models/movie.dart';
 import '../models/cast.dart';
 import '../models/watch_providers.dart';
 import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
+import '../theme/app_theme.dart';
 import 'actor_details_screen.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
@@ -25,51 +25,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   MovieVideos? movieVideos;
   SoundtrackInfo? soundtrackInfo;
   bool isLoading = true;
-  
-  // Adaptive colors
-  Color primaryColor = const Color(0xFF6366F1);
-  Color backgroundColor = Colors.white;
-  Color surfaceColor = const Color(0xFFF8FAFC);
-  Color onSurfaceColor = const Color(0xFF1E293B);
-  Color secondaryColor = const Color(0xFF8B5CF6);
 
   @override
   void initState() {
     super.initState();
     _loadMovieDetails();
-    _extractColorsFromImage();
-  }
-
-  Future<void> _extractColorsFromImage() async {
-    final movie = widget.movie;
-    if (movie.fullPosterUrl.isNotEmpty) {
-      try {
-        final paletteGenerator = await PaletteGenerator.fromImageProvider(
-          NetworkImage(movie.fullPosterUrl),
-          maximumColorCount: 20,
-        );
-
-        if (mounted) {
-          setState(() {
-            final dominantColor = paletteGenerator.dominantColor?.color ?? const Color(0xFF6366F1);
-            final vibrantColor = paletteGenerator.vibrantColor?.color ?? const Color(0xFF8B5CF6);
-            
-            primaryColor = dominantColor;
-            secondaryColor = vibrantColor;
-            
-            // Calculate contrasting colors for text
-            final luminance = dominantColor.computeLuminance();
-            onSurfaceColor = luminance > 0.5 ? const Color(0xFF1E293B) : Colors.white;
-            
-            // Create a lighter version for surface
-            surfaceColor = Color.lerp(dominantColor, Colors.white, 0.85) ?? const Color(0xFFF8FAFC);
-            backgroundColor = Color.lerp(dominantColor, Colors.white, 0.95) ?? Colors.white;
-          });
-        }
-      } catch (e) {
-        // Keep default colors if extraction fails
-      }
-    }
   }
 
   Future<void> _loadMovieDetails() async {
@@ -224,20 +184,20 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     final movie = detailedMovie ?? widget.movie;
     
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: AppColors.backgroundDark,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
-            backgroundColor: primaryColor,
-            foregroundColor: onSurfaceColor,
+            backgroundColor: AppColors.backgroundDark,
+            foregroundColor: AppColors.textPrimary,
             flexibleSpace: FlexibleSpaceBar(
               title: AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 500),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: onSurfaceColor,
+                    color: AppColors.textPrimary,
                     shadows: const [
                       Shadow(
                         offset: Offset(0, 1),
@@ -257,22 +217,22 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: Colors.grey.shade300,
-                          child: const Icon(
+                          color: AppColors.surfaceDark,
+                          child: Icon(
                             Icons.movie,
                             size: 100,
-                            color: Colors.grey,
+                            color: AppColors.textMuted,
                           ),
                         );
                       },
                     )
                   else
                     Container(
-                      color: Colors.grey.shade300,
-                      child: const Icon(
+                      color: AppColors.surfaceDark,
+                      child: Icon(
                         Icons.movie,
                         size: 100,
-                        color: Colors.grey,
+                        color: AppColors.textMuted,
                       ),
                     ),
                   Container(
@@ -314,13 +274,13 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 width: 120,
                                 height: 180,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
+                                  color: AppColors.surfaceDark,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.movie,
                                   size: 60,
-                                  color: Colors.grey,
+                                  color: AppColors.textMuted,
                                 ),
                               );
                             },
@@ -337,30 +297,31 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey.shade600,
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.star,
-                                  color: Colors.amber,
+                                  color: AppColors.primary,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   movie.voteAverage.toStringAsFixed(1),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
                                   ),
                                 ),
-                                const Text(
+                                Text(
                                   '/10',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.grey,
+                                    color: AppColors.textTertiary,
                                   ),
                                 ),
                               ],
@@ -371,7 +332,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 movie.formattedRuntime,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.grey.shade600,
+                                  color: AppColors.textTertiary,
                                 ),
                               ),
                           ],
@@ -414,16 +375,17 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: primaryColor,
+                      color: AppColors.primary,
                     ),
                     child: const Text('Sinopse'),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     movie.overview.isNotEmpty ? movie.overview : 'Sinopse não disponível.',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       height: 1.5,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -435,7 +397,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: primaryColor,
+                        color: AppColors.primary,
                       ),
                       child: const Text('Direção'),
                     ),
@@ -447,21 +409,22 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         return GestureDetector(
                           onTap: () => _navigateToDirectorDetails(director),
                           child: Chip(
-                            avatar: const Icon(
+                            avatar: Icon(
                               Icons.movie_filter,
                               size: 16,
-                              color: Colors.purple,
+                              color: AppColors.backgroundDark, // Preto no fundo dourado
                             ),
                             label: Text(
                               director.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
+                                color: AppColors.backgroundDark, // Preto no fundo dourado
                               ),
                             ),
-                            backgroundColor: Colors.purple.shade50,
+                            backgroundColor: AppColors.primary, // Fundo dourado
                             side: BorderSide(
-                              color: Colors.purple.shade200,
+                              color: AppColors.primaryDark,
                               width: 1,
                             ),
                             shape: RoundedRectangleBorder(
@@ -481,7 +444,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: primaryColor,
+                        color: AppColors.primary,
                       ),
                       child: const Text('Elenco Principal'),
                     ),
@@ -512,11 +475,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                               return Container(
                                                 width: 80,
                                                 height: 120,
-                                                color: Colors.grey.shade300,
-                                                child: const Icon(
+                                                color: AppColors.surfaceDark,
+                                                child: Icon(
                                                   Icons.person,
                                                   size: 40,
-                                                  color: Colors.grey,
+                                                  color: AppColors.textMuted,
                                                 ),
                                               );
                                             },
@@ -524,20 +487,21 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                         : Container(
                                             width: 80,
                                             height: 120,
-                                            color: Colors.grey.shade300,
-                                            child: const Icon(
+                                            color: AppColors.surfaceDark,
+                                            child: Icon(
                                               Icons.person,
                                               size: 40,
-                                              color: Colors.grey,
+                                              color: AppColors.textMuted,
                                             ),
                                           ),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
                                     actor.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
+                                      color: AppColors.textPrimary,
                                     ),
                                     textAlign: TextAlign.center,
                                     maxLines: 2,
@@ -547,7 +511,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     actor.character,
                                     style: TextStyle(
                                       fontSize: 10,
-                                      color: Colors.grey.shade600,
+                                      color: AppColors.textTertiary,
                                     ),
                                     textAlign: TextAlign.center,
                                     maxLines: 1,
@@ -565,12 +529,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                   // Vídeos/Trailers adicionais
                   if (movieVideos != null && movieVideos!.results.length > 1) ...[
-                    const Text(
+                    Text(
                       'Vídeos',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.purple,
+                        color: AppColors.primary,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -668,23 +632,76 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                   // Onde assistir
                   if (watchProviders?.hasProviders == true) ...[
-                    AnimatedDefaultTextStyle(
-                      duration: const Duration(milliseconds: 500),
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: primaryColor,
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.surfaceDark,
+                            AppColors.surfaceVariantDark,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.3),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.1),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      child: const Text('Onde Assistir'),
-                    ),
-                    const SizedBox(height: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  gradient: AppColors.primaryGradient,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.primary.withOpacity(0.4),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  Icons.play_circle_fill,
+                                  color: AppColors.backgroundDark,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              AnimatedDefaultTextStyle(
+                                duration: const Duration(milliseconds: 500),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
+                                child: const Text('Onde Assistir'),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
                     
                     if (watchProviders!.flatrate.isNotEmpty) ...[
-                      const Text(
+                      Text(
                         'Streaming (Incluído na assinatura):',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: AppColors.primary, // Dourado
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -695,11 +712,28 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           return GestureDetector(
                             onTap: () => _openProvider(provider),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
-                                color: Colors.green.shade100,
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.green),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppColors.primary.withOpacity(0.9),
+                                    AppColors.primaryLight.withOpacity(0.8),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppColors.primaryDark,
+                                  width: 1.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -710,18 +744,34 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       width: 20,
                                       height: 20,
                                       errorBuilder: (context, error, stackTrace) {
-                                        return const Icon(Icons.tv, size: 16);
+                                        return Icon(
+                                          Icons.tv, 
+                                          size: 16, 
+                                          color: AppColors.backgroundDark, // Preto no fundo dourado
+                                        );
                                       },
                                     )
                                   else
-                                    const Icon(Icons.tv, size: 16),
-                                  const SizedBox(width: 4),
+                                    Icon(
+                                      Icons.tv, 
+                                      size: 16, 
+                                      color: AppColors.backgroundDark, // Preto no fundo dourado
+                                    ),
+                                  const SizedBox(width: 6),
                                   Text(
                                     provider.providerName,
-                                    style: const TextStyle(fontSize: 12),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.backgroundDark, // Preto no fundo dourado
+                                    ),
                                   ),
                                   const SizedBox(width: 4),
-                                  const Icon(Icons.open_in_new, size: 12),
+                                  Icon(
+                                    Icons.open_in_new, 
+                                    size: 12, 
+                                    color: AppColors.backgroundDark, // Preto no fundo dourado
+                                  ),
                                 ],
                               ),
                             ),
@@ -732,11 +782,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ],
 
                     if (watchProviders!.rent.isNotEmpty) ...[
-                      const Text(
+                      Text(
                         'Aluguel:',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: AppColors.primary, // Dourado
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -747,11 +798,21 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           return GestureDetector(
                             onTap: () => _openProvider(provider),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
-                                color: Colors.orange.shade100,
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.orange),
+                                color: AppColors.surfaceDark,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppColors.secondary,
+                                  width: 1.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.secondary.withOpacity(0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -762,18 +823,34 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       width: 20,
                                       height: 20,
                                       errorBuilder: (context, error, stackTrace) {
-                                        return const Icon(Icons.movie, size: 16);
+                                        return Icon(
+                                          Icons.movie, 
+                                          size: 16, 
+                                          color: AppColors.secondary, // Vermelho no fundo escuro
+                                        );
                                       },
                                     )
                                   else
-                                    const Icon(Icons.movie, size: 16),
-                                  const SizedBox(width: 4),
+                                    Icon(
+                                      Icons.movie, 
+                                      size: 16, 
+                                      color: AppColors.secondary, // Vermelho no fundo escuro
+                                    ),
+                                  const SizedBox(width: 6),
                                   Text(
                                     provider.providerName,
-                                    style: const TextStyle(fontSize: 12),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimary, // Branco no fundo escuro
+                                    ),
                                   ),
                                   const SizedBox(width: 4),
-                                  const Icon(Icons.open_in_new, size: 12),
+                                  Icon(
+                                    Icons.open_in_new, 
+                                    size: 12, 
+                                    color: AppColors.secondary, // Vermelho no fundo escuro
+                                  ),
                                 ],
                               ),
                             ),
@@ -784,11 +861,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ],
 
                     if (watchProviders!.buy.isNotEmpty) ...[
-                      const Text(
+                      Text(
                         'Compra:',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: AppColors.primary, // Dourado
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -799,11 +877,28 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           return GestureDetector(
                             onTap: () => _openProvider(provider),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
-                                color: Colors.blue.shade100,
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.blue),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppColors.surfaceVariantDark,
+                                    AppColors.surfaceDark,
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppColors.accentDark,
+                                  width: 1.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.accentDark.withOpacity(0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -814,18 +909,34 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       width: 20,
                                       height: 20,
                                       errorBuilder: (context, error, stackTrace) {
-                                        return const Icon(Icons.shopping_cart, size: 16);
+                                        return Icon(
+                                          Icons.shopping_cart, 
+                                          size: 16, 
+                                          color: AppColors.primary, // Dourado no fundo escuro
+                                        );
                                       },
                                     )
                                   else
-                                    const Icon(Icons.shopping_cart, size: 16),
-                                  const SizedBox(width: 4),
+                                    Icon(
+                                      Icons.shopping_cart, 
+                                      size: 16, 
+                                      color: AppColors.primary, // Dourado no fundo escuro
+                                    ),
+                                  const SizedBox(width: 6),
                                   Text(
                                     provider.providerName,
-                                    style: const TextStyle(fontSize: 12),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimary, // Branco no fundo escuro
+                                    ),
                                   ),
                                   const SizedBox(width: 4),
-                                  const Icon(Icons.open_in_new, size: 12),
+                                  Icon(
+                                    Icons.open_in_new, 
+                                    size: 12, 
+                                    color: AppColors.primary, // Dourado no fundo escuro
+                                  ),
                                 ],
                               ),
                             ),
@@ -833,22 +944,100 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         }).toList(),
                       ),
                     ],
-                  ] else ...[
-                    const Text(
-                      'Onde Assistir',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.purple,
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Informações de streaming não disponíveis no momento.',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                        fontStyle: FontStyle.italic,
+                  ] else ...[
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.surfaceDark,
+                            AppColors.surfaceVariantDark,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.3),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.1),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.surfaceVariantDark,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: AppColors.textMuted,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.tv_off,
+                                  color: AppColors.textMuted,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Onde Assistir',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.backgroundDark.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppColors.textMuted.withOpacity(0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: AppColors.textTertiary,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    'Informações de streaming não disponíveis no momento.',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.textTertiary,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -856,12 +1045,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   // Seção Trilha Sonora
                   if (soundtrackInfo != null) ...[
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'Trilha Sonora',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.purple,
+                        color: AppColors.primary,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -871,27 +1060,23 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.purple.shade100, Colors.blue.shade100],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          color: AppColors.surfaceDark,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.purple.shade200),
+                          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.music_note, color: Colors.purple.shade700, size: 24),
+                                Icon(Icons.music_note, color: AppColors.primary, size: 24),
                                 const SizedBox(width: 8),
-                                const Text(
+                                Text(
                                   'Música Tema',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.purple,
+                                    color: AppColors.primary,
                                   ),
                                 ),
                               ],
@@ -899,9 +1084,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                             const SizedBox(height: 8),
                             Text(
                               soundtrackInfo!.themeSongTitle!,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
                               ),
                             ),
                             if (soundtrackInfo!.themeSongArtist != null) ...[

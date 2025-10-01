@@ -1,66 +1,84 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Cinema Classic Theme Colors
+  // Cinema Classic Theme - Yellow, Black & White
   
-  // Primary Colors - Gold/Bronze Film Reel
-  static const Color primary = Color(0xFFD4AF37); // Gold
-  static const Color primaryLight = Color(0xFFFFD700); // Bright Gold
-  static const Color primaryDark = Color(0xFFB8860B); // Dark Goldenrod
+  // Primary Colors - Classic Cinema Gold
+  static const Color primary = Color(0xFFFFD700); // Gold
+  static const Color primaryLight = Color(0xFFFFF176); // Light Gold
+  static const Color primaryDark = Color(0xFFFFC107); // Dark Gold
   
-  // Secondary Colors - Vintage Red (Cinema Seats)
+  // Secondary Colors - Classic Red
   static const Color secondary = Color(0xFFDC143C); // Crimson Red
-  static const Color secondaryLight = Color(0xFFFF6B6B); // Light Red
-  static const Color secondaryDark = Color(0xFF8B0000); // Dark Red
+  static const Color secondaryLight = Color(0xFFFF5722); // Light Red
+  static const Color secondaryDark = Color(0xFFB71C1C); // Dark Red
   
-  // Accent Colors - Popcorn Yellow
-  static const Color accent = Color(0xFFFFFACD); // Lemon Chiffon
-  static const Color accentLight = Color(0xFFFFFFF0); // Ivory
-  static const Color accentDark = Color(0xFFFFE135); // Banana Yellow
+  // Accent Colors - Classic White/Silver
+  static const Color accent = Color(0xFFF5F5F5); // Off White
+  static const Color accentLight = Color(0xFFFFFFFF); // Pure White
+  static const Color accentDark = Color(0xFFE0E0E0); // Light Gray
   
-  // Dark Cinema Colors
-  static const Color backgroundDark = Color(0xFF0D1117); // Very Dark Blue
-  static const Color surfaceDark = Color(0xFF161B22); // Dark Gray
-  static const Color surfaceVariantDark = Color(0xFF21262D); // Medium Dark
+  // Background Colors - Classic Dark Cinema
+  static const Color backgroundDark = Color(0xFF0D0D0D); // Near Black
+  static const Color surfaceDark = Color(0xFF1A1A1A); // Dark Gray
+  static const Color surfaceVariantDark = Color(0xFF2D2D2D); // Medium Gray
   
-  // Text Colors for Dark Theme
-  static const Color textPrimary = Color(0xFFF0F6FC); // Almost White
-  static const Color textSecondary = Color(0xFFB1BAC4); // Light Gray
-  static const Color textTertiary = Color(0xFF8B949E); // Medium Gray
+  // Text Colors - High Contrast Cinema
+  static const Color textPrimary = Color(0xFFFFFFF8); // Cream White
+  static const Color textSecondary = Color(0xFFFFD700); // Gold
+  static const Color textTertiary = Color(0xFFB8B8B8); // Light Gray
+  static const Color textMuted = Color(0xFF757575); // Medium Gray
   
-  // Legacy Background Colors (keeping for compatibility)
+  // Interactive Colors - Cinema Gold
+  static const Color interactive = Color(0xFFFFD700); // Gold
+  static const Color interactiveLight = Color(0xFFFFF176); // Light Gold
+  static const Color interactiveDark = Color(0xFFFFC107); // Dark Gold
+  // Legacy compatibility
   static const Color background = backgroundDark;
   static const Color surface = surfaceDark;
   static const Color surfaceVariant = surfaceVariantDark;
   
-  // Cinema Specific Colors
-  static const Color filmStrip = Color(0xFF2F2F2F); // Dark Gray
-  static const Color projectorLight = Color(0xFFF5F5DC); // Beige Light
-  static const Color curtainRed = Color(0xFF800020); // Burgundy
+  // Cinema Specific Colors - Classic Theme
+  static const Color filmStrip = Color(0xFF2D2D2D); // Dark Gray
+  static const Color projectorLight = Color(0xFFFFF9C4); // Warm light
+  static const Color curtainRed = secondary; // Classic red curtain
   
-  // Status Colors
-  static const Color success = Color(0xFF32D74B); // Bright Green
-  static const Color warning = Color(0xFFFF9F0A); // Orange
-  static const Color error = Color(0xFFFF453A); // Red
-  static const Color info = Color(0xFF007AFF); // Blue
+  // Status Colors - Cinema Theme
+  static const Color success = Color(0xFF4CAF50); // Green
+  static const Color warning = Color(0xFFFF9800); // Orange
+  static const Color error = secondary; // Red
+  static const Color info = primary; // Gold
   
-  // Cinema Gradients
+  // Classic Cinema Gradients
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primary, secondary],
+    colors: [primaryDark, primary, primaryLight],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  
+  static const LinearGradient secondaryGradient = LinearGradient(
+    colors: [secondaryDark, secondary, secondaryLight],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+  
+  static const LinearGradient accentGradient = LinearGradient(
+    colors: [accentDark, accent, accentLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
   
   static const LinearGradient backgroundGradient = LinearGradient(
-    colors: [backgroundDark, Color(0xFF1C2128)],
+    colors: [backgroundDark, surfaceDark],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
   
   static const LinearGradient cinemaGradient = LinearGradient(
-    colors: [backgroundDark, filmStrip, backgroundDark],
+    colors: [backgroundDark, surfaceDark, primary],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
+    stops: [0.0, 0.7, 1.0],
   );
   
   static const LinearGradient goldGradient = LinearGradient(
@@ -68,101 +86,96 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+  
+  // Classic film effect gradient
+  static const LinearGradient glassGradient = LinearGradient(
+    colors: [
+      Color(0x15FFD700), // Gold tint
+      Color(0x05FFD700),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }
 
 class AppTextStyles {
-  // Cinema Classic Typography
+  // Modern Typography - Clean & Elegant
   
-  // Display Styles - Bold Cinema Headers
+  // Display Styles - Modern Headers
   static const TextStyle displayLarge = TextStyle(
-    fontSize: 32,
-    fontWeight: FontWeight.w900,
-    color: AppColors.primary,
-    height: 1.2,
-    fontFamily: 'serif',
-    shadows: [
-      Shadow(
-        offset: Offset(2, 2),
-        blurRadius: 4,
-        color: Color(0x40000000),
-      ),
-    ],
+    fontSize: 36,
+    fontWeight: FontWeight.w700,
+    color: AppColors.textPrimary,
+    height: 1.1,
+    letterSpacing: -1.0,
   );
   
   static const TextStyle displayMedium = TextStyle(
-    fontSize: 28,
-    fontWeight: FontWeight.w800,
-    color: AppColors.primary,
-    height: 1.3,
-    fontFamily: 'serif',
-    shadows: [
-      Shadow(
-        offset: Offset(1, 1),
-        blurRadius: 3,
-        color: Color(0x40000000),
-      ),
-    ],
+    fontSize: 32,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+    height: 1.2,
+    letterSpacing: -0.5,
   );
   
   static const TextStyle displaySmall = TextStyle(
-    fontSize: 24,
-    fontWeight: FontWeight.w700,
-    color: AppColors.primary,
-    height: 1.3,
-    fontFamily: 'serif',
-  );
-  
-  // Headline Styles - Classic Cinema Look
-  static const TextStyle headlineLarge = TextStyle(
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
-    height: 1.4,
+    height: 1.2,
+    letterSpacing: -0.25,
+  );
+  
+  // Headline Styles - Modern & Clean
+  static const TextStyle headlineLarge = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+    height: 1.3,
     letterSpacing: 0.5,
   );
   
   static const TextStyle headlineMedium = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
+    fontSize: 20,
+    fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
-    height: 1.4,
-    letterSpacing: 0.3,
+    height: 1.3,
+    letterSpacing: -0.15,
   );
   
   static const TextStyle headlineSmall = TextStyle(
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
-    height: 1.4,
-    letterSpacing: 0.2,
+    height: 1.3,
   );
   
-  // Body Styles - Readable Text
+  // Body Styles - Clean & Readable
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16,
-    fontWeight: FontWeight.normal,
+    fontWeight: FontWeight.w400,
     color: AppColors.textPrimary,
-    height: 1.5,
+    height: 1.6,
   );
   
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,
-    fontWeight: FontWeight.normal,
+    fontWeight: FontWeight.w400,
     color: AppColors.textSecondary,
     height: 1.5,
   );
   
   static const TextStyle bodySmall = TextStyle(
     fontSize: 12,
-    fontWeight: FontWeight.normal,
+    fontWeight: FontWeight.w400,
     color: AppColors.textTertiary,
     height: 1.4,
   );
   
-  // Label Styles
+  // Label Styles - Modern & Clean
   static const TextStyle labelLarge = TextStyle(
     fontSize: 14,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     letterSpacing: 0.1,
   );
@@ -171,37 +184,30 @@ class AppTextStyles {
     fontSize: 12,
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
-    letterSpacing: 0.1,
+    letterSpacing: 0.2,
   );
   
   static const TextStyle labelSmall = TextStyle(
     fontSize: 10,
     fontWeight: FontWeight.w500,
     color: AppColors.textTertiary,
-    letterSpacing: 0.1,
+    letterSpacing: 0.3,
   );
   
-  // Special Cinema Styles
+  // Special Cinema Styles - Modern Cinema
   static const TextStyle cinemaTitle = TextStyle(
-    fontSize: 36,
-    fontWeight: FontWeight.w900,
+    fontSize: 32,
+    fontWeight: FontWeight.w700,
     color: AppColors.primary,
-    fontFamily: 'serif',
-    letterSpacing: 2.0,
-    shadows: [
-      Shadow(
-        offset: Offset(3, 3),
-        blurRadius: 6,
-        color: Color(0x60000000),
-      ),
-    ],
+    letterSpacing: -0.5,
+    height: 1.1,
   );
   
   static const TextStyle genreLabel = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
-    letterSpacing: 1.0,
+    letterSpacing: 0.5,
   );
 }
 
@@ -218,15 +224,16 @@ class AppTheme {
         background: AppColors.backgroundDark,
         surface: AppColors.surfaceDark,
         surfaceVariant: AppColors.surfaceVariantDark,
-        onPrimary: AppColors.backgroundDark,
+        onPrimary: AppColors.textPrimary,
         onSecondary: AppColors.textPrimary,
         onBackground: AppColors.textPrimary,
         onSurface: AppColors.textPrimary,
+        tertiary: AppColors.accent,
       ),
       
       scaffoldBackgroundColor: AppColors.backgroundDark,
       
-      // Text Theme
+      // Text Theme - Modern Typography
       textTheme: const TextTheme(
         displayLarge: AppTextStyles.displayLarge,
         displayMedium: AppTextStyles.displayMedium,
@@ -242,101 +249,59 @@ class AppTheme {
         labelSmall: AppTextStyles.labelSmall,
       ),
       
-      // AppBar Theme - Cinema Style
-      appBarTheme: AppBarTheme(
+      // AppBar Theme - Modern & Clean
+      appBarTheme: const AppBarTheme(
         elevation: 0,
         backgroundColor: AppColors.backgroundDark,
-        foregroundColor: AppColors.primary,
+        foregroundColor: AppColors.textPrimary,
         centerTitle: true,
-        titleTextStyle: AppTextStyles.cinemaTitle.copyWith(fontSize: 24),
-        shadowColor: AppColors.primary.withOpacity(0.3),
+        titleTextStyle: AppTextStyles.headlineLarge,
       ),
       
-      // Card Theme - Film Strip Style
-      cardTheme: CardThemeData(
-        elevation: 8,
-        shadowColor: AppColors.primary.withOpacity(0.3),
+      // Card Theme - Modern Glass Effect
+      cardTheme: const CardThemeData(
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(
-            color: AppColors.filmStrip,
-            width: 2,
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         color: AppColors.surfaceDark,
+        shadowColor: Colors.transparent,
       ),
       
-      // Elevated Button Theme - Golden Tickets
+      // Elevated Button Theme - Modern & Sleek
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          elevation: 6,
+          elevation: 0,
           backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.backgroundDark,
-          shadowColor: AppColors.primary.withOpacity(0.5),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          foregroundColor: AppColors.textPrimary,
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
           textStyle: const TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.5,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.2,
           ),
         ),
       ),
       
-      // Input Decoration Theme
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: AppColors.surfaceVariantDark,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: AppColors.filmStrip,
-            width: 1,
+      // Bottom Sheet Theme
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: AppColors.surfaceDark,
+        modalBackgroundColor: AppColors.surfaceDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(24),
           ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: AppColors.filmStrip,
-            width: 1,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: AppColors.primary,
-            width: 2,
-          ),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-        hintStyle: TextStyle(
-          color: AppColors.textTertiary,
         ),
       ),
       
       // Icon Theme
       iconTheme: const IconThemeData(
-        color: AppColors.primary,
+        color: AppColors.textSecondary,
         size: 24,
-      ),
-      
-      // Floating Action Button Theme
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: AppColors.secondary,
-        foregroundColor: AppColors.textPrimary,
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
       ),
     );
   }
-  
-  // Keep legacy method for compatibility
-  static ThemeData get lightTheme => darkCinemaTheme;
 }

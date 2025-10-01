@@ -32,11 +32,9 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveBackgroundColor = backgroundColor ?? 
-      (isOutlined ? Colors.transparent : AppColors.primary);
-    
+    // Seguindo as regras: fundo amarelo = texto preto; fundo preto = texto branco/amarelo
     final effectiveTextColor = textColor ?? 
-      (isOutlined ? AppColors.primary : Colors.white);
+      (isOutlined ? AppColors.primary : AppColors.backgroundDark); // Preto no fundo dourado
 
     Widget content = Row(
       mainAxisSize: MainAxisSize.min,
@@ -44,54 +42,75 @@ class AppButton extends StatelessWidget {
       children: [
         if (isLoading) ...[
           SizedBox(
-            width: 16,
-            height: 16,
+            width: 18,
+            height: 18,
             child: CircularProgressIndicator(
-              strokeWidth: 2,
+              strokeWidth: 2.5,
               valueColor: AlwaysStoppedAnimation<Color>(effectiveTextColor),
             ),
           ),
-          const SizedBox(width: AppConstants.spacingS),
+          const SizedBox(width: 12),
         ] else if (icon != null) ...[
-          Icon(icon, size: 16, color: effectiveTextColor),
-          const SizedBox(width: AppConstants.spacingS),
+          Icon(icon, size: 20, color: effectiveTextColor),
+          const SizedBox(width: 12),
         ],
         Text(
           text,
           style: AppTextStyles.labelLarge.copyWith(
             color: effectiveTextColor,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
     );
 
-    return SizedBox(
+    return Container(
       width: width,
-      height: height ?? 48,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: effectiveBackgroundColor,
-          foregroundColor: effectiveTextColor,
-          elevation: 0,
-          padding: padding ?? const EdgeInsets.symmetric(
-            horizontal: AppConstants.spacingL,
-            vertical: AppConstants.spacingM,
+      height: height ?? 56,
+      decoration: BoxDecoration(
+        gradient: isOutlined ? null : AppColors.primaryGradient,
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: isOutlined 
+          ? Border.all(color: AppColors.primary, width: 2)
+          : null,
+        boxShadow: !isOutlined ? [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.4),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-            side: isOutlined 
-              ? BorderSide(color: AppColors.primary, width: 1)
-              : BorderSide.none,
+          BoxShadow(
+            color: AppColors.primaryDark.withOpacity(0.3),
+            blurRadius: 25,
+            offset: const Offset(0, 12),
+          ),
+        ] : [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isLoading ? null : onPressed,
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: Container(
+            padding: padding ?? const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 16,
+            ),
+            child: content,
           ),
         ),
-        child: content,
       ),
     );
   }
 }
 
-class AppCard extends StatelessWidget {
+class AppCard extends StatefulWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
@@ -101,6 +120,8 @@ class AppCard extends StatelessWidget {
   final VoidCallback? onTap;
   final Border? border;
   final List<BoxShadow>? boxShadow;
+  final bool enableGlassEffect;
+  final bool enableHoverEffect;
 
   const AppCard({
     super.key,
@@ -108,39 +129,126 @@ class AppCard extends StatelessWidget {
     this.padding,
     this.margin,
     this.backgroundColor,
-    this.borderRadius = AppConstants.radiusL,
+    this.borderRadius = 20,
     this.elevation = 0,
     this.onTap,
     this.border,
     this.boxShadow,
+    this.enableGlassEffect = true,
+    this.enableHoverEffect = true,
   });
 
   @override
+  State<AppCard> createState() => _AppCardState();
+}
+
+class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.98,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Widget content = Container(
-      padding: padding ?? const EdgeInsets.all(AppConstants.spacingL),
-      margin: margin,
-      decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.surface,
-        borderRadius: BorderRadius.circular(borderRadius),
-        border: border,
-        boxShadow: boxShadow ?? (elevation > 0 ? [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: elevation * 2,
-            offset: Offset(0, elevation),
-          ),
-        ] : null),
+    // Modern glass effect with subtle transparency
+    final glassEffect = widget.enableGlassEffect 
+        ? [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+            BoxShadow(
+              color: AppColors.secondary.withOpacity(0.03),
+              blurRadius: 40,
+              offset: const Offset(0, 16),
+            ),
+          ]
+        : null;
+
+    final defaultShadow = widget.boxShadow ?? glassEffect ?? (widget.elevation > 0 ? [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.08),
+        blurRadius: widget.elevation * 3,
+        offset: Offset(0, widget.elevation * 2),
       ),
-      child: child,
+    ] : null);
+
+    Widget content = AnimatedBuilder(
+      animation: _scaleAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Container(
+            padding: widget.padding ?? const EdgeInsets.all(20),
+            margin: widget.margin,
+            decoration: BoxDecoration(
+              color: widget.backgroundColor ?? AppColors.surface.withOpacity(0.95),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              border: widget.border ?? Border.all(
+                color: AppColors.primary.withOpacity(0.08),
+                width: 1,
+              ),
+              boxShadow: defaultShadow,
+              gradient: widget.enableGlassEffect 
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.surface.withOpacity(0.98),
+                        AppColors.surface.withOpacity(0.92),
+                      ],
+                    )
+                  : null,
+            ),
+            child: widget.child,
+          ),
+        );
+      },
     );
 
-    if (onTap != null) {
+    if (widget.onTap != null) {
       return Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(borderRadius),
+          onTap: () {
+            _animationController.forward().then((_) {
+              _animationController.reverse();
+            });
+            widget.onTap?.call();
+          },
+          onTapDown: widget.enableHoverEffect ? (_) {
+            _animationController.forward();
+          } : null,
+          onTapUp: widget.enableHoverEffect ? (_) {
+            _animationController.reverse();
+          } : null,
+          onTapCancel: widget.enableHoverEffect ? () {
+            _animationController.reverse();
+          } : null,
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          splashColor: AppColors.primary.withOpacity(0.1),
+          highlightColor: AppColors.primary.withOpacity(0.05),
           child: content,
         ),
       );
@@ -150,17 +258,58 @@ class AppCard extends StatelessWidget {
   }
 }
 
-class AppLoadingIndicator extends StatelessWidget {
+class AppLoadingIndicator extends StatefulWidget {
   final double size;
   final Color? color;
   final String? message;
+  final bool showPulse;
 
   const AppLoadingIndicator({
     super.key,
-    this.size = 40,
+    this.size = 50,
     this.color,
     this.message,
+    this.showPulse = true,
   });
+
+  @override
+  State<AppLoadingIndicator> createState() => _AppLoadingIndicatorState();
+}
+
+class _AppLoadingIndicatorState extends State<AppLoadingIndicator>
+    with TickerProviderStateMixin {
+  late AnimationController _rotationController;
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _rotationController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat();
+
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _pulseAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _rotationController.dispose();
+    _pulseController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,28 +317,129 @@ class AppLoadingIndicator extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            width: size,
-            height: size,
-            child: CircularProgressIndicator(
-              strokeWidth: 3,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                color ?? AppColors.primary,
+          widget.showPulse
+              ? AnimatedBuilder(
+                  animation: _pulseAnimation,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _pulseAnimation.value,
+                      child: _buildLoadingIcon(),
+                    );
+                  },
+                )
+              : _buildLoadingIcon(),
+          if (widget.message != null) ...[
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.surface.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: AppColors.primary.withOpacity(0.1),
+                  width: 1,
+                ),
               ),
-            ),
-          ),
-          if (message != null) ...[
-            const SizedBox(height: AppConstants.spacingM),
-            Text(
-              message!,
-              style: AppTextStyles.bodyMedium,
-              textAlign: TextAlign.center,
+              child: Text(
+                widget.message!,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ],
       ),
     );
   }
+
+  Widget _buildLoadingIcon() {
+    return Container(
+      width: widget.size,
+      height: widget.size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primary.withOpacity(0.1),
+            AppColors.primary.withOpacity(0.05),
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: RotationTransition(
+        turns: _rotationController,
+        child: CustomPaint(
+          painter: ModernLoadingPainter(
+            color: widget.color ?? AppColors.primary,
+          ),
+          size: Size(widget.size, widget.size),
+        ),
+      ),
+    );
+  }
+}
+
+class ModernLoadingPainter extends CustomPainter {
+  final Color color;
+
+  ModernLoadingPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width - 6) / 2;
+
+    // Main arc with gradient effect
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    
+    // Primary arc
+    paint.color = color;
+    canvas.drawArc(
+      rect,
+      -1.6,
+      1.2,
+      false,
+      paint,
+    );
+
+    // Secondary accent arc
+    paint.color = AppColors.secondary.withOpacity(0.7);
+    canvas.drawArc(
+      rect,
+      0.5,
+      0.8,
+      false,
+      paint,
+    );
+
+    // Tertiary subtle arc
+    paint.color = AppColors.accent.withOpacity(0.5);
+    canvas.drawArc(
+      rect,
+      2.2,
+      0.6,
+      false,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class AppErrorWidget extends StatelessWidget {
