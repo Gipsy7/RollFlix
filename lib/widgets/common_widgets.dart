@@ -73,24 +73,7 @@ class AppButton extends StatelessWidget {
         border: isOutlined 
           ? Border.all(color: AppColors.primary, width: 2)
           : null,
-        boxShadow: !isOutlined ? [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.4),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color: AppColors.primaryDark.withOpacity(0.3),
-            blurRadius: 25,
-            offset: const Offset(0, 12),
-          ),
-        ] : [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        // Sombras removidas para visual mais limpo
       ),
       child: Material(
         color: Colors.transparent,
@@ -170,23 +153,8 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // Modern glass effect with subtle transparency
-    final glassEffect = widget.enableGlassEffect 
-        ? [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-            BoxShadow(
-              color: AppColors.secondary.withOpacity(0.03),
-              blurRadius: 40,
-              offset: const Offset(0, 16),
-            ),
-          ]
-        : null;
-
-    final defaultShadow = widget.boxShadow ?? glassEffect ?? (widget.elevation > 0 ? [
+    // Visual limpo sem efeitos excessivos
+    final defaultShadow = widget.boxShadow ?? (widget.elevation > 0 ? [
       BoxShadow(
         color: Colors.black.withOpacity(0.08),
         blurRadius: widget.elevation * 3,
@@ -210,16 +178,7 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
                 width: 1,
               ),
               boxShadow: defaultShadow,
-              gradient: widget.enableGlassEffect 
-                  ? LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.surface.withOpacity(0.98),
-                        AppColors.surface.withOpacity(0.92),
-                      ],
-                    )
-                  : null,
+              // Gradiente removido para visual mais limpo
             ),
             child: widget.child,
           ),

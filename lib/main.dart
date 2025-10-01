@@ -106,8 +106,20 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     final isMobile = AppUtils.ResponsiveUtils.isMobile(context);
     
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: CustomScrollView(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.backgroundDark.withOpacity(0.95), // Preto fosco no topo
+              AppColors.backgroundDark.withOpacity(0.98), // Mais opaco no meio
+              AppColors.backgroundDark, // Preto sólido na base
+            ],
+            stops: const [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: CustomScrollView(
         slivers: [
           // Modern Cinema App Bar
           SliverAppBar(
@@ -224,8 +236,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Genre Selection Card
-                  AppCard(
+                  Container(
                     padding: EdgeInsets.all(isMobile ? 24 : 32),
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent, // Invisível
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -234,19 +249,12 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                gradient: AppColors.primaryGradient,
+                                color: Colors.transparent, // Invisível
                                 borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.primary.withOpacity(0.4),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
                               ),
                               child: Icon(
                                 Icons.casino,
-                                color: AppColors.backgroundDark, // Preto no fundo dourado
+                                color: AppColors.primary, // Dourado visível
                                 size: 24,
                               ),
                             ),
@@ -263,12 +271,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                           ],
                         ),
                         const SizedBox(height: 32),
-                        // Genre Wheel Container - Invisível
-                        Container(
+                        // Genre Wheel - Completamente Invisível
+                        SizedBox(
                           height: isMobile ? 400 : 450,
-                          decoration: const BoxDecoration(
-                            color: Colors.transparent,
-                          ),
                           child: GenreWheel(
                             genres: genres,
                             selectedGenre: selectedGenre,
@@ -306,6 +311,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -340,18 +346,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                       color: AppColors.interactive.withOpacity(0.3),
                       width: 2,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.interactive.withOpacity(0.2),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
-                      ),
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.1),
-                        blurRadius: 25,
-                        offset: const Offset(0, 12),
-                      ),
-                    ],
+                    // Sombras removidas para visual mais limpo
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(14),
@@ -413,18 +408,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                           children: [
                             Container(
                               padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: AppColors.backgroundDark,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: AppColors.primary.withOpacity(0.3),
-                                  width: 1,
-                                ),
+                              decoration: const BoxDecoration(
+                                color: Colors.transparent, // Invisível
                               ),
                               child: Icon(
                                 Icons.calendar_today,
                                 size: 16,
-                                color: AppColors.primary, // Amarelo no fundo preto
+                                color: AppColors.primary, // Amarelo visível
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -445,13 +435,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                         children: [
                           Container(
                             padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: AppColors.backgroundDark,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: AppColors.primary.withOpacity(0.3),
-                                width: 1,
-                              ),
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent, // Invisível
                             ),
                             child: Icon(
                               Icons.star,
@@ -486,23 +471,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                         const SizedBox(height: 16),
                       ],
                       
-                      // Action Hint
+                      // Action Hint - Container Invisível
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.backgroundDark,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.primary.withOpacity(0.3),
-                            width: 1,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.2),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent, // Invisível
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -510,13 +483,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                             Icon(
                               Icons.touch_app,
                               size: 16,
-                              color: AppColors.primary, // Amarelo no fundo preto
+                              color: AppColors.primary, // Amarelo visível
                             ),
                             const SizedBox(width: 6),
                             Text(
                               'Toque para mais detalhes',
                               style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.primary, // Amarelo no fundo preto
+                                color: AppColors.primary, // Amarelo visível
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
