@@ -1,0 +1,32 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="#DC143C" stroke="#0D0D0D" stroke-width="10"/>
+  
+  <!-- Film Reel Holes -->
+  <circle cx="100" cy="40" r="12" fill="#0D0D0D"/>
+  <circle cx="140" cy="70" r="12" fill="#0D0D0D"/>
+  <circle cx="140" cy="130" r="12" fill="#0D0D0D"/>
+  <circle cx="100" cy="160" r="12" fill="#0D0D0D"/>
+  <circle cx="60" cy="130" r="12" fill="#0D0D0D"/>
+  <circle cx="60" cy="70" r="12" fill="#0D0D0D"/>
+  
+  <!-- Center Film Strip -->
+  <rect x="70" y="85" width="60" height="30" rx="3" fill="#FFD700"/>
+  
+  <!-- Play Button -->
+  <polygon points="90,95 90,105 110,100" fill="#0D0D0D"/>
+  
+  <!-- Film Strip Perforations -->
+  <rect x="72" y="87" width="3" height="3" fill="#0D0D0D"/>
+  <rect x="77" y="87" width="3" height="3" fill="#0D0D0D"/>
+  <rect x="120" y="87" width="3" height="3" fill="#0D0D0D"/>
+  <rect x="125" y="87" width="3" height="3" fill="#0D0D0D"/>
+  
+  <rect x="72" y="110" width="3" height="3" fill="#0D0D0D"/>
+  <rect x="77" y="110" width="3" height="3" fill="#0D0D0D"/>
+  <rect x="120" y="110" width="3" height="3" fill="#0D0D0D"/>
+  <rect x="125" y="110" width="3" height="3" fill="#0D0D0D"/>
+  
+  <!-- Base -->
+  <rect x="20" y="185" width="160" height="10" rx="5" fill="#0D0D0D"/>
+</svg>

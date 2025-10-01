@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'theme/app_theme.dart';
 import 'constants/app_constants.dart';
 import 'utils/app_utils.dart' as AppUtils;
@@ -129,9 +130,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                       children: [
                         Row(
                           children: [
-                            // Modern Cinema Icon
+                            // RollFlix Logo
                             Container(
-                              padding: const EdgeInsets.all(16),
+                              width: isMobile ? 60 : 70,
+                              height: isMobile ? 60 : 70,
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 gradient: AppColors.glassGradient,
                                 borderRadius: BorderRadius.circular(20),
@@ -147,10 +150,22 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                                   ),
                                 ],
                               ),
-                              child: Icon(
-                                Icons.movie_filter,
-                                color: AppColors.backgroundDark, // Preto no fundo dourado
-                                size: 32,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: SvgPicture.asset(
+                                  'assets/images/rollflix_logo.svg',
+                                  fit: BoxFit.contain,
+                                  // ignore: deprecated_member_use
+                                  color: null, // Preserve original colors
+                                  placeholderBuilder: (context) {
+                                    // Fallback para ícone se a imagem não for encontrada
+                                    return Icon(
+                                      Icons.movie_filter,
+                                      color: AppColors.backgroundDark,
+                                      size: 32,
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                             const SizedBox(width: 20),
