@@ -475,7 +475,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: const BoxDecoration(
-                          color: Colors.transparent, // Invisível
+                          color: Colors.yellow,
+                          borderRadius: BorderRadius.all(Radius.circular(12)), // Invisível
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -483,13 +484,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                             Icon(
                               Icons.touch_app,
                               size: 16,
-                              color: AppColors.primary, // Amarelo visível
+                              color: AppColors.backgroundDark, // Preto visível
                             ),
                             const SizedBox(width: 6),
                             Text(
                               'Toque para mais detalhes',
                               style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.primary, // Amarelo visível
+                                color: AppColors.backgroundDark, // Preto visível
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
