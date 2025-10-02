@@ -3,6 +3,8 @@ import 'theme/app_theme.dart';
 import 'constants/app_constants.dart';
 import 'utils/app_utils.dart' as AppUtils;
 import 'models/movie.dart';
+import 'models/tv_show.dart';
+import 'services/movie_service.dart';
 import 'screens/movie_details_screen.dart';
 import 'screens/search_screen.dart';
 import 'widgets/genre_wheel.dart';
@@ -42,6 +44,24 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   late final MovieController _movieController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // Variáveis para controle do toggle filme/série
+  bool _isSeriesMode = false;
+  
+  // Filme ou série selecionada
+  Movie? _selectedMovie;
+  TVShow? _selectedTVShow;
+  
+  // Status de carregamento
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  // Gêneros dinâmicos baseados no modo
+  List<String> get currentGenres => _isSeriesMode 
+      ? MovieService.getTVGenres() 
+      : AppConstants.movieGenres;
+  
+  String? _selectedGenre;
+
   final List<String> genres = AppConstants.movieGenres;
 
   @override
@@ -57,10 +77,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       
       _movieController.preloadData();
       
-      // Seleciona automaticamente o primeiro gênero ("Ação") para permitir rolar filme imediatamente
-      if (genres.isNotEmpty) {
-        _movieController.selectGenre(genres.first);
-        debugPrint('Gênero inicial selecionado automaticamente: ${genres.first}');
+      // Seleciona automaticamente o primeiro gênero do modo atual
+      if (currentGenres.isNotEmpty) {
+        _selectedGenre = currentGenres.first;
+        if (!_isSeriesMode) {
+          _movieController.selectGenre(currentGenres.first);
+        }
+        debugPrint('Gênero inicial selecionado automaticamente: ${currentGenres.first}');
       }
     });
   }
@@ -86,28 +109,89 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     }
   }
 
-  /// Método simplificado para sortear filme
-  Future<void> _handleRollMovie() async {
-    if (!_movieController.canRollMovie) {
-      // Como o gênero já é selecionado automaticamente, este caso não deveria ocorrer
-      AppSnackBar.showInfo(context, 'Aguarde, carregando gêneros...');
+  /// Método para alternar entre filmes e séries
+  void _toggleContentMode() {
+    setState(() {
+      _isSeriesMode = !_isSeriesMode;
+      _selectedMovie = null;
+      _selectedTVShow = null;
+      _selectedGenre = null;
+      _errorMessage = null;
+    });
+    
+    // Auto-seleciona o primeiro gênero do novo modo
+    if (currentGenres.isNotEmpty) {
+      _selectedGenre = currentGenres.first;
+    }
+  }
+
+  /// Método unificado para sortear filmes ou séries
+  Future<void> _handleRollContent() async {
+    if (_selectedGenre == null) {
+      AppSnackBar.showInfo(context, 'Selecione um gênero primeiro');
       return;
     }
 
-    debugPrint('=== INICIANDO SORTEIO ===');
-    debugPrint('Gênero atual: ${_movieController.selectedGenre}');
-    debugPrint('Filme atual: ${_movieController.selectedMovie?.title ?? "nenhum"}');
-    debugPrint('Contador atual: ${_movieController.movieCount}');
-    
-    await _movieController.rollMovie();
-    
-    // Feedback de sucesso
-    if (_movieController.selectedMovie != null) {
-      debugPrint('=== SORTEIO CONCLUÍDO ===');
-      debugPrint('Novo filme: ${_movieController.selectedMovie!.title}');
-      debugPrint('Novo contador: ${_movieController.movieCount}');
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      if (_isSeriesMode) {
+        final tvShows = await MovieService.getTVShowsByGenre(_selectedGenre!);
+        if (tvShows.isNotEmpty) {
+          setState(() {
+            _selectedTVShow = tvShows[DateTime.now().millisecondsSinceEpoch % tvShows.length];
+            _selectedMovie = null;
+          });
+          animateMovieCard();
+        } else {
+          setState(() {
+            _errorMessage = 'Nenhuma série encontrada para este gênero';
+          });
+        }
+      } else {
+        // Usa o método existente do controller para filmes
+        if (_movieController.canRollMovie || _selectedGenre != _movieController.selectedGenre) {
+          _movieController.selectGenre(_selectedGenre!);
+          await _movieController.rollMovie();
+          setState(() {
+            _selectedMovie = _movieController.selectedMovie;
+            _selectedTVShow = null;
+          });
+        }
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Erro ao buscar ${_isSeriesMode ? 'série' : 'filme'}: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
+
+  /// Obtém as cores baseadas no modo atual
+  LinearGradient get currentGradient => _isSeriesMode 
+      ? const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF6A1B9A), // Roxo médio
+            Color(0xFF8E24AA), // Roxo vibrante
+            Color(0xFFAB47BC), // Roxo claro
+          ],
+        )
+      : AppColors.cinemaGradient; // Amarelo/dourado padrão
+
+  Color get currentAccentColor => _isSeriesMode 
+      ? const Color(0xFF8E24AA) // Roxo vibrante
+      : AppColors.primary; // Dourado original
+
+  String get currentContentType => _isSeriesMode ? 'Série' : 'Filme';
+  String get currentModeLabel => _isSeriesMode ? 'Séries' : 'Filmes';
 
   @override
   Widget build(BuildContext context) {
@@ -162,8 +246,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       ),
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(
-            gradient: AppColors.cinemaGradient,
+          decoration: BoxDecoration(
+            gradient: currentGradient,
           ),
           child: SafeArea(
             child: Padding(
@@ -183,8 +267,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         children: [
           // Header do Drawer
           DrawerHeader(
-            decoration: const BoxDecoration(
-              gradient: AppColors.cinemaGradient,
+            decoration: BoxDecoration(
+              gradient: currentGradient,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -431,7 +515,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         ),
         const SizedBox(height: 8),
         SafeText(
-          'Roll and Chill',
+          'Roll and Chill • $currentModeLabel',
           style: AppTextStyles.bodyLarge.copyWith(
             color: AppColors.textPrimary.withOpacity(0.9),
             fontWeight: FontWeight.w400,
@@ -459,9 +543,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           children: [
             _buildGenreSelection(isMobile),
             const SizedBox(height: 24),
-            _buildActionButton(),
+            _buildActionButtons(isMobile),
             const SizedBox(height: 24),
-            if (_movieController.hasMovie) _buildMovieCard(context, isMobile),
+            if (_selectedMovie != null || _selectedTVShow != null) 
+              _buildContentCard(context, isMobile),
+            if (_errorMessage != null) _buildErrorMessage(),
           ],
         ),
       ),
@@ -483,10 +569,17 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             child: SizedBox(
               height: isMobile ? 400 : 450,
               child: GenreWheel(
-                genres: genres,
-                selectedGenre: _movieController.selectedGenre,
-                onGenreSelected: _movieController.selectGenre,
+                genres: currentGenres,
+                selectedGenre: _selectedGenre,
+                onGenreSelected: (genre) {
+                  setState(() {
+                    _selectedGenre = genre;
+                  });
+                },
                 onRandomSpin: () {},
+                accentColor: _isSeriesMode ? currentAccentColor : null,
+                onToggleMode: _toggleContentMode,
+                isSeriesMode: _isSeriesMode,
               ),
             ),
           ),
@@ -506,14 +599,14 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           ),
           child: Icon(
             Icons.casino,
-            color: AppColors.primary,
+            color: currentAccentColor,
             size: 24,
           ),
         ),
         const SizedBox(width: 16),
         Flexible(
           child: SafeText(
-            'Escolha um Gênero',
+            'Escolha um Gênero de $currentContentType',
             style: (isMobile 
               ? AppTextStyles.headlineSmall
               : AppTextStyles.headlineMedium).copyWith(
@@ -526,17 +619,153 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     );
   }
 
-  Widget _buildActionButton() {
+  Widget _buildActionButtons(bool isMobile) {
     return AppButton(
-      onPressed: _movieController.canRollMovie ? _handleRollMovie : null,
-      text: _movieController.isLoading 
+      onPressed: _selectedGenre != null && !_isLoading ? _handleRollContent : null,
+      text: _isLoading 
           ? 'Rolando...' 
-          : (_movieController.hasMovie ? 'Rolar Novo Filme' : 'Rolar Filme'),
-      isLoading: _movieController.isLoading,
-      icon: _movieController.isLoading ? null : Icons.local_movies,
+          : (_selectedMovie != null || _selectedTVShow != null 
+              ? 'Rolar Nov${_isSeriesMode ? 'a Série' : 'o Filme'}' 
+              : 'Rolar ${_isSeriesMode ? 'Série' : 'Filme'}'),
+      isLoading: _isLoading,
+      icon: _isLoading ? null : (_isSeriesMode ? Icons.tv : Icons.local_movies),
+      backgroundColor: currentAccentColor,
     );
-  }  Widget _buildMovieCard(BuildContext context, bool isMobile) {
-    final movie = _movieController.selectedMovie!;
+  }
+
+  Widget _buildErrorMessage() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.red.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.error_outline,
+            color: Colors.red,
+            size: 24,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SafeText(
+              _errorMessage!,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContentCard(BuildContext context, bool isMobile) {
+    if (_isSeriesMode && _selectedTVShow != null) {
+      return _buildTVShowCard(context, isMobile);
+    } else if (!_isSeriesMode && _selectedMovie != null) {
+      return _buildMovieCard(context, isMobile);
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildTVShowCard(BuildContext context, bool isMobile) {
+    final tvShow = _selectedTVShow!;
+    
+    return OptimizedAnimatedBuilder(
+      animation: movieCardAnimation,
+      builder: (context, animationValue) {
+        return Transform.scale(
+          scale: animationValue,
+          child: AppCard(
+            onTap: () {
+              // TODO: Criar tela de detalhes da série
+              AppSnackBar.showInfo(context, 'Tela de detalhes da série em desenvolvimento');
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Poster da série
+                if (tvShow.posterPath.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: OptimizedNetworkImage(
+                      imageUrl: tvShow.fullPosterUrl,
+                      height: isMobile ? 300 : 400,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                
+                // Informações da série
+                SafeText(
+                  tvShow.name,
+                  style: AppTextStyles.headlineSmall.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      color: currentAccentColor,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    SafeText(
+                      tvShow.year.isNotEmpty ? tvShow.year : 'Data não disponível',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Icon(
+                      Icons.star,
+                      color: currentAccentColor,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    SafeText(
+                      tvShow.voteAverage.toStringAsFixed(1),
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+                
+                if (tvShow.overview.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  SafeText(
+                    tvShow.overview,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMovieCard(BuildContext context, bool isMobile) {
+    final movie = _selectedMovie!;
     
     return OptimizedAnimatedBuilder(
       animation: movieCardAnimation,

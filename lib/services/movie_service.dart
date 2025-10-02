@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 import '../constants/app_constants.dart';
 import '../models/movie.dart';
+import '../models/tv_show.dart';
 import '../models/cast.dart';
 import '../models/watch_providers.dart';
 import '../models/movie_videos.dart';
@@ -34,6 +35,26 @@ class MovieService {
     'Suspense': [53], // Thriller
     'Guerra': [10752], // War
     'Western': [37], // Western
+  };
+
+  // Gêneros específicos para séries de TV
+  static const Map<String, List<int>> _tvGenreMap = {
+    'Ação & Aventura': [10759], // Action & Adventure
+    'Animação': [16], // Animation
+    'Comédia': [35], // Comedy
+    'Crime': [80], // Crime
+    'Documentário': [99], // Documentary
+    'Drama': [18], // Drama
+    'Família': [10751], // Family
+    'Infantil': [10762], // Kids
+    'Mistério': [9648], // Mystery
+    'Novela': [10766], // Soap
+    'Ficção Científica & Fantasia': [10765], // Sci-Fi & Fantasy
+    'Talk Show': [10767], // Talk
+    'Guerra & Política': [10768], // War & Politics
+    'Western': [37], // Western
+    'Reality': [10764], // Reality
+    'Notícias': [10763], // News
   };
 
   static Future<List<Movie>> getMoviesByGenre(String genre) async {
@@ -597,6 +618,179 @@ class MovieService {
       }
     } catch (e) {
       print('Erro na pesquisa: $e');
+      return null;
+    }
+  }
+
+  // Métodos para Séries de TV
+
+  static Future<List<TVShow>> getTVShowsByGenre(String genre) async {
+    try {
+      final genreIds = _tvGenreMap[genre];
+      if (genreIds == null || genreIds.isEmpty) {
+        throw Exception('Gênero não encontrado');
+      }
+
+      // Gera uma página aleatória entre 1 e 5 para mais variedade
+      final randomPage = Random().nextInt(5) + 1;
+      
+      final url = Uri.parse(
+        '$_baseUrl/discover/tv?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=pt-BR&sort_by=popularity.desc&page=$randomPage'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
+        
+        // Filtra séries que tenham título em português ou pelo menos um título válido
+        final validTVShows = tvShowsResponse.results
+            .where((tvshow) => tvshow.name.isNotEmpty && tvshow.name != 'Título não disponível')
+            .toList();
+
+        return validTVShows;
+      } else {
+        throw Exception('Erro ao buscar séries: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro no TVService: $e');
+      throw Exception('Falha ao buscar séries: $e');
+    }
+  }
+
+  static Future<TVShow?> getRandomTVShow() async {
+    try {
+      final genres = _tvGenreMap.keys.toList();
+      final randomGenre = genres[Random().nextInt(genres.length)];
+      
+      final tvShows = await getTVShowsByGenre(randomGenre);
+      
+      if (tvShows.isNotEmpty) {
+        final randomIndex = Random().nextInt(tvShows.length);
+        return tvShows[randomIndex];
+      }
+      
+      return null;
+    } catch (e) {
+      print('Erro ao buscar série aleatória: $e');
+      return null;
+    }
+  }
+
+  static List<String> getTVGenres() {
+    return _tvGenreMap.keys.toList();
+  }
+
+  static Future<List<TVShow>?> getPopularTVShows({int page = 1}) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/tv/popular?api_key=$_apiKey&language=pt-BR&page=$page'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
+        return tvShowsResponse.results;
+      } else {
+        throw Exception('Erro ao buscar séries populares: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar séries populares: $e');
+      return null;
+    }
+  }
+
+  static Future<List<TVShow>?> getTopRatedTVShows({int page = 1}) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/tv/top_rated?api_key=$_apiKey&language=pt-BR&page=$page'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
+        return tvShowsResponse.results;
+      } else {
+        throw Exception('Erro ao buscar séries mais bem avaliadas: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar séries mais bem avaliadas: $e');
+      return null;
+    }
+  }
+
+  static Future<List<TVShow>?> getOnTheAirTVShows({int page = 1}) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/tv/on_the_air?api_key=$_apiKey&language=pt-BR&page=$page'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
+        return tvShowsResponse.results;
+      } else {
+        throw Exception('Erro ao buscar séries no ar: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar séries no ar: $e');
+      return null;
+    }
+  }
+
+  static Future<List<TVShow>?> searchTVShows(String query, {int page = 1}) async {
+    if (query.trim().isEmpty) return [];
+    
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/search/tv?api_key=$_apiKey&language=pt-BR&query=${Uri.encodeComponent(query)}&page=$page'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
+        return tvShowsResponse.results;
+      } else {
+        throw Exception('Erro na pesquisa de séries: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro na pesquisa de séries: $e');
+      return null;
+    }
+  }
+
+  static Future<List<TVShow>?> discoverTVShows({
+    List<int>? genreIds,
+    int page = 1,
+    String sortBy = 'popularity.desc',
+  }) async {
+    try {
+      var url = '$_baseUrl/discover/tv?api_key=$_apiKey&language=pt-BR&sort_by=$sortBy&page=$page';
+      
+      if (genreIds != null && genreIds.isNotEmpty) {
+        url += '&with_genres=${genreIds.join(',')}';
+      }
+
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
+        return tvShowsResponse.results;
+      } else {
+        throw Exception('Erro ao descobrir séries: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao descobrir séries: $e');
       return null;
     }
   }

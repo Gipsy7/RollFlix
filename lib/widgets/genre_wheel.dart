@@ -7,6 +7,9 @@ class GenreWheel extends StatefulWidget {
   final String? selectedGenre;
   final Function(String) onGenreSelected;
   final VoidCallback? onRandomSpin;
+  final Color? accentColor;
+  final VoidCallback? onToggleMode;
+  final bool isSeriesMode;
 
   const GenreWheel({
     super.key,
@@ -14,6 +17,9 @@ class GenreWheel extends StatefulWidget {
     this.selectedGenre,
     required this.onGenreSelected,
     this.onRandomSpin,
+    this.accentColor,
+    this.onToggleMode,
+    this.isSeriesMode = false,
   });
 
   @override
@@ -31,6 +37,9 @@ class _GenreWheelState extends State<GenreWheel>
   double _velocity = 0.0;
   bool _isSpinning = false;
   bool _isPendulumActive = false;
+
+  // Getter para cor primária dinâmica
+  Color get primaryColor => widget.accentColor ?? AppColors.primary;
 
   void _setInitialPosition() {
     if (widget.selectedGenre != null && widget.genres.isNotEmpty) {
@@ -276,47 +285,84 @@ class _GenreWheelState extends State<GenreWheel>
                 genres: widget.genres,
                 scrollOffset: _currentScroll,
                 selectedGenre: widget.selectedGenre,
+                accentColor: primaryColor,
               ),
             ),
           ),
           
-          // Botão de sorteio
+          // Botões de ação
           Positioned(
             bottom: 20,
             right: 20,
-            child: GestureDetector(
-              onTap: _spinFilmReel,
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
-                    ),
-                  ],
-                ),
-                child: _isSpinning
-                    ? Center(
-                        child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.backgroundDark,
-                            ),
-                            strokeWidth: 3,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Botão de toggle filme/série
+                if (widget.onToggleMode != null)
+                  GestureDetector(
+                    onTap: widget.onToggleMode,
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: primaryColor.withOpacity(0.8),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: primaryColor.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
                           ),
-                        ),
-                      )
-                    : Icon(
-                        Icons.shuffle,
-                        color: AppColors.backgroundDark,
-                        size: 30,
+                        ],
                       ),
-              ),
+                      child: Icon(
+                        widget.isSeriesMode ? Icons.movie : Icons.tv,
+                        color: AppColors.backgroundDark,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                
+                if (widget.onToggleMode != null) const SizedBox(width: 12),
+                
+                // Botão de sorteio de gênero
+                GestureDetector(
+                  onTap: _spinFilmReel,
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: primaryColor.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: _isSpinning
+                        ? Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.backgroundDark,
+                                ),
+                                strokeWidth: 3,
+                              ),
+                            ),
+                          )
+                        : Icon(
+                            Icons.shuffle,
+                            color: AppColors.backgroundDark,
+                            size: 30,
+                          ),
+                  ),
+                ),
+              ],
             ),
           ),
           
@@ -326,11 +372,11 @@ class _GenreWheelState extends State<GenreWheel>
               width: 4,
               height: 120,
               decoration: BoxDecoration(
-                color: AppColors.secondary,
+                color: primaryColor.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(2),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.secondary.withOpacity(0.5),
+                    color: primaryColor.withOpacity(0.5),
                     blurRadius: 8,
                     offset: const Offset(0, 0),
                   ),
@@ -348,11 +394,13 @@ class FilmReelPainter extends CustomPainter {
   final List<String> genres;
   final double scrollOffset;
   final String? selectedGenre;
+  final Color accentColor;
 
   FilmReelPainter({
     required this.genres,
     required this.scrollOffset,
     this.selectedGenre,
+    required this.accentColor,
   });
 
   @override
@@ -387,7 +435,7 @@ class FilmReelPainter extends CustomPainter {
     
     // Bordas superior e inferior do filme - douradas
     final borderPaint = Paint()
-      ..color = AppColors.primary.withOpacity(0.6)
+      ..color = accentColor.withOpacity(0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
     
@@ -448,10 +496,14 @@ class FilmReelPainter extends CustomPainter {
   void _drawGenreCircle(Canvas canvas, Offset center, double radius, String genre, bool isHighlighted) {
     // Círculo do gênero com tema cinema clássico
     if (isHighlighted) {
-      // Círculo destacado com gradiente dourado
+      // Círculo destacado com gradiente
       final rect = Rect.fromCircle(center: center, radius: radius);
       final gradient = LinearGradient(
-        colors: [AppColors.primaryDark, AppColors.primary, AppColors.primaryLight],
+        colors: [
+          accentColor.withOpacity(0.8), 
+          accentColor, 
+          accentColor.withOpacity(0.9)
+        ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       );
@@ -469,28 +521,26 @@ class FilmReelPainter extends CustomPainter {
       
       canvas.drawCircle(center, radius, borderPaint);
       
-      // Efeito de brilho dourado
+      // Efeito de brilho com cor do tema
       final glowPaint = Paint()
-        ..color = AppColors.primary.withOpacity(0.5)
+        ..color = accentColor.withOpacity(0.5)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;
-      
+
       canvas.drawCircle(center, radius + 2, glowPaint);
     } else {
       // Círculo normal com tema escuro
       final circlePaint = Paint()
         ..color = AppColors.surfaceDark.withOpacity(0.9)
         ..style = PaintingStyle.fill;
-      
+
       canvas.drawCircle(center, radius, circlePaint);
-      
-      // Borda dourada sutil
+
+      // Borda sutil com cor do tema
       final borderPaint = Paint()
-        ..color = AppColors.primary.withOpacity(0.3)
+        ..color = accentColor.withOpacity(0.3)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
-      
-      canvas.drawCircle(center, radius, borderPaint);
+        ..strokeWidth = 2;      canvas.drawCircle(center, radius, borderPaint);
     }
     
     // Texto do gênero seguindo as regras de cores
@@ -554,9 +604,9 @@ class FilmReelPainter extends CustomPainter {
           holePaint,
         );
         
-        // Borda dourada dos furos
+        // Borda com cor do tema para furos superiores
         final borderPaint = Paint()
-          ..color = AppColors.primary.withOpacity(0.4)
+          ..color = accentColor.withOpacity(0.4)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1;
         
@@ -578,9 +628,9 @@ class FilmReelPainter extends CustomPainter {
           holePaint,
         );
         
-        // Borda dourada dos furos
+        // Borda com cor do tema para furos inferiores
         final borderPaint = Paint()
-          ..color = AppColors.primary.withOpacity(0.4)
+          ..color = accentColor.withOpacity(0.4)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1;
         

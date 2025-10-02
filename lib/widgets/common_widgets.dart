@@ -68,7 +68,10 @@ class AppButton extends StatelessWidget {
       width: width,
       height: height ?? 56,
       decoration: BoxDecoration(
-        gradient: isOutlined ? null : AppColors.primaryGradient,
+        gradient: backgroundColor != null 
+          ? null 
+          : (isOutlined ? null : AppColors.primaryGradient),
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(borderRadius),
         border: isOutlined 
           ? Border.all(color: AppColors.primary, width: 2)
