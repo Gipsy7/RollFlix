@@ -54,7 +54,6 @@ class MovieService {
     'Guerra & Política': [10768], // War & Politics
     'Western': [37], // Western
     'Reality': [10764], // Reality
-    'Notícias': [10763], // News
   };
 
   static Future<List<Movie>> getMoviesByGenre(String genre) async {

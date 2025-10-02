@@ -1085,13 +1085,6 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(width: 16),
-        SafeText(
-          '(${tvShow.voteCount} avaliações)',
-          style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.textSecondary.withOpacity(0.8),
-          ),
-        ),
       ],
     );
   }
