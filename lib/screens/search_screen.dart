@@ -27,16 +27,51 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   bool _isLoadingPopular = false;
   bool _isLoadingUpcoming = false;
   
+  // Variáveis de paginação
+  bool _isLoadingMore = false;
+  bool _hasMoreData = true;
+  int _currentSearchPage = 1;
+  int _currentPopularPage = 1;
+  int _currentUpcomingPage = 1;
+  String _currentSearchQuery = '';
+  
   String? _selectedGenre;
   String _currentFilter = 'popular'; // popular, upcoming, heroes, search
   
   late TabController _tabController;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this); // Apenas "Em Alta" e "Novidades"
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+    
+    // Listener para mudanças de tab
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        _resetPagination();
+        if (_tabController.index == 0) {
+          _currentFilter = 'popular';
+        } else {
+          _currentFilter = 'upcoming';
+        }
+      }
+    });
+    
     _loadInitialData();
+  }
+
+  // Reset da paginação
+  void _resetPagination() {
+    setState(() {
+      _currentSearchPage = 1;
+      _currentPopularPage = 1;
+      _currentUpcomingPage = 1;
+      _hasMoreData = true;
+      _isLoadingMore = false;
+    });
   }
 
   @override
@@ -44,7 +79,75 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
     _searchController.dispose();
     _searchFocusNode.dispose();
     _tabController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  // Listener para detectar quando o usuário chega ao final da lista
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (!_isLoadingMore && _hasMoreData) {
+        _loadMoreData();
+      }
+    }
+  }
+
+  // Carrega mais dados baseado no filtro atual
+  Future<void> _loadMoreData() async {
+    if (_isLoadingMore || !_hasMoreData) return;
+
+    setState(() => _isLoadingMore = true);
+
+    try {
+      List<Movie> newMovies = [];
+      
+      switch (_currentFilter) {
+        case 'popular':
+          _currentPopularPage++;
+          final movies = await MovieService.getPopularMovies(page: _currentPopularPage);
+          if (movies != null && movies.isNotEmpty) {
+            newMovies = movies;
+            _popularMovies.addAll(newMovies);
+          } else {
+            _hasMoreData = false;
+          }
+          break;
+          
+        case 'upcoming':
+          _currentUpcomingPage++;
+          final movies = await MovieService.getUpcomingMovies(page: _currentUpcomingPage);
+          if (movies != null && movies.isNotEmpty) {
+            newMovies = movies;
+            _upcomingMovies.addAll(newMovies);
+          } else {
+            _hasMoreData = false;
+          }
+          break;
+          
+        case 'search':
+          if (_currentSearchQuery.isNotEmpty) {
+            _currentSearchPage++;
+            final movies = await MovieService.searchMovies(_currentSearchQuery, page: _currentSearchPage);
+            if (movies != null && movies.isNotEmpty) {
+              newMovies = movies;
+              _searchResults.addAll(newMovies);
+            } else {
+              _hasMoreData = false;
+            }
+          }
+          break;
+      }
+      
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      debugPrint('Erro ao carregar mais dados: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingMore = false);
+      }
+    }
   }
 
   Future<void> _loadInitialData() async {
@@ -94,8 +197,19 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       setState(() {
         _searchResults = [];
         _currentFilter = 'popular';
+        _currentSearchQuery = '';
+        _currentSearchPage = 1;
+        _hasMoreData = true;
       });
       return;
+    }
+
+    // Reset paginação para nova pesquisa
+    if (query != _currentSearchQuery) {
+      _currentSearchPage = 1;
+      _currentSearchQuery = query;
+      _searchResults.clear();
+      _hasMoreData = true;
     }
 
     setState(() {
@@ -104,9 +218,16 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
     });
 
     try {
-      final results = await MovieService.searchMovies(query);
+      final results = await MovieService.searchMovies(query, page: _currentSearchPage);
       if (results != null && mounted) {
-        setState(() => _searchResults = results);
+        setState(() {
+          if (_currentSearchPage == 1) {
+            _searchResults = results;
+          } else {
+            _searchResults.addAll(results);
+          }
+          _hasMoreData = results.isNotEmpty;
+        });
       }
     } catch (e) {
       debugPrint('Erro na pesquisa: $e');
@@ -131,9 +252,17 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       setState(() {
         _currentFilter = 'popular';
         _searchResults = [];
+        _currentSearchQuery = '';
+        _currentSearchPage = 1;
+        _hasMoreData = true;
       });
       return;
     }
+    
+    // Reset paginação para novo filtro
+    _currentSearchPage = 1;
+    _currentSearchQuery = genre;
+    _hasMoreData = true;
     
     setState(() => _isSearching = true);
     
@@ -492,10 +621,80 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       );
     }
 
-    return MovieGridView(
-      movies: movies,
-      onMovieTap: _onMovieTap,
-      isLoading: false,
+    return Column(
+      children: [
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = ResponsiveUtils.getResponsiveGridColumns(context);
+              final spacing = ResponsiveUtils.isMobile(context) 
+                ? AppConstants.spacingM 
+                : AppConstants.spacingL;
+              
+              // Aspect ratio responsivo para evitar overflow
+              double aspectRatio;
+              if (ResponsiveUtils.isMobile(context)) {
+                aspectRatio = 0.75; // Mobile: mais quadrado
+              } else if (ResponsiveUtils.isTablet(context)) {
+                aspectRatio = 0.70; // Tablet: intermediário
+              } else {
+                aspectRatio = 0.67; // Desktop: mais retangular
+              }
+
+              return GridView.builder(
+                controller: _scrollController,
+                padding: EdgeInsets.all(spacing),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: columns,
+                  crossAxisSpacing: spacing,
+                  mainAxisSpacing: spacing,
+                  childAspectRatio: aspectRatio,
+                ),
+                itemCount: movies.length + (_isLoadingMore ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index >= movies.length) {
+                    // Item de loading no final da lista
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: OptimizedLoadingIndicator(size: 24),
+                      ),
+                    );
+                  }
+                  
+                  return MovieCard(
+                    movie: movies[index],
+                    onTap: () => _onMovieTap(movies[index]),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+        
+        // Indicador de carregamento fixo na parte inferior
+        if (_isLoadingMore && movies.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 12),
+                SafeText(
+                  'Carregando mais filmes...',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }
