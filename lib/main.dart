@@ -179,15 +179,15 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF6A1B9A), // Roxo médio
-            Color(0xFF8E24AA), // Roxo vibrante
-            Color(0xFFAB47BC), // Roxo claro
+            Color.fromARGB(255, 0, 0, 0), // Roxo médio
+            Color.fromARGB(255, 45, 3, 56), // Roxo vibrante
+            Color.fromARGB(255, 255, 0, 128), // Roxo claro
           ],
         )
       : AppColors.cinemaGradient; // Amarelo/dourado padrão
 
   Color get currentAccentColor => _isSeriesMode 
-      ? const Color(0xFF8E24AA) // Roxo vibrante
+      ? const Color.fromARGB(255, 240, 43, 109) // Roxo vibrante
       : AppColors.primary; // Dourado original
 
   String get currentContentType => _isSeriesMode ? 'Série' : 'Filme';
@@ -206,9 +206,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.backgroundDark.withOpacity(0.95),
-              AppColors.backgroundDark.withOpacity(0.98),
-              AppColors.backgroundDark,
+              const Color.fromARGB(255, 32, 31, 31).withOpacity(0.95),
+              const Color.fromARGB(255, 29, 26, 26).withOpacity(0.98),
+              const Color.fromARGB(211, 30, 31, 29),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
@@ -687,75 +687,15 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               // TODO: Criar tela de detalhes da série
               AppSnackBar.showInfo(context, 'Tela de detalhes da série em desenvolvimento');
             },
-            child: Column(
+            padding: EdgeInsets.all(isMobile ? 20 : 28),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Poster da série
-                if (tvShow.posterPath.isNotEmpty)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: OptimizedNetworkImage(
-                      imageUrl: tvShow.fullPosterUrl,
-                      height: isMobile ? 300 : 400,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                const SizedBox(height: 16),
-                
-                // Informações da série
-                SafeText(
-                  tvShow.name,
-                  style: AppTextStyles.headlineSmall.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                _buildTVShowPoster(tvShow, isMobile),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: _buildTVShowDetails(tvShow, isMobile),
                 ),
-                const SizedBox(height: 8),
-                
-                Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      color: currentAccentColor,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    SafeText(
-                      tvShow.year.isNotEmpty ? tvShow.year : 'Data não disponível',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Icon(
-                      Icons.star,
-                      color: currentAccentColor,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    SafeText(
-                      tvShow.voteAverage.toStringAsFixed(1),
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-                
-                if (tvShow.overview.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  SafeText(
-                    tvShow.overview,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
-                      height: 1.5,
-                    ),
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
               ],
             ),
           ),
@@ -976,6 +916,222 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       decoration: const BoxDecoration(
         color: Colors.yellow,
         borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.touch_app,
+            size: 16,
+            color: AppColors.backgroundDark,
+          ),
+          const SizedBox(width: 6),
+          Flexible(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Se há pouco espaço (menos de 120px) ou é mobile, usar texto curto
+                final isMobile = ResponsiveUtils.isMobile(context);
+                final useShortText = constraints.maxWidth < 120 || isMobile;
+                return SafeText(
+                  useShortText ? 'Toque para detalhes' : 'Toque para mais detalhes',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.backgroundDark,
+                    fontWeight: FontWeight.w500,
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Métodos para TVShow (seguindo o mesmo padrão dos métodos de Movie)
+
+  Widget _buildTVShowPoster(TVShow tvShow, bool isMobile) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: AppColors.glassGradient,
+        border: Border.all(
+          color: currentAccentColor.withOpacity(0.3),
+          width: 2,
+        ),
+      ),
+      child: OptimizedNetworkImage(
+        imageUrl: tvShow.posterPath.isNotEmpty 
+            ? 'https://image.tmdb.org/t/p/w500${tvShow.posterPath}'
+            : '',
+        width: isMobile ? 100 : 120,
+        height: isMobile ? 150 : 180,
+        borderRadius: BorderRadius.circular(14),
+        errorWidget: _buildTVShowPosterFallback(),
+        placeholder: Container(
+          width: isMobile ? 100 : 120,
+          height: isMobile ? 150 : 180,
+          decoration: BoxDecoration(
+            gradient: AppColors.glassGradient,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: const OptimizedLoadingIndicator(size: 24),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTVShowPosterFallback() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: currentGradient,
+      ),
+      child: Icon(
+        Icons.tv,
+        color: AppColors.backgroundDark,
+        size: 48,
+      ),
+    );
+  }
+
+  Widget _buildTVShowDetails(TVShow tvShow, bool isMobile) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildTVShowTitle(tvShow, isMobile),
+        const SizedBox(height: 12),
+        if (tvShow.firstAirDate.isNotEmpty) ...[
+          _buildTVShowDate(tvShow),
+          const SizedBox(height: 12),
+        ],
+        _buildTVShowRating(tvShow),
+        const SizedBox(height: 16),
+        if (tvShow.overview.isNotEmpty) ...[
+          _buildTVShowOverview(tvShow, isMobile),
+          const SizedBox(height: 16),
+        ],
+        _buildTVShowCounter(),
+        const SizedBox(height: 8),
+        _buildTVShowDetailsHint(),
+      ],
+    );
+  }
+
+  Widget _buildTVShowTitle(TVShow tvShow, bool isMobile) {
+    return SafeText(
+      tvShow.name,
+      style: (isMobile 
+          ? AppTextStyles.headlineSmall
+          : AppTextStyles.headlineMedium).copyWith(
+        color: AppColors.textPrimary,
+        fontWeight: FontWeight.w600,
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildTVShowDate(TVShow tvShow) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+          child: Icon(
+            Icons.calendar_today,
+            size: 16,
+            color: currentAccentColor,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: SafeText(
+            tvShow.year.isNotEmpty ? tvShow.year : 'Data não disponível',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTVShowRating(TVShow tvShow) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+          child: Icon(
+            Icons.star,
+            size: 16,
+            color: currentAccentColor,
+          ),
+        ),
+        const SizedBox(width: 8),
+        SafeText(
+          '${tvShow.voteAverage.toStringAsFixed(1)}/10',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(width: 16),
+        SafeText(
+          '(${tvShow.voteCount} avaliações)',
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.textSecondary.withOpacity(0.8),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTVShowOverview(TVShow tvShow, bool isMobile) {
+    return SafeText(
+      tvShow.overview,
+      style: AppTextStyles.bodyMedium.copyWith(
+        color: AppColors.textSecondary,
+        height: 1.5,
+      ),
+      maxLines: isMobile ? 4 : 3,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildTVShowCounter() {
+    // Contador dinâmico baseado no número de séries sorteadas
+    // Por enquanto, vamos usar um contador simples
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.tv,
+          size: 16,
+          color: AppColors.textSecondary,
+        ),
+        const SizedBox(width: 6),
+        SafeText(
+          'Série sorteada',
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.textSecondary,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTVShowDetailsHint() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: currentAccentColor,
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

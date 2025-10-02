@@ -302,8 +302,8 @@ class _GenreWheelState extends State<GenreWheel>
                   GestureDetector(
                     onTap: widget.onToggleMode,
                     child: Container(
-                      width: 50,
-                      height: 50,
+                      width: 60,
+                      height: 60,
                       decoration: BoxDecoration(
                         color: primaryColor.withOpacity(0.8),
                         shape: BoxShape.circle,
