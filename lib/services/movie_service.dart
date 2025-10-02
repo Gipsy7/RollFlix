@@ -513,4 +513,91 @@ class MovieService {
       return [];
     }
   }
+
+  // Métodos para a tela de pesquisa
+  static Future<List<Movie>?> getPopularMovies({int page = 1}) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/movie/popular?api_key=$_apiKey&language=pt-BR&page=$page'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final moviesResponse = MoviesResponse.fromJson(jsonData);
+        return moviesResponse.results;
+      } else {
+        throw Exception('Erro ao buscar filmes populares: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar filmes populares: $e');
+      return null;
+    }
+  }
+
+  static Future<List<Movie>?> getUpcomingMovies({int page = 1}) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/movie/upcoming?api_key=$_apiKey&language=pt-BR&page=$page'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final moviesResponse = MoviesResponse.fromJson(jsonData);
+        return moviesResponse.results;
+      } else {
+        throw Exception('Erro ao buscar novidades: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar novidades: $e');
+      return null;
+    }
+  }
+
+  static Future<List<Movie>?> getMoviesByGenres(List<int> genreIds, {int page = 1}) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/discover/movie?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=pt-BR&sort_by=popularity.desc&page=$page'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final moviesResponse = MoviesResponse.fromJson(jsonData);
+        return moviesResponse.results;
+      } else {
+        throw Exception('Erro ao buscar filmes por gêneros: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar filmes por gêneros: $e');
+      return null;
+    }
+  }
+
+  static Future<List<Movie>?> searchMovies(String query, {int page = 1}) async {
+    if (query.trim().isEmpty) return [];
+    
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/search/movie?api_key=$_apiKey&language=pt-BR&query=${Uri.encodeComponent(query)}&page=$page'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final moviesResponse = MoviesResponse.fromJson(jsonData);
+        return moviesResponse.results;
+      } else {
+        throw Exception('Erro na pesquisa: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro na pesquisa: $e');
+      return null;
+    }
+  }
 }

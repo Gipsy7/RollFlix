@@ -4,6 +4,7 @@ import 'constants/app_constants.dart';
 import 'utils/app_utils.dart' as AppUtils;
 import 'models/movie.dart';
 import 'screens/movie_details_screen.dart';
+import 'screens/search_screen.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/common_widgets.dart';
 import 'widgets/error_widgets.dart';
@@ -231,6 +232,19 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                   },
                 ),
                 _buildDrawerItem(
+                  icon: Icons.search,
+                  title: 'Pesquisar Filmes',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SearchScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildDrawerItem(
                   icon: Icons.refresh,
                   title: 'Limpar Cache',
                   onTap: () {
@@ -294,8 +308,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         ),
       ),
       onTap: onTap,
-      splashColor: AppColors.primary.withOpacity(0.1),
-      hoverColor: AppColors.primary.withOpacity(0.05),
+      splashColor: AppColors.primary.withAlpha(1),
+      hoverColor: AppColors.primary.withAlpha(05),
     );
   }
 
