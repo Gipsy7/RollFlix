@@ -1,18 +1,30 @@
-# 🎬 RollFlix - Movie Discovery App
+# 🎬 RollFlix - Movie & TV Series Discovery App
 
-**"Roll and Chill"** - Um app Flutter moderno e responsivo que ajuda você a descobrir filmes incríveis! Escolha um gênero na nossa roda de filme cinemática e deixe o app sortear um filme aleatório para você usando dados reais da **API do The Movie Database (TMDb)**.
+**"Roll and Chill"** - Um app Flutter moderno e responsivo que ajuda você a descobrir filmes e séries incríveis! Escolha um gênero na nossa roda interativa e deixe o app sortear conteúdo aleatório para você usando dados reais da **API do The Movie Database (TMDb)**.
 
 ## ✨ Funcionalidades Principais
 
-### 🎲 **Sistema de Sorteio Inteligente**
-- **18 Gêneros Disponíveis**: Ação, Aventura, Animação, Comédia, Crime, Documentário, Drama, Família, Fantasia, História, Terror, Música, Mistério, Romance, Ficção Científica, Thriller, Guerra e Faroeste
-- **Roda de Filme Interativa**: Interface visual única com estilo de rolo de filme clássico
-- **Sorteio Múltiplo**: Sistema anti-repetição que garante filmes diferentes a cada sorteio
-- **Seleção Automática**: Gênero inicial pré-selecionado para uso imediato
-- **Cache Inteligente**: Múltiplos filmes por gênero para variedade máxima
+### 🔄 **Sistema de Toggle Filme/Série**
+- **Modo Dual**: Alterne facilmente entre filmes e séries com um botão dedicado
+- **Temas Dinâmicos**: Cores douradas para filmes e roxas para séries
+- **Gêneros Específicos**: Cada modo tem sua própria lista de gêneros otimizada
+- **Interface Adaptativa**: Botões e textos se ajustam automaticamente ao modo
 
-### 🎬 **Experiência Cinematográfica**
-- **Design Cinema Clássico**: Tema escuro com gradientes dourados inspirados no cinema
+### 🎲 **Sistema de Sorteio Inteligente**
+**Para Filmes:**
+- **18 Gêneros Disponíveis**: Ação, Aventura, Animação, Comédia, Crime, Documentário, Drama, Família, Fantasia, História, Terror, Música, Mistério, Romance, Ficção Científica, Thriller, Guerra e Faroeste
+
+**Para Séries:**
+- **15 Gêneros Especializados**: Ação & Aventura, Animação, Comédia, Crime, Documentário, Drama, Família, Infantil, Mistério, Novela, Ficção Científica & Fantasia, Talk Show, Guerra & Política, Western e Reality
+
+- **Roda Interativa**: Interface visual única com estilo cinemático
+- **Sorteio Múltiplo**: Sistema anti-repetição que garante conteúdo diferente a cada sorteio
+- **Seleção Automática**: Gênero inicial pré-selecionado para uso imediato
+- **Cache Inteligente**: Múltiplos títulos por gênero para variedade máxima
+
+### 🎬 **Experiência Cinematográfica Completa**
+- **Telas de Detalhes Unificadas**: Padrão visual consistente para filmes e séries
+- **Design Cinema Clássico**: Tema escuro com gradientes dinâmicos
 - **Animações Fluidas**: Transições suaves e efeitos visuais polidos
 - **Interface Responsiva**: Adaptação perfeita para mobile, tablet e desktop
 - **Navegação Intuitiva**: Menu hamburger com acesso rápido às funcionalidades
@@ -23,12 +35,30 @@
 - **Componentes Seguros**: Widgets otimizados que previnem overflow
 - **Feedback Visual**: Indicadores de carregamento e mensagens de status
 
-### 🎭 **Informações Completas dos Filmes**
-- **Dados Detalhados**: Título, ano, nota, sinopse e poster de alta qualidade
+### 🎭 **Informações Completas dos Filmes e Séries**
+**Para Filmes:**
+- **Dados Detalhados**: Título, ano, nota, duração, gêneros e sinopse
 - **Tela de Detalhes Completa**: Sinopse, elenco, direção e informações de produção
-- **Trailers Integrados**: Assista trailers oficiais diretamente do YouTube
-- **Onde Assistir**: Links diretos para Netflix, Prime Video, Disney+ e outros serviços
-- **Elenco e Equipe**: Informações detalhadas com fotos dos atores e diretores
+- **Trilhas Sonoras**: Acesso direto ao Spotify e YouTube para músicas famosas
+- **Onde Assistir**: Seção elegante com provedores de streaming brasileiros
+
+**Para Séries:**
+- **Informações Específicas**: Nome, primeira exibição, temporadas, episódios e gêneros
+- **Detalhes Expandidos**: Sinopse, elenco, equipe técnica e informações de produção
+- **Trilhas Sonoras de Séries**: Base de dados com temas musicais icônicos
+- **Provedores de Streaming**: Onde assistir com design consistente
+
+### 🎵 **Sistema de Trilhas Sonoras**
+- **Filmes Clássicos**: The Lion King, Frozen, A Star Is Born, La La Land, The Greatest Showman
+- **Séries Populares**: Game of Thrones, Stranger Things, The Last of Us, Breaking Bad, The Mandalorian
+- **Integração Musical**: Links diretos para Spotify e YouTube
+- **Playlists Completas**: Acesso a trilhas sonoras completas
+
+### 📺 **Provedores de Streaming**
+- **Categorização Inteligente**: Streaming, Aluguel e Compra
+- **Logos Oficiais**: Imagens dos serviços (Netflix, Prime Video, Disney+, etc.)
+- **Links Diretos**: Navegação rápida para as plataformas
+- **Dados Brasileiros**: Priorizando provedores disponíveis no Brasil
 
 ## 🏗️ **Arquitetura e Tecnologias**
 
@@ -62,18 +92,34 @@ class ResponsiveUtils {
 ## 🎮 **Como Usar o App**
 
 ### **📱 Interface Principal**
-1. **Abra o RollFlix** e veja a roda de filme cinemática
-2. **Navegue pelos gêneros** arrastando horizontalmente ou usando os controles
-3. **Toque em um gênero** para selecioná-lo (ou use o sorteio automático)
-4. **Pressione "Rolar Filme"** para descobrir um filme aleatório
-5. **Explore os detalhes** tocando no card do filme
+1. **Abra o RollFlix** e veja a roda de filme/série cinemática
+2. **Escolha o modo** usando o botão "🎬 FILMES" ou "📺 SÉRIES" no topo
+3. **Navegue pelos gêneros** arrastando horizontalmente ou usando os controles
+4. **Toque em um gênero** para selecioná-lo (ou use o sorteio automático)
+5. **Pressione "SORTEAR"** para descobrir conteúdo aleatório
+6. **Explore os detalhes** tocando no card do filme/série
+
+### **🔄 Sistema de Toggle Filme/Série**
+- **Modo Filmes** (🎬): Interface dourada com 18 gêneros cinematográficos
+- **Modo Séries** (📺): Interface roxa com 15 gêneros televisivos
+- **Alternância Rápida**: Toque no botão superior para alternar modos
+- **Persistência**: O app lembra sua última escolha de modo
 
 ### **🎬 Detalhes do Filme**
 - **Sinopse Completa**: História e informações de produção
 - **Elenco Principal**: Fotos e nomes dos atores principais
 - **Equipe Técnica**: Direção, produção e equipe
-- **Trailers Oficiais**: Acesso direto ao YouTube
-- **Onde Assistir**: Links para serviços de streaming
+- **Gêneros**: Lista organizada dos gêneros do filme
+- **Trilhas Sonoras**: Links para Spotify e YouTube (filmes selecionados)
+- **Onde Assistir**: Serviços de streaming, aluguel e compra
+
+### **📺 Detalhes da Série**
+- **Informações Específicas**: Temporadas, episódios e primeira exibição
+- **Sinopse Detalhada**: História e contexto da série
+- **Elenco e Equipe**: Cast principal e equipe técnica
+- **Gêneros da TV**: Categorias específicas para séries
+- **Trilhas Sonoras**: Temas musicais icônicos de séries famosas
+- **Onde Assistir**: Provedores de streaming para séries
 
 ### **🍔 Menu Hamburger**
 - **Início**: Voltar à tela principal
@@ -105,6 +151,8 @@ class ResponsiveUtils {
 - **Images**: Posters e backdrops em alta resolução
 
 ### **🎭 Mapeamento de Gêneros TMDb**
+
+**🎬 Filmes (18 Gêneros):**
 | Gênero | ID TMDb | Categoria |
 |--------|---------|-----------|
 | 🔫 **Ação** | 28 | Action |
@@ -125,6 +173,25 @@ class ResponsiveUtils {
 | 😱 **Thriller** | 53 | Thriller |
 | ⚔️ **Guerra** | 10752 | War |
 | 🤠 **Faroeste** | 37 | Western |
+
+**📺 Séries TV (15 Gêneros):**
+| Gênero | ID TMDb | Categoria |
+|--------|---------|-----------|
+| 🔫 **Ação & Aventura** | 10759 | Action & Adventure |
+| 🎨 **Animação** | 16 | Animation |
+| 😄 **Comédia** | 35 | Comedy |
+| 🔪 **Crime** | 80 | Crime |
+| 📹 **Documentário** | 99 | Documentary |
+| 🎭 **Drama** | 18 | Drama |
+| 👨‍👩‍👧‍👦 **Família** | 10751 | Family |
+| 👶 **Infantil** | 10762 | Kids |
+| 🕵️ **Mistério** | 9648 | Mystery |
+| 💔 **Novela** | 10766 | Soap |
+| 🚀 **Ficção Científica & Fantasia** | 10765 | Sci-Fi & Fantasy |
+| 🎤 **Talk Show** | 10767 | Talk |
+| ⚔️ **Guerra & Política** | 10768 | War & Politics |
+| 🤠 **Western** | 37 | Western |
+| 📺 **Reality** | 10764 | Reality |
 
 ## 🛠️ **Stack Tecnológico**
 
@@ -155,27 +222,30 @@ lib/
 ├── controllers/        # Lógica de negócio
 │   └── movie_controller.dart
 ├── models/            # Modelos de dados
-│   ├── movie.dart
-│   ├── cast.dart
-│   ├── watch_providers.dart
-│   └── movie_videos.dart
+│   ├── movie.dart              # Modelo de filme com gêneros
+│   ├── tv_show.dart            # Modelo de série de TV
+│   ├── cast.dart               # Elenco e equipe técnica
+│   ├── watch_providers.dart    # Provedores de streaming
+│   └── movie_videos.dart       # Vídeos e trailers
 ├── repositories/      # Camada de dados
 │   └── movie_repository.dart
 ├── services/          # Serviços externos
-│   └── movie_service.dart
+│   └── movie_service.dart      # API TMDb para filmes e séries
 ├── screens/           # Telas da aplicação
-│   ├── movie_details_screen.dart
-│   └── actor_details_screen.dart
+│   ├── movie_details_screen.dart    # Detalhes de filmes
+│   ├── tv_show_details_screen.dart  # Detalhes de séries
+│   └── actor_details_screen.dart    # Detalhes de atores
 ├── widgets/           # Componentes reutilizáveis
-│   ├── genre_wheel.dart
-│   ├── responsive_widgets.dart
-│   ├── movie_widgets.dart
-│   └── common_widgets.dart
+│   ├── genre_wheel.dart             # Roda de gêneros interativa
+│   ├── responsive_widgets.dart      # Widgets responsivos
+│   ├── movie_widgets.dart           # Componentes específicos
+│   └── common_widgets.dart          # Componentes compartilhados
 ├── theme/             # Sistema de design
-│   └── app_theme.dart
+│   └── app_theme.dart               # Temas para filmes e séries
 ├── mixins/            # Funcionalidades reutilizáveis
-│   └── animation_mixin.dart
-└── main.dart          # Ponto de entrada
+│   └── animation_mixin.dart         # Animações compartilhadas
+└── main.dart          # Ponto de entrada com toggle sistema
+```
 ## 🚀 **Executando o Projeto**
 
 ### **📋 Pré-requisitos**
@@ -187,7 +257,7 @@ flutter --version
 flutter doctor
 ```
 
-### **⚙️ Instalação**
+### **⚙️ Instalação e Execução**
 ```bash
 # 1. Clone o repositório
 git clone https://github.com/Gipsy7/RandomMovie.git
@@ -199,8 +269,21 @@ flutter pub get
 # 3. Execute o app
 flutter run
 
-# Para web especificamente
+# Para executar especificamente no Chrome
 flutter run -d chrome
+
+# Para executar em modo release
+flutter run --release
+
+# Para web com hot reload
+flutter run -d web-server --web-port 8080
+```
+
+### **🌐 Plataformas Suportadas**
+- **📱 Mobile**: Android e iOS
+- **💻 Desktop**: Windows, macOS e Linux  
+- **🌐 Web**: Chrome, Firefox, Safari e Edge
+- **⚡ Hot Reload**: Desenvolvimento ágil em todas as plataformas
 
 # Para build de produção
 flutter build apk              # Android
@@ -312,12 +395,24 @@ flutter analyze
 ```
 
 ### **📈 Roadmap**
+
+**✅ Funcionalidades Implementadas:**
+- **✅ Sistema de Toggle**: Filme/Série com temas dinâmicos
+- **✅ Séries de TV**: Suporte completo com 15 gêneros específicos
+- **✅ Detalhes de Séries**: Tela completa com todas as informações
+- **✅ Trilhas Sonoras**: Para filmes e séries selecionados
+- **✅ Onde Assistir**: Provedores de streaming para séries
+- **✅ Web Support**: Execução completa no navegador
+
+**🚀 Próximas Funcionalidades:**
 - [ ] **Modo Offline**: Cache completo para uso sem internet
 - [ ] **Listas Personalizadas**: Favoritos e watchlist
-- [ ] **Filtros Avançados**: Por ano, nota, duração
-- [ ] **Compartilhamento**: Compartilhar filmes descobertos
-- [ ] **Temas**: Light mode e temas personalizados
+- [ ] **Filtros Avançados**: Por ano, nota, duração e popularidade
+- [ ] **Compartilhamento**: Compartilhar descobertas nas redes sociais
+- [ ] **Temas Personalizados**: Light mode e mais opções de cores
 - [ ] **Internacionalização**: Suporte a múltiplos idiomas
+- [ ] **Recommendations**: Sugestões baseadas no histórico
+- [ ] **User Profiles**: Perfis de usuário com preferências
 
 ## 🤝 **Contribuindo**
 
@@ -364,6 +459,6 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 [![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
 [![TMDb](https://img.shields.io/badge/TMDb-01B4E4?style=for-the-badge&logo=themoviedatabase&logoColor=white)](https://www.themoviedb.org/)
 
-**Transforme sua escolha de filmes em uma experiência divertida!** 🍿
+**Transforme sua escolha de filmes e séries em uma experiência divertida!** 🍿📺
 
 </div>
