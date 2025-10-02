@@ -819,7 +819,15 @@ class MovieService {
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
-        return WatchProviders.fromJson(jsonData);
+        final results = jsonData['results'] as Map<String, dynamic>?;
+        
+        // Verifica primeiro BR (Brasil), depois US (Estados Unidos)
+        if (results?['BR'] != null) {
+          return WatchProviders.fromJson(results!['BR']);
+        } else if (results?['US'] != null) {
+          return WatchProviders.fromJson(results!['US']);
+        }
+        return null;
       } else {
         return null;
       }
@@ -862,5 +870,72 @@ class MovieService {
       print('Erro ao buscar vídeos da série: $e');
       return null;
     }
+  }
+
+  // Método para obter informações da trilha sonora de séries
+  static SoundtrackInfo getTVShowSoundtrackInfo(TVShow tvShow) {
+    // Base de dados de trilhas sonoras conhecidas de séries
+    final Map<String, Map<String, String?>> knownTVSoundtracks = {
+      'Game of Thrones': {
+        'themeSongTitle': 'Main Title',
+        'themeSongArtist': 'Ramin Djawadi',
+        'spotifyPlaylistId': '37i9dQZF1DX2VTRKgLfOjV',
+        'youtubePlaylistId': 'PLjaCx3bwu6PVtvf8dGdAd5MIW5yP3Jhjf',
+      },
+      'Stranger Things': {
+        'themeSongTitle': 'Stranger Things Main Theme',
+        'themeSongArtist': 'Kyle Dixon & Michael Stein',
+        'spotifyPlaylistId': '37i9dQZF1DWVbeRiWz5Gpe',
+        'youtubePlaylistId': 'PLCWd1hNEJhLU2VwCXUjZ9O5P9Fj5LX5Hj',
+      },
+      'The Last of Us': {
+        'themeSongTitle': 'The Last of Us Main Theme',
+        'themeSongArtist': 'Gustavo Santaolalla',
+        'spotifyPlaylistId': '1QsNABo6LppD7zPgKOT6sW',
+        'youtubePlaylistId': 'PLCWd1hNEJhLWfPFGgB8cUjO1v4G5z3Fp8',
+      },
+      'Breaking Bad': {
+        'themeSongTitle': 'Breaking Bad Main Theme',
+        'themeSongArtist': 'Dave Porter',
+        'spotifyPlaylistId': '37i9dQZF1DWVbeRiWz5Gpe',
+        'youtubePlaylistId': 'PLCWd1hNEJhLWfPFGgB8cUjO1v4G5z3Fp8',
+      },
+      'The Mandalorian': {
+        'themeSongTitle': 'The Mandalorian Theme',
+        'themeSongArtist': 'Ludwig Göransson',
+        'spotifyPlaylistId': '37i9dQZF1DX2BKDJjG8A3T',
+        'youtubePlaylistId': 'PLCWd1hNEJhLU2VwCXUjZ9O5P9Fj5LX5Hj',
+      },
+      'House of the Dragon': {
+        'themeSongTitle': 'House of the Dragon Main Title',
+        'themeSongArtist': 'Ramin Djawadi',
+        'spotifyPlaylistId': '37i9dQZF1DX2VTRKgLfOjV',
+        'youtubePlaylistId': 'PLjaCx3bwu6PVtvf8dGdAd5MIW5yP3Jhjf',
+      },
+      'The Witcher': {
+        'themeSongTitle': 'Toss a Coin to Your Witcher',
+        'themeSongArtist': 'Joey Batey',
+        'spotifyPlaylistId': '37i9dQZF1DWTuVMVpbnY7C',
+        'youtubePlaylistId': 'PLCWd1hNEJhLWfPFGgB8cUjO1v4G5z3Fp8',
+      },
+      'Westworld': {
+        'themeSongTitle': 'Westworld Main Theme',
+        'themeSongArtist': 'Ramin Djawadi',
+        'spotifyPlaylistId': '37i9dQZF1DX2VTRKgLfOjV',
+        'youtubePlaylistId': 'PLjaCx3bwu6PVtvf8dGdAd5MIW5yP3Jhjf',
+      },
+    };
+
+    final soundtrackData = knownTVSoundtracks[tvShow.name];
+    
+    return SoundtrackInfo(
+      movieTitle: tvShow.name,
+      spotifyPlaylistId: soundtrackData?['spotifyPlaylistId'],
+      youtubePlaylistId: soundtrackData?['youtubePlaylistId'],
+      themeSongTitle: soundtrackData?['themeSongTitle'],
+      themeSongArtist: soundtrackData?['themeSongArtist'],
+      themeSongSpotifyId: soundtrackData?['themeSongSpotifyId'],
+      themeSongYoutubeId: soundtrackData?['themeSongYoutubeId'],
+    );
   }
 }

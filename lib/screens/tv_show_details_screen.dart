@@ -4,6 +4,7 @@ import '../models/tv_show.dart';
 import '../models/cast.dart';
 import '../models/watch_providers.dart';
 import '../models/movie_videos.dart';
+import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
 import 'actor_details_screen.dart';
 
@@ -21,6 +22,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
   MovieCredits? credits;
   WatchProviders? watchProviders;
   MovieVideos? tvShowVideos;
+  SoundtrackInfo? soundtrackInfo;
   bool isLoading = true;
 
   @override
@@ -43,6 +45,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
         credits = results[1] as MovieCredits;
         watchProviders = results[2] as WatchProviders?;
         tvShowVideos = results[3] as MovieVideos?;
+        soundtrackInfo = MovieService.getTVShowSoundtrackInfo(results[0] as TVShow);
         isLoading = false;
       });
     } catch (e) {
@@ -102,6 +105,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                 if (credits?.crew.isNotEmpty == true) _buildCrewSection(),
                 if (watchProviders != null) _buildWatchProvidersSection(),
                 if (tvShowVideos?.results.isNotEmpty == true) _buildVideosSection(),
+                if (soundtrackInfo != null) _buildSoundtrackSection(),
                 const SizedBox(height: 32),
               ],
             ),
@@ -673,6 +677,239 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
     }
+  }
+
+  Future<void> _launchSoundtrackUrl(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    }
+  }
+
+  Widget _buildSoundtrackSection() {
+    if (soundtrackInfo == null) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Trilha Sonora',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          // Música Tema em Destaque
+          if (soundtrackInfo!.themeSongTitle != null) ...[
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.purple.withOpacity(0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.music_note, color: Colors.purple, size: 24),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Música Tema',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    soundtrackInfo!.themeSongTitle!,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  if (soundtrackInfo!.themeSongArtist != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'por ${soundtrackInfo!.themeSongArtist}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[400],
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      // Botão Spotify da música tema
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            final url = soundtrackInfo!.themeSongSpotifyUrl ?? 
+                                      soundtrackInfo!.themeSongSearchSpotifyUrl;
+                            if (url != null) {
+                              _launchSoundtrackUrl(url);
+                            }
+                          },
+                          icon: const Icon(Icons.music_note, color: Colors.white),
+                          label: const Text('Spotify', style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green.shade600,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Botão YouTube da música tema
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            final url = soundtrackInfo!.themeSongYoutubeUrl ?? 
+                                      soundtrackInfo!.themeSongSearchYoutubeUrl;
+                            if (url != null) {
+                              _launchSoundtrackUrl(url);
+                            }
+                          },
+                          icon: const Icon(Icons.play_arrow, color: Colors.white),
+                          label: const Text('YouTube', style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade600,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+          
+          // Playlists Completas
+          const Text(
+            'Playlist Completa',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              // Botão Spotify Playlist
+              Expanded(
+                child: Card(
+                  color: Colors.grey[900],
+                  elevation: 2,
+                  child: InkWell(
+                    onTap: () {
+                      final url = soundtrackInfo!.spotifyPlaylistUrl ?? 
+                                soundtrackInfo!.spotifySearchUrl;
+                      _launchSoundtrackUrl(url);
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.library_music,
+                            size: 32,
+                            color: Colors.green.shade600,
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Spotify',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Playlist no Spotify',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[400],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Botão YouTube Playlist
+              Expanded(
+                child: Card(
+                  color: Colors.grey[900],
+                  elevation: 2,
+                  child: InkWell(
+                    onTap: () {
+                      final url = soundtrackInfo!.youtubePlaylistUrl ?? 
+                                soundtrackInfo!.youtubeSearchUrl;
+                      _launchSoundtrackUrl(url);
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.play_circle_filled,
+                            size: 32,
+                            color: Colors.red.shade600,
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'YouTube',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Playlist no YouTube',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[400],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
   }
 
   String _formatDate(String date) {
