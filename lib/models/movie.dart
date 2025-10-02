@@ -1,3 +1,27 @@
+class Genre {
+  final int id;
+  final String name;
+
+  const Genre({
+    required this.id,
+    required this.name,
+  });
+
+  factory Genre.fromJson(Map<String, dynamic> json) {
+    return Genre(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+    };
+  }
+}
+
 class Movie {
   final int id;
   final String title;
@@ -8,6 +32,7 @@ class Movie {
   final int voteCount;
   final String releaseDate;
   final List<int> genreIds;
+  final List<Genre> genres;
   final int runtime;
   final String originalLanguage;
   final String originalTitle;
@@ -26,6 +51,7 @@ class Movie {
     required this.voteCount,
     required this.releaseDate,
     required this.genreIds,
+    this.genres = const [],
     this.runtime = 0,
     this.originalLanguage = '',
     this.originalTitle = '',
@@ -46,6 +72,9 @@ class Movie {
       voteCount: json['vote_count'] ?? 0,
       releaseDate: json['release_date'] ?? '',
       genreIds: List<int>.from(json['genre_ids'] ?? []),
+      genres: (json['genres'] as List<dynamic>?)
+          ?.map((g) => Genre.fromJson(g as Map<String, dynamic>))
+          .toList() ?? [],
       runtime: json['runtime'] ?? 0,
       originalLanguage: json['original_language'] ?? '',
       originalTitle: json['original_title'] ?? '',

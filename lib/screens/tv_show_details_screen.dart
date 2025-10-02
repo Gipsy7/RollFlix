@@ -419,90 +419,329 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
   Widget _buildWatchProvidersSection() {
     if (watchProviders == null) return const SizedBox.shrink();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.grey[900]!,
+            Colors.grey[850]!,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.purple.withOpacity(0.3),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.purple.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Onde assistir no Brasil',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.purple, Colors.purple.shade600],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.purple.withOpacity(0.4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.play_circle_fill,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Onde Assistir',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
+          
           if (watchProviders!.flatrate.isNotEmpty) ...[
             Text(
-              'Streaming:',
+              'Streaming (Incluído na assinatura):',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[300],
+                color: Colors.purple,
               ),
             ),
             const SizedBox(height: 8),
-            _buildProvidersList(watchProviders!.flatrate),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: watchProviders!.flatrate.map((provider) {
+                return GestureDetector(
+                  onTap: () {
+                    // TODO: Implementar abertura do provedor
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.purple.withOpacity(0.9),
+                          Colors.purple.shade300.withOpacity(0.8),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.purple,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.purple.withOpacity(0.3),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (provider.logoPath.isNotEmpty)
+                          Image.network(
+                            'https://image.tmdb.org/t/p/w92${provider.logoPath}',
+                            width: 20,
+                            height: 20,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(
+                                Icons.tv,
+                                size: 16,
+                                color: Colors.white,
+                              );
+                            },
+                          )
+                        else
+                          const Icon(
+                            Icons.tv,
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                        const SizedBox(width: 6),
+                        Text(
+                          provider.providerName,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.open_in_new,
+                          size: 12,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
             const SizedBox(height: 16),
           ],
+          
           if (watchProviders!.rent.isNotEmpty) ...[
             Text(
               'Aluguel:',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[300],
+                color: Colors.purple,
               ),
             ),
             const SizedBox(height: 8),
-            _buildProvidersList(watchProviders!.rent),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: watchProviders!.rent.map((provider) {
+                return GestureDetector(
+                  onTap: () {
+                    // TODO: Implementar abertura do provedor
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[800],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.purple.shade300,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.purple.shade300.withOpacity(0.3),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (provider.logoPath.isNotEmpty)
+                          Image.network(
+                            'https://image.tmdb.org/t/p/w92${provider.logoPath}',
+                            width: 20,
+                            height: 20,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.tv,
+                                size: 16,
+                                color: Colors.purple.shade300,
+                              );
+                            },
+                          )
+                        else
+                          Icon(
+                            Icons.tv,
+                            size: 16,
+                            color: Colors.purple.shade300,
+                          ),
+                        const SizedBox(width: 6),
+                        Text(
+                          provider.providerName,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.open_in_new,
+                          size: 12,
+                          color: Colors.purple.shade300,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
             const SizedBox(height: 16),
           ],
+          
           if (watchProviders!.buy.isNotEmpty) ...[
             Text(
               'Compra:',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[300],
+                color: Colors.purple,
               ),
             ),
             const SizedBox(height: 8),
-            _buildProvidersList(watchProviders!.buy),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: watchProviders!.buy.map((provider) {
+                return GestureDetector(
+                  onTap: () {
+                    // TODO: Implementar abertura do provedor
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.grey[850]!,
+                          Colors.grey[800]!,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.purple.shade400,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.purple.shade400.withOpacity(0.3),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (provider.logoPath.isNotEmpty)
+                          Image.network(
+                            'https://image.tmdb.org/t/p/w92${provider.logoPath}',
+                            width: 20,
+                            height: 20,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.tv,
+                                size: 16,
+                                color: Colors.purple.shade400,
+                              );
+                            },
+                          )
+                        else
+                          Icon(
+                            Icons.tv,
+                            size: 16,
+                            color: Colors.purple.shade400,
+                          ),
+                        const SizedBox(width: 6),
+                        Text(
+                          provider.providerName,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.open_in_new,
+                          size: 12,
+                          color: Colors.purple.shade400,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
           ],
-          const SizedBox(height: 24),
         ],
       ),
-    );
-  }
-
-  Widget _buildProvidersList(List<WatchProvider> providers) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: providers.map((provider) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            'https://image.tmdb.org/t/p/w92${provider.logoPath}',
-            width: 40,
-            height: 40,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                width: 40,
-                height: 40,
-                color: Colors.grey[800],
-                child: Text(
-                  provider.providerName[0].toUpperCase(),
-                  style: const TextStyle(color: Colors.white),
-                ),
-              );
-            },
-          ),
-        );
-      }).toList(),
     );
   }
 

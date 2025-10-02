@@ -335,6 +335,36 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                   color: AppColors.textTertiary,
                                 ),
                               ),
+                            if (movie.genres.isNotEmpty) ...[
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 4,
+                                children: movie.genres.map((genre) {
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: AppColors.primaryGradient,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: AppColors.primary.withOpacity(0.5),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      genre.name,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
                           ],
                         ),
                       ),
