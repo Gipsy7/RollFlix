@@ -768,29 +768,98 @@ class MovieService {
     }
   }
 
-  static Future<List<TVShow>?> discoverTVShows({
-    List<int>? genreIds,
-    int page = 1,
-    String sortBy = 'popularity.desc',
-  }) async {
+  // Métodos de detalhes para TV Shows
+  static Future<TVShow> getTVShowDetails(int tvShowId) async {
     try {
-      var url = '$_baseUrl/discover/tv?api_key=$_apiKey&language=pt-BR&sort_by=$sortBy&page=$page';
-      
-      if (genreIds != null && genreIds.isNotEmpty) {
-        url += '&with_genres=${genreIds.join(',')}';
-      }
+      final url = Uri.parse(
+        '$_baseUrl/tv/$tvShowId?api_key=$_apiKey&language=pt-BR'
+      );
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(url);
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
-        final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
-        return tvShowsResponse.results;
+        return TVShow.fromJson(jsonData);
       } else {
-        throw Exception('Erro ao descobrir séries: ${response.statusCode}');
+        throw Exception('Erro ao buscar detalhes da série: ${response.statusCode}');
       }
     } catch (e) {
-      print('Erro ao descobrir séries: $e');
+      print('Erro ao buscar detalhes da série: $e');
+      rethrow;
+    }
+  }
+
+  static Future<MovieCredits> getTVShowCredits(int tvShowId) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/tv/$tvShowId/credits?api_key=$_apiKey'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        return MovieCredits.fromJson(jsonData);
+      } else {
+        throw Exception('Erro ao buscar elenco da série: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar elenco da série: $e');
+      return MovieCredits(cast: [], crew: []);
+    }
+  }
+
+  static Future<WatchProviders?> getTVShowWatchProviders(int tvShowId) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/tv/$tvShowId/watch/providers?api_key=$_apiKey'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        return WatchProviders.fromJson(jsonData);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Erro ao buscar provedores da série: $e');
+      return null;
+    }
+  }
+
+  static Future<MovieVideos?> getTVShowVideos(int tvShowId) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/tv/$tvShowId/videos?api_key=$_apiKey&language=pt-BR'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final tvShowVideos = MovieVideos.fromJson(jsonData);
+        
+        // Se não encontrar vídeos em português, tenta em inglês
+        if (tvShowVideos.results.isEmpty) {
+          final urlEn = Uri.parse(
+            '$_baseUrl/tv/$tvShowId/videos?api_key=$_apiKey&language=en-US'
+          );
+          
+          final responseEn = await http.get(urlEn);
+          if (responseEn.statusCode == 200) {
+            final jsonDataEn = json.decode(responseEn.body);
+            return MovieVideos.fromJson(jsonDataEn);
+          }
+        }
+        
+        return tvShowVideos;
+      } else {
+        throw Exception('Erro ao buscar vídeos da série: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao buscar vídeos da série: $e');
       return null;
     }
   }

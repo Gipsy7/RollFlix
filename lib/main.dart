@@ -6,6 +6,7 @@ import 'models/movie.dart';
 import 'models/tv_show.dart';
 import 'services/movie_service.dart';
 import 'screens/movie_details_screen.dart';
+import 'screens/tv_show_details_screen.dart';
 import 'screens/search_screen.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/common_widgets.dart';
@@ -684,8 +685,12 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           scale: animationValue,
           child: AppCard(
             onTap: () {
-              // TODO: Criar tela de detalhes da série
-              AppSnackBar.showInfo(context, 'Tela de detalhes da série em desenvolvimento');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TVShowDetailsScreen(tvShow: tvShow),
+                ),
+              );
             },
             padding: EdgeInsets.all(isMobile ? 20 : 28),
             child: Row(

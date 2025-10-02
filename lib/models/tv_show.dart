@@ -1,3 +1,27 @@
+class Genre {
+  final int id;
+  final String name;
+
+  const Genre({
+    required this.id,
+    required this.name,
+  });
+
+  factory Genre.fromJson(Map<String, dynamic> json) {
+    return Genre(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+    };
+  }
+}
+
 class TVShow {
   final int id;
   final String name;
@@ -13,6 +37,7 @@ class TVShow {
   final double popularity;
   final bool adult;
   final List<int> genreIds;
+  final List<Genre> genres;
   
   // Campos específicos de séries
   final List<int> episodeRunTime;
@@ -35,6 +60,7 @@ class TVShow {
     required this.popularity,
     required this.adult,
     required this.genreIds,
+    this.genres = const [],
     this.episodeRunTime = const [],
     this.numberOfEpisodes = 0,
     this.numberOfSeasons = 0,
@@ -72,6 +98,9 @@ class TVShow {
       popularity: (json['popularity'] ?? 0.0).toDouble(),
       adult: json['adult'] ?? false,
       genreIds: List<int>.from(json['genre_ids'] ?? []),
+      genres: (json['genres'] as List<dynamic>?)
+          ?.map((g) => Genre.fromJson(g as Map<String, dynamic>))
+          .toList() ?? [],
       episodeRunTime: List<int>.from(json['episode_run_time'] ?? []),
       numberOfEpisodes: json['number_of_episodes'] ?? 0,
       numberOfSeasons: json['number_of_seasons'] ?? 0,
