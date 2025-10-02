@@ -4,6 +4,7 @@ import '../constants/app_constants.dart';
 import '../utils/app_utils.dart';
 import '../models/movie.dart';
 import 'common_widgets.dart';
+import 'responsive_widgets.dart' as ResponsiveWidgets;
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
@@ -29,15 +30,15 @@ class MovieCard extends StatelessWidget {
     return AppCard(
       onTap: onTap,
       padding: EdgeInsets.zero,
-      child: SizedBox(
+      child: Container(
         width: cardWidth,
         height: cardHeight,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Poster Image
-            Expanded(
-              flex: 3,
+            // Poster Image - Flexible height
+            Flexible(
+              flex: showDetails ? 6 : 10,
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(AppConstants.radiusL),
@@ -60,41 +61,53 @@ class MovieCard extends StatelessWidget {
             ),
             
             if (showDetails) ...[
-              // Movie Details
-              Expanded(
-                flex: 1,
-                child: Padding(
-                  padding: const EdgeInsets.all(AppConstants.spacingM),
+              // Movie Details - Intrinsic height with limits
+              Flexible(
+                flex: 4,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(AppConstants.spacingS),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        movie.title,
-                        style: AppTextStyles.labelLarge,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: AppConstants.spacingXS),
-                      if (movie.year.isNotEmpty) ...[
-                        Text(
-                          movie.year,
-                          style: AppTextStyles.labelMedium,
+                      // Title - always visible
+                      Flexible(
+                        child: ResponsiveWidgets.SafeText(
+                          movie.title,
+                          style: AppTextStyles.labelLarge,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ],
-                      const Spacer(),
-                      if (movie.voteAverage > 0) ...[
+                      ),
+                      
+                      // Year and rating in a row to save space
+                      if (movie.year.isNotEmpty || movie.voteAverage > 0) ...[
+                        const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(
-                              Icons.star,
-                              size: 16,
-                              color: Colors.amber,
-                            ),
-                            const SizedBox(width: AppConstants.spacingXS),
-                            Text(
-                              movie.voteAverage.toStringAsFixed(1),
-                              style: AppTextStyles.labelSmall,
-                            ),
+                            if (movie.year.isNotEmpty) ...[
+                              Flexible(
+                                child: ResponsiveWidgets.SafeText(
+                                  movie.year,
+                                  style: AppTextStyles.labelSmall,
+                                ),
+                              ),
+                            ],
+                            if (movie.year.isNotEmpty && movie.voteAverage > 0) 
+                              const SizedBox(width: 8),
+                            if (movie.voteAverage > 0) ...[
+                              const Icon(
+                                Icons.star,
+                                size: 12,
+                                color: Colors.amber,
+                              ),
+                              const SizedBox(width: 2),
+                              ResponsiveWidgets.SafeText(
+                                movie.voteAverage.toStringAsFixed(1),
+                                style: AppTextStyles.labelSmall,
+                              ),
+                            ],
                           ],
                         ),
                       ],
@@ -244,6 +257,16 @@ class MovieGridView extends StatelessWidget {
         final spacing = ResponsiveUtils.isMobile(context) 
           ? AppConstants.spacingM 
           : AppConstants.spacingL;
+        
+        // Aspect ratio responsivo para evitar overflow
+        double aspectRatio;
+        if (ResponsiveUtils.isMobile(context)) {
+          aspectRatio = 0.75; // Mobile: mais quadrado
+        } else if (ResponsiveUtils.isTablet(context)) {
+          aspectRatio = 0.70; // Tablet: intermediário
+        } else {
+          aspectRatio = 0.67; // Desktop: mais retangular
+        }
 
         return GridView.builder(
           padding: EdgeInsets.all(spacing),
@@ -251,7 +274,7 @@ class MovieGridView extends StatelessWidget {
             crossAxisCount: columns,
             crossAxisSpacing: spacing,
             mainAxisSpacing: spacing,
-            childAspectRatio: 0.67, // Aspect ratio for movie cards
+            childAspectRatio: aspectRatio,
           ),
           itemCount: movies.length,
           itemBuilder: (context, index) {
