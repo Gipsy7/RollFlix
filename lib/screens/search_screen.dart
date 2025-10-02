@@ -22,12 +22,10 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   List<Movie> _searchResults = [];
   List<Movie> _popularMovies = [];
   List<Movie> _upcomingMovies = [];
-  List<Movie> _heroMovies = [];
   
   bool _isSearching = false;
   bool _isLoadingPopular = false;
   bool _isLoadingUpcoming = false;
-  bool _isLoadingHeroes = false;
   
   String? _selectedGenre;
   String _currentFilter = 'popular'; // popular, upcoming, heroes, search
@@ -37,7 +35,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this); // Apenas "Em Alta" e "Novidades"
     _loadInitialData();
   }
 
@@ -53,7 +51,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
     await Future.wait([
       _loadPopularMovies(),
       _loadUpcomingMovies(),
-      _loadHeroMovies(),
+      // Removido _loadHeroMovies() pois será tratado como gênero
     ]);
   }
 
@@ -88,34 +86,6 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       debugPrint('Erro ao carregar novidades: $e');
     } finally {
       if (mounted) setState(() => _isLoadingUpcoming = false);
-    }
-  }
-
-  Future<void> _loadHeroMovies() async {
-    if (_isLoadingHeroes) return;
-    
-    setState(() => _isLoadingHeroes = true);
-    
-    try {
-      // Busca por filmes de super-heróis (gêneros: Ação + Fantasia + Ficção Científica)
-      final movies = await MovieService.getMoviesByGenres([28, 14, 878]); // Action, Fantasy, Sci-Fi
-      if (movies != null && mounted) {
-        // Filtra por palavras-chave relacionadas a heróis
-        final heroKeywords = ['hero', 'super', 'man', 'woman', 'captain', 'spider', 'iron', 'batman', 'superman', 'wonder'];
-        final heroMovies = movies.where((movie) {
-          final title = movie.title.toLowerCase();
-          final overview = movie.overview.toLowerCase();
-          return heroKeywords.any((keyword) => 
-            title.contains(keyword) || overview.contains(keyword)
-          );
-        }).toList();
-        
-        setState(() => _heroMovies = heroMovies);
-      }
-    } catch (e) {
-      debugPrint('Erro ao carregar filmes de heróis: $e');
-    } finally {
-      if (mounted) setState(() => _isLoadingHeroes = false);
     }
   }
 
@@ -156,12 +126,27 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   Future<void> _filterByGenre(String? genre) async {
     setState(() => _selectedGenre = genre);
     
-    if (genre == null) return;
+    // Se genre for null (opção "Todos"), volta para as tabs
+    if (genre == null) {
+      setState(() {
+        _currentFilter = 'popular';
+        _searchResults = [];
+      });
+      return;
+    }
     
     setState(() => _isSearching = true);
     
     try {
-      final movies = await MovieService.getMoviesByGenre(genre);
+      List<Movie> movies;
+      
+      // Tratamento especial para "Heróis"
+      if (genre == 'Heróis') {
+        movies = await _getHeroMovies();
+      } else {
+        movies = await MovieService.getMoviesByGenre(genre);
+      }
+      
       if (mounted) {
         setState(() {
           _searchResults = movies;
@@ -172,6 +157,31 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       debugPrint('Erro ao filtrar por gênero: $e');
     } finally {
       if (mounted) setState(() => _isSearching = false);
+    }
+  }
+
+  // Método para buscar filmes de heróis (movido da lógica anterior)
+  Future<List<Movie>> _getHeroMovies() async {
+    try {
+      // Busca por filmes de super-heróis (gêneros: Ação + Fantasia + Ficção Científica)
+      final movies = await MovieService.getMoviesByGenres([28, 14, 878]); // Action, Fantasy, Sci-Fi
+      if (movies != null) {
+        // Filtra por palavras-chave relacionadas a heróis
+        final heroKeywords = ['hero', 'super', 'man', 'woman', 'captain', 'spider', 'iron', 'batman', 'superman', 'wonder'];
+        final heroMovies = movies.where((movie) {
+          final title = movie.title.toLowerCase();
+          final overview = movie.overview.toLowerCase();
+          return heroKeywords.any((keyword) => 
+            title.contains(keyword) || overview.contains(keyword)
+          );
+        }).toList();
+        
+        return heroMovies;
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Erro ao carregar filmes de heróis: $e');
+      return [];
     }
   }
 
@@ -306,6 +316,9 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   }
 
   Widget _buildGenreFilter(bool isMobile) {
+    // Lista de gêneros incluindo "Heróis"
+    final allGenres = [...AppConstants.movieGenres, 'Heróis'];
+    
     return Container(
       height: 60,
       padding: EdgeInsets.symmetric(vertical: 8),
@@ -315,12 +328,12 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         children: [
           _buildGenreChip('Todos', null, isMobile),
           const SizedBox(width: 8),
-          ...AppConstants.movieGenres.map((genre) => 
+          ...allGenres.map((genre) => 
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: _buildGenreChip(genre, genre, isMobile),
             ),
-          ).toList(),
+          ),
         ],
       ),
     );
@@ -392,7 +405,6 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         tabs: const [
           Tab(text: 'Em Alta'),
           Tab(text: 'Novidades'),
-          Tab(text: 'Heróis'),
         ],
       ),
     );
@@ -404,7 +416,6 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       children: [
         _buildMovieGrid(_popularMovies, _isLoadingPopular, isMobile),
         _buildMovieGrid(_upcomingMovies, _isLoadingUpcoming, isMobile),
-        _buildMovieGrid(_heroMovies, _isLoadingHeroes, isMobile),
       ],
     );
   }
