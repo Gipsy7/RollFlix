@@ -8,6 +8,7 @@ import 'services/movie_service.dart';
 import 'screens/movie_details_screen.dart';
 import 'screens/tv_show_details_screen.dart';
 import 'screens/search_screen.dart';
+import 'screens/tv_series_search_screen.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/common_widgets.dart';
 import 'widgets/error_widgets.dart';
@@ -325,6 +326,19 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                       context,
                       MaterialPageRoute(
                         builder: (context) => const SearchScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.tv,
+                  title: 'Pesquisar Séries',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TVSeriesSearchScreen(),
                       ),
                     );
                   },
