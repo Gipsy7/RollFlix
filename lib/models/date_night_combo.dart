@@ -2,9 +2,16 @@ class DateNightCombo {
   final String movieTitle;
   final String movieYear;
   final String moviePosterPath;
+  final String movieBackdropPath;
   final double movieRating;
   final String movieOverview;
   final int movieId;
+  final List<String> movieGenres;
+  final String movieRuntime;
+  final String movieReleaseDate;
+  final String movieOriginalLanguage;
+  final List<String> movieProductionCompanies;
+  final List<Map<String, dynamic>> movieWatchProviders;
   
   final String mainDish;
   final String drink;
@@ -26,9 +33,16 @@ class DateNightCombo {
     required this.movieTitle,
     required this.movieYear,
     required this.moviePosterPath,
+    this.movieBackdropPath = '',
     required this.movieRating,
     required this.movieOverview,
     required this.movieId,
+    this.movieGenres = const [],
+    this.movieRuntime = '',
+    this.movieReleaseDate = '',
+    this.movieOriginalLanguage = '',
+    this.movieProductionCompanies = const [],
+    this.movieWatchProviders = const [],
     required this.mainDish,
     required this.drink,
     required this.dessert,
@@ -50,8 +64,15 @@ class DateNightCombo {
     required String title,
     required String year,
     required String posterPath,
+    String backdropPath = '',
     required double rating,
     required String overview,
+    List<String> genres = const [],
+    String runtime = '',
+    String releaseDate = '',
+    String originalLanguage = '',
+    List<String> productionCompanies = const [],
+    List<Map<String, dynamic>> watchProviders = const [],
     required String mealType,
   }) {
     final mealData = DateNightService.getMealForMovieType(mealType);
@@ -61,8 +82,15 @@ class DateNightCombo {
       movieTitle: title,
       movieYear: year,
       moviePosterPath: posterPath,
+      movieBackdropPath: backdropPath,
       movieRating: rating,
       movieOverview: overview,
+      movieGenres: genres,
+      movieRuntime: runtime,
+      movieReleaseDate: releaseDate,
+      movieOriginalLanguage: originalLanguage,
+      movieProductionCompanies: productionCompanies,
+      movieWatchProviders: watchProviders,
       mainDish: mealData['mainDish']!,
       drink: mealData['drink']!,
       dessert: mealData['dessert']!,

@@ -291,6 +291,37 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                                 ],
                               ),
                             ),
+                            
+                            // Gêneros em mobile
+                            if (widget.combo.movieGenres.isNotEmpty) ...[
+                              const SizedBox(height: 16),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                alignment: WrapAlignment.center,
+                                children: widget.combo.movieGenres.map((genre) {
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [_primaryRose, _secondaryGold],
+                                      ),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: SafeText(
+                                      genre,
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
                           ],
                         ),
                       ],
@@ -347,6 +378,26 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                                   color: AppColors.textSecondary,
                                 ),
                               ),
+                              if (widget.combo.movieReleaseDate.isNotEmpty && widget.combo.movieReleaseDate != 'Data não disponível')
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: SafeText(
+                                    'Lançamento: ${widget.combo.movieReleaseDate}',
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              if (widget.combo.movieRuntime.isNotEmpty && widget.combo.movieRuntime != 'Duração não disponível')
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: SafeText(
+                                    'Duração: ${widget.combo.movieRuntime}',
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
                               const SizedBox(height: 8),
                               Row(
                                 children: [
@@ -394,6 +445,36 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                                   ],
                                 ),
                               ),
+                              
+                              // Gêneros em desktop
+                              if (widget.combo.movieGenres.isNotEmpty) ...[
+                                const SizedBox(height: 16),
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: widget.combo.movieGenres.map((genre) {
+                                    return Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [_primaryRose, _secondaryGold],
+                                        ),
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: SafeText(
+                                        genre,
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
                             ],
                           ),
                         ),
@@ -427,6 +508,134 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                     ),
                   ],
                 ),
+                
+                // Informações Técnicas
+                if (widget.combo.movieProductionCompanies.isNotEmpty || 
+                    widget.combo.movieOriginalLanguage.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SafeText(
+                        'Informações Técnicas',
+                        style: AppTextStyles.headlineSmall.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      if (widget.combo.movieOriginalLanguage.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.language,
+                                size: 18,
+                                color: _primaryRose,
+                              ),
+                              const SizedBox(width: 8),
+                              SafeText(
+                                'Idioma Original: ',
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              Expanded(
+                                child: SafeText(
+                                  widget.combo.movieOriginalLanguage.toUpperCase(),
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                      if (widget.combo.movieProductionCompanies.isNotEmpty) ...[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.business,
+                              size: 18,
+                              color: _primaryRose,
+                            ),
+                            const SizedBox(width: 8),
+                            SafeText(
+                              'Produção: ',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Expanded(
+                              child: SafeText(
+                                widget.combo.movieProductionCompanies.take(3).join(', '),
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+                
+                // Onde Assistir
+                if (widget.combo.movieWatchProviders.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [_primaryRose, _secondaryGold],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _primaryRose.withValues(alpha: 0.4),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.play_circle_fill,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          SafeText(
+                            'Onde Assistir',
+                            style: AppTextStyles.headlineSmall.copyWith(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      _buildWatchProvidersSection(),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -975,6 +1184,156 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildWatchProvidersSection() {
+    final streamingProviders = widget.combo.movieWatchProviders
+        .where((p) => p['type'] == 'streaming')
+        .toList();
+    final rentProviders = widget.combo.movieWatchProviders
+        .where((p) => p['type'] == 'rent')
+        .toList();
+    final buyProviders = widget.combo.movieWatchProviders
+        .where((p) => p['type'] == 'buy')
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (streamingProviders.isNotEmpty) ...[
+          SafeText(
+            'Streaming (Incluído na assinatura):',
+            style: AppTextStyles.bodyLarge.copyWith(
+              color: _primaryRose,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: streamingProviders.map((provider) {
+              return _buildProviderCard(provider);
+            }).toList(),
+          ),
+          const SizedBox(height: 20),
+        ],
+        
+        if (rentProviders.isNotEmpty) ...[
+          SafeText(
+            'Aluguel:',
+            style: AppTextStyles.bodyLarge.copyWith(
+              color: _primaryRose,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: rentProviders.map((provider) {
+              return _buildProviderCard(provider);
+            }).toList(),
+          ),
+          const SizedBox(height: 20),
+        ],
+        
+        if (buyProviders.isNotEmpty) ...[
+          SafeText(
+            'Compra:',
+            style: AppTextStyles.bodyLarge.copyWith(
+              color: _primaryRose,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: buyProviders.map((provider) {
+              return _buildProviderCard(provider);
+            }).toList(),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildProviderCard(Map<String, dynamic> provider) {
+    return GestureDetector(
+      onTap: () => _openProvider(provider),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              _primaryRose.withValues(alpha: 0.1),
+              _secondaryGold.withValues(alpha: 0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: _primaryRose.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+              ),
+              child: provider['logoPath'] != null && provider['logoPath'].isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: OptimizedNetworkImage(
+                        imageUrl: 'https://image.tmdb.org/t/p/w92${provider['logoPath']}',
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Icon(
+                      Icons.play_circle_fill,
+                      color: _primaryRose,
+                      size: 20,
+                    ),
+            ),
+            const SizedBox(width: 12),
+            Flexible(
+              child: SafeText(
+                provider['name'] ?? 'Provedor',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openProvider(Map<String, dynamic> provider) {
+    // Implementar abertura do provedor
+    // Por enquanto, vamos mostrar um snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: SafeText(
+          'Abrindo ${provider['name']} para assistir ${widget.combo.movieTitle}',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: _primaryRose,
+        duration: const Duration(seconds: 2),
       ),
     );
   }

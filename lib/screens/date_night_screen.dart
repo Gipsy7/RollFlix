@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../models/movie.dart';
 import '../models/date_night_combo.dart';
+import '../models/watch_providers.dart';
 import '../services/movie_service.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
@@ -132,16 +133,62 @@ class _DateNightScreenState extends State<DateNightScreen> with TickerProviderSt
         // Sortear um filme
         final randomMovie = selectedMovies[DateTime.now().millisecondsSinceEpoch % selectedMovies.length];
         
-        // Criar combo de encontro
+        // Buscar detalhes completos do filme
+        Movie detailedMovie;
+        List<Map<String, dynamic>> watchProviders = [];
+        try {
+          final results = await Future.wait([
+            MovieService.getMovieDetails(randomMovie.id),
+            MovieService.getWatchProviders(randomMovie.id),
+          ]);
+          
+          detailedMovie = results[0] as Movie;
+          final watchProvidersData = results[1] as WatchProviders?;
+          
+          // Converter watch providers para o formato do combo
+          if (watchProvidersData != null) {
+            watchProviders = [
+              ...watchProvidersData.flatrate.map((p) => {
+                'name': p.providerName,
+                'logoPath': p.logoPath,
+                'type': 'streaming',
+                'providerId': p.providerId,
+              }),
+              ...watchProvidersData.rent.map((p) => {
+                'name': p.providerName,
+                'logoPath': p.logoPath,
+                'type': 'rent',
+                'providerId': p.providerId,
+              }),
+              ...watchProvidersData.buy.map((p) => {
+                'name': p.providerName,
+                'logoPath': p.logoPath,
+                'type': 'buy',
+                'providerId': p.providerId,
+              }),
+            ];
+          }
+        } catch (e) {
+          detailedMovie = randomMovie; // Fallback para o filme básico
+        }
+        
+        // Criar combo de encontro com informações completas
         final combo = DateNightCombo.fromMovie(
-          movieId: randomMovie.id,
-          title: randomMovie.title,
-          year: randomMovie.releaseDate.isNotEmpty 
-              ? randomMovie.releaseDate.split('-')[0] 
+          movieId: detailedMovie.id,
+          title: detailedMovie.title,
+          year: detailedMovie.releaseDate.isNotEmpty 
+              ? detailedMovie.releaseDate.split('-')[0] 
               : 'N/A',
-          posterPath: randomMovie.posterPath,
-          rating: randomMovie.voteAverage,
-          overview: randomMovie.overview,
+          posterPath: detailedMovie.posterPath,
+          backdropPath: detailedMovie.backdropPath,
+          rating: detailedMovie.voteAverage,
+          overview: detailedMovie.overview,
+          genres: detailedMovie.genres.map((g) => g.name).toList(),
+          runtime: detailedMovie.formattedRuntime,
+          releaseDate: detailedMovie.formattedReleaseDate,
+          originalLanguage: detailedMovie.originalLanguage,
+          productionCompanies: detailedMovie.productionCompanies,
+          watchProviders: watchProviders,
           mealType: DateNightService.getMovieTypeKey(_selectedDateType!),
         );
 
