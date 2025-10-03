@@ -207,8 +207,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color.fromARGB(255, 32, 31, 31).withOpacity(0.95),
-              const Color.fromARGB(255, 29, 26, 26).withOpacity(0.98),
+              const Color.fromARGB(255, 32, 31, 31).withValues(alpha: 0.95),
+              const Color.fromARGB(255, 29, 26, 26).withValues(alpha: 0.98),
               const Color.fromARGB(211, 30, 31, 29),
             ],
             stops: const [0.0, 0.5, 1.0],
@@ -475,12 +475,12 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         gradient: AppColors.glassGradient,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.white.withOpacity(0.3),
+          color: Colors.white.withValues(alpha: 0.3),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -506,7 +506,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             fontWeight: FontWeight.w700,
             shadows: [
               Shadow(
-                color: AppColors.backgroundDark.withOpacity(0.5),
+                color: AppColors.backgroundDark.withValues(alpha: 0.5),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -518,15 +518,15 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         SafeText(
           'Roll and Chill • $currentModeLabel',
           style: AppTextStyles.bodyLarge.copyWith(
-            color: AppColors.textPrimary.withOpacity(0.9),
+            color: AppColors.textPrimary.withValues(alpha: 0.9),
             fontWeight: FontWeight.w400,
             fontStyle: FontStyle.italic,
             fontSize: isMobile ? 14 : 16,
             shadows: [
               Shadow(
-                color: AppColors.backgroundDark.withOpacity(0.3),
+                color: AppColors.backgroundDark.withValues(alpha: 0.3),
                 blurRadius: 4,
-                offset: const Offset(0, 1),
+                offset: const Offset(1, 1),
               ),
             ],
           ),
@@ -638,10 +638,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.1),
+        color: Colors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.red.withOpacity(0.3),
+          color: Colors.red.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -749,7 +749,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         borderRadius: BorderRadius.circular(16),
         gradient: AppColors.glassGradient,
         border: Border.all(
-          color: AppColors.interactive.withOpacity(0.3),
+          color: AppColors.interactive.withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -960,7 +960,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         borderRadius: BorderRadius.circular(16),
         gradient: AppColors.glassGradient,
         border: Border.all(
-          color: currentAccentColor.withOpacity(0.3),
+          color: currentAccentColor.withValues(alpha: 0.3),
           width: 2,
         ),
       ),

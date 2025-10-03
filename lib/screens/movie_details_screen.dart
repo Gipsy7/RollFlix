@@ -242,7 +242,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.7),
+                          Colors.black.withValues(alpha: 0.7),
                         ],
                       ),
                     ),
@@ -350,7 +350,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       gradient: AppColors.primaryGradient,
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
-                                        color: AppColors.primary.withOpacity(0.5),
+                                        color: AppColors.primary.withValues(alpha: 0.5),
                                       ),
                                     ),
                                     child: Text(
@@ -676,12 +676,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         ),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: AppColors.primary.withOpacity(0.3),
+                          color: AppColors.primary.withValues(alpha:0.3),
                           width: 1,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.1),
+                            color: AppColors.primary.withValues(alpha:0.1),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -699,7 +699,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppColors.primary.withOpacity(0.4),
+                                      color: AppColors.primary.withValues(alpha:0.4),
                                       blurRadius: 8,
                                       offset: const Offset(0, 2),
                                     ),
@@ -746,8 +746,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    AppColors.primary.withOpacity(0.9),
-                                    AppColors.primaryLight.withOpacity(0.8),
+                                    AppColors.primary.withValues(alpha:0.9),
+                                    AppColors.primaryLight.withValues(alpha:0.8),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
@@ -759,7 +759,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.primary.withOpacity(0.3),
+                                    color: AppColors.primary.withValues(alpha:0.3),
                                     blurRadius: 6,
                                     offset: const Offset(0, 2),
                                   ),
@@ -838,7 +838,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.secondary.withOpacity(0.3),
+                                    color: AppColors.secondary.withValues(alpha:0.3),
                                     blurRadius: 6,
                                     offset: const Offset(0, 2),
                                   ),
@@ -924,7 +924,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.accentDark.withOpacity(0.3),
+                                    color: AppColors.accentDark.withValues(alpha:0.3),
                                     blurRadius: 6,
                                     offset: const Offset(0, 2),
                                   ),
@@ -992,12 +992,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         ),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: AppColors.primary.withOpacity(0.3),
+                          color: AppColors.primary.withValues(alpha:0.3),
                           width: 1,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.1),
+                            color: AppColors.primary.withValues(alpha:0.1),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -1039,10 +1039,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: AppColors.backgroundDark.withOpacity(0.5),
+                              color: AppColors.backgroundDark.withValues(alpha:0.5),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: AppColors.textMuted.withOpacity(0.3),
+                                color: AppColors.textMuted.withValues(alpha:0.3),
                                 width: 1,
                               ),
                             ),
@@ -1092,7 +1092,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         decoration: BoxDecoration(
                           color: AppColors.surfaceDark,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                          border: Border.all(color: AppColors.primary.withValues(alpha:0.3)),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

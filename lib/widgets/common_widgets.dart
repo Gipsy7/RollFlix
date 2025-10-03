@@ -159,7 +159,7 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
     // Visual limpo sem efeitos excessivos
     final defaultShadow = widget.boxShadow ?? (widget.elevation > 0 ? [
       BoxShadow(
-        color: Colors.black.withOpacity(0.08),
+        color: Colors.black.withValues(alpha: 0.08),
         blurRadius: widget.elevation * 3,
         offset: Offset(0, widget.elevation * 2),
       ),
@@ -174,10 +174,10 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
             padding: widget.padding ?? const EdgeInsets.all(20),
             margin: widget.margin,
             decoration: BoxDecoration(
-              color: widget.backgroundColor ?? AppColors.surface.withOpacity(0.95),
+              color: widget.backgroundColor ?? AppColors.surface.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(widget.borderRadius),
               border: widget.border ?? Border.all(
-                color: AppColors.primary.withOpacity(0.08),
+                color: AppColors.primary.withValues(alpha: 0.08),
                 width: 1,
               ),
               boxShadow: defaultShadow,
@@ -209,8 +209,8 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
             _animationController.reverse();
           } : null,
           borderRadius: BorderRadius.circular(widget.borderRadius),
-          splashColor: AppColors.primary.withOpacity(0.1),
-          highlightColor: AppColors.primary.withOpacity(0.05),
+          splashColor: AppColors.primary.withValues(alpha:0.1),
+          highlightColor: AppColors.primary.withValues(alpha:0.05),
           child: content,
         ),
       );
@@ -295,10 +295,10 @@ class _AppLoadingIndicatorState extends State<AppLoadingIndicator>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.surface.withOpacity(0.9),
+                color: AppColors.surface.withValues(alpha:0.9),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha:0.1),
                   width: 1,
                 ),
               ),
@@ -326,13 +326,13 @@ class _AppLoadingIndicatorState extends State<AppLoadingIndicator>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.primary.withOpacity(0.1),
-            AppColors.primary.withOpacity(0.05),
+            AppColors.primary.withValues(alpha:0.1),
+            AppColors.primary.withValues(alpha:0.05),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.2),
+            color: AppColors.primary.withValues(alpha:0.2),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -380,7 +380,7 @@ class ModernLoadingPainter extends CustomPainter {
     );
 
     // Secondary accent arc
-    paint.color = AppColors.secondary.withOpacity(0.7);
+    paint.color = AppColors.secondary.withValues(alpha:0.7);
     canvas.drawArc(
       rect,
       0.5,
@@ -390,7 +390,7 @@ class ModernLoadingPainter extends CustomPainter {
     );
 
     // Tertiary subtle arc
-    paint.color = AppColors.accent.withOpacity(0.5);
+    paint.color = AppColors.accent.withValues(alpha:0.5);
     canvas.drawArc(
       rect,
       2.2,

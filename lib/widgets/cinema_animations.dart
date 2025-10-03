@@ -84,8 +84,8 @@ class _ProjectorAnimationState extends State<ProjectorAnimation>
                 decoration: BoxDecoration(
                   gradient: RadialGradient(
                     colors: [
-                      AppColors.projectorLight.withOpacity(_lightAnimation.value * 0.6),
-                      AppColors.projectorLight.withOpacity(_lightAnimation.value * 0.3),
+                      AppColors.projectorLight.withValues(alpha:_lightAnimation.value * 0.6),
+                      AppColors.projectorLight.withValues(alpha:_lightAnimation.value * 0.3),
                       Colors.transparent,
                     ],
                   ),
@@ -150,7 +150,7 @@ class ProjectorPainter extends CustomPainter {
     );
     
     // Lens reflection
-    paint.color = AppColors.projectorLight.withOpacity(0.8);
+    paint.color = AppColors.projectorLight.withValues(alpha:0.8);
     canvas.drawCircle(
       Offset(center.dx + size.width * 0.3, center.dy),
       size.width * 0.1,
@@ -512,7 +512,7 @@ class _CurtainAnimationState extends State<CurtainAnimation>
                     end: Alignment.centerRight,
                     colors: [
                       AppColors.curtainRed,
-                      AppColors.curtainRed.withOpacity(0.8),
+                      AppColors.curtainRed.withValues(alpha:0.8),
                     ],
                   ),
                 ),
@@ -537,7 +537,7 @@ class _CurtainAnimationState extends State<CurtainAnimation>
                     end: Alignment.centerLeft,
                     colors: [
                       AppColors.curtainRed,
-                      AppColors.curtainRed.withOpacity(0.8),
+                      AppColors.curtainRed.withValues(alpha:0.8),
                     ],
                   ),
                 ),

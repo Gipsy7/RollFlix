@@ -305,11 +305,11 @@ class _GenreWheelState extends State<GenreWheel>
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: primaryColor.withOpacity(0.8),
+                        color: primaryColor.withValues(alpha:0.8),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: primaryColor.withOpacity(0.3),
+                            color: primaryColor.withValues(alpha:0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -336,7 +336,7 @@ class _GenreWheelState extends State<GenreWheel>
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: primaryColor.withOpacity(0.3),
+                          color: primaryColor.withValues(alpha:0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -372,11 +372,11 @@ class _GenreWheelState extends State<GenreWheel>
               width: 4,
               height: 120,
               decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.8),
+                color: primaryColor.withValues(alpha:0.8),
                 borderRadius: BorderRadius.circular(2),
                 boxShadow: [
                   BoxShadow(
-                    color: primaryColor.withOpacity(0.5),
+                    color: primaryColor.withValues(alpha:0.5),
                     blurRadius: 8,
                     offset: const Offset(0, 0),
                   ),
@@ -422,7 +422,7 @@ class FilmReelPainter extends CustomPainter {
   void _drawFilmBackground(Canvas canvas, Size size) {
     // Fundo principal do filme - estilo cinema clássico
     final filmPaint = Paint()
-      ..color = AppColors.backgroundDark.withOpacity(0.8)
+      ..color = AppColors.backgroundDark.withValues(alpha:0.8)
       ..style = PaintingStyle.fill;
     
     canvas.drawRRect(
@@ -435,7 +435,7 @@ class FilmReelPainter extends CustomPainter {
     
     // Bordas superior e inferior do filme - douradas
     final borderPaint = Paint()
-      ..color = accentColor.withOpacity(0.6)
+      ..color = accentColor.withValues(alpha:0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
     
@@ -500,9 +500,9 @@ class FilmReelPainter extends CustomPainter {
       final rect = Rect.fromCircle(center: center, radius: radius);
       final gradient = LinearGradient(
         colors: [
-          accentColor.withOpacity(0.8), 
+          accentColor.withValues(alpha:0.8), 
           accentColor, 
-          accentColor.withOpacity(0.9)
+          accentColor.withValues(alpha:0.9)
         ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -523,7 +523,7 @@ class FilmReelPainter extends CustomPainter {
       
       // Efeito de brilho com cor do tema
       final glowPaint = Paint()
-        ..color = accentColor.withOpacity(0.5)
+        ..color = accentColor.withValues(alpha:0.5)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;
 
@@ -531,14 +531,14 @@ class FilmReelPainter extends CustomPainter {
     } else {
       // Círculo normal com tema escuro
       final circlePaint = Paint()
-        ..color = AppColors.surfaceDark.withOpacity(0.9)
+        ..color = AppColors.surfaceDark.withValues(alpha:0.9)
         ..style = PaintingStyle.fill;
 
       canvas.drawCircle(center, radius, circlePaint);
 
       // Borda sutil com cor do tema
       final borderPaint = Paint()
-        ..color = accentColor.withOpacity(0.3)
+        ..color = accentColor.withValues(alpha:0.3)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;      canvas.drawCircle(center, radius, borderPaint);
     }
@@ -553,7 +553,7 @@ class FilmReelPainter extends CustomPainter {
         fontSize: isHighlighted ? 13 : 11,
         shadows: !isHighlighted ? [
           Shadow(
-            color: AppColors.backgroundDark.withOpacity(0.8),
+            color: AppColors.backgroundDark.withValues(alpha:0.8),
             blurRadius: 2,
             offset: const Offset(0, 1),
           ),
@@ -581,7 +581,7 @@ class FilmReelPainter extends CustomPainter {
   void _drawFilmHoles(Canvas canvas, Size size) {
     // Desenha os furos característicos do filme - estilo clássico
     final holePaint = Paint()
-      ..color = AppColors.backgroundDark.withOpacity(0.8)
+      ..color = AppColors.backgroundDark.withValues(alpha:0.8)
       ..style = PaintingStyle.fill;
     
     final holeRadius = 7.0;
@@ -606,7 +606,7 @@ class FilmReelPainter extends CustomPainter {
         
         // Borda com cor do tema para furos superiores
         final borderPaint = Paint()
-          ..color = accentColor.withOpacity(0.4)
+          ..color = accentColor.withValues(alpha:0.4)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1;
         
@@ -630,7 +630,7 @@ class FilmReelPainter extends CustomPainter {
         
         // Borda com cor do tema para furos inferiores
         final borderPaint = Paint()
-          ..color = accentColor.withOpacity(0.4)
+          ..color = accentColor.withValues(alpha:0.4)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1;
         

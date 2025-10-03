@@ -113,7 +113,7 @@ class ColorUtils {
       end: end,
       colors: [
         color,
-        color.withOpacity(opacity),
+        color.withValues(alpha: opacity),
       ],
     );
   }

@@ -370,7 +370,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         gradient: AppColors.cinemaGradient.scale(0.3),
         border: Border(
           bottom: BorderSide(
-            color: AppColors.textSecondary.withOpacity(0.2),
+            color: AppColors.textSecondary.withValues(alpha:0.2),
             width: 1,
           ),
         ),
@@ -395,10 +395,10 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   Widget _buildSearchBar(bool isMobile) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.backgroundDark.withOpacity(0.8),
+        color: AppColors.backgroundDark.withValues(alpha:0.8),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.primary.withOpacity(0.3),
+          color: AppColors.primary.withValues(alpha:0.3),
           width: 1,
         ),
       ),
@@ -409,7 +409,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         decoration: InputDecoration(
           hintText: 'Digite o nome do filme ou série...',
           hintStyle: AppTextStyles.bodyLarge.copyWith(
-            color: AppColors.textSecondary.withOpacity(0.7),
+            color: AppColors.textSecondary.withValues(alpha:0.7),
           ),
           prefixIcon: Icon(
             Icons.search,
@@ -484,15 +484,15 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
               ? AppColors.primaryGradient
               : LinearGradient(
                   colors: [
-                    AppColors.backgroundDark.withOpacity(0.8),
-                    AppColors.backgroundDark.withOpacity(0.6),
+                    AppColors.backgroundDark.withValues(alpha:0.8),
+                    AppColors.backgroundDark.withValues(alpha:0.6),
                   ],
                 ),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected 
                 ? AppColors.primary
-                : AppColors.textSecondary.withOpacity(0.3),
+                : AppColors.textSecondary.withValues(alpha:0.3),
             width: 1,
           ),
         ),
@@ -566,7 +566,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
             Icon(
               Icons.search_off,
               size: 64,
-              color: AppColors.textSecondary.withOpacity(0.5),
+              color: AppColors.textSecondary.withValues(alpha:0.5),
             ),
             const SizedBox(height: 16),
             SafeText(
@@ -579,7 +579,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
             SafeText(
               'Tente pesquisar com outras palavras-chave',
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary.withOpacity(0.7),
+                color: AppColors.textSecondary.withValues(alpha:0.7),
               ),
             ),
           ],
@@ -607,7 +607,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
             Icon(
               Icons.movie_outlined,
               size: 64,
-              color: AppColors.textSecondary.withOpacity(0.5),
+              color: AppColors.textSecondary.withValues(alpha:0.5),
             ),
             const SizedBox(height: 16),
             SafeText(
