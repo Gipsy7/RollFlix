@@ -187,104 +187,218 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
             child: Column(
               children: [
                 // Poster e informações básicas
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Poster
-                    Container(
-                      width: isMobile ? 120 : 150,
-                      height: isMobile ? 180 : 225,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        gradient: _romanticGradient.scale(0.5),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: widget.combo.moviePosterPath.isNotEmpty
-                            ? OptimizedNetworkImage(
-                                imageUrl: 'https://image.tmdb.org/t/p/w500${widget.combo.moviePosterPath}',
-                                fit: BoxFit.cover,
-                              )
-                            : Container(
-                                color: AppColors.surfaceDark,
-                                child: Icon(
-                                  Icons.movie,
-                                  size: 48,
-                                  color: AppColors.textMuted,
-                                ),
-                              ),
-                      ),
-                    ),
-                    
-                    const SizedBox(width: 20),
-                    
-                    // Informações do filme
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SafeText(
-                            widget.combo.movieTitle,
-                            style: AppTextStyles.headlineSmall.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          SafeText(
-                            'Ano: ${widget.combo.movieYear}',
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.star,
-                                size: 20,
-                                color: _secondaryGold,
-                              ),
-                              const SizedBox(width: 4),
-                              SafeText(
-                                '${widget.combo.movieRating.toStringAsFixed(1)}/10',
-                                style: AppTextStyles.bodyLarge.copyWith(
-                                  color: AppColors.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.all(12),
+                isMobile 
+                  ? Column(
+                      children: [
+                        // Poster em mobile (layout vertical)
+                        Center(
+                          child: Container(
+                            width: 150,
+                            height: 225,
                             decoration: BoxDecoration(
-                              color: _primaryRose.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: _romanticGradient.scale(0.5),
                             ),
-                            child: Row(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: widget.combo.moviePosterPath.isNotEmpty
+                                  ? OptimizedNetworkImage(
+                                      imageUrl: 'https://image.tmdb.org/t/p/w500${widget.combo.moviePosterPath}',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Container(
+                                      color: AppColors.surfaceDark,
+                                      child: Icon(
+                                        Icons.movie,
+                                        size: 48,
+                                        color: AppColors.textMuted,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 20),
+                        
+                        // Informações do filme em mobile
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SafeText(
+                              widget.combo.movieTitle,
+                              style: AppTextStyles.headlineSmall.copyWith(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            SafeText(
+                              'Ano: ${widget.combo.movieYear}',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.favorite,
-                                  color: _primaryRose,
+                                  Icons.star,
                                   size: 20,
+                                  color: _secondaryGold,
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 4),
                                 SafeText(
-                                  'Perfeito para encontros!',
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: _primaryRose,
+                                  '${widget.combo.movieRating.toStringAsFixed(1)}/10',
+                                  style: AppTextStyles.bodyLarge.copyWith(
+                                    color: AppColors.textPrimary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
                             ),
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: _primaryRose.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.favorite,
+                                    color: _primaryRose,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: SafeText(
+                                      'Perfeito para encontros!',
+                                      style: AppTextStyles.bodyMedium.copyWith(
+                                        color: _primaryRose,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Poster para tablet/desktop
+                        Container(
+                          width: 150,
+                          height: 225,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            gradient: _romanticGradient.scale(0.5),
                           ),
-                        ],
-                      ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: widget.combo.moviePosterPath.isNotEmpty
+                                ? OptimizedNetworkImage(
+                                    imageUrl: 'https://image.tmdb.org/t/p/w500${widget.combo.moviePosterPath}',
+                                    fit: BoxFit.cover,
+                                  )
+                                : Container(
+                                    color: AppColors.surfaceDark,
+                                    child: Icon(
+                                      Icons.movie,
+                                      size: 48,
+                                      color: AppColors.textMuted,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        
+                        const SizedBox(width: 20),
+                        
+                        // Informações do filme para tablet/desktop
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SafeText(
+                                widget.combo.movieTitle,
+                                style: AppTextStyles.headlineSmall.copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                              SafeText(
+                                'Ano: ${widget.combo.movieYear}',
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.star,
+                                    size: 20,
+                                    color: _secondaryGold,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  SafeText(
+                                    '${widget.combo.movieRating.toStringAsFixed(1)}/10',
+                                    style: AppTextStyles.bodyLarge.copyWith(
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: _primaryRose.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.favorite,
+                                      color: _primaryRose,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: SafeText(
+                                        'Perfeito para encontros!',
+                                        style: AppTextStyles.bodyMedium.copyWith(
+                                          color: _primaryRose,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
                 
                 const SizedBox(height: 20),
                 
@@ -308,6 +422,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                         color: AppColors.textSecondary,
                         height: 1.5,
                       ),
+                      maxLines: 10,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
