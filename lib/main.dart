@@ -9,6 +9,7 @@ import 'screens/movie_details_screen.dart';
 import 'screens/tv_show_details_screen.dart';
 import 'screens/search_screen.dart';
 import 'screens/tv_series_search_screen.dart';
+import 'screens/date_night_screen.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/common_widgets.dart';
 import 'widgets/error_widgets.dart';
@@ -339,6 +340,19 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                       context,
                       MaterialPageRoute(
                         builder: (context) => const TVSeriesSearchScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.favorite,
+                  title: 'Date Night',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DateNightScreen(),
                       ),
                     );
                   },
