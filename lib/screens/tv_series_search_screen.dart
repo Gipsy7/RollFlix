@@ -6,6 +6,7 @@ import '../widgets/responsive_widgets.dart';
 import '../widgets/optimized_widgets.dart';
 import '../widgets/common_widgets.dart';
 import 'tv_show_details_screen.dart';
+import 'search_screen.dart';
 
 class TVSeriesSearchScreen extends StatefulWidget {
   const TVSeriesSearchScreen({super.key});
@@ -321,6 +322,10 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
           fontWeight: FontWeight.w600,
         ),
       ),
+      actions: [
+        _buildSwapButton(isMobile),
+        SizedBox(width: isMobile ? 8 : 16),
+      ],
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -330,6 +335,78 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
               Color.fromARGB(255, 45, 3, 56), // Roxo escuro
               Color.fromARGB(255, 240, 43, 109), // Roxo vibrante
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSwapButton(bool isMobile) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color.fromARGB(255, 147, 51, 234).withValues(alpha: 0.8),
+            const Color.fromARGB(255, 219, 39, 119).withValues(alpha: 0.8),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(255, 240, 43, 109).withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SearchScreen(),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 12 : 16,
+              vertical: 8,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.tv,
+                  color: AppColors.textPrimary,
+                  size: isMobile ? 20 : 24,
+                ),
+                SizedBox(width: isMobile ? 6 : 8),
+                if (!isMobile) ...[
+                  Text(
+                    'Séries',
+                    style: AppTextStyles.labelLarge.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                ],
+                Icon(
+                  Icons.swap_horiz_rounded,
+                  color: AppColors.textPrimary,
+                  size: isMobile ? 18 : 20,
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -7,6 +7,7 @@ import '../widgets/responsive_widgets.dart';
 import '../widgets/movie_widgets.dart';
 import '../widgets/optimized_widgets.dart';
 import 'movie_details_screen.dart';
+import 'tv_series_search_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -355,9 +356,85 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           fontWeight: FontWeight.w600,
         ),
       ),
+      actions: [
+        _buildSwapButton(isMobile),
+        SizedBox(width: isMobile ? 8 : 16),
+      ],
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: AppColors.cinemaGradient,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSwapButton(bool isMobile) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary.withValues(alpha: 0.8),
+            const Color(0xFFD4AF37).withValues(alpha: 0.8),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const TVSeriesSearchScreen(),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 12 : 16,
+              vertical: 8,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.movie_filter,
+                  color: AppColors.textPrimary,
+                  size: isMobile ? 20 : 24,
+                ),
+                SizedBox(width: isMobile ? 6 : 8),
+                if (!isMobile) ...[
+                  Text(
+                    'Filmes',
+                    style: AppTextStyles.labelLarge.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                ],
+                Icon(
+                  Icons.swap_horiz_rounded,
+                  color: AppColors.textPrimary,
+                  size: isMobile ? 18 : 20,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
