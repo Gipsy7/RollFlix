@@ -280,6 +280,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           tooltip: 'Menu',
         ),
       ),
+      actions: [
+        _buildSwapButton(isMobile),
+        SizedBox(width: isMobile ? 8 : 16),
+      ],
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
@@ -289,6 +293,78 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             child: Padding(
               padding: EdgeInsets.all(isMobile ? 20 : 32),
               child: _buildHeader(isMobile),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSwapButton(bool isMobile) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        gradient: _isSeriesMode 
+            ? LinearGradient(
+                colors: [
+                  const Color.fromARGB(255, 147, 51, 234).withValues(alpha: 0.8),
+                  const Color.fromARGB(255, 219, 39, 119).withValues(alpha: 0.8),
+                ],
+              )
+            : LinearGradient(
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.8),
+                  const Color(0xFFD4AF37).withValues(alpha: 0.8),
+                ],
+              ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: currentAccentColor.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _toggleContentMode,
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 12 : 16,
+              vertical: 8,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  _isSeriesMode ? Icons.tv : Icons.movie_filter,
+                  color: AppColors.textPrimary,
+                  size: isMobile ? 20 : 24,
+                ),
+                SizedBox(width: isMobile ? 6 : 8),
+                if (!isMobile) ...[
+                  Text(
+                    _isSeriesMode ? 'Séries' : 'Filmes',
+                    style: AppTextStyles.labelLarge.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                ],
+                Icon(
+                  Icons.swap_horiz_rounded,
+                  color: AppColors.textPrimary,
+                  size: isMobile ? 18 : 20,
+                ),
+              ],
             ),
           ),
         ),
