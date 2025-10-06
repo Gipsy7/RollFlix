@@ -39,6 +39,7 @@ class AppConstants {
   
   // Movie Genres with TMDb IDs
   static const Map<String, int> genreIds = {
+    'Novidades': 0, // Special case - uses now_playing endpoint
     'Ação': 28,
     'Aventura': 12,
     'Animação': 16,

@@ -17,6 +17,7 @@ class MovieService {
 
   // Use genre mapping from constants
   static const Map<String, List<int>> _genreMap = {
+    'Novidades': [], // Special case - uses now_playing endpoint
     'Ação': [28], // Action
     'Aventura': [12], // Adventure
     'Animação': [16], // Animation
@@ -39,6 +40,7 @@ class MovieService {
 
   // Gêneros específicos para séries de TV
   static const Map<String, List<int>> _tvGenreMap = {
+    'Novidades': [], // Special case - uses on_the_air endpoint
     'Ação & Aventura': [10759], // Action & Adventure
     'Animação': [16], // Animation
     'Comédia': [35], // Comedy
@@ -58,6 +60,11 @@ class MovieService {
 
   static Future<List<Movie>> getMoviesByGenre(String genre) async {
     try {
+      // Caso especial para "Novidades" - busca filmes em cartaz/recentes
+      if (genre == 'Novidades') {
+        return await _getNowPlayingMovies();
+      }
+
       final genreIds = _genreMap[genre];
       if (genreIds == null || genreIds.isEmpty) {
         throw Exception('Gênero não encontrado');
@@ -89,6 +96,68 @@ class MovieService {
       print('Erro no MovieService: $e');
       // Fallback para lista estática em caso de erro
       return _getFallbackMovies(genre);
+    }
+  }
+
+  // Função auxiliar para buscar filmes em cartaz/novidades
+  static Future<List<Movie>> _getNowPlayingMovies() async {
+    try {
+      // Gera uma página aleatória entre 1 e 3 para variedade
+      final randomPage = Random().nextInt(3) + 1;
+      
+      final url = Uri.parse(
+        '$_baseUrl/movie/now_playing?api_key=$_apiKey&language=pt-BR&page=$randomPage&region=BR'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final moviesResponse = MoviesResponse.fromJson(jsonData);
+        
+        // Filtra filmes que tenham título em português ou pelo menos um título válido
+        final validMovies = moviesResponse.results
+            .where((movie) => movie.title.isNotEmpty && movie.title != 'Título não disponível')
+            .toList();
+
+        return validMovies;
+      } else {
+        // Se falhar, tenta buscar filmes populares recentes
+        return await _getRecentPopularMovies();
+      }
+    } catch (e) {
+      print('Erro ao buscar novidades: $e');
+      return await _getRecentPopularMovies();
+    }
+  }
+
+  // Função auxiliar para buscar filmes populares recentes
+  static Future<List<Movie>> _getRecentPopularMovies() async {
+    try {
+      final currentYear = DateTime.now().year;
+      final randomPage = Random().nextInt(3) + 1;
+      
+      final url = Uri.parse(
+        '$_baseUrl/discover/movie?api_key=$_apiKey&language=pt-BR&sort_by=popularity.desc&primary_release_year=$currentYear&page=$randomPage'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final moviesResponse = MoviesResponse.fromJson(jsonData);
+        
+        final validMovies = moviesResponse.results
+            .where((movie) => movie.title.isNotEmpty && movie.title != 'Título não disponível')
+            .toList();
+
+        return validMovies;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Erro ao buscar filmes populares recentes: $e');
+      return [];
     }
   }
 
@@ -208,6 +277,13 @@ class MovieService {
   // Lista de fallback caso a API não funcione
   static List<Movie> _getFallbackMovies(String genre) {
     final fallbackData = {
+      'Novidades': [
+        {'title': 'Oppenheimer', 'year': '2023'},
+        {'title': 'Barbie', 'year': '2023'},
+        {'title': 'Guardiões da Galáxia Vol. 3', 'year': '2023'},
+        {'title': 'Missão: Impossível - Acerto de Contas Parte 1', 'year': '2023'},
+        {'title': 'Elementos', 'year': '2023'},
+      ],
       'Ação': [
         {'title': 'John Wick', 'year': '2014'},
         {'title': 'Mad Max: Fury Road', 'year': '2015'},
@@ -625,6 +701,11 @@ class MovieService {
 
   static Future<List<TVShow>> getTVShowsByGenre(String genre) async {
     try {
+      // Caso especial para "Novidades" - busca séries no ar/recentes
+      if (genre == 'Novidades') {
+        return await _getOnTheAirTVShows();
+      }
+
       final genreIds = _tvGenreMap[genre];
       if (genreIds == null || genreIds.isEmpty) {
         throw Exception('Gênero não encontrado');
@@ -655,6 +736,144 @@ class MovieService {
     } catch (e) {
       print('Erro no TVService: $e');
       throw Exception('Falha ao buscar séries: $e');
+    }
+  }
+
+  // Função auxiliar para buscar séries no ar/novidades
+  static Future<List<TVShow>> _getOnTheAirTVShows() async {
+    try {
+      final currentYear = DateTime.now().year;
+      final lastYear = currentYear - 1;
+      
+      // Primeira tentativa: Séries que estrearam nos últimos 2 anos e são populares
+      final randomPage = Random().nextInt(2) + 1;
+      
+      final url = Uri.parse(
+        '$_baseUrl/discover/tv?api_key=$_apiKey&language=pt-BR&sort_by=popularity.desc&first_air_date.gte=$lastYear-01-01&page=$randomPage'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
+        
+        // Filtra séries que tenham título em português ou pelo menos um título válido
+        final validTVShows = tvShowsResponse.results
+            .where((tvshow) => tvshow.name.isNotEmpty && tvshow.name != 'Título não disponível')
+            .toList();
+
+        // Se encontrou séries recentes, retorna
+        if (validTVShows.isNotEmpty) {
+          return validTVShows;
+        }
+      }
+      
+      // Se não encontrou, tenta o endpoint on_the_air mas filtra por data
+      return await _getFilteredOnTheAirTVShows();
+    } catch (e) {
+      print('Erro ao buscar novidades de séries: $e');
+      return await _getRecentPopularTVShows();
+    }
+  }
+
+  // Função auxiliar para buscar séries on_the_air filtradas por data
+  static Future<List<TVShow>> _getFilteredOnTheAirTVShows() async {
+    try {
+      final randomPage = Random().nextInt(2) + 1;
+      
+      final url = Uri.parse(
+        '$_baseUrl/tv/on_the_air?api_key=$_apiKey&language=pt-BR&page=$randomPage'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
+        
+        // Filtra séries que estrearam nos últimos 3 anos
+        final currentYear = DateTime.now().year;
+        final cutoffYear = currentYear - 3;
+        
+        final recentTVShows = tvShowsResponse.results
+            .where((tvshow) {
+              if (tvshow.name.isEmpty || tvshow.name == 'Título não disponível') {
+                return false;
+              }
+              
+              // Verifica se a série estreou recentemente
+              if (tvshow.firstAirDate.isNotEmpty) {
+                try {
+                  final year = int.parse(tvshow.firstAirDate.split('-')[0]);
+                  return year >= cutoffYear;
+                } catch (e) {
+                  return true; // Se não conseguir parsear, mantém na lista
+                }
+              }
+              return true;
+            })
+            .toList();
+
+        if (recentTVShows.isNotEmpty) {
+          return recentTVShows;
+        }
+      }
+      
+      return await _getRecentPopularTVShows();
+    } catch (e) {
+      print('Erro ao buscar séries on the air filtradas: $e');
+      return await _getRecentPopularTVShows();
+    }
+  }
+
+  // Função auxiliar para buscar séries populares recentes
+  static Future<List<TVShow>> _getRecentPopularTVShows() async {
+    try {
+      final currentYear = DateTime.now().year;
+      final lastYear = currentYear - 1;
+      final randomPage = Random().nextInt(2) + 1;
+      
+      // Busca séries que estrearam nos últimos 2 anos
+      final url = Uri.parse(
+        '$_baseUrl/discover/tv?api_key=$_apiKey&language=pt-BR&sort_by=popularity.desc&first_air_date.gte=$lastYear-01-01&vote_count.gte=10&page=$randomPage'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
+        
+        final validTVShows = tvShowsResponse.results
+            .where((tvshow) => tvshow.name.isNotEmpty && tvshow.name != 'Título não disponível')
+            .toList();
+
+        // Se não encontrou séries dos últimos 2 anos, tenta apenas o ano atual
+        if (validTVShows.isEmpty) {
+          final urlCurrentYear = Uri.parse(
+            '$_baseUrl/discover/tv?api_key=$_apiKey&language=pt-BR&sort_by=popularity.desc&first_air_date_year=$currentYear&page=1'
+          );
+          
+          final responseCurrentYear = await http.get(urlCurrentYear);
+          
+          if (responseCurrentYear.statusCode == 200) {
+            final jsonDataCurrentYear = json.decode(responseCurrentYear.body);
+            final tvShowsResponseCurrentYear = TVShowsResponse.fromJson(jsonDataCurrentYear);
+            
+            return tvShowsResponseCurrentYear.results
+                .where((tvshow) => tvshow.name.isNotEmpty && tvshow.name != 'Título não disponível')
+                .toList();
+          }
+        }
+
+        return validTVShows;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Erro ao buscar séries populares recentes: $e');
+      return [];
     }
   }
 
