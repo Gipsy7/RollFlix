@@ -267,6 +267,58 @@ class _GenreWheelState extends State<GenreWheel>
     _pendulumController.forward();
   }
 
+  void _handleTapUp(TapUpDetails details) {
+    if (_isSpinning || widget.genres.isEmpty) return;
+    
+    // Obtém a posição do toque na tela
+    final tapX = details.localPosition.dx;
+    final screenWidth = context.size?.width ?? 0;
+    final centerX = screenWidth / 2;
+    
+    // Calcula qual gênero foi clicado baseado na posição
+    final genreSpacing = 120.0;
+    final scrollPixels = _currentScroll * genreSpacing;
+    
+    // Calcula o offset do toque em relação ao centro
+    final offsetFromCenter = tapX - centerX;
+    
+    // Calcula qual índice de gênero foi clicado
+    final clickedGenreOffset = (scrollPixels + offsetFromCenter) / genreSpacing;
+    final clickedGenreIndex = clickedGenreOffset.round();
+    
+    // Calcula a diferença entre a posição atual e a posição do gênero clicado
+    final targetScroll = clickedGenreIndex.toDouble();
+    
+    // Anima suavemente até o gênero clicado
+    _animateToPosition(targetScroll);
+  }
+
+  void _animateToPosition(double targetPosition) {
+    // Para qualquer animação ativa
+    _scrollController.stop();
+    _pendulumController.stop();
+    
+    setState(() {
+      _isPendulumActive = false;
+    });
+    
+    // Configura a animação para a nova posição
+    _pendulumAnimation = Tween<double>(
+      begin: _currentScroll,
+      end: targetPosition,
+    ).animate(CurvedAnimation(
+      parent: _pendulumController,
+      curve: Curves.easeOutCubic,
+    ));
+    
+    setState(() {
+      _isPendulumActive = true;
+    });
+    
+    _pendulumController.reset();
+    _pendulumController.forward();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -279,6 +331,7 @@ class _GenreWheelState extends State<GenreWheel>
             onPanStart: _handlePanStart,
             onPanUpdate: _handlePanUpdate,
             onPanEnd: _handlePanEnd,
+            onTapUp: _handleTapUp,
             child: CustomPaint(
               size: Size(double.infinity, 200),
               painter: FilmReelPainter(
