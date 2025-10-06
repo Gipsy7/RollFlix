@@ -716,7 +716,6 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                 },
                 onRandomSpin: () {},
                 accentColor: _isSeriesMode ? currentAccentColor : null,
-                onToggleMode: _toggleContentMode,
                 isSeriesMode: _isSeriesMode,
               ),
             ),

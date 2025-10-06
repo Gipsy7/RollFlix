@@ -8,7 +8,6 @@ class GenreWheel extends StatefulWidget {
   final Function(String) onGenreSelected;
   final VoidCallback? onRandomSpin;
   final Color? accentColor;
-  final VoidCallback? onToggleMode;
   final bool isSeriesMode;
 
   const GenreWheel({
@@ -18,7 +17,6 @@ class GenreWheel extends StatefulWidget {
     required this.onGenreSelected,
     this.onRandomSpin,
     this.accentColor,
-    this.onToggleMode,
     this.isSeriesMode = false,
   });
 
@@ -350,34 +348,6 @@ class _GenreWheelState extends State<GenreWheel>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Botão de toggle filme/série
-                if (widget.onToggleMode != null)
-                  GestureDetector(
-                    onTap: widget.onToggleMode,
-                    child: Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: primaryColor.withValues(alpha:0.8),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: primaryColor.withValues(alpha:0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        widget.isSeriesMode ? Icons.movie : Icons.tv,
-                        color: AppColors.backgroundDark,
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                
-                if (widget.onToggleMode != null) const SizedBox(width: 12),
-                
                 // Botão de sorteio de gênero
                 GestureDetector(
                   onTap: _spinFilmReel,
