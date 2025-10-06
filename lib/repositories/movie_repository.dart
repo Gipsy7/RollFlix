@@ -15,6 +15,10 @@ class MovieRepository extends ChangeNotifier {
   final Map<String, List<Movie>> _movieCache = {};
   final Map<String, DateTime> _cacheTimestamps = {};
   static const Duration _cacheExpiration = Duration(minutes: 15);
+  
+  // Histórico de filmes sorteados por gênero para evitar repetições
+  final Map<String, List<int>> _recentlyDrawnMovies = {};
+  static const int _maxHistorySize = 10; // Mantém os últimos 10 filmes sorteados por gênero
 
   /// Obtém filmes por gênero com cache
   Future<List<Movie>> getMoviesByGenre(String genre) async {
@@ -53,7 +57,7 @@ class MovieRepository extends ChangeNotifier {
     }
   }
 
-  /// Obtém um filme aleatório do cache ou API
+  /// Obtém um filme aleatório do cache ou API, evitando repetições recentes
   Future<Movie> getRandomMovieByGenre(String genre, {int? excludeMovieId}) async {
     debugPrint('Buscando filme aleatório do gênero: $genre (Excluindo: $excludeMovieId)');
     final movies = await getMoviesByGenre(genre);
@@ -63,32 +67,63 @@ class MovieRepository extends ChangeNotifier {
     
     debugPrint('Encontrados ${movies.length} filmes do gênero $genre');
     
-    // Se há um filme a excluir e há mais de um filme, remove da lista
-    List<Movie> availableMovies = movies;
-    if (excludeMovieId != null && movies.length > 1) {
-      availableMovies = movies.where((movie) => movie.id != excludeMovieId).toList();
-      debugPrint('Após excluir filme atual: ${availableMovies.length} filmes disponíveis');
+    // Obtém o histórico de filmes recentes deste gênero
+    final cacheKey = genre.toLowerCase();
+    final recentMovieIds = _recentlyDrawnMovies[cacheKey] ?? [];
+    
+    // Filtra filmes que não estão no histórico recente
+    List<Movie> availableMovies = movies.where((movie) {
+      // Exclui o filme atual se especificado
+      if (excludeMovieId != null && movie.id == excludeMovieId) {
+        return false;
+      }
+      // Exclui filmes do histórico recente
+      return !recentMovieIds.contains(movie.id);
+    }).toList();
+    
+    debugPrint('Histórico recente tem ${recentMovieIds.length} filmes, ${availableMovies.length} filmes disponíveis após filtro');
+    
+    // Se não sobrou nenhum filme após exclusão, limpa o histórico e usa toda a lista
+    // (exceto o filme atual se especificado)
+    if (availableMovies.isEmpty) {
+      debugPrint('Histórico resetado - todos os filmes já foram sorteados');
+      _recentlyDrawnMovies[cacheKey] = [];
+      availableMovies = movies.where((movie) => 
+        excludeMovieId == null || movie.id != excludeMovieId
+      ).toList();
     }
     
-    // Se não sobrou nenhum filme após exclusão, usa a lista original
+    // Se ainda não há filmes disponíveis, usa a lista completa
     if (availableMovies.isEmpty) {
       availableMovies = movies;
-      debugPrint('Usando lista original pois não sobrou nenhum filme');
+      debugPrint('Usando lista completa pois não há filmes disponíveis');
     }
     
-    // Retorna um filme verdadeiramente aleatório da lista
+    // Seleciona um filme aleatório
     final random = Random();
     final selectedMovie = availableMovies[random.nextInt(availableMovies.length)];
     
-    debugPrint('Filme sorteado: ${selectedMovie.title}');
+    // Adiciona ao histórico
+    _recentlyDrawnMovies[cacheKey] = _recentlyDrawnMovies[cacheKey] ?? [];
+    _recentlyDrawnMovies[cacheKey]!.add(selectedMovie.id);
+    
+    // Mantém apenas os últimos N filmes no histórico
+    if (_recentlyDrawnMovies[cacheKey]!.length > _maxHistorySize) {
+      _recentlyDrawnMovies[cacheKey] = 
+        _recentlyDrawnMovies[cacheKey]!.skip(_recentlyDrawnMovies[cacheKey]!.length - _maxHistorySize).toList();
+    }
+    
+    debugPrint('Filme sorteado: ${selectedMovie.title} (ID: ${selectedMovie.id})');
+    debugPrint('Histórico atualizado: ${_recentlyDrawnMovies[cacheKey]!.length} filmes');
     return selectedMovie;
   }
 
-  /// Limpa o cache
+  /// Limpa o cache e histórico
   void clearCache() {
     _movieCache.clear();
     _cacheTimestamps.clear();
-    debugPrint('Movie cache cleared');
+    _recentlyDrawnMovies.clear();
+    debugPrint('Movie cache and history cleared');
   }
 
   /// Limpa cache expirado
@@ -133,6 +168,8 @@ class MovieRepository extends ChangeNotifier {
       'cached_genres': _movieCache.length,
       'total_movies': _movieCache.values.fold<int>(0, (sum, list) => sum + list.length),
       'cache_size_mb': _calculateCacheSize(),
+      'history_entries': _recentlyDrawnMovies.length,
+      'total_history_items': _recentlyDrawnMovies.values.fold<int>(0, (sum, list) => sum + list.length),
     };
   }
 

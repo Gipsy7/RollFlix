@@ -16,6 +16,7 @@ import 'widgets/error_widgets.dart';
 import 'widgets/optimized_widgets.dart';
 import 'widgets/responsive_widgets.dart';
 import 'controllers/movie_controller.dart';
+import 'repositories/tv_show_repository.dart';
 import 'mixins/animation_mixin.dart';
 
 void main() {
@@ -45,6 +46,7 @@ class MovieSorterApp extends StatefulWidget {
 
 class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStateMixin, AnimationMixin {
   late final MovieController _movieController;
+  late final TVShowRepository _tvShowRepository;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   // Variáveis para controle do toggle filme/série
@@ -71,14 +73,17 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   void initState() {
     super.initState();
     _movieController = MovieController();
+    _tvShowRepository = TVShowRepository();
     _movieController.addListener(_onMovieStateChanged);
     
     // Pré-carrega dados populares para melhor performance
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Limpa o cache para garantir busca de múltiplos filmes
       _movieController.clearCache();
+      _tvShowRepository.clearCache();
       
       _movieController.preloadData();
+      _tvShowRepository.preloadPopularGenres();
       
       // Seleciona automaticamente o primeiro gênero do modo atual
       if (currentGenres.isNotEmpty) {
@@ -95,6 +100,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   void dispose() {
     _movieController.removeListener(_onMovieStateChanged);
     _movieController.dispose();
+    _tvShowRepository.cleanExpiredCache();
     super.dispose();
   }
 
@@ -142,18 +148,18 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
     try {
       if (_isSeriesMode) {
-        final tvShows = await MovieService.getTVShowsByGenre(_selectedGenre!);
-        if (tvShows.isNotEmpty) {
-          setState(() {
-            _selectedTVShow = tvShows[DateTime.now().millisecondsSinceEpoch % tvShows.length];
-            _selectedMovie = null;
-          });
-          animateMovieCard();
-        } else {
-          setState(() {
-            _errorMessage = 'Nenhuma série encontrada para este gênero';
-          });
-        }
+        // Usa o repository para séries com histórico anti-repetição
+        final currentShowId = _selectedTVShow?.id;
+        final newShow = await _tvShowRepository.getRandomTVShowByGenre(
+          _selectedGenre!,
+          excludeShowId: currentShowId,
+        );
+        
+        setState(() {
+          _selectedTVShow = newShow;
+          _selectedMovie = null;
+        });
+        animateMovieCard();
       } else {
         // Usa o método existente do controller para filmes
         if (_movieController.canRollMovie || _selectedGenre != _movieController.selectedGenre) {
