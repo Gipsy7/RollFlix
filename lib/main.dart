@@ -16,6 +16,7 @@ import 'widgets/error_widgets.dart';
 import 'widgets/optimized_widgets.dart';
 import 'widgets/responsive_widgets.dart';
 import 'controllers/movie_controller.dart';
+import 'controllers/tv_show_controller.dart';
 import 'repositories/tv_show_repository.dart';
 import 'mixins/animation_mixin.dart';
 
@@ -46,6 +47,7 @@ class MovieSorterApp extends StatefulWidget {
 
 class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStateMixin, AnimationMixin {
   late final MovieController _movieController;
+  late final TVShowController _tvShowController;
   late final TVShowRepository _tvShowRepository;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -73,23 +75,27 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   void initState() {
     super.initState();
     _movieController = MovieController();
+    _tvShowController = TVShowController();
     _tvShowRepository = TVShowRepository();
     _movieController.addListener(_onMovieStateChanged);
+    _tvShowController.addListener(_onTVShowStateChanged);
     
     // Pré-carrega dados populares para melhor performance
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Limpa o cache para garantir busca de múltiplos filmes
+      // Limpa o cache para garantir busca de múltiplos filmes e séries
       _movieController.clearCache();
-      _tvShowRepository.clearCache();
+      _tvShowController.clearCache();
       
       _movieController.preloadData();
-      _tvShowRepository.preloadPopularGenres();
+      _tvShowController.preloadData();
       
       // Seleciona automaticamente o primeiro gênero do modo atual
       if (currentGenres.isNotEmpty) {
         _selectedGenre = currentGenres.first;
         if (!_isSeriesMode) {
           _movieController.selectGenre(currentGenres.first);
+        } else {
+          _tvShowController.selectGenre(currentGenres.first);
         }
         debugPrint('Gênero inicial selecionado automaticamente: ${currentGenres.first}');
       }
@@ -99,13 +105,19 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   @override
   void dispose() {
     _movieController.removeListener(_onMovieStateChanged);
+    _tvShowController.removeListener(_onTVShowStateChanged);
     _movieController.dispose();
+    _tvShowController.dispose();
     _tvShowRepository.cleanExpiredCache();
     super.dispose();
   }
 
-  /// Listener otimizado para mudanças de estado
+  /// Listener otimizado para mudanças de estado de filmes
   void _onMovieStateChanged() {
+    setState(() {
+      // Força rebuild para atualizar contador e estado
+    });
+    
     if (_movieController.hasMovie) {
       animateMovieCard();
     }
@@ -114,6 +126,24 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       WidgetsBinding.instance.addPostFrameCallback((_) {
         AppSnackBar.showError(context, _movieController.errorMessage!);
         _movieController.clearError();
+      });
+    }
+  }
+
+  /// Listener otimizado para mudanças de estado de séries
+  void _onTVShowStateChanged() {
+    setState(() {
+      // Força rebuild para atualizar contador e estado
+    });
+    
+    if (_tvShowController.hasShow) {
+      animateMovieCard();
+    }
+    
+    if (_tvShowController.errorMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        AppSnackBar.showError(context, _tvShowController.errorMessage!);
+        _tvShowController.clearError();
       });
     }
   }
@@ -148,20 +178,17 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
     try {
       if (_isSeriesMode) {
-        // Usa o repository para séries com histórico anti-repetição
-        final currentShowId = _selectedTVShow?.id;
-        final newShow = await _tvShowRepository.getRandomTVShowByGenre(
-          _selectedGenre!,
-          excludeShowId: currentShowId,
-        );
-        
-        setState(() {
-          _selectedTVShow = newShow;
-          _selectedMovie = null;
-        });
-        animateMovieCard();
+        // Usa o controller para séries com histórico anti-repetição
+        if (_tvShowController.canRollShow || _selectedGenre != _tvShowController.selectedGenre) {
+          _tvShowController.selectGenre(_selectedGenre!);
+          await _tvShowController.rollShow();
+          setState(() {
+            _selectedTVShow = _tvShowController.selectedShow;
+            _selectedMovie = null;
+          });
+        }
       } else {
-        // Usa o método existente do controller para filmes
+        // Usa o controller para filmes
         if (_movieController.canRollMovie || _selectedGenre != _movieController.selectedGenre) {
           _movieController.selectGenre(_selectedGenre!);
           await _movieController.rollMovie();
@@ -701,12 +728,20 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildContentCard(BuildContext context, bool isMobile) {
-    if (_isSeriesMode && _selectedTVShow != null) {
-      return _buildTVShowCard(context, isMobile);
-    } else if (!_isSeriesMode && _selectedMovie != null) {
-      return _buildMovieCard(context, isMobile);
-    }
-    return const SizedBox.shrink();
+    return Column(
+      children: [
+        // Contador unificado ANTES do card
+        _buildMovieCounter(),
+        const SizedBox(height: 12),
+        // Card do filme ou série
+        if (_isSeriesMode && _selectedTVShow != null)
+          _buildTVShowCard(context, isMobile)
+        else if (!_isSeriesMode && _selectedMovie != null)
+          _buildMovieCard(context, isMobile)
+        else
+          const SizedBox.shrink(),
+      ],
+    );
   }
 
   Widget _buildTVShowCard(BuildContext context, bool isMobile) {
@@ -837,7 +872,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           _buildMovieOverview(movie, isMobile),
           const SizedBox(height: 16),
         ],
-        _buildMovieCounter(),
+        // Removido: _buildMovieCounter() - agora usando contador unificado
         const SizedBox(height: 8),
         _buildDetailsHint(),
       ],
@@ -927,19 +962,40 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildMovieCounter() {
-    if (_movieController.movieCount <= 1) return const SizedBox.shrink();
+    // Verifica qual contador mostrar baseado no modo
+    int count;
+    String counterText;
+    IconData icon;
+    
+    if (_isSeriesMode) {
+      count = _tvShowController.showCount;
+      icon = Icons.tv;
+      counterText = 'Série $count sorteada';
+    } else {
+      count = _movieController.movieCount;
+      icon = Icons.movie_filter;
+      counterText = 'Filme $count sorteado';
+    }
+    
+    debugPrint('=== CONTADOR DEBUG ===');
+    debugPrint('Modo Séries: $_isSeriesMode');
+    debugPrint('Count: $count');
+    debugPrint('Texto: $counterText');
+    debugPrint('====================');
+    
+    if (count <= 1) return const SizedBox.shrink();
     
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(
-          Icons.movie_filter,
+          icon,
           size: 16,
           color: AppColors.textSecondary,
         ),
         const SizedBox(width: 6),
-        SafeText(
-          'Filme ${_movieController.movieCount} sorteado',
+        Text(
+          counterText,
           style: AppTextStyles.bodySmall.copyWith(
             color: AppColors.textSecondary,
             fontStyle: FontStyle.italic,
@@ -1048,7 +1104,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           _buildTVShowOverview(tvShow, isMobile),
           const SizedBox(height: 16),
         ],
-        _buildTVShowCounter(),
+        // Removido: _buildTVShowCounter() - agora usando contador unificado
         const SizedBox(height: 8),
         _buildTVShowDetailsHint(),
       ],
@@ -1135,28 +1191,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     );
   }
 
-  Widget _buildTVShowCounter() {
-    // Contador dinâmico baseado no número de séries sorteadas
-    // Por enquanto, vamos usar um contador simples
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.tv,
-          size: 16,
-          color: AppColors.textSecondary,
-        ),
-        const SizedBox(width: 6),
-        SafeText(
-          'Série sorteada',
-          style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.textSecondary,
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildTVShowDetailsHint() {
     return Container(
