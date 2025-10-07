@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -40,33 +39,6 @@ class AuthService {
     }
   }
 
-  // Login com Facebook
-  static Future<UserCredential?> signInWithFacebook() async {
-    try {
-      // Trigger the Facebook authentication flow
-      final LoginResult loginResult = await FacebookAuth.instance.login(
-        permissions: ['email', 'public_profile'],
-      );
-
-      if (loginResult.status == LoginStatus.success) {
-        // Create a credential from the access token
-        final OAuthCredential facebookAuthCredential = 
-            FacebookAuthProvider.credential(loginResult.accessToken!.token);
-
-        // Sign in to Firebase with the Facebook credential
-        return await _auth.signInWithCredential(facebookAuthCredential);
-      } else if (loginResult.status == LoginStatus.cancelled) {
-        // O usuário cancelou o login
-        return null;
-      } else {
-        throw Exception('Erro ao fazer login com Facebook: ${loginResult.message}');
-      }
-    } catch (e) {
-      print('Erro ao fazer login com Facebook: $e');
-      rethrow;
-    }
-  }
-
   // Logout
   static Future<void> signOut() async {
     try {
@@ -74,9 +46,6 @@ class AuthService {
       if (await _googleSignIn.isSignedIn()) {
         await _googleSignIn.signOut();
       }
-      
-      // Logout do Facebook
-      await FacebookAuth.instance.logOut();
       
       // Logout do Firebase
       await _auth.signOut();
@@ -113,14 +82,13 @@ class AuthService {
     return currentUser != null;
   }
 
-  // Obter provedor de login (Google, Facebook, etc.)
+  // Obter provedor de login (Google)
   static String? getLoginProvider() {
     final user = currentUser;
     if (user == null || user.providerData.isEmpty) return null;
     
     final providerId = user.providerData.first.providerId;
     if (providerId.contains('google')) return 'Google';
-    if (providerId.contains('facebook')) return 'Facebook';
     return providerId;
   }
 }

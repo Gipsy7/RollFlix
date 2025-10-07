@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
-import '../widgets/error_widgets.dart';
 import '../main.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -33,35 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erro ao fazer login com Google: $e'),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  Future<void> _signInWithFacebook() async {
-    setState(() => _isLoading = true);
-
-    try {
-      final userCredential = await AuthService.signInWithFacebook();
-      
-      if (userCredential != null && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MyApp()),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao fazer login com Facebook: $e'),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
@@ -174,16 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             label: 'Continuar com Google',
                             color: Colors.white,
                             textColor: Colors.black87,
-                          ),
-                          const SizedBox(height: 16),
-                          
-                          // Botão Facebook
-                          _buildSocialButton(
-                            onPressed: _signInWithFacebook,
-                            icon: Icons.facebook,
-                            label: 'Continuar com Facebook',
-                            color: const Color(0xFF1877F2),
-                            textColor: Colors.white,
                           ),
                           const SizedBox(height: 24),
                           

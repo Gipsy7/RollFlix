@@ -64,6 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '532332079577',
     projectId: 'rollflix-6640f',
     storageBucket: 'rollflix-6640f.firebasestorage.app',
+    androidClientId: '532332079577-m63q4vap2pk6ui8gssfmqjq6nqc2q2gp.apps.googleusercontent.com',
+    iosClientId: '532332079577-kbak8klq0k1rb2n3me3bfpvr7qc0njr8.apps.googleusercontent.com',
     iosBundleId: 'com.example.testeapp',
   );
 
@@ -73,6 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '532332079577',
     projectId: 'rollflix-6640f',
     storageBucket: 'rollflix-6640f.firebasestorage.app',
+    androidClientId: '532332079577-m63q4vap2pk6ui8gssfmqjq6nqc2q2gp.apps.googleusercontent.com',
+    iosClientId: '532332079577-kbak8klq0k1rb2n3me3bfpvr7qc0njr8.apps.googleusercontent.com',
     iosBundleId: 'com.example.testeapp',
   );
 
@@ -85,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'rollflix-6640f.firebasestorage.app',
     measurementId: 'G-1ZVZ4CC98N',
   );
+
 }
