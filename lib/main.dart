@@ -47,6 +47,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   late final TVShowRepository _tvShowRepository;
   late final AppModeController _appModeController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  
+  // Flag para controlar quando a animação deve disparar
+  bool _shouldAnimateCard = false;
 
   // Getters para acessar estado dos controllers
   Movie? get _selectedMovie => _movieController.selectedMovie;
@@ -125,6 +128,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   void _toggleContentMode() {
     _appModeController.toggleMode();
     
+    // Reseta a flag ao trocar de modo para evitar animação automática
+    setState(() {
+      _shouldAnimateCard = false;
+    });
+    
     // Auto-seleciona o primeiro gênero do novo modo
     if (currentGenres.isNotEmpty) {
       _appModeController.selectGenre(currentGenres.first);
@@ -142,6 +150,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       AppSnackBar.showInfo(context, 'Selecione um gênero primeiro');
       return;
     }
+
+    // Ativa a flag para permitir animação após o sorteio
+    setState(() {
+      _shouldAnimateCard = true;
+    });
 
     try {
       if (_appModeController.isSeriesMode) {
@@ -197,21 +210,29 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         _appModeController,
       ]),
       builder: (context, _) {
-        // Anima o card quando há um novo filme/série
+        // Anima o card quando há um novo filme/série E a flag está ativa
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
           
           if (_appModeController.isSeriesMode) {
-            if (_tvShowController.hasShow) {
+            if (_tvShowController.hasShow && _shouldAnimateCard) {
               animateMovieCard();
+              // Reseta a flag após animar
+              setState(() {
+                _shouldAnimateCard = false;
+              });
             }
             if (_tvShowController.errorMessage != null) {
               AppSnackBar.showError(context, _tvShowController.errorMessage!);
               _tvShowController.clearError();
             }
           } else {
-            if (_movieController.hasMovie) {
+            if (_movieController.hasMovie && _shouldAnimateCard) {
               animateMovieCard();
+              // Reseta a flag após animar
+              setState(() {
+                _shouldAnimateCard = false;
+              });
             }
             if (_movieController.errorMessage != null) {
               AppSnackBar.showError(context, _movieController.errorMessage!);
