@@ -427,32 +427,35 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                     Navigator.pop(context);
                   },
                 ),
-                _buildDrawerItem(
-                  icon: Icons.search,
-                  title: 'Pesquisar Filmes',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SearchScreen(),
-                      ),
-                    );
-                  },
-                ),
-                _buildDrawerItem(
-                  icon: Icons.tv,
-                  title: 'Pesquisar Séries',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const TVSeriesSearchScreen(),
-                      ),
-                    );
-                  },
-                ),
+                // Exibe apenas a pesquisa correspondente ao modo atual
+                if (!_isSeriesMode)
+                  _buildDrawerItem(
+                    icon: Icons.search,
+                    title: 'Pesquisar Filmes',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SearchScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                if (_isSeriesMode)
+                  _buildDrawerItem(
+                    icon: Icons.search,
+                    title: 'Pesquisar Séries',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TVSeriesSearchScreen(),
+                        ),
+                      );
+                    },
+                  ),
                 _buildDrawerItem(
                   icon: Icons.favorite,
                   title: 'Date Night',
