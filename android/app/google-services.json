@@ -12,7 +12,20 @@
           "package_name": "com.rollflix.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "532332079577-m63q4vap2pk6ui8gssfmqjq6nqc2q2gp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rollflix.app",
+            "certificate_hash": "6c50575b4f7c48a73f0d735dfdee1bf01b1cef0e"
+          }
+        },
+        {
+          "client_id": "532332079577-pl49gm35erc77st380johfojttu6uafr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAISnI4auhuCG-oG-FQAL2t7W3IBf1o19w"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "532332079577-pl49gm35erc77st380johfojttu6uafr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "532332079577-kbak8klq0k1rb2n3me3bfpvr7qc0njr8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.testeapp"
+              }
+            }
+          ]
         }
       }
     }
