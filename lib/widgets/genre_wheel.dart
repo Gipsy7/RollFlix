@@ -484,20 +484,23 @@ class FilmReelPainter extends CustomPainter {
     final yPosition = center.dy;
     
     // Calcula o offset horizontal baseado no scroll
-    // Agora scrollOffset representa diretamente a posição do gênero (0, 1, 2, etc.)
     final scrollPixels = scrollOffset * genreSpacing;
     
     // Calcula quantos círculos são necessários para preencher a tela COMPLETA + buffer
     final screenWidth = size.width;
     final circlesOnScreen = (screenWidth / genreSpacing).ceil();
-    final bufferCircles = 6; // Buffer maior para garantir cobertura total nas bordas
+    final bufferCircles = 8; // Buffer ainda maior para garantir cobertura nas bordas
     final totalCirclesToDraw = circlesOnScreen + (bufferCircles * 2);
     
     // Encontra o índice base baseado na posição atual
     final baseIndex = scrollOffset.floor();
     
-    // Desenha círculos em ambas as direções para criar rolagem infinita
-    for (int i = -bufferCircles; i < totalCirclesToDraw - bufferCircles; i++) {
+    // Ajusta o início para cobrir a borda esquerda
+    // Calcula quantos círculos cabem à esquerda do centro
+    final leftCircles = (center.dx / genreSpacing).ceil() + 2;
+    
+    // Desenha círculos começando bem antes da borda esquerda
+    for (int i = -leftCircles - bufferCircles; i < totalCirclesToDraw - bufferCircles; i++) {
       final currentIndex = baseIndex + i;
       
       // Usa modulo para criar o loop infinito
@@ -506,13 +509,13 @@ class FilmReelPainter extends CustomPainter {
       
       final xPosition = center.dx + (currentIndex * genreSpacing) - scrollPixels;
       
-      // Desenha se estiver visível ou MUITO próximo das bordas (para garantir cobertura total)
-      if (xPosition > -genreRadius * 3 && xPosition < screenWidth + genreRadius * 3) {
+      // Desenha se estiver visível ou próximo das bordas
+      if (xPosition > -genreRadius * 2 && xPosition < screenWidth + genreRadius * 2) {
         final position = Offset(xPosition, yPosition);
         
-        // Determina se é o gênero central (destacado) - usa critério mais rigoroso
+        // Determina se é o gênero central (destacado)
         final distanceFromCenter = (xPosition - center.dx).abs();
-        final isHighlighted = distanceFromCenter < genreSpacing * 0.3; // Reduzido para ser mais preciso
+        final isHighlighted = distanceFromCenter < genreSpacing * 0.3;
         
         _drawGenreCircle(canvas, position, genreRadius, genre, isHighlighted);
       }
