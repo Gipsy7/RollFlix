@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/recipe.dart';
+import '../data/static_recipes_data.dart';
 import 'recipe_cache_service.dart';
 
 class RecipeService {
@@ -133,6 +134,7 @@ class RecipeService {
   static Future<Map<String, Recipe>> generateDateNightMenu({
     String? cuisine,
     String? diet,
+    String? dateType, // Tipo de Date Night para fallback apropriado
   }) async {
     // 1. Verificar se há menu completo em cache
     final cachedMenu = await RecipeCacheService.getCachedMenu(cuisine, diet);
@@ -152,10 +154,10 @@ class RecipeService {
       ]);
 
       final menu = {
-        'mainCourse': results[0].isNotEmpty ? results[0][0] : _getFallbackRecipes('main course')[0],
-        'dessert': results[1].isNotEmpty ? results[1][0] : _getFallbackRecipes('dessert')[0],
-        'appetizer': results[2].isNotEmpty ? results[2][0] : _getFallbackRecipes('appetizer')[0],
-        'sideDish': results[3].isNotEmpty ? results[3][0] : _getFallbackRecipes('side dish')[0],
+        'mainCourse': results[0].isNotEmpty ? results[0][0] : _getFallbackRecipes('main course', dateType: dateType)[0],
+        'dessert': results[1].isNotEmpty ? results[1][0] : _getFallbackRecipes('dessert', dateType: dateType)[0],
+        'appetizer': results[2].isNotEmpty ? results[2][0] : _getFallbackRecipes('appetizer', dateType: dateType)[0],
+        'sideDish': results[3].isNotEmpty ? results[3][0] : _getFallbackRecipes('side dish', dateType: dateType)[0],
       };
 
       // 3. Salvar menu completo no cache
@@ -165,80 +167,55 @@ class RecipeService {
       return menu;
     } catch (e) {
       print('Erro ao gerar menu: $e');
-      // Retornar menu fallback
+      // Retornar menu fallback usando receitas estáticas apropriadas
+      if (dateType != null) {
+        final staticMenu = StaticRecipesData.getRandomMenuForDateType(dateType);
+        print('✓ Usando menu estático para $dateType');
+        return staticMenu;
+      }
+      
+      // Fallback genérico
       return {
-        'mainCourse': _getFallbackRecipes('main course')[0],
-        'dessert': _getFallbackRecipes('dessert')[0],
-        'appetizer': _getFallbackRecipes('appetizer')[0],
-        'sideDish': _getFallbackRecipes('side dish')[0],
+        'mainCourse': _getFallbackRecipes('main course', dateType: dateType)[0],
+        'dessert': _getFallbackRecipes('dessert', dateType: dateType)[0],
+        'appetizer': _getFallbackRecipes('appetizer', dateType: dateType)[0],
+        'sideDish': _getFallbackRecipes('side dish', dateType: dateType)[0],
       };
     }
   }
 
   // Receitas de fallback (quando a API falha ou não está configurada)
-  static List<Recipe> _getFallbackRecipes(String type) {
-    switch (type.toLowerCase()) {
-      case 'main course':
-        return [
-          Recipe(
-            id: 1,
-            title: 'Filé Mignon ao Molho Madeira',
-            image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500',
-            readyInMinutes: 45,
-            servings: 2,
-            sourceUrl: '',
-            summary: 'Filé mignon suculento com delicioso molho madeira.',
-            pricePerServing: 2500.0,
-            vegetarian: false,
-            glutenFree: true,
-          ),
-        ];
-      case 'dessert':
-        return [
-          Recipe(
-            id: 2,
-            title: 'Mousse de Chocolate Belga',
-            image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=500',
-            readyInMinutes: 20,
-            servings: 2,
-            sourceUrl: '',
-            summary: 'Mousse cremoso de chocolate belga.',
-            pricePerServing: 800.0,
-            vegetarian: true,
-          ),
-        ];
-      case 'appetizer':
-        return [
-          Recipe(
-            id: 3,
-            title: 'Bruschetta Caprese',
-            image: 'https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=500',
-            readyInMinutes: 15,
-            servings: 2,
-            sourceUrl: '',
-            summary: 'Bruschetta italiana com tomate, manjericão e mozzarella.',
-            pricePerServing: 600.0,
-            vegetarian: true,
-          ),
-        ];
-      case 'side dish':
-        return [
-          Recipe(
-            id: 4,
-            title: 'Batatas ao Alecrim',
-            image: 'https://images.unsplash.com/photo-1518013431117-eb1465fa5752?w=500',
-            readyInMinutes: 30,
-            servings: 2,
-            sourceUrl: '',
-            summary: 'Batatas assadas crocantes com alecrim fresco.',
-            pricePerServing: 400.0,
-            vegetarian: true,
-            vegan: true,
-          ),
-        ];
-      default:
-        return [];
+  // Usa banco de dados estático com receitas reais por tipo de Date Night
+  static List<Recipe> _getFallbackRecipes(String type, {String? dateType}) {
+    // Se temos o tipo de Date Night, usar receitas específicas
+    if (dateType != null) {
+      switch (type.toLowerCase()) {
+        case 'main course':
+          final recipes = StaticRecipesData.getMainCoursesForDateType(dateType);
+          // Retornar uma receita aleatória da lista
+          final index = DateTime.now().millisecondsSinceEpoch % recipes.length;
+          return [recipes[index]];
+        case 'dessert':
+          final recipes = StaticRecipesData.getDessertsForDateType(dateType);
+          final index = DateTime.now().millisecondsSinceEpoch % recipes.length;
+          return [recipes[index]];
+        case 'appetizer':
+          // Para petiscos, usar pratos principais como alternativa
+          final recipes = StaticRecipesData.getMainCoursesForDateType(dateType);
+          final index = (DateTime.now().millisecondsSinceEpoch ~/ 2) % recipes.length;
+          return [recipes[index]];
+        case 'side dish':
+          // Para acompanhamentos, usar pratos principais como alternativa
+          final recipes = StaticRecipesData.getMainCoursesForDateType(dateType);
+          final index = (DateTime.now().millisecondsSinceEpoch ~/ 3) % recipes.length;
+          return [recipes[index]];
+        default:
+          return [];
+      }
     }
+    
+    // Fallback padrão se não tiver tipo de Date Night (usar Romance Clássico)
+    return _getFallbackRecipes(type, dateType: 'Romance Clássico');
   }
 
   // Mapear tipo de encontro para tipo de cozinha

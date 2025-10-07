@@ -115,7 +115,10 @@ class _DateNightScreenState extends State<DateNightScreen> {
           final results = await Future.wait([
             MovieService.getMovieDetails(randomMovie.id),
             MovieService.getWatchProviders(randomMovie.id),
-            RecipeService.generateDateNightMenu(cuisine: cuisine),
+            RecipeService.generateDateNightMenu(
+              cuisine: cuisine,
+              dateType: _selectedDateType, // Passa o tipo para fallback apropriado
+            ),
           ]);
           
           detailedMovie = results[0] as Movie;
