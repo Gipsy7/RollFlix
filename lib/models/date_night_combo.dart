@@ -235,7 +235,8 @@ class DateNightService {
       'Comédia Romântica', 
       'Drama Romântico',
       'Musical Romântico',
-      'Romance Aventureiro'
+      'Romance Aventureiro',
+      'Suspense Romântico'
     ];
   }
 
@@ -251,6 +252,8 @@ class DateNightService {
         return 'musical_romance';
       case 'Romance Aventureiro':
         return 'adventure_romance';
+      case 'Suspense Romântico':
+        return 'thriller_romance';
       default:
         return 'romance_classic';
     }
