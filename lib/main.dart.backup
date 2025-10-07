@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'constants/app_constants.dart';
+import 'utils/app_utils.dart' as AppUtils;
 import 'models/movie.dart';
 import 'models/tv_show.dart';
 import 'services/movie_service.dart';
+import 'screens/movie_details_screen.dart';
+import 'screens/tv_show_details_screen.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/common_widgets.dart';
 import 'widgets/error_widgets.dart';
+import 'widgets/optimized_widgets.dart';
 import 'widgets/responsive_widgets.dart';
 import 'widgets/app_drawer.dart';
+import 'widgets/content_mode_header.dart';
 import 'widgets/content_widgets.dart';
+import 'widgets/genre_selection_widgets.dart';
 import 'controllers/movie_controller.dart';
 import 'controllers/tv_show_controller.dart';
 import 'controllers/app_mode_controller.dart';
@@ -654,6 +660,491 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         else
           const SizedBox.shrink(),
       ],
+    );
+  }
+}
+    final tvShow = _selectedTVShow!;
+    
+    return OptimizedAnimatedBuilder(
+      animation: movieCardAnimation,
+      builder: (context, animationValue) {
+        return Transform.scale(
+          scale: animationValue,
+          child: AppCard(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TVShowDetailsScreen(tvShow: tvShow),
+                ),
+              );
+            },
+            padding: EdgeInsets.all(isMobile ? 20 : 28),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTVShowPoster(tvShow, isMobile),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: _buildTVShowDetails(tvShow, isMobile),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMovieCard(BuildContext context, bool isMobile) {
+    final movie = _selectedMovie!;
+    
+    return OptimizedAnimatedBuilder(
+      animation: movieCardAnimation,
+      builder: (context, animationValue) {
+        return Transform.scale(
+          scale: animationValue,
+          child: AppCard(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MovieDetailsScreen(movie: movie),
+                ),
+              );
+            },
+            padding: EdgeInsets.all(isMobile ? 20 : 28),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildMoviePoster(movie, isMobile),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: _buildMovieDetails(movie, isMobile),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMoviePoster(Movie movie, bool isMobile) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: AppColors.glassGradient,
+        border: Border.all(
+          color: AppColors.interactive.withValues(alpha: 0.3),
+          width: 2,
+        ),
+      ),
+      child: OptimizedNetworkImage(
+        imageUrl: movie.posterPath.isNotEmpty 
+            ? 'https://image.tmdb.org/t/p/w500${movie.posterPath}'
+            : '',
+        width: isMobile ? 100 : 120,
+        height: isMobile ? 150 : 180,
+        borderRadius: BorderRadius.circular(14),
+        errorWidget: _buildPosterFallback(),
+        placeholder: Container(
+          width: isMobile ? 100 : 120,
+          height: isMobile ? 150 : 180,
+          decoration: BoxDecoration(
+            gradient: AppColors.glassGradient,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: const OptimizedLoadingIndicator(size: 24),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPosterFallback() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: AppColors.primaryGradient,
+      ),
+      child: Icon(
+        Icons.movie,
+        color: AppColors.backgroundDark,
+        size: 48,
+      ),
+    );
+  }
+
+  Widget _buildMovieDetails(Movie movie, bool isMobile) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildMovieTitle(movie, isMobile),
+        const SizedBox(height: 12),
+        if (movie.releaseDate.isNotEmpty) ...[
+          _buildMovieDate(movie),
+          const SizedBox(height: 12),
+        ],
+        _buildMovieRating(movie),
+        const SizedBox(height: 16),
+        if (movie.overview.isNotEmpty) ...[
+          _buildMovieOverview(movie, isMobile),
+          const SizedBox(height: 16),
+        ],
+        // Removido: _buildMovieCounter() - agora usando contador unificado
+        const SizedBox(height: 8),
+        _buildDetailsHint(),
+      ],
+    );
+  }
+
+  Widget _buildMovieTitle(Movie movie, bool isMobile) {
+    return SafeText(
+      movie.title,
+      style: (isMobile 
+          ? AppTextStyles.headlineSmall
+          : AppTextStyles.headlineMedium).copyWith(
+        color: AppColors.textPrimary,
+        fontWeight: FontWeight.w600,
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildMovieDate(Movie movie) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+          child: Icon(
+            Icons.calendar_today,
+            size: 16,
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: SafeText(
+            AppUtils.DateUtils.formatReleaseDate(movie.releaseDate),
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMovieRating(Movie movie) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+          child: Icon(
+            Icons.star,
+            size: 16,
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: SafeText(
+            '${movie.voteAverage.toStringAsFixed(1)}/10',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMovieOverview(Movie movie, bool isMobile) {
+    return SafeText(
+      movie.overview,
+      style: AppTextStyles.bodyMedium.copyWith(
+        color: AppColors.textSecondary,
+        height: 1.5,
+      ),
+      maxLines: isMobile ? 3 : 4,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildMovieCounter() {
+    // Verifica qual contador mostrar baseado no modo
+    int count;
+    String counterText;
+    IconData icon;
+    
+    if (_appModeController.isSeriesMode) {
+      count = _tvShowController.showCount;
+      icon = Icons.tv;
+      counterText = 'Série $count sorteada';
+    } else {
+      count = _movieController.movieCount;
+      icon = Icons.movie_filter;
+      counterText = 'Filme $count sorteado';
+    }
+    
+    debugPrint('=== CONTADOR DEBUG ===');
+    debugPrint('Modo Séries: $_appModeController.isSeriesMode');
+    debugPrint('Count: $count');
+    debugPrint('Texto: $counterText');
+    debugPrint('====================');
+    
+    if (count <= 1) return const SizedBox.shrink();
+    
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          size: 16,
+          color: AppColors.textSecondary,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          counterText,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.textSecondary,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailsHint() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: const BoxDecoration(
+        color: Colors.yellow,
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.touch_app,
+            size: 16,
+            color: AppColors.backgroundDark,
+          ),
+          const SizedBox(width: 6),
+          Flexible(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Se há pouco espaço (menos de 120px) ou é mobile, usar texto curto
+                final isMobile = ResponsiveUtils.isMobile(context);
+                final useShortText = constraints.maxWidth < 120 || isMobile;
+                return SafeText(
+                  useShortText ? 'Toque para detalhes' : 'Toque para mais detalhes',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.backgroundDark,
+                    fontWeight: FontWeight.w500,
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Métodos para TVShow (seguindo o mesmo padrão dos métodos de Movie)
+
+  Widget _buildTVShowPoster(TVShow tvShow, bool isMobile) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: AppColors.glassGradient,
+        border: Border.all(
+          color: currentAccentColor.withValues(alpha: 0.3),
+          width: 2,
+        ),
+      ),
+      child: OptimizedNetworkImage(
+        imageUrl: tvShow.posterPath.isNotEmpty 
+            ? 'https://image.tmdb.org/t/p/w500${tvShow.posterPath}'
+            : '',
+        width: isMobile ? 100 : 120,
+        height: isMobile ? 150 : 180,
+        borderRadius: BorderRadius.circular(14),
+        errorWidget: _buildTVShowPosterFallback(),
+        placeholder: Container(
+          width: isMobile ? 100 : 120,
+          height: isMobile ? 150 : 180,
+          decoration: BoxDecoration(
+            gradient: AppColors.glassGradient,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: const OptimizedLoadingIndicator(size: 24),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTVShowPosterFallback() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: currentGradient,
+      ),
+      child: Icon(
+        Icons.tv,
+        color: AppColors.backgroundDark,
+        size: 48,
+      ),
+    );
+  }
+
+  Widget _buildTVShowDetails(TVShow tvShow, bool isMobile) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildTVShowTitle(tvShow, isMobile),
+        const SizedBox(height: 12),
+        if (tvShow.firstAirDate.isNotEmpty) ...[
+          _buildTVShowDate(tvShow),
+          const SizedBox(height: 12),
+        ],
+        _buildTVShowRating(tvShow),
+        const SizedBox(height: 16),
+        if (tvShow.overview.isNotEmpty) ...[
+          _buildTVShowOverview(tvShow, isMobile),
+          const SizedBox(height: 16),
+        ],
+        // Removido: _buildTVShowCounter() - agora usando contador unificado
+        const SizedBox(height: 8),
+        _buildTVShowDetailsHint(),
+      ],
+    );
+  }
+
+  Widget _buildTVShowTitle(TVShow tvShow, bool isMobile) {
+    return SafeText(
+      tvShow.name,
+      style: (isMobile 
+          ? AppTextStyles.headlineSmall
+          : AppTextStyles.headlineMedium).copyWith(
+        color: AppColors.textPrimary,
+        fontWeight: FontWeight.w600,
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildTVShowDate(TVShow tvShow) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+          child: Icon(
+            Icons.calendar_today,
+            size: 16,
+            color: currentAccentColor,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: SafeText(
+            tvShow.year.isNotEmpty ? tvShow.year : 'Data não disponível',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTVShowRating(TVShow tvShow) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+          child: Icon(
+            Icons.star,
+            size: 16,
+            color: currentAccentColor,
+          ),
+        ),
+        const SizedBox(width: 8),
+        SafeText(
+          '${tvShow.voteAverage.toStringAsFixed(1)}/10',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTVShowOverview(TVShow tvShow, bool isMobile) {
+    return SafeText(
+      tvShow.overview,
+      style: AppTextStyles.bodyMedium.copyWith(
+        color: AppColors.textSecondary,
+        height: 1.5,
+      ),
+      maxLines: isMobile ? 4 : 3,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+
+
+  Widget _buildTVShowDetailsHint() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: currentAccentColor,
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.touch_app,
+            size: 16,
+            color: AppColors.backgroundDark,
+          ),
+          const SizedBox(width: 6),
+          Flexible(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Se há pouco espaço (menos de 120px) ou é mobile, usar texto curto
+                final isMobile = ResponsiveUtils.isMobile(context);
+                final useShortText = constraints.maxWidth < 120 || isMobile;
+                return SafeText(
+                  useShortText ? 'Toque para detalhes' : 'Toque para mais detalhes',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.backgroundDark,
+                    fontWeight: FontWeight.w500,
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

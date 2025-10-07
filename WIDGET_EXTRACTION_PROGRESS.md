@@ -6,10 +6,18 @@ Reduzir a complexidade do `main.dart` de 1343 linhas para aproximadamente 200 li
 ## Progresso Atual
 
 ### ✅ Fase 1: Extração de Widgets Concluída (15% de redução)
+**Status**: CONCLUÍDO
 - **Linhas iniciais**: 1343
-- **Linhas atuais**: 1135
+- **Linhas após Fase 1**: 1135
 - **Linhas removidas**: 208
 - **Redução**: 15%
+
+### ✅ Fase 2: Integração dos Widgets (51% de redução total)
+**Status**: CONCLUÍDO
+- **Linhas antes da Fase 2**: 1135
+- **Linhas após Fase 2**: 660
+- **Linhas removidas na Fase 2**: 475
+- **Redução total desde o início**: 51% (683 linhas removidas)
 
 ### Widgets Criados
 
@@ -67,8 +75,6 @@ Reduzir a complexidade do `main.dart` de 1343 linhas para aproximadamente 200 li
 
 **Preparado para uso** (aguardando integração no main.dart)
 
-## Próximos Passos
-
 ### ⏭️ Fase 2: Integração dos Widgets Criados
 **Estimativa de redução**: ~300 linhas adicionais
 
@@ -93,6 +99,45 @@ Reduzir a complexidade do `main.dart` de 1343 linhas para aproximadamente 200 li
    - Substituir por `RollActionButton`
    - Localizar `_buildErrorMessage`
    - Substituir por `ErrorMessage`
+
+## Implementações da Fase 2
+
+### Widgets Integrados no main.dart ✅
+
+1. **ContentCard** - Substituiu métodos:
+   - ❌ `_buildMovieCard()` (34 linhas)
+   - ❌ `_buildTVShowCard()` (34 linhas)
+   - ❌ `_buildMoviePoster()` (32 linhas)
+   - ❌ `_buildTVShowPoster()` (32 linhas)
+   - ❌ `_buildPosterFallback()` (13 linhas)
+   - ❌ `_buildTVShowPosterFallback()` (13 linhas)
+   - ❌ `_buildMovieDetails()` (28 linhas)
+   - ❌ `_buildTVShowDetails()` (28 linhas)
+   - ❌ `_buildMovieTitle()` (14 linhas)
+   - ❌ `_buildTVShowTitle()` (14 linhas)
+   - ❌ `_buildMovieDate()` (28 linhas)
+   - ❌ `_buildTVShowDate()` (28 linhas)
+   - ❌ `_buildMovieRating()` (26 linhas)
+   - ❌ `_buildTVShowRating()` (26 linhas)
+   - ❌ `_buildMovieOverview()` (10 linhas)
+   - ❌ `_buildTVShowOverview()` (12 linhas)
+   - ❌ `_buildDetailsHint()` (32 linhas)
+   - ❌ `_buildTVShowDetailsHint()` (35 linhas)
+   - **Total removido**: ~439 linhas
+
+2. **ContentCounter** - Substituiu métodos:
+   - ❌ `_buildMovieCounter()` (44 linhas)
+   - **Total removido**: ~44 linhas
+
+**Redução total na Fase 2**: ~475 linhas
+**Código substituído por**: ~30 linhas de chamadas aos novos widgets
+
+### Benefícios da Fase 2 ✅
+1. ✅ **Unificação**: Um único `ContentCard` para Movie e TVShow
+2. ✅ **Eliminação de duplicação**: ~200 linhas de código duplicado removido
+3. ✅ **Manutenibilidade**: Alterações em cards afetam um único arquivo
+4. ✅ **Testabilidade**: Widgets isolados podem ser testados individualmente
+5. ✅ **Imports limpos**: Removidos 6 imports não utilizados
 
 ### ⏭️ Fase 3: Extração de Lógica de Estado
 **Estimativa de redução**: ~200 linhas adicionais
@@ -129,11 +174,11 @@ Reduzir a complexidade do `main.dart` de 1343 linhas para aproximadamente 200 li
 - **Métodos**: ~45
 - **Complexidade ciclomática**: Alta
 
-### Estado Atual (Fase 1)
-- **Linhas**: 1135 (↓ 15%)
-- **Métodos**: ~43
+### Estado Atual (Fase 2)
+- **Linhas**: 660 (↓ 51%)
+- **Métodos**: ~20
 - **Widgets criados**: 4
-- **Complexidade ciclomática**: Média-Alta
+- **Complexidade ciclomática**: Média
 
 ### Estado Final Esperado (Todas as Fases)
 - **Linhas**: ~200-250 (↓ 82%)
