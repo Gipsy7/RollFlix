@@ -19,6 +19,13 @@ Reduzir a complexidade do `main.dart` de 1343 linhas para aproximadamente 200 li
 - **Linhas removidas na Fase 2**: 475
 - **Redução total desde o início**: 51% (683 linhas removidas)
 
+### ✅ Fase 3: Mover Estado para Controllers (52% de redução total)
+**Status**: CONCLUÍDO
+- **Linhas antes da Fase 3**: 660
+- **Linhas após Fase 3**: 637
+- **Linhas removidas na Fase 3**: 23
+- **Redução total desde o início**: 52% (706 linhas removidas)
+
 ### Widgets Criados
 
 #### 1. `lib/widgets/app_drawer.dart` ✅
@@ -174,11 +181,12 @@ Reduzir a complexidade do `main.dart` de 1343 linhas para aproximadamente 200 li
 - **Métodos**: ~45
 - **Complexidade ciclomática**: Alta
 
-### Estado Atual (Fase 2)
-- **Linhas**: 660 (↓ 51%)
-- **Métodos**: ~20
+### Estado Atual (Fase 3)
+- **Linhas**: 637 (↓ 52%)
+- **Métodos**: ~18
 - **Widgets criados**: 4
-- **Complexidade ciclomática**: Média
+- **Complexidade ciclomática**: Baixa
+- **Estado local**: Eliminado - tudo nos controllers
 
 ### Estado Final Esperado (Todas as Fases)
 - **Linhas**: ~200-250 (↓ 82%)

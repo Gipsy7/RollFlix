@@ -11,11 +11,14 @@ class AppModeController extends ChangeNotifier {
   AppModeController._internal();
 
   bool _isSeriesMode = false;
+  String? _selectedGenre;
 
   bool get isSeriesMode => _isSeriesMode;
+  String? get selectedGenre => _selectedGenre;
 
   void toggleMode() {
     _isSeriesMode = !_isSeriesMode;
+    _selectedGenre = null; // Limpa gênero ao trocar de modo
     notifyListeners();
     debugPrint('Modo alterado para: ${_isSeriesMode ? "Séries" : "Filmes"}');
   }
@@ -23,6 +26,7 @@ class AppModeController extends ChangeNotifier {
   void setSeriesMode(bool value) {
     if (_isSeriesMode != value) {
       _isSeriesMode = value;
+      _selectedGenre = null; // Limpa gênero ao trocar de modo
       notifyListeners();
       debugPrint('Modo definido para: ${_isSeriesMode ? "Séries" : "Filmes"}');
     }
@@ -30,4 +34,19 @@ class AppModeController extends ChangeNotifier {
 
   void setToMovieMode() => setSeriesMode(false);
   void setToSeriesMode() => setSeriesMode(true);
+  
+  void selectGenre(String genre) {
+    if (_selectedGenre != genre) {
+      _selectedGenre = genre;
+      notifyListeners();
+      debugPrint('Gênero selecionado: $genre');
+    }
+  }
+  
+  void clearGenre() {
+    if (_selectedGenre != null) {
+      _selectedGenre = null;
+      notifyListeners();
+    }
+  }
 }

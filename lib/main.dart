@@ -47,21 +47,21 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   late final TVShowRepository _tvShowRepository;
   late final AppModeController _appModeController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  
-  // Filme ou série selecionada
-  Movie? _selectedMovie;
-  TVShow? _selectedTVShow;
-  
-  // Status de carregamento
-  bool _isLoading = false;
-  String? _errorMessage;
+
+  // Getters para acessar estado dos controllers
+  Movie? get _selectedMovie => _movieController.selectedMovie;
+  TVShow? get _selectedTVShow => _tvShowController.selectedShow;
+  bool get _isLoading => _appModeController.isSeriesMode 
+      ? _tvShowController.isLoading 
+      : _movieController.isLoading;
+  String? get _errorMessage => _appModeController.isSeriesMode
+      ? _tvShowController.errorMessage
+      : _movieController.errorMessage;
 
   // Gêneros dinâmicos baseados no modo
   List<String> get currentGenres => _appModeController.isSeriesMode 
       ? MovieService.getTVGenres() 
       : AppConstants.movieGenres;
-  
-  String? _selectedGenre;
 
   @override
   void initState() {
@@ -77,9 +77,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   
   /// Configura listeners de forma segura
   void _setupListeners() {
-    _movieController.addListener(_onMovieStateChanged);
-    _tvShowController.addListener(_onTVShowStateChanged);
-    _appModeController.addListener(_onModeChanged);
+    // Listeners removidos - usando ListenableBuilder no build()
+    // que escuta _movieController, _tvShowController e _appModeController
   }
   
   /// Inicialização assíncrona da aplicação
@@ -96,7 +95,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         
         // Seleciona automaticamente o primeiro gênero do modo atual
         if (mounted && currentGenres.isNotEmpty) {
-          _selectedGenre = currentGenres.first;
+          _appModeController.selectGenre(currentGenres.first);
           if (!_appModeController.isSeriesMode) {
             _movieController.selectGenre(currentGenres.first);
           } else {
@@ -115,124 +114,55 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   @override
   void dispose() {
-    _movieController.removeListener(_onMovieStateChanged);
-    _tvShowController.removeListener(_onTVShowStateChanged);
-    _appModeController.removeListener(_onModeChanged);
+    // Não precisamos remover listeners pois usamos ListenableBuilder
     _movieController.dispose();
     _tvShowController.dispose();
     _tvShowRepository.cleanExpiredCache();
     super.dispose();
   }
 
-  /// Listener para mudanças no modo (filme/série)
-  void _onModeChanged() {
-    if (!mounted) return;
-    
-    setState(() {
-      // Força rebuild completo ao mudar de modo
-      _selectedMovie = null;
-      _selectedTVShow = null;
-      _selectedGenre = null;
-      _errorMessage = null;
-      
-      // Auto-seleciona o primeiro gênero do novo modo
-      if (currentGenres.isNotEmpty) {
-        _selectedGenre = currentGenres.first;
-      }
-    });
-  }
-
-  /// Listener otimizado para mudanças de estado de filmes
-  void _onMovieStateChanged() {
-    if (!mounted) return;
-    
-    setState(() {
-      // Força rebuild para atualizar contador e estado
-    });
-    
-    if (_movieController.hasMovie) {
-      animateMovieCard();
-    }
-    
-    if (_movieController.errorMessage != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          AppSnackBar.showError(context, _movieController.errorMessage!);
-          _movieController.clearError();
-        }
-      });
-    }
-  }
-
-  /// Listener otimizado para mudanças de estado de séries
-  void _onTVShowStateChanged() {
-    if (!mounted) return;
-    
-    setState(() {
-      // Força rebuild para atualizar contador e estado
-    });
-    
-    if (_tvShowController.hasShow) {
-      animateMovieCard();
-    }
-    
-    if (_tvShowController.errorMessage != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          AppSnackBar.showError(context, _tvShowController.errorMessage!);
-          _tvShowController.clearError();
-        }
-      });
-    }
-  }
-
   /// Método para alternar entre filmes e séries
   void _toggleContentMode() {
     _appModeController.toggleMode();
+    
+    // Auto-seleciona o primeiro gênero do novo modo
+    if (currentGenres.isNotEmpty) {
+      _appModeController.selectGenre(currentGenres.first);
+    }
   }
 
   /// Método unificado para sortear filmes ou séries
   Future<void> _handleRollContent() async {
-    if (_selectedGenre == null) {
+    debugPrint('=== HANDLE ROLL CONTENT ===');
+    final selectedGenre = _appModeController.selectedGenre;
+    debugPrint('selectedGenre: $selectedGenre');
+    debugPrint('isSeriesMode: ${_appModeController.isSeriesMode}');
+    
+    if (selectedGenre == null) {
       AppSnackBar.showInfo(context, 'Selecione um gênero primeiro');
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
     try {
       if (_appModeController.isSeriesMode) {
-        // Usa o controller para séries com histórico anti-repetição
-        if (_tvShowController.canRollShow || _selectedGenre != _tvShowController.selectedGenre) {
-          _tvShowController.selectGenre(_selectedGenre!);
+        debugPrint('Chamando rollShow para série...');
+        // Usa o controller para séries
+        if (_tvShowController.canRollShow || selectedGenre != _tvShowController.selectedGenre) {
+          _tvShowController.selectGenre(selectedGenre);
           await _tvShowController.rollShow();
-          setState(() {
-            _selectedTVShow = _tvShowController.selectedShow;
-            _selectedMovie = null;
-          });
+          debugPrint('rollShow concluído. selectedShow: ${_tvShowController.selectedShow?.name}');
         }
       } else {
+        debugPrint('Chamando rollMovie para filme...');
         // Usa o controller para filmes
-        if (_movieController.canRollMovie || _selectedGenre != _movieController.selectedGenre) {
-          _movieController.selectGenre(_selectedGenre!);
+        if (_movieController.canRollMovie || selectedGenre != _movieController.selectedGenre) {
+          _movieController.selectGenre(selectedGenre);
           await _movieController.rollMovie();
-          setState(() {
-            _selectedMovie = _movieController.selectedMovie;
-            _selectedTVShow = null;
-          });
+          debugPrint('rollMovie concluído. selectedMovie: ${_movieController.selectedMovie?.title}');
         }
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Erro ao buscar ${_appModeController.isSeriesMode ? 'série' : 'filme'}: $e';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      debugPrint('Erro em _handleRollContent: $e');
     }
   }
 
@@ -277,13 +207,42 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           ),
         ),
         child: ListenableBuilder(
-          listenable: _movieController,
-          builder: (context, _) => CustomScrollView(
-            slivers: [
-              _buildAppBar(isMobile),
-              _buildContent(isMobile),
-            ],
-          ),
+          listenable: Listenable.merge([
+            _movieController,
+            _tvShowController,
+            _appModeController,
+          ]),
+          builder: (context, _) {
+            // Anima o card quando há um novo filme/série
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              
+              if (_appModeController.isSeriesMode) {
+                if (_tvShowController.hasShow) {
+                  animateMovieCard();
+                }
+                if (_tvShowController.errorMessage != null) {
+                  AppSnackBar.showError(context, _tvShowController.errorMessage!);
+                  _tvShowController.clearError();
+                }
+              } else {
+                if (_movieController.hasMovie) {
+                  animateMovieCard();
+                }
+                if (_movieController.errorMessage != null) {
+                  AppSnackBar.showError(context, _movieController.errorMessage!);
+                  _movieController.clearError();
+                }
+              }
+            });
+            
+            return CustomScrollView(
+              slivers: [
+                _buildAppBar(isMobile),
+                _buildContent(isMobile),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -529,11 +488,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               height: isMobile ? 400 : 450,
               child: GenreWheel(
                 genres: currentGenres,
-                selectedGenre: _selectedGenre,
+                selectedGenre: _appModeController.selectedGenre,
                 onGenreSelected: (genre) {
-                  setState(() {
-                    _selectedGenre = genre;
-                  });
+                  _appModeController.selectGenre(genre);
                 },
                 onRandomSpin: () {},
                 accentColor: _appModeController.isSeriesMode ? currentAccentColor : null,
@@ -579,7 +536,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   Widget _buildActionButtons(bool isMobile) {
     return AppButton(
-      onPressed: _selectedGenre != null && !_isLoading ? _handleRollContent : null,
+      onPressed: _appModeController.selectedGenre != null && !_isLoading ? _handleRollContent : null,
       text: _isLoading 
           ? 'Rolando...' 
           : (_selectedMovie != null || _selectedTVShow != null 
@@ -624,6 +581,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildContentCard(BuildContext context, bool isMobile) {
+    debugPrint('=== BUILD CONTENT CARD ===');
+    debugPrint('isSeriesMode: ${_appModeController.isSeriesMode}');
+    debugPrint('_selectedMovie: $_selectedMovie');
+    debugPrint('_selectedTVShow: $_selectedTVShow');
+    debugPrint('movieController.selectedMovie: ${_movieController.selectedMovie?.title}');
+    debugPrint('tvShowController.selectedShow: ${_tvShowController.selectedShow?.name}');
+    
     return Column(
       children: [
         // Contador unificado
