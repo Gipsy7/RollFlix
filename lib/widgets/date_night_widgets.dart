@@ -88,7 +88,7 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -96,7 +96,7 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
             _secondaryGold.withOpacity(0.1),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: _primaryRose.withOpacity(0.3)),
       ),
       child: Column(
@@ -106,11 +106,11 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
             alignment: Alignment.center,
             children: [
               SizedBox(
-                width: 200,
-                height: 200,
+                width: 140,
+                height: 140,
                 child: CircularProgressIndicator(
                   value: _progress,
-                  strokeWidth: 12,
+                  strokeWidth: 8,
                   backgroundColor: Colors.grey.withOpacity(0.2),
                   valueColor: AlwaysStoppedAnimation<Color>(
                     _isCompleted ? Colors.green : _primaryRose,
@@ -121,14 +121,14 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
                 children: [
                   Icon(
                     _isCompleted ? Icons.check_circle : Icons.timer,
-                    size: 48,
+                    size: 32,
                     color: _isCompleted ? Colors.green : _secondaryGold,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   Text(
                     _formattedTime,
                     style: const TextStyle(
-                      fontSize: 48,
+                      fontSize: 36,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -137,7 +137,7 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
                     const Text(
                       'Pronto!',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.green,
                       ),
@@ -147,7 +147,7 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
             ],
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
 
           // Controles
           Row(
@@ -158,7 +158,7 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
                 onPressed: _resetTimer,
                 icon: const Icon(Icons.refresh),
                 color: Colors.white70,
-                iconSize: 32,
+                iconSize: 28,
                 tooltip: 'Reiniciar',
               ),
 
@@ -174,7 +174,7 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
                   onPressed: _isRunning ? _pauseTimer : _startTimer,
                   icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow),
                   color: Colors.white,
-                  iconSize: 48,
+                  iconSize: 36,
                   tooltip: _isRunning ? 'Pausar' : 'Iniciar',
                 ),
               ),
@@ -188,7 +188,7 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
                 },
                 icon: const Icon(Icons.add),
                 color: Colors.white70,
-                iconSize: 32,
+                iconSize: 28,
                 tooltip: '+5 min',
               ),
             ],

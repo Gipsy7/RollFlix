@@ -8,7 +8,6 @@ import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import 'date_night_details_screen.dart';
 import 'date_night_preferences_screen.dart';
-import 'date_night_games_screen.dart';
 
 class DateNightScreen extends StatefulWidget {
   const DateNightScreen({super.key});
@@ -215,15 +214,6 @@ class _DateNightScreenState extends State<DateNightScreen> {
     );
   }
 
-  void _openGames() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const DateNightGamesScreen(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isMobile = ResponsiveUtils.isMobile(context);
@@ -261,11 +251,6 @@ class _DateNightScreenState extends State<DateNightScreen> {
         ),
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.casino, color: Colors.white),
-          onPressed: _openGames,
-          tooltip: 'Jogos & Atividades',
-        ),
         IconButton(
           icon: const Icon(Icons.tune, color: Colors.white),
           onPressed: _openPreferences,
