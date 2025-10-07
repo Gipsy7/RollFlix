@@ -7,14 +7,15 @@ import 'models/tv_show.dart';
 import 'services/movie_service.dart';
 import 'screens/movie_details_screen.dart';
 import 'screens/tv_show_details_screen.dart';
-import 'screens/search_screen.dart';
-import 'screens/tv_series_search_screen.dart';
-import 'screens/date_night_screen.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/common_widgets.dart';
 import 'widgets/error_widgets.dart';
 import 'widgets/optimized_widgets.dart';
 import 'widgets/responsive_widgets.dart';
+import 'widgets/app_drawer.dart';
+import 'widgets/content_mode_header.dart';
+import 'widgets/content_widgets.dart';
+import 'widgets/genre_selection_widgets.dart';
 import 'controllers/movie_controller.dart';
 import 'controllers/tv_show_controller.dart';
 import 'controllers/app_mode_controller.dart';
@@ -405,220 +406,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildDrawer(BuildContext context, bool isMobile) {
-    return Drawer(
-      backgroundColor: AppColors.backgroundDark,
-      child: Column(
-        children: [
-          // Header do Drawer
-          DrawerHeader(
-            decoration: BoxDecoration(
-              gradient: currentGradient,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.local_movies,
-                      color: AppColors.textPrimary,
-                      size: 32,
-                    ),
-                    const SizedBox(width: 12),
-                    SafeText(
-                      'RollFlix',
-                      style: AppTextStyles.headlineMedium.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                SafeText(
-                  'Roll and chill',
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    color: AppColors.textSecondary,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Menu Items
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                _buildDrawerItem(
-                  icon: Icons.home,
-                  title: 'Início',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                // Exibe apenas a pesquisa correspondente ao modo atual
-                if (!_appModeController.isSeriesMode)
-                  _buildDrawerItem(
-                    icon: Icons.search,
-                    title: 'Pesquisar Filmes',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SearchScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                if (_appModeController.isSeriesMode)
-                  _buildDrawerItem(
-                    icon: Icons.search,
-                    title: 'Pesquisar Séries',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const TVSeriesSearchScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                _buildDrawerItem(
-                  icon: Icons.favorite,
-                  title: 'Date Night',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const DateNightScreen(),
-                      ),
-                    );
-                  },
-                ),
-                _buildDrawerItem(
-                  icon: Icons.refresh,
-                  title: 'Limpar Cache',
-                  onTap: () {
-                    _movieController.clearCache();
-                    Navigator.pop(context);
-                    AppSnackBar.showSuccess(context, 'Cache limpo com sucesso!');
-                  },
-                ),
-                const Divider(color: AppColors.textSecondary),
-                _buildDrawerItem(
-                  icon: Icons.info_outline,
-                  title: 'Sobre o App',
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showAboutDialog(context);
-                  },
-                ),
-                _buildDrawerItem(
-                  icon: Icons.settings,
-                  title: 'Configurações',
-                  onTap: () {
-                    Navigator.pop(context);
-                    AppSnackBar.showInfo(context, 'Em breve: Configurações');
-                  },
-                ),
-              ],
-            ),
-          ),
-          
-          // Footer
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: SafeText(
-              'Versão ${AppConstants.appVersion}',
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDrawerItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: AppColors.primary,
-        size: 24,
-      ),
-      title: SafeText(
-        title,
-        style: AppTextStyles.bodyLarge.copyWith(
-          color: AppColors.textPrimary,
-        ),
-      ),
-      onTap: onTap,
-      splashColor: AppColors.primary.withAlpha(1),
-      hoverColor: AppColors.primary.withAlpha(05),
-    );
-  }
-
-  void _showAboutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.backgroundDark,
-        title: SafeText(
-          'Sobre o RollFlix',
-          style: AppTextStyles.headlineSmall.copyWith(
-            color: AppColors.textPrimary,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SafeText(
-              'Aplicativo para descobrir filmes aleatórios por gênero.',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            SafeText(
-              'Desenvolvido com Flutter',
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            SafeText(
-              'Dados fornecidos por The Movie Database (TMDb)',
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: SafeText(
-              'Fechar',
-              style: AppTextStyles.labelLarge.copyWith(
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return AppDrawer(
+      appModeController: _appModeController,
+      movieController: _movieController,
+      currentGradient: currentGradient,
+      isMobile: isMobile,
     );
   }
 
