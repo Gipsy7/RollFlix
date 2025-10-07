@@ -2,7 +2,7 @@
 
 **"Roll and Chill"** - Um app Flutter moderno, otimizado e responsivo que ajuda você a descobrir filmes e séries incríveis! Escolha um gênero na nossa roda interativa e deixe o app sortear conteúdo aleatório para você usando dados reais da **API do The Movie Database (TMDb)**.
 
-> 🚀 **Versão 2.0** - Completamente refatorado com **56% menos código**, arquitetura limpa e performance otimizada!
+> 🚀 **Versão 3.0** - Completamente refatorado com **56% menos código**, sistema de favoritos, pesquisa avançada e interface totalmente redesenhada!
 
 ## ✨ Funcionalidades Principais
 
@@ -10,8 +10,31 @@
 - **Modo Dual**: Alterne facilmente entre filmes e séries com um botão dedicado
 - **Temas Dinâmicos**: Cores douradas para filmes e roxas para séries
 - **Gêneros Específicos**: Cada modo tem sua própria lista de gêneros otimizada
-- **Interface Adaptativa**: Botões e textos se ajustam automaticamente ao modo
+- **Interface Adaptativa**: Todos os botões, textos e gradientes se ajustam automaticamente ao modo
 - **Estado Persistente**: Modo e gênero mantidos ao navegar entre telas
+- **Design Unificado**: Botões de swap idênticos em todas as telas (sorteio, pesquisa, favoritos)
+
+### ⭐ **Sistema de Favoritos** (NOVO!)
+- **Persistência Local**: Salva favoritos usando SharedPreferences
+- **Favoritar/Desfavoritar**: Botão flutuante em cada card de filme/série
+- **Tela Dedicada**: Interface completa para gerenciar favoritos
+- **Filtragem por Modo**: Mostra apenas filmes ou séries de acordo com o modo atual
+- **Navegação para Detalhes**: Clique em qualquer favorito para ver detalhes completos
+- **Remoção Individual**: Remova favoritos com confirmação
+- **Limpar Tudo**: Botão para limpar todos os favoritos do modo atual
+- **Feedback Visual**: Ícone de coração muda de cor (vazio/preenchido vermelho)
+- **Contador de Favoritos**: Acompanhe quantos itens foram favoritados
+- **Estado Vazio Intuitivo**: Mensagem amigável quando não há favoritos
+
+### 🔍 **Sistema de Pesquisa Avançado** (NOVO!)
+- **Pesquisa de Filmes**: Interface dedicada com busca em tempo real
+- **Pesquisa de Séries**: Tela separada para buscar séries de TV
+- **Resultados Paginados**: Sistema de rolagem infinita
+- **Debounce Inteligente**: Evita chamadas excessivas à API
+- **Cache de Resultados**: Melhora performance em buscas repetidas
+- **Visual Consistente**: Mesmo padrão de design das outras telas
+- **Navegação Rápida**: Acesso direto aos detalhes do conteúdo
+- **Swap Entre Modos**: Alternar pesquisa de filme/série facilmente
 
 ### 🎲 **Sistema de Sorteio Inteligente**
 **Para Filmes:**
@@ -22,25 +45,31 @@
 - **15 Gêneros Especializados**: Ação & Aventura, Animação, Comédia, Crime, Documentário, Drama, Família, Infantil, Mistério, Novela, Ficção Científica & Fantasia, Talk Show, Guerra & Política, Western e Reality
 - **Gênero Especial**: "Novidades" - Séries dos últimos 90 dias
 
-- **Roda Interativa**: Interface visual única com estilo cinemático
+- **Roda de Filme Interativa**: Interface visual única com estilo cinemático
+- **Rolagem Horizontal Completa**: Gêneros ocupam toda a tela (sem gaps nas bordas)
 - **Anti-Repetição**: Sistema de histórico que evita repetir os últimos 10 itens
 - **Seleção Automática**: Gênero inicial pré-selecionado para uso imediato
 - **Cache Inteligente**: 15 minutos de cache com múltiplos títulos por gênero
 - **Contador Inteligente**: Acompanhe quantos filmes/séries já foram sorteados
+- **Controle de Animação**: Animação do card apenas ao clicar em "Rolar" (não ao trocar gênero)
+- **Scroll Otimizado**: AlwaysScrollableScrollPhysics com padding adequado
 
 ### 🎬 **Experiência Cinematográfica Completa**
 - **Telas de Detalhes Unificadas**: Padrão visual consistente para filmes e séries
-- **Design Cinema Clássico**: Tema escuro com gradientes dinâmicos
+- **Design Cinema Clássico**: Tema escuro com gradientes dinâmicos adaptativos
 - **Animações Fluidas**: Transições suaves e efeitos visuais polidos
 - **Interface Responsiva**: Adaptação perfeita para mobile, tablet e desktop
-- **Navegação Intuitiva**: Menu hamburger context-aware (mostra opções relevantes ao modo)
+- **Menu Drawer Adaptativo**: Cores, gradiente e ícones se adaptam ao modo (dourado/roxo)
+- **Navegação Intuitiva**: Menu hamburger context-aware com todas as opções relevantes
+
 
 ### 📱 **Interface Moderna e Responsiva**
 - **Material Design 3**: Seguindo as diretrizes mais recentes do Google
 - **Breakpoints Responsivos**: Mobile (480px), Tablet (768px), Desktop (1024px+)
-- **Componentes Seguros**: Widgets otimizados que previnem overflow
-- **Feedback Visual**: Indicadores de carregamento e mensagens de status
-- **Widgets Reutilizáveis**: 7 componentes modulares criados
+- **Componentes Seguros**: Widgets otimizados que previnem overflow (SafeText)
+- **Feedback Visual**: Indicadores de carregamento, snackbars e mensagens de status
+- **Widgets Reutilizáveis**: 10+ componentes modulares criados
+- **Gradientes Adaptativos**: Todos os gradientes mudam com o modo (dourado/roxo-rosa)
 
 ### 🎭 **Informações Completas dos Filmes e Séries**
 **Para Filmes:**
@@ -48,12 +77,14 @@
 - **Tela de Detalhes Completa**: Sinopse, elenco, direção e informações de produção
 - **Trilhas Sonoras**: Acesso direto ao Spotify e YouTube para músicas famosas
 - **Onde Assistir**: Seção elegante com provedores de streaming brasileiros
+- **Botão de Favoritar**: Adicione/remova dos favoritos direto da tela de detalhes
 
 **Para Séries:**
 - **Informações Específicas**: Nome, primeira exibição, temporadas, episódios e gêneros
 - **Detalhes Expandidos**: Sinopse, elenco, equipe técnica e informações de produção
 - **Trilhas Sonoras de Séries**: Base de dados com temas musicais icônicos
 - **Provedores de Streaming**: Onde assistir com design consistente
+- **Botão de Favoritar**: Gerenciar favoritos de séries facilmente
 
 ### 🎵 **Sistema de Trilhas Sonoras**
 - **Filmes Clássicos**: The Lion King, Frozen, A Star Is Born, La La Land, The Greatest Showman
@@ -69,45 +100,71 @@
 
 ## 🏗️ **Arquitetura e Tecnologias**
 
-### **🎯 Arquitetura Limpa (Refatorado v2.0)**
+### **🎯 Arquitetura Limpa (Refatorado v3.0)**
 ```
 📦 RollFlix
 ├── 🎨 Presentation Layer
-│   ├── widgets/ (7 componentes reutilizáveis)
-│   │   ├── app_drawer.dart (Menu lateral)
-│   │   ├── content_widgets.dart (Cards + Contador)
+│   ├── widgets/ (10+ componentes reutilizáveis)
+│   │   ├── app_drawer.dart (Menu lateral adaptativo)
+│   │   ├── content_widgets.dart (Cards + Contador + Favoritos)
 │   │   ├── content_mode_header.dart (Cabeçalho)
+│   │   ├── genre_wheel.dart (Roda de filme/série)
 │   │   ├── genre_selection_widgets.dart (Seleção de gênero)
 │   │   ├── common_widgets.dart (Botões, Cards)
 │   │   ├── responsive_widgets.dart (Responsividade)
+│   │   ├── error_widgets.dart (SafeText, ErrorScreen)
 │   │   └── optimized_widgets.dart (Imagens, Loading)
 │   └── screens/ (Telas principais)
+│       ├── movie_details_screen.dart
+│       ├── tv_show_details_screen.dart
+│       ├── search_screen.dart (NOVO)
+│       ├── tv_series_search_screen.dart (NOVO)
+│       ├── favorites_screen.dart (NOVO)
+│       └── actor_details_screen.dart
 │
 ├── 🎮 Business Logic Layer
 │   ├── controllers/ (Singleton pattern)
 │   │   ├── app_mode_controller.dart (Estado global)
 │   │   ├── movie_controller.dart (Lógica de filmes)
-│   │   └── tv_show_controller.dart (Lógica de séries)
+│   │   ├── tv_show_controller.dart (Lógica de séries)
+│   │   └── favorites_controller.dart (Gerenciamento de favoritos - NOVO)
 │   └── mixins/ (Reutilização de código)
+│       └── animation_mixin.dart
 │
 ├── 💾 Data Layer
 │   ├── repositories/ (Abstração de dados)
 │   ├── services/ (API TMDb)
 │   └── models/ (Entidades)
+│       ├── movie.dart
+│       ├── tv_show.dart
+│       ├── favorite_item.dart (NOVO - Modelo unificado)
+│       ├── cast.dart
+│       ├── watch_providers.dart
+│       └── movie_videos.dart
 │
 └── 🎨 Theme & Constants
     ├── theme/ (Design system)
+    │   └── app_theme.dart (Temas adaptativos)
     └── constants/ (Configurações)
+        └── app_constants.dart
 ```
 
-### **🚀 Melhorias de Performance (v2.0)**
+### **🚀 Melhorias de Performance (v3.0)**
 
 #### **Redução de Código**
 | Arquivo | Antes | Depois | Redução |
 |---------|-------|--------|---------|
-| **main.dart** | 1343 linhas | 623 linhas | **-56%** |
+| **main.dart** | 1343 linhas | 679 linhas | **-49%** |
 | **Métodos** | ~45 | ~15 | **-67%** |
 | **Estado local** | 5 variáveis | 0 (getters) | **-100%** |
+
+#### **Novas Funcionalidades (v3.0)**
+- ✅ **Sistema de Favoritos**: Persistência local com SharedPreferences
+- ✅ **Pesquisa Avançada**: Telas dedicadas para filmes e séries
+- ✅ **Drawer Adaptativo**: Cores dinâmicas baseadas no modo
+- ✅ **Botões Unificados**: Design consistente em todas as telas
+- ✅ **Controle de Animação**: Flag para evitar animações indesejadas
+- ✅ **Scroll Otimizado**: Melhor UX com AlwaysScrollableScrollPhysics
 
 #### **Otimizações Implementadas**
 - ✅ **Singleton Pattern**: Controllers únicos em toda aplicação (-27% memória)
@@ -115,7 +172,9 @@
 - ✅ **Mounted Checks**: 100% proteção contra crashes
 - ✅ **Parallel Preload**: Future.wait para carregamento simultâneo (-16% startup)
 - ✅ **Smart Notifications**: Apenas quando estado muda realmente
-- ✅ **Widget Extraction**: 7 widgets reutilizáveis criados
+- ✅ **Widget Extraction**: 10+ widgets reutilizáveis criados
+- ✅ **Persistent Storage**: SharedPreferences para favoritos
+- ✅ **Debounce em Pesquisa**: Evita chamadas excessivas à API
 
 ### **🎨 Design System**
 - **Material Design 3**: Sistema de design moderno do Google
@@ -154,19 +213,36 @@ class ResponsiveUtils {
 ## 🎮 **Como Usar o App**
 
 ### **📱 Interface Principal**
-1. **Abra o RollFlix** e veja a roda de filme/série cinemática
-2. **Escolha o modo** usando o botão de swap no topo (🎬 ⇄ 📺)
+1. **Abra o RollFlix** e veja a roda de filme cinemática
+2. **Escolha o modo** usando o botão de swap no topo (🎬 FILMES ⇄ 📺 SÉRIES)
 3. **Navegue pelos gêneros** arrastando horizontalmente ou tocando
 4. **Toque em um gênero** para selecioná-lo (ou use o primeiro automaticamente)
 5. **Pressione "ROLAR"** para descobrir conteúdo aleatório
 6. **Explore os detalhes** tocando no card do filme/série
-7. **Continue rolando** para descobrir mais - o sistema evita repetições!
+7. **Adicione aos favoritos** clicando no botão de coração ❤️
+8. **Continue rolando** para descobrir mais - o sistema evita repetições!
 
-### **🔄 Sistema de Toggle Filme/Série**
+### **⭐ Sistema de Favoritos**
+- **Adicionar**: Clique no ícone de coração (vazio) em qualquer card
+- **Remover**: Clique no ícone de coração preenchido (vermelho)
+- **Acessar**: Menu hambúrguer → "Meus Favoritos"
+- **Filtrar por Modo**: Use o botão swap para ver apenas filmes ou séries
+- **Ver Detalhes**: Toque em qualquer favorito para abrir a tela completa
+- **Limpar**: Botão para remover todos os favoritos do modo atual
+
+### **� Sistema de Pesquisa**
+- **Acessar**: Menu hambúrguer → "Pesquisar Filmes" ou "Pesquisar Séries"
+- **Buscar**: Digite o nome do filme/série na barra de pesquisa
+- **Trocar Modo**: Use o botão swap para alternar entre pesquisa de filme/série
+- **Ver Resultados**: Role para ver mais resultados (paginação automática)
+- **Abrir Detalhes**: Toque em qualquer resultado
+
+### **�🔄 Sistema de Toggle Filme/Série**
 - **Modo Filmes** (🎬): Interface dourada com 18 gêneros cinematográficos
 - **Modo Séries** (📺): Interface roxa com 15 gêneros televisivos
 - **Alternância Rápida**: Toque no botão superior para alternar modos
 - **Persistência**: O app lembra sua última escolha de modo
+- **Visual Adaptativo**: Todas as cores, gradientes e ícones mudam automaticamente
 
 ### **🎬 Detalhes do Filme**
 - **Sinopse Completa**: História e informações de produção
@@ -185,16 +261,22 @@ class ResponsiveUtils {
 - **Onde Assistir**: Provedores de streaming para séries
 
 ### **🍔 Menu Hamburger**
-- **Início**: Voltar à tela principal
+- **Início**: Voltar à tela principal de sorteio
+- **Pesquisar Filmes**: Buscar filmes por nome (NOVO)
+- **Pesquisar Séries**: Buscar séries por nome (NOVO)
+- **Meus Favoritos**: Gerenciar lista de favoritos (NOVO)
+- **Noite de Cinema**: Sorteio especial de filmes clássicos
 - **Limpar Cache**: Reset do sistema de cache
 - **Sobre o App**: Informações sobre desenvolvimento
-- **Configurações**: Opções futuras (em desenvolvimento)
 
 ### **🎯 Recursos Especiais**
-- **Anti-Repetição**: Filmes diferentes a cada sorteio
-- **Sorteio Múltiplo**: Vários filmes disponíveis por gênero
-- **Feedback Visual**: Animações e indicadores de status
+- **Anti-Repetição**: Conteúdo diferente a cada sorteio (últimos 10 evitados)
+- **Sorteio Múltiplo**: Vários filmes/séries disponíveis por gênero
+- **Feedback Visual**: Animações, indicadores de status e snackbars informativos
 - **Navegação Fluida**: Transições suaves entre telas
+- **Persistência de Dados**: Favoritos salvos localmente
+- **Design Adaptativo**: Cores, gradientes e ícones mudam com o modo
+- **Scroll Infinito**: Pesquisa com carregamento automático de mais resultados
 
 ## 🌐 **Integração com TMDb API**
 
@@ -270,11 +352,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8      # Ícones iOS
-  http: ^1.1.0                 # Requisições HTTP
-  url_launcher: ^6.2.2         # Abrir URLs externas
-  palette_generator: ^0.3.3+3  # Cores dinâmicas
-  flutter_svg: ^2.0.9          # Suporte a SVG
+  cupertino_icons: ^1.0.8        # Ícones iOS
+  http: ^1.1.0                   # Requisições HTTP
+  url_launcher: ^6.2.2           # Abrir URLs externas
+  palette_generator: ^0.3.3+3    # Cores dinâmicas
+  flutter_svg: ^2.0.9            # Suporte a SVG
+  shared_preferences: ^2.2.2     # Persistência de favoritos (NOVO)
 ```
 
 ### **🏗️ Estrutura do Projeto**
@@ -282,32 +365,45 @@ dependencies:
 lib/
 ├── constants/          # Constantes da aplicação
 │   └── app_constants.dart
-├── controllers/        # Lógica de negócio
-│   └── movie_controller.dart
+├── controllers/        # Lógica de negócio (Singleton)
+│   ├── app_mode_controller.dart      # Estado global do app
+│   ├── movie_controller.dart         # Controle de filmes
+│   ├── tv_show_controller.dart       # Controle de séries
+│   └── favorites_controller.dart     # Gerenciamento de favoritos (NOVO)
 ├── models/            # Modelos de dados
-│   ├── movie.dart              # Modelo de filme com gêneros
-│   ├── tv_show.dart            # Modelo de série de TV
-│   ├── cast.dart               # Elenco e equipe técnica
-│   ├── watch_providers.dart    # Provedores de streaming
-│   └── movie_videos.dart       # Vídeos e trailers
+│   ├── movie.dart                    # Modelo de filme com gêneros
+│   ├── tv_show.dart                  # Modelo de série de TV
+│   ├── favorite_item.dart            # Modelo unificado de favoritos (NOVO)
+│   ├── cast.dart                     # Elenco e equipe técnica
+│   ├── watch_providers.dart          # Provedores de streaming
+│   ├── movie_videos.dart             # Vídeos e trailers
+│   └── soundtrack.dart               # Trilhas sonoras
 ├── repositories/      # Camada de dados
 │   └── movie_repository.dart
 ├── services/          # Serviços externos
-│   └── movie_service.dart      # API TMDb para filmes e séries
+│   └── movie_service.dart            # API TMDb para filmes e séries
 ├── screens/           # Telas da aplicação
-│   ├── movie_details_screen.dart    # Detalhes de filmes
-│   ├── tv_show_details_screen.dart  # Detalhes de séries
-│   └── actor_details_screen.dart    # Detalhes de atores
+│   ├── movie_details_screen.dart     # Detalhes de filmes
+│   ├── tv_show_details_screen.dart   # Detalhes de séries
+│   ├── actor_details_screen.dart     # Detalhes de atores
+│   ├── search_screen.dart            # Pesquisa de filmes (NOVO)
+│   ├── tv_series_search_screen.dart  # Pesquisa de séries (NOVO)
+│   └── favorites_screen.dart         # Gerenciamento de favoritos (NOVO)
 ├── widgets/           # Componentes reutilizáveis
-│   ├── genre_wheel.dart             # Roda de gêneros interativa
-│   ├── responsive_widgets.dart      # Widgets responsivos
-│   ├── movie_widgets.dart           # Componentes específicos
-│   └── common_widgets.dart          # Componentes compartilhados
+│   ├── genre_wheel.dart              # Roda de filme interativa
+│   ├── app_drawer.dart               # Menu lateral adaptativo
+│   ├── content_widgets.dart          # Cards + Contador + Favoritos
+│   ├── content_mode_header.dart      # Cabeçalho do modo
+│   ├── genre_selection_widgets.dart  # Seleção de gêneros
+│   ├── responsive_widgets.dart       # Widgets responsivos
+│   ├── error_widgets.dart            # SafeText, ErrorScreen
+│   ├── common_widgets.dart           # Componentes compartilhados
+│   └── optimized_widgets.dart        # Imagens e loading otimizados
 ├── theme/             # Sistema de design
-│   └── app_theme.dart               # Temas para filmes e séries
+│   └── app_theme.dart                # Temas adaptativos (dourado/roxo)
 ├── mixins/            # Funcionalidades reutilizáveis
-│   └── animation_mixin.dart         # Animações compartilhadas
-└── main.dart          # Ponto de entrada com toggle sistema
+│   └── animation_mixin.dart          # Animações compartilhadas
+└── main.dart          # Ponto de entrada com sistema de toggle
 ```
 ## 🚀 **Executando o Projeto**
 
@@ -459,23 +555,31 @@ flutter analyze
 
 ### **📈 Roadmap**
 
-**✅ Funcionalidades Implementadas:**
+**✅ Funcionalidades Implementadas (v3.0):**
 - **✅ Sistema de Toggle**: Filme/Série com temas dinâmicos
 - **✅ Séries de TV**: Suporte completo com 15 gêneros específicos
 - **✅ Detalhes de Séries**: Tela completa com todas as informações
 - **✅ Trilhas Sonoras**: Para filmes e séries selecionados
 - **✅ Onde Assistir**: Provedores de streaming para séries
 - **✅ Web Support**: Execução completa no navegador
+- **✅ Sistema de Favoritos**: Persistência local completa
+- **✅ Pesquisa Avançada**: Telas dedicadas para filmes e séries
+- **✅ Drawer Adaptativo**: Cores dinâmicas baseadas no modo
+- **✅ Scroll Otimizado**: Melhor experiência de rolagem
+- **✅ Controle de Animação**: Animações apenas quando necessário
 
-**🚀 Próximas Funcionalidades:**
+**🚀 Próximas Funcionalidades (v4.0):**
 - [ ] **Modo Offline**: Cache completo para uso sem internet
-- [ ] **Listas Personalizadas**: Favoritos e watchlist
+- [ ] **Listas Personalizadas**: Múltiplas listas customizáveis além de favoritos
 - [ ] **Filtros Avançados**: Por ano, nota, duração e popularidade
 - [ ] **Compartilhamento**: Compartilhar descobertas nas redes sociais
 - [ ] **Temas Personalizados**: Light mode e mais opções de cores
-- [ ] **Internacionalização**: Suporte a múltiplos idiomas
-- [ ] **Recommendations**: Sugestões baseadas no histórico
-- [ ] **User Profiles**: Perfis de usuário com preferências
+- [ ] **Internacionalização**: Suporte a múltiplos idiomas (EN, ES, FR)
+- [ ] **Recommendations**: Sugestões baseadas no histórico e favoritos
+- [ ] **User Profiles**: Perfis de usuário com preferências sincronizadas
+- [ ] **Watchlist**: Lista separada de "quero assistir"
+- [ ] **Histórico**: Visualizar todo o histórico de sorteios
+- [ ] **Exportar/Importar**: Backup de favoritos e listas
 
 ## 🤝 **Contribuindo**
 
@@ -516,12 +620,19 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 **Desenvolvido com ❤️ em Flutter**
 
-`RollFlix v1.0.0` | **"Roll and Chill"**
+`RollFlix v3.0.0` | **"Roll and Chill"**
 
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
 [![TMDb](https://img.shields.io/badge/TMDb-01B4E4?style=for-the-badge&logo=themoviedatabase&logoColor=white)](https://www.themoviedb.org/)
 
 **Transforme sua escolha de filmes e séries em uma experiência divertida!** 🍿📺
+
+**Novidades v3.0:**
+- ⭐ Sistema de Favoritos com persistência local
+- 🔍 Pesquisa avançada de filmes e séries
+- 🎨 Interface totalmente adaptativa (dourado/roxo)
+- 🎬 Navegação completa entre detalhes e favoritos
+- ✨ Scroll otimizado e animações controladas
 
 </div>
