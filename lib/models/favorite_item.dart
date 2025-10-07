@@ -131,4 +131,45 @@ class FavoriteItem {
       return 'Filme';
     }
   }
+
+  /// Converte FavoriteItem de volta para Movie
+  Movie toMovie() {
+    return Movie(
+      id: int.parse(id),
+      title: title,
+      overview: overview ?? '',
+      posterPath: posterPath ?? '',
+      backdropPath: '',
+      voteAverage: voteAverage,
+      voteCount: 0,
+      releaseDate: releaseDate,
+      genreIds: [],
+      genres: [],
+      runtime: runtime ?? 0,
+      originalTitle: originalTitle ?? title,
+    );
+  }
+
+  /// Converte FavoriteItem de volta para TVShow
+  TVShow toTVShow() {
+    return TVShow(
+      id: int.parse(id),
+      name: title,
+      firstAirDate: releaseDate,
+      overview: overview ?? '',
+      posterPath: posterPath ?? '',
+      backdropPath: '',
+      voteAverage: voteAverage,
+      voteCount: 0,
+      originCountry: [],
+      originalLanguage: '',
+      originalName: originalName ?? title,
+      popularity: 0.0,
+      adult: false,
+      genreIds: [],
+      genres: [],
+      numberOfSeasons: numberOfSeasons ?? 0,
+      numberOfEpisodes: numberOfEpisodes ?? 0,
+    );
+  }
 }

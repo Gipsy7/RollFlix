@@ -6,6 +6,8 @@ import '../theme/app_theme.dart';
 import '../constants/app_constants.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/error_widgets.dart';
+import 'movie_details_screen.dart';
+import 'tv_show_details_screen.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -234,7 +236,25 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          // TODO: Navegar para detalhes
+          if (favorite.isTVShow) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TVShowDetailsScreen(
+                  tvShow: favorite.toTVShow(),
+                ),
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MovieDetailsScreen(
+                  movie: favorite.toMovie(),
+                ),
+              ),
+            );
+          }
         },
         child: Padding(
           padding: const EdgeInsets.all(12),
