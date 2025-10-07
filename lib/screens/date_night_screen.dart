@@ -208,6 +208,13 @@ class _DateNightScreenState extends State<DateNightScreen> with TickerProviderSt
           if (mounted) _heartController.stop();
         });
 
+        // Auto-navegar para os detalhes do encontro após criar
+        if (mounted) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            _viewComboDetails();
+          });
+        }
+
       } else {
         _showError('Nenhum filme encontrado para este tipo de encontro');
       }
@@ -322,58 +329,58 @@ class _DateNightScreenState extends State<DateNightScreen> with TickerProviderSt
   Widget _buildHeader(bool isMobile) {
     return SliverToBoxAdapter(
       child: Container(
-        padding: EdgeInsets.all(isMobile ? 20 : 32),
+        padding: EdgeInsets.all(isMobile ? 12 : 20),
         decoration: BoxDecoration(
           gradient: _romanticGradient.scale(0.3),
         ),
         child: Column(
           children: [
-            // Ícone principal
+            // Ícone principal (menor)
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: _romanticGradient.scale(0.8),
                 boxShadow: [
                   BoxShadow(
                     color: _primaryRose.withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
               child: const Icon(
                 Icons.favorite,
-                size: 48,
+                size: 32,
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             
-            // Título e descrição
+            // Título e descrição (mais compactos)
             SafeText(
               'Encontro Perfeito',
               style: AppTextStyles.headlineLarge.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
-                fontSize: isMobile ? 28 : 36,
+                fontSize: isMobile ? 22 : 28,
               ),
               textAlign: TextAlign.center,
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 6),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: isMobile ? 0 : 20),
               child: SafeText(
-                'Filme romântico + refeição especial = noite inesquecível 💕',
+                'Filme romântico + refeição especial 💕',
                 style: AppTextStyles.bodyLarge.copyWith(
                   color: AppColors.textSecondary,
                   fontStyle: FontStyle.italic,
-                  fontSize: isMobile ? 14 : 16,
+                  fontSize: isMobile ? 12 : 14,
                 ),
                 textAlign: TextAlign.center,
-                maxLines: 3,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -386,14 +393,14 @@ class _DateNightScreenState extends State<DateNightScreen> with TickerProviderSt
   Widget _buildContent(bool isMobile) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: EdgeInsets.all(isMobile ? 20 : 32),
+        padding: EdgeInsets.all(isMobile ? 12 : 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildDateTypeSelection(isMobile),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
             _buildGenerateButton(isMobile),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
             if (_currentCombo != null) _buildComboResult(isMobile),
             if (_errorMessage != null) _buildErrorMessage(),
           ],
@@ -412,47 +419,45 @@ class _DateNightScreenState extends State<DateNightScreen> with TickerProviderSt
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: _primaryRose.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(6),
                 ),
                 child: Icon(
                   Icons.restaurant,
                   color: _primaryRose,
-                  size: 24,
+                  size: 18,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               SafeText(
-                'Escolha o Estilo do Encontro',
+                'Escolha o Estilo',
                 style: AppTextStyles.headlineSmall.copyWith(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w600,
+                  fontSize: isMobile ? 16 : 18,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           
-          // Grid de tipos de encontro
+          // Grid de tipos de encontro (mais compacto)
           LayoutBuilder(
             builder: (context, constraints) {
               int crossAxisCount;
               double childAspectRatio;
               
               if (constraints.maxWidth < 600) {
-                // Mobile: 1 coluna
-                crossAxisCount = 1;
-                childAspectRatio = 3.2; // Mais altura para mobile
+                crossAxisCount = 2; // 2 colunas no mobile
+                childAspectRatio = 1.3;
               } else if (constraints.maxWidth < 900) {
-                // Tablet: 2 colunas
-                crossAxisCount = 2;
-                childAspectRatio = 2.2; // Mais altura para tablet
-              } else {
-                // Desktop: 3 colunas
                 crossAxisCount = 3;
-                childAspectRatio = 1.8; // Mais altura para desktop
+                childAspectRatio = 1.4;
+              } else {
+                crossAxisCount = 5;
+                childAspectRatio = 1.2;
               }
               
               return GridView.builder(
@@ -461,8 +466,8 @@ class _DateNightScreenState extends State<DateNightScreen> with TickerProviderSt
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
                   childAspectRatio: childAspectRatio,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
                 ),
                 itemCount: dateTypes.length,
                 itemBuilder: (context, index) {
@@ -477,7 +482,7 @@ class _DateNightScreenState extends State<DateNightScreen> with TickerProviderSt
                     },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      padding: EdgeInsets.all(isMobile ? 12 : 16),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         gradient: isSelected
                             ? _romanticGradient.scale(0.8)
@@ -487,83 +492,42 @@ class _DateNightScreenState extends State<DateNightScreen> with TickerProviderSt
                                   AppColors.backgroundDark.withValues(alpha: 0.9),
                                 ],
                               ),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSelected
                               ? _primaryRose
                               : AppColors.textSecondary.withValues(alpha: 0.4),
-                          width: 2,
+                          width: isSelected ? 2 : 1,
                         ),
                         boxShadow: isSelected 
                           ? [
                               BoxShadow(
                                 color: _primaryRose.withValues(alpha: 0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ]
-                          : [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.2),
-                                blurRadius: 4,
+                                blurRadius: 6,
                                 offset: const Offset(0, 2),
                               ),
-                            ],
+                            ]
+                          : null,
                       ),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            flex: 2,
-                            child: Icon(
-                              _getIconForDateType(dateType),
-                              color: isSelected 
-                                ? Colors.white 
-                                : Colors.white.withValues(alpha: 0.9),
-                              size: isMobile ? 24 : 28,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black.withValues(alpha: 0.6),
-                                  blurRadius: 3,
-                                  offset: const Offset(0, 1),
-                                ),
-                              ],
-                            ),
+                          Icon(
+                            _getIconForDateType(dateType),
+                            color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.9),
+                            size: 20,
                           ),
-                          Expanded(
-                            flex: 1,
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: SafeText(
-                                dateType,
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                  color: isSelected 
-                                      ? Colors.white 
-                                      : Colors.white.withValues(alpha: 0.95),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: isMobile ? 12 : 14,
-                                  shadows: isSelected 
-                                    ? [
-                                        Shadow(
-                                          color: Colors.black.withValues(alpha: 0.5),
-                                          blurRadius: 2,
-                                          offset: const Offset(0, 1),
-                                        ),
-                                      ]
-                                    : [
-                                        Shadow(
-                                          color: Colors.black.withValues(alpha: 0.7),
-                                          blurRadius: 4,
-                                          offset: const Offset(0, 1),
-                                        ),
-                                      ],
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                          const SizedBox(height: 4),
+                          SafeText(
+                            dateType,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.95),
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                              fontSize: 11,
                             ),
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
