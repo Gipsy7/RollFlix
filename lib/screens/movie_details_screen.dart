@@ -7,6 +7,7 @@ import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
 import '../theme/app_theme.dart';
+import '../controllers/favorites_controller.dart';
 import 'actor_details_screen.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
@@ -25,10 +26,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   MovieVideos? movieVideos;
   SoundtrackInfo? soundtrackInfo;
   bool isLoading = true;
+  late final FavoritesController _favoritesController;
 
   @override
   void initState() {
     super.initState();
+    _favoritesController = FavoritesController.instance;
     _loadMovieDetails();
   }
 
@@ -192,6 +195,35 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             pinned: true,
             backgroundColor: AppColors.backgroundDark,
             foregroundColor: AppColors.textPrimary,
+            actions: [
+              ListenableBuilder(
+                listenable: _favoritesController,
+                builder: (context, _) {
+                  final isFavorite = _favoritesController.isMovieFavorite(widget.movie);
+                  return IconButton(
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : AppColors.textPrimary,
+                    ),
+                    tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
+                    onPressed: () {
+                      _favoritesController.toggleMovieFavorite(widget.movie);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            isFavorite 
+                                ? 'Removido dos favoritos' 
+                                : 'Adicionado aos favoritos',
+                          ),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               title: AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 500),

@@ -6,6 +6,7 @@ import '../models/watch_providers.dart';
 import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
+import '../controllers/favorites_controller.dart';
 import 'actor_details_screen.dart';
 
 class TVShowDetailsScreen extends StatefulWidget {
@@ -24,10 +25,12 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
   MovieVideos? tvShowVideos;
   SoundtrackInfo? soundtrackInfo;
   bool isLoading = true;
+  late final FavoritesController _favoritesController;
 
   @override
   void initState() {
     super.initState();
+    _favoritesController = FavoritesController.instance;
     _loadTVShowDetails();
   }
 
@@ -120,6 +123,35 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       backgroundColor: Colors.black,
       expandedHeight: 300,
       pinned: true,
+      actions: [
+        ListenableBuilder(
+          listenable: _favoritesController,
+          builder: (context, _) {
+            final isFavorite = _favoritesController.isTVShowFavorite(widget.tvShow);
+            return IconButton(
+              icon: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.red : Colors.white,
+              ),
+              tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
+              onPressed: () {
+                _favoritesController.toggleTVShowFavorite(widget.tvShow);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      isFavorite 
+                          ? 'Removido dos favoritos' 
+                          : 'Adicionado aos favoritos',
+                    ),
+                    duration: const Duration(seconds: 2),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ],
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           fit: StackFit.expand,
