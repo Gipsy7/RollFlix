@@ -4,6 +4,8 @@ import '../models/date_night_combo.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/optimized_widgets.dart';
+import '../widgets/date_night_widgets.dart';
+import 'date_night_games_screen.dart';
 
 class DateNightDetailsScreen extends StatefulWidget {
   final DateNightCombo combo;
@@ -38,7 +40,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -156,6 +158,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                 Tab(text: 'Refeição', icon: Icon(Icons.restaurant, size: 20)),
                 Tab(text: 'Ambiente', icon: Icon(Icons.lightbulb, size: 20)),
                 Tab(text: 'Lista', icon: Icon(Icons.shopping_cart, size: 20)),
+                Tab(text: 'Ferramentas', icon: Icon(Icons.build, size: 20)),
               ],
             ),
           ),
@@ -170,6 +173,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                 _buildMealTab(isMobile),
                 _buildAtmosphereTab(isMobile),
                 _buildShoppingListTab(isMobile),
+                _buildToolsTab(isMobile),
               ],
             ),
           ),
@@ -1042,6 +1046,63 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                 ],
               ),
             ),
+
+          const SizedBox(height: 24),
+
+          // Botão para Jogos e Atividades
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [_primaryRose.withOpacity(0.2), _secondaryGold.withOpacity(0.2)],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: _primaryRose.withOpacity(0.3)),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.casino, color: _secondaryGold, size: 48),
+                const SizedBox(height: 12),
+                SafeText(
+                  'Jogos & Atividades',
+                  style: AppTextStyles.headlineSmall.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SafeText(
+                  'Torne o encontro ainda mais divertido com jogos e perguntas especiais para casais',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: Colors.white70,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DateNightGamesScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Ver Jogos e Atividades'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _primaryRose,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -1336,5 +1397,266 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
         duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  Widget _buildToolsTab(bool isMobile) {
+    // Extrair tempo de preparo em minutos
+    int preparationMinutes = 45; // padrão
+    try {
+      final timeMatch = RegExp(r'(\d+)').firstMatch(widget.combo.preparationTime);
+      if (timeMatch != null) {
+        preparationMinutes = int.parse(timeMatch.group(1)!);
+      }
+    } catch (e) {
+      // Usar padrão
+    }
+
+    // Criar cronograma do encontro
+    final schedule = _createDateNightSchedule(preparationMinutes);
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(isMobile ? 16 : 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [_primaryRose, _secondaryGold],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.construction, color: Colors.white, size: 32),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SafeText(
+                        'Ferramentas do Date Night',
+                        style: AppTextStyles.headlineSmall.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      SafeText(
+                        'Organize e prepare tudo para o encontro perfeito',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Timer de Cozinha
+          SafeText(
+            '⏱️ Timer de Cozinha',
+            style: AppTextStyles.headlineSmall.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SafeText(
+            'Acompanhe o tempo de preparo da refeição',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.white70,
+            ),
+          ),
+          const SizedBox(height: 16),
+          CookingTimerWidget(
+            totalMinutes: preparationMinutes,
+            onComplete: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('⏰ Tempo de preparo concluído!'),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
+                  action: SnackBarAction(
+                    label: 'OK',
+                    textColor: Colors.white,
+                    onPressed: () {},
+                  ),
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 32),
+
+          // Checklist de Ingredientes
+          SafeText(
+            '✅ Checklist de Compras',
+            style: AppTextStyles.headlineSmall.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SafeText(
+            'Marque os ingredientes conforme for comprando',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.white70,
+            ),
+          ),
+          const SizedBox(height: 16),
+          IngredientsChecklistWidget(
+            ingredients: widget.combo.ingredients,
+          ),
+
+          const SizedBox(height: 32),
+
+          // Cronograma do Encontro
+          SafeText(
+            '📅 Cronograma do Encontro',
+            style: AppTextStyles.headlineSmall.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SafeText(
+            'Sugestão de timeline para o date night perfeito',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.white70,
+            ),
+          ),
+          const SizedBox(height: 16),
+          DateNightScheduleWidget(schedule: schedule),
+
+          const SizedBox(height: 32),
+
+          // Dicas Extras
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1E1E),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: _secondaryGold.withOpacity(0.3)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.tips_and_updates, color: _secondaryGold),
+                    const SizedBox(width: 12),
+                    SafeText(
+                      'Dicas Importantes',
+                      style: AppTextStyles.bodyLarge.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildTipItem('📱 Silencie os celulares para aproveitar o momento'),
+                _buildTipItem('🎵 Prepare a playlist com antecedência'),
+                _buildTipItem('🕯️ Teste velas e iluminação antes'),
+                _buildTipItem('🍷 Deixe bebidas resfriando com 2h de antecedência'),
+                _buildTipItem('🧹 Organize o ambiente com calma'),
+                _buildTipItem('😊 O mais importante: relaxe e aproveite!'),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTipItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 2),
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: _secondaryGold,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SafeText(
+              text,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Map<String, dynamic>> _createDateNightSchedule(int cookingMinutes) {
+    return [
+      {
+        'time': '2h antes',
+        'icon': '🛒',
+        'activity': 'Fazer compras',
+        'tips': 'Verifique a lista de ingredientes e vá ao mercado',
+      },
+      {
+        'time': '1h30 antes',
+        'icon': '🧹',
+        'activity': 'Preparar o ambiente',
+        'tips': 'Arrume a mesa, organize a iluminação e prepare a decoração',
+      },
+      {
+        'time': '1h antes',
+        'icon': '👨‍🍳',
+        'activity': 'Iniciar preparo da refeição',
+        'tips': 'Comece pelos pratos que levam mais tempo',
+      },
+      {
+        'time': '30min antes',
+        'icon': '🎵',
+        'activity': 'Música e últimos ajustes',
+        'tips': 'Coloque a playlist e faça os toques finais',
+      },
+      {
+        'time': 'Hora H',
+        'icon': '💑',
+        'activity': 'Receber seu par',
+        'tips': 'Relaxe, sorria e aproveite!',
+      },
+      {
+        'time': 'Início',
+        'icon': '🍽️',
+        'activity': 'Servir a refeição',
+        'tips': 'Apresente os pratos com carinho',
+      },
+      {
+        'time': 'Após jantar',
+        'icon': '🎬',
+        'activity': 'Assistir o filme',
+        'tips': 'Aconcheguem-se e aproveitem o momento',
+      },
+      {
+        'time': 'Final',
+        'icon': '✨',
+        'activity': 'Momento especial',
+        'tips': 'Conversem sobre o que gostaram e criem memórias',
+      },
+    ];
   }
 }
