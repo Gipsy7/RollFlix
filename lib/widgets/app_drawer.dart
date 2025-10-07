@@ -8,6 +8,7 @@ import '../widgets/error_widgets.dart';
 import '../screens/search_screen.dart';
 import '../screens/tv_series_search_screen.dart';
 import '../screens/date_night_screen.dart';
+import '../screens/favorites_screen.dart';
 
 /// Widget do menu lateral (drawer) da aplicação
 /// Gerencia navegação e opções do app
@@ -140,6 +141,21 @@ class AppDrawer extends StatelessWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.favorite,
+          title: 'Meus Favoritos',
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const FavoritesScreen(),
+              ),
+            );
+          },
+        ),
+        
+        _buildDrawerItem(
+          context: context,
+          icon: Icons.favorite_border,
           title: 'Date Night',
           onTap: () {
             Navigator.pop(context);

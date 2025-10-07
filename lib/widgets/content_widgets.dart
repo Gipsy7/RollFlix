@@ -9,6 +9,7 @@ import '../widgets/optimized_widgets.dart';
 import '../mixins/animation_mixin.dart';
 import '../screens/movie_details_screen.dart';
 import '../screens/tv_show_details_screen.dart';
+import '../controllers/favorites_controller.dart';
 
 /// Widget que exibe um card de filme ou série com detalhes
 class ContentCard extends StatelessWidget {
@@ -33,26 +34,103 @@ class ContentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final favoritesController = FavoritesController.instance;
+    
     return OptimizedAnimatedBuilder(
       animation: animation,
       builder: (context, animationValue) {
         return Transform.scale(
           scale: animationValue,
-          child: AppCard(
-            onTap: () => _navigateToDetails(context),
-            padding: EdgeInsets.all(isMobile ? 20 : 28),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildPoster(),
-                const SizedBox(width: 20),
-                Expanded(child: _buildDetails()),
-              ],
-            ),
+          child: Stack(
+            children: [
+              AppCard(
+                onTap: () => _navigateToDetails(context),
+                padding: EdgeInsets.all(isMobile ? 20 : 28),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildPoster(),
+                    const SizedBox(width: 20),
+                    Expanded(child: _buildDetails()),
+                  ],
+                ),
+              ),
+              // Botão de favorito flutuante
+              Positioned(
+                top: 8,
+                right: 8,
+                child: ListenableBuilder(
+                  listenable: favoritesController,
+                  builder: (context, _) {
+                    final isFavorite = isMovie
+                        ? favoritesController.isMovieFavorite(movie!)
+                        : favoritesController.isTVShowFavorite(tvShow!);
+                    
+                    return Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(24),
+                        onTap: () => _toggleFavorite(context, favoritesController),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.backgroundDark.withValues(alpha: 0.8),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: isFavorite 
+                                  ? AppColors.error 
+                                  : AppColors.textSecondary.withValues(alpha: 0.5),
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? AppColors.error : AppColors.textSecondary,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         );
       },
     );
+  }
+
+  void _toggleFavorite(BuildContext context, FavoritesController controller) {
+    if (isMovie) {
+      controller.toggleMovieFavorite(movie!);
+      final isFavorite = controller.isMovieFavorite(movie!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isFavorite 
+                ? '❤️ ${movie!.title} adicionado aos favoritos'
+                : '${movie!.title} removido dos favoritos',
+          ),
+          duration: const Duration(seconds: 2),
+          backgroundColor: isFavorite ? AppColors.success : AppColors.surfaceDark,
+        ),
+      );
+    } else {
+      controller.toggleTVShowFavorite(tvShow!);
+      final isFavorite = controller.isTVShowFavorite(tvShow!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isFavorite 
+                ? '❤️ ${tvShow!.name} adicionado aos favoritos'
+                : '${tvShow!.name} removido dos favoritos',
+          ),
+          duration: const Duration(seconds: 2),
+          backgroundColor: isFavorite ? AppColors.success : AppColors.surfaceDark,
+        ),
+      );
+    }
   }
 
   void _navigateToDetails(BuildContext context) {
