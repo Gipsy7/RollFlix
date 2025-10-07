@@ -269,9 +269,14 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               ),
             ),
             child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(), // Sempre permite scroll
               slivers: [
                 _buildAppBar(isMobile),
                 _buildContent(isMobile),
+                // Adiciona um padding final como sliver para garantir espaço extra
+                SliverPadding(
+                  padding: EdgeInsets.only(bottom: isMobile ? 20 : 40),
+                ),
               ],
             ),
           ),
@@ -506,6 +511,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                 if (_selectedMovie != null || _selectedTVShow != null) 
                   _buildContentCard(context, isMobile),
                 if (_errorMessage != null) _buildErrorMessage(),
+                // Espaçamento final para garantir scroll completo
+                SizedBox(height: isMobile ? 60 : 80),
               ],
             ),
           ),
