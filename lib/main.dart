@@ -210,10 +210,21 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         _appModeController,
       ]),
       builder: (context, _) {
-        // Anima o card quando há um novo filme/série E a flag está ativa
+        // Verifica se precisa selecionar um gênero quando não há nenhum selecionado
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
           
+          // Se não há gênero selecionado mas há gêneros disponíveis, seleciona o primeiro
+          if (_appModeController.selectedGenre == null && currentGenres.isNotEmpty) {
+            _appModeController.selectGenre(currentGenres.first);
+            if (_appModeController.isSeriesMode) {
+              _tvShowController.selectGenre(currentGenres.first);
+            } else {
+              _movieController.selectGenre(currentGenres.first);
+            }
+          }
+          
+          // Anima o card quando há um novo filme/série E a flag está ativa
           if (_appModeController.isSeriesMode) {
             if (_tvShowController.hasShow && _shouldAnimateCard) {
               animateMovieCard();
