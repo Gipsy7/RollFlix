@@ -337,14 +337,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             : LinearGradient(
                 colors: [
                   AppColors.primary.withValues(alpha: 0.8),
-                  const Color(0xFFD4AF37).withValues(alpha: 0.8),
+                  AppColors.primaryLight.withValues(alpha: 0.8),
                 ],
               ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.2),
-          width: 1,
-        ),
+        borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
             color: currentAccentColor.withValues(alpha: 0.3),
@@ -356,8 +352,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       child: Material(
         color: Colors.transparent,
         child: InkWell(
+          borderRadius: BorderRadius.circular(30),
           onTap: _toggleContentMode,
-          borderRadius: BorderRadius.circular(20),
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: isMobile ? 12 : 16,
@@ -367,23 +363,24 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  _appModeController.isSeriesMode ? Icons.tv : Icons.movie_filter,
+                  _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
                   color: AppColors.textPrimary,
-                  size: isMobile ? 20 : 24,
+                  size: isMobile ? 18 : 20,
                 ),
-                SizedBox(width: isMobile ? 6 : 8),
-                if (!isMobile) ...[
-                  Text(
-                    _appModeController.isSeriesMode ? 'Séries' : 'Filmes',
-                    style: AppTextStyles.labelLarge.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                const SizedBox(width: 8),
+                SafeText(
+                  _appModeController.isSeriesMode ? 'SÉRIES' : 'FILMES',
+                  style: (isMobile 
+                      ? AppTextStyles.labelMedium
+                      : AppTextStyles.labelLarge).copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
                   ),
-                  const SizedBox(width: 4),
-                ],
+                ),
+                const SizedBox(width: 8),
                 Icon(
-                  Icons.swap_horiz_rounded,
+                  Icons.swap_horiz,
                   color: AppColors.textPrimary,
                   size: isMobile ? 18 : 20,
                 ),

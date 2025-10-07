@@ -353,14 +353,10 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
             const Color.fromARGB(255, 219, 39, 119).withValues(alpha: 0.8),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.2),
-          width: 1,
-        ),
+        borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 240, 43, 109).withValues(alpha: 0.3),
+            color: const Color(0xFFBB86FC).withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -369,6 +365,7 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
       child: Material(
         color: Colors.transparent,
         child: InkWell(
+          borderRadius: BorderRadius.circular(30),
           onTap: () {
             _appModeController.setToMovieMode();
             Navigator.pushReplacement(
@@ -378,7 +375,6 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
               ),
             );
           },
-          borderRadius: BorderRadius.circular(20),
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: isMobile ? 12 : 16,
@@ -390,21 +386,22 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
                 Icon(
                   Icons.tv,
                   color: AppColors.textPrimary,
-                  size: isMobile ? 20 : 24,
+                  size: isMobile ? 18 : 20,
                 ),
-                SizedBox(width: isMobile ? 6 : 8),
-                if (!isMobile) ...[
-                  Text(
-                    'Séries',
-                    style: AppTextStyles.labelLarge.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                const SizedBox(width: 8),
+                SafeText(
+                  'SÉRIES',
+                  style: (isMobile 
+                      ? AppTextStyles.labelMedium
+                      : AppTextStyles.labelLarge).copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
                   ),
-                  const SizedBox(width: 4),
-                ],
+                ),
+                const SizedBox(width: 8),
                 Icon(
-                  Icons.swap_horiz_rounded,
+                  Icons.swap_horiz,
                   color: AppColors.textPrimary,
                   size: isMobile ? 18 : 20,
                 ),
