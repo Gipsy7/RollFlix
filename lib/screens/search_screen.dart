@@ -6,6 +6,7 @@ import '../services/movie_service.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/movie_widgets.dart';
 import '../widgets/optimized_widgets.dart';
+import '../controllers/app_mode_controller.dart';
 import 'movie_details_screen.dart';
 import 'tv_series_search_screen.dart';
 
@@ -19,6 +20,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
+  final AppModeController _appModeController = AppModeController();
   
   List<Movie> _searchResults = [];
   List<Movie> _popularMovies = [];
@@ -395,6 +397,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
+            _appModeController.setToSeriesMode();
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
