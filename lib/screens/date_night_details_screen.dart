@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../models/date_night_combo.dart';
+import '../services/recipe_service.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/optimized_widgets.dart';
 import '../widgets/date_night_widgets.dart';
+import 'recipe_details_screen.dart';
 
 class DateNightDetailsScreen extends StatefulWidget {
   final DateNightCombo combo;
@@ -675,236 +677,82 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
           const SizedBox(height: 16),
 
           // Prato Principal
+          _buildRecipeCard(
+            title: 'Prato Principal',
+            recipeName: widget.combo.mainDish,
+            icon: Icons.restaurant_menu,
+            recipeId: widget.combo.mainCourseRecipeId,
+            showDetails: true,
+            isMobile: isMobile,
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Sobremesa
+          _buildRecipeCard(
+            title: 'Sobremesa',
+            recipeName: widget.combo.dessert,
+            icon: Icons.cake,
+            recipeId: widget.combo.dessertRecipeId,
+            isMobile: isMobile,
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Petiscos e Acompanhamentos
+          if (widget.combo.snacks.isNotEmpty) ...[
+            if (widget.combo.appetizerRecipeId != null)
+              _buildRecipeCard(
+                title: 'Petisco',
+                recipeName: widget.combo.snacks.isNotEmpty ? widget.combo.snacks[0] : 'Petisco',
+                icon: Icons.emoji_food_beverage,
+                recipeId: widget.combo.appetizerRecipeId,
+                isMobile: isMobile,
+              ),
+            
+            if (widget.combo.appetizerRecipeId != null && widget.combo.sideDishRecipeId != null)
+              const SizedBox(height: 16),
+            
+            if (widget.combo.sideDishRecipeId != null)
+              _buildRecipeCard(
+                title: 'Acompanhamento',
+                recipeName: widget.combo.snacks.length > 1 ? widget.combo.snacks[1] : 'Acompanhamento',
+                icon: Icons.restaurant,
+                recipeId: widget.combo.sideDishRecipeId,
+                isMobile: isMobile,
+              ),
+            
+            const SizedBox(height: 16),
+          ],
+          
+          // Bebida (não tem receita, só informação)
           AppCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.restaurant_menu, color: _primaryRose, size: 24),
-                    const SizedBox(width: 12),
+                    Icon(Icons.local_bar, color: _primaryRose, size: 20),
+                    const SizedBox(width: 8),
                     SafeText(
-                      'Prato Principal',
-                      style: AppTextStyles.headlineSmall.copyWith(
+                      'Bebida',
+                      style: AppTextStyles.bodyLarge.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 SafeText(
-                  widget.combo.mainDish,
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
+                  widget.combo.drink,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 12),
-                _buildInfoRow(Icons.access_time, 'Tempo', widget.combo.preparationTime),
-                _buildInfoRow(Icons.star, 'Dificuldade', widget.combo.difficulty),
-                _buildInfoRow(Icons.attach_money, 'Custo', widget.combo.estimatedCost),
               ],
             ),
           ),
-          
-          const SizedBox(height: 16),
-          
-          // Bebida e Sobremesa
-          isMobile 
-            ? Column(
-                children: [
-                  AppCard(
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.local_bar, color: _primaryRose, size: 20),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: SafeText(
-                                'Bebida',
-                                style: AppTextStyles.bodyLarge.copyWith(
-                                  color: AppColors.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        SafeText(
-                          widget.combo.drink,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  AppCard(
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.cake, color: _primaryRose, size: 20),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: SafeText(
-                                'Sobremesa',
-                                style: AppTextStyles.bodyLarge.copyWith(
-                                  color: AppColors.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        SafeText(
-                          widget.combo.dessert,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              )
-            : Row(
-            children: [
-              Expanded(
-                child: AppCard(
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.local_bar, color: _primaryRose, size: 20),
-                          const SizedBox(width: 8),
-                          SafeText(
-                            'Bebida',
-                            style: AppTextStyles.bodyLarge.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      SafeText(
-                        widget.combo.drink,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: AppCard(
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.cake, color: _primaryRose, size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: SafeText(
-                              'Sobremesa',
-                              style: AppTextStyles.bodyLarge.copyWith(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      SafeText(
-                        widget.combo.dessert,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Petiscos
-          if (widget.combo.snacks.isNotEmpty)
-            AppCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.emoji_food_beverage, color: _primaryRose, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: SafeText(
-                          'Petiscos e Acompanhamentos',
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: widget.combo.snacks.map((snack) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _primaryRose.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: _primaryRose.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: SafeText(
-                          snack,
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: _primaryRose,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
           
           const SizedBox(height: 16),
           
@@ -940,6 +788,125 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
         ],
       ),
     );
+  }
+
+  // Card de receita clicável
+  Widget _buildRecipeCard({
+    required String title,
+    required String recipeName,
+    required IconData icon,
+    required int? recipeId,
+    bool showDetails = false,
+    required bool isMobile,
+  }) {
+    final hasRecipe = recipeId != null;
+    
+    return InkWell(
+      onTap: hasRecipe ? () => _openRecipeDetails(recipeId, recipeType: title) : null,
+      borderRadius: BorderRadius.circular(16),
+      child: AppCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: _primaryRose, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: SafeText(
+                    title,
+                    style: AppTextStyles.headlineSmall.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                if (hasRecipe)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _primaryRose.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SafeText(
+                          'Ver receita',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: _primaryRose,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(Icons.arrow_forward_ios, color: _primaryRose, size: 12),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SafeText(
+              recipeName,
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            if (showDetails) ...[
+              const SizedBox(height: 12),
+              _buildInfoRow(Icons.access_time, 'Tempo', widget.combo.preparationTime),
+              _buildInfoRow(Icons.star, 'Dificuldade', widget.combo.difficulty),
+              _buildInfoRow(Icons.attach_money, 'Custo', widget.combo.estimatedCost),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Navegar para os detalhes da receita
+  Future<void> _openRecipeDetails(int recipeId, {String recipeType = 'Receita'}) async {
+    try {
+      // Mostrar loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Buscar detalhes completos da receita
+      final recipe = await RecipeService.getRecipeDetails(recipeId);
+
+      if (!mounted) return;
+      
+      // Fechar loading
+      Navigator.of(context).pop();
+
+      // Navegar para a tela de detalhes
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => RecipeDetailsScreen(
+            recipe: recipe,
+            recipeType: recipeType,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      
+      // Fechar loading se ainda estiver aberto
+      Navigator.of(context).pop();
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao carregar receita: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Widget _buildShoppingListTab(bool isMobile) {

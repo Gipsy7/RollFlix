@@ -3,7 +3,9 @@ import '../theme/app_theme.dart';
 import '../models/movie.dart';
 import '../models/date_night_combo.dart';
 import '../models/watch_providers.dart';
+import '../models/recipe.dart';
 import '../services/movie_service.dart';
+import '../services/recipe_service.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import 'date_night_details_screen.dart';
@@ -102,17 +104,23 @@ class _DateNightScreenState extends State<DateNightScreen> {
         // Sortear um filme
         final randomMovie = selectedMovies[DateTime.now().millisecondsSinceEpoch % selectedMovies.length];
         
-        // Buscar detalhes completos do filme
+        // Buscar detalhes completos do filme e receitas em paralelo
         Movie detailedMovie;
         List<Map<String, dynamic>> watchProviders = [];
+        Map<String, Recipe>? recipeMenu;
+        
         try {
+          final cuisine = RecipeService.getDateTypeCuisine(_selectedDateType!);
+          
           final results = await Future.wait([
             MovieService.getMovieDetails(randomMovie.id),
             MovieService.getWatchProviders(randomMovie.id),
+            RecipeService.generateDateNightMenu(cuisine: cuisine),
           ]);
           
           detailedMovie = results[0] as Movie;
           final watchProvidersData = results[1] as WatchProviders?;
+          recipeMenu = results[2] as Map<String, Recipe>?;
           
           // Converter watch providers para o formato do combo
           if (watchProvidersData != null) {
@@ -139,6 +147,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
           }
         } catch (e) {
           detailedMovie = randomMovie; // Fallback para o filme básico
+          recipeMenu = null; // Usar dados estáticos se a API falhar
         }
         
         // Criar combo de encontro com informações completas
@@ -161,9 +170,61 @@ class _DateNightScreenState extends State<DateNightScreen> {
           mealType: DateNightService.getMovieTypeKey(_selectedDateType!),
         );
 
-        setState(() {
-          _currentCombo = combo;
-        });
+        // Atualizar combo com dados das receitas se disponível
+        if (recipeMenu != null) {
+          final mainCourse = recipeMenu['mainCourse'];
+          final dessert = recipeMenu['dessert'];
+          final appetizer = recipeMenu['appetizer'];
+          final sideDish = recipeMenu['sideDish'];
+          
+          // Criar novo combo com IDs das receitas
+          final updatedCombo = DateNightCombo(
+            movieId: combo.movieId,
+            movieTitle: combo.movieTitle,
+            movieYear: combo.movieYear,
+            moviePosterPath: combo.moviePosterPath,
+            movieBackdropPath: combo.movieBackdropPath,
+            movieRating: combo.movieRating,
+            movieOverview: combo.movieOverview,
+            movieGenres: combo.movieGenres,
+            movieRuntime: combo.movieRuntime,
+            movieReleaseDate: combo.movieReleaseDate,
+            movieOriginalLanguage: combo.movieOriginalLanguage,
+            movieProductionCompanies: combo.movieProductionCompanies,
+            movieWatchProviders: combo.movieWatchProviders,
+            mainDish: mainCourse?.title ?? combo.mainDish,
+            drink: combo.drink,
+            dessert: dessert?.title ?? combo.dessert,
+            snacks: [
+              if (appetizer != null) appetizer.title,
+              if (sideDish != null) sideDish.title,
+            ].isNotEmpty ? [
+              if (appetizer != null) appetizer.title,
+              if (sideDish != null) sideDish.title,
+            ] : combo.snacks,
+            atmosphere: combo.atmosphere,
+            preparationTime: mainCourse?.formattedTime ?? combo.preparationTime,
+            difficulty: combo.difficulty,
+            ingredients: mainCourse?.extendedIngredients?.map((i) => i.original).toList() ?? combo.ingredients,
+            cookingTips: combo.cookingTips,
+            theme: combo.theme,
+            playlistSuggestions: combo.playlistSuggestions,
+            ambientLighting: combo.ambientLighting,
+            estimatedCost: combo.estimatedCost,
+            mainCourseRecipeId: mainCourse?.id,
+            dessertRecipeId: dessert?.id,
+            appetizerRecipeId: appetizer?.id,
+            sideDishRecipeId: sideDish?.id,
+          );
+          
+          setState(() {
+            _currentCombo = updatedCombo;
+          });
+        } else {
+          setState(() {
+            _currentCombo = combo;
+          });
+        }
 
         // Auto-navegar para os detalhes do encontro após criar
         if (mounted) {

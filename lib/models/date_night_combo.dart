@@ -29,6 +29,12 @@ class DateNightCombo {
   final String ambientLighting;
   final String estimatedCost;
 
+  // IDs das receitas da API (opcionais)
+  final int? mainCourseRecipeId;
+  final int? dessertRecipeId;
+  final int? appetizerRecipeId;
+  final int? sideDishRecipeId;
+
   const DateNightCombo({
     required this.movieTitle,
     required this.movieYear,
@@ -56,6 +62,10 @@ class DateNightCombo {
     required this.playlistSuggestions,
     required this.ambientLighting,
     required this.estimatedCost,
+    this.mainCourseRecipeId,
+    this.dessertRecipeId,
+    this.appetizerRecipeId,
+    this.sideDishRecipeId,
   });
 
   // Método para converter um Movie em DateNightCombo
