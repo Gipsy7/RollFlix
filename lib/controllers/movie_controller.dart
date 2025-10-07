@@ -3,8 +3,16 @@ import '../models/movie.dart';
 import '../repositories/movie_repository.dart';
 
 /// Controller responsável pelo gerenciamento de estado dos filmes
-/// Separação da lógica de negócio da UI para melhor testabilidade
+/// Singleton pattern para garantir instância única em toda a aplicação
 class MovieController extends ChangeNotifier {
+  // Singleton pattern
+  static final MovieController _instance = MovieController._internal();
+  static MovieController get instance => _instance;
+  
+  factory MovieController() => _instance;
+  
+  MovieController._internal();
+  
   final MovieRepository _repository = MovieRepository();
   
   String? _selectedGenre;

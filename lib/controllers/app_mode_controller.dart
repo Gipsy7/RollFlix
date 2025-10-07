@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 
 /// Controller global para gerenciar o modo da aplicação (Filme/Série)
+/// Singleton pattern para garantir instância única
 class AppModeController extends ChangeNotifier {
   static final AppModeController _instance = AppModeController._internal();
+  static AppModeController get instance => _instance;
   
-  factory AppModeController() {
-    return _instance;
-  }
+  factory AppModeController() => _instance;
   
   AppModeController._internal();
 

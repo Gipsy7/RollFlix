@@ -68,37 +68,52 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   
   String? _selectedGenre;
 
-  final List<String> genres = AppConstants.movieGenres;
-
   @override
   void initState() {
     super.initState();
-    _movieController = MovieController();
-    _tvShowController = TVShowController();
+    _movieController = MovieController.instance;
+    _tvShowController = TVShowController.instance;
     _tvShowRepository = TVShowRepository();
-    _appModeController = AppModeController();
+    _appModeController = AppModeController.instance;
+    
+    _setupListeners();
+    _initializeApp();
+  }
+  
+  /// Configura listeners de forma segura
+  void _setupListeners() {
     _movieController.addListener(_onMovieStateChanged);
     _tvShowController.addListener(_onTVShowStateChanged);
     _appModeController.addListener(_onModeChanged);
-    
-    // Pré-carrega dados populares para melhor performance
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Limpa o cache para garantir busca de múltiplos filmes e séries
-      _movieController.clearCache();
-      _tvShowController.clearCache();
+  }
+  
+  /// Inicialização assíncrona da aplicação
+  void _initializeApp() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
       
-      _movieController.preloadData();
-      _tvShowController.preloadData();
-      
-      // Seleciona automaticamente o primeiro gênero do modo atual
-      if (currentGenres.isNotEmpty) {
-        _selectedGenre = currentGenres.first;
-        if (!_appModeController.isSeriesMode) {
-          _movieController.selectGenre(currentGenres.first);
-        } else {
-          _tvShowController.selectGenre(currentGenres.first);
+      try {
+        // Pré-carrega dados populares para melhor performance
+        await Future.wait([
+          _movieController.preloadData(),
+          _tvShowController.preloadData(),
+        ]);
+        
+        // Seleciona automaticamente o primeiro gênero do modo atual
+        if (mounted && currentGenres.isNotEmpty) {
+          _selectedGenre = currentGenres.first;
+          if (!_appModeController.isSeriesMode) {
+            _movieController.selectGenre(currentGenres.first);
+          } else {
+            _tvShowController.selectGenre(currentGenres.first);
+          }
+          debugPrint('Gênero inicial selecionado: ${currentGenres.first}');
         }
-        debugPrint('Gênero inicial selecionado automaticamente: ${currentGenres.first}');
+      } catch (e) {
+        debugPrint('Erro ao inicializar app: $e');
+        if (mounted) {
+          AppSnackBar.showError(context, 'Erro ao carregar dados iniciais');
+        }
       }
     });
   }
@@ -116,6 +131,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   /// Listener para mudanças no modo (filme/série)
   void _onModeChanged() {
+    if (!mounted) return;
+    
     setState(() {
       // Força rebuild completo ao mudar de modo
       _selectedMovie = null;
@@ -132,6 +149,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   /// Listener otimizado para mudanças de estado de filmes
   void _onMovieStateChanged() {
+    if (!mounted) return;
+    
     setState(() {
       // Força rebuild para atualizar contador e estado
     });
@@ -142,14 +161,18 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     
     if (_movieController.errorMessage != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        AppSnackBar.showError(context, _movieController.errorMessage!);
-        _movieController.clearError();
+        if (mounted) {
+          AppSnackBar.showError(context, _movieController.errorMessage!);
+          _movieController.clearError();
+        }
       });
     }
   }
 
   /// Listener otimizado para mudanças de estado de séries
   void _onTVShowStateChanged() {
+    if (!mounted) return;
+    
     setState(() {
       // Força rebuild para atualizar contador e estado
     });
@@ -160,8 +183,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     
     if (_tvShowController.errorMessage != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        AppSnackBar.showError(context, _tvShowController.errorMessage!);
-        _tvShowController.clearError();
+        if (mounted) {
+          AppSnackBar.showError(context, _tvShowController.errorMessage!);
+          _tvShowController.clearError();
+        }
       });
     }
   }

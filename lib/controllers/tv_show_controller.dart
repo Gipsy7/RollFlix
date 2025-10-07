@@ -3,8 +3,16 @@ import '../models/tv_show.dart';
 import '../repositories/tv_show_repository.dart';
 
 /// Controller responsável pelo gerenciamento de estado das séries TV
-/// Separação da lógica de negócio da UI para melhor testabilidade
+/// Singleton pattern para garantir instância única em toda a aplicação
 class TVShowController extends ChangeNotifier {
+  // Singleton pattern
+  static final TVShowController _instance = TVShowController._internal();
+  static TVShowController get instance => _instance;
+  
+  factory TVShowController() => _instance;
+  
+  TVShowController._internal();
+  
   final TVShowRepository _repository = TVShowRepository();
   
   String? _selectedGenre;
