@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/recipe.dart';
+import 'recipe_cache_service.dart';
 
 class RecipeService {
   // API Key da Spoonacular (use sua própria key)
@@ -15,6 +16,14 @@ class RecipeService {
     String? cuisine,
     String? diet,
   }) async {
+    // 1. Verificar cache primeiro
+    final cachedResults = await RecipeCacheService.getCachedSearchResults(type, cuisine, diet);
+    if (cachedResults != null && cachedResults.isNotEmpty) {
+      print('✓ Receitas carregadas do cache para $type');
+      return cachedResults.take(number).toList();
+    }
+
+    // 2. Buscar da API se não estiver em cache
     try {
       final queryParams = {
         'apiKey': _apiKey,
@@ -35,7 +44,13 @@ class RecipeService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final results = data['results'] as List;
-        return results.map((recipe) => Recipe.fromJson(recipe)).toList();
+        final recipes = results.map((recipe) => Recipe.fromJson(recipe)).toList();
+        
+        // 3. Salvar no cache para uso futuro
+        await RecipeCacheService.cacheSearchResults(type, cuisine, diet, recipes);
+        print('✓ Receitas salvas no cache para $type');
+        
+        return recipes;
       } else {
         throw Exception('Erro ao buscar receitas: ${response.statusCode}');
       }
@@ -47,6 +62,14 @@ class RecipeService {
 
   // Buscar detalhes completos de uma receita
   static Future<Recipe> getRecipeDetails(int recipeId) async {
+    // 1. Verificar cache primeiro
+    final cachedRecipe = await RecipeCacheService.getCachedRecipe(recipeId);
+    if (cachedRecipe != null) {
+      print('✓ Receita #$recipeId carregada do cache');
+      return cachedRecipe;
+    }
+
+    // 2. Buscar da API se não estiver em cache
     try {
       final uri = Uri.parse('$_baseUrl/$recipeId/information').replace(
         queryParameters: {
@@ -59,7 +82,13 @@ class RecipeService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        return Recipe.fromJson(data);
+        final recipe = Recipe.fromJson(data);
+        
+        // 3. Salvar no cache
+        await RecipeCacheService.cacheRecipe(recipe);
+        print('✓ Receita #$recipeId salva no cache');
+        
+        return recipe;
       } else {
         throw Exception('Erro ao buscar detalhes: ${response.statusCode}');
       }
@@ -105,8 +134,16 @@ class RecipeService {
     String? cuisine,
     String? diet,
   }) async {
+    // 1. Verificar se há menu completo em cache
+    final cachedMenu = await RecipeCacheService.getCachedMenu(cuisine, diet);
+    if (cachedMenu != null && cachedMenu.length == 4) {
+      print('✓ Menu completo carregado do cache');
+      return cachedMenu;
+    }
+
+    // 2. Buscar da API se não estiver em cache
     try {
-      // Buscar em paralelo
+      // Buscar em paralelo (searchRecipes já usa cache internamente)
       final results = await Future.wait([
         searchRecipes(type: 'main course', number: 1, cuisine: cuisine, diet: diet),
         searchRecipes(type: 'dessert', number: 1, cuisine: cuisine),
@@ -114,12 +151,18 @@ class RecipeService {
         searchRecipes(type: 'side dish', number: 1, cuisine: cuisine, diet: diet),
       ]);
 
-      return {
+      final menu = {
         'mainCourse': results[0].isNotEmpty ? results[0][0] : _getFallbackRecipes('main course')[0],
         'dessert': results[1].isNotEmpty ? results[1][0] : _getFallbackRecipes('dessert')[0],
         'appetizer': results[2].isNotEmpty ? results[2][0] : _getFallbackRecipes('appetizer')[0],
         'sideDish': results[3].isNotEmpty ? results[3][0] : _getFallbackRecipes('side dish')[0],
       };
+
+      // 3. Salvar menu completo no cache
+      await RecipeCacheService.cacheMenu(cuisine, diet, menu);
+      print('✓ Menu completo salvo no cache');
+
+      return menu;
     } catch (e) {
       print('Erro ao gerar menu: $e');
       // Retornar menu fallback

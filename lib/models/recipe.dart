@@ -75,6 +75,34 @@ class Recipe {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'image': image,
+      'readyInMinutes': readyInMinutes,
+      'servings': servings,
+      'sourceUrl': sourceUrl,
+      'summary': summary,
+      'extendedIngredients': extendedIngredients?.map((i) => i.toJson()).toList(),
+      'analyzedInstructions': analyzedInstructions != null
+          ? [
+              {
+                'steps': analyzedInstructions!.map((s) => s.toJson()).toList(),
+              }
+            ]
+          : null,
+      'nutrition': nutrition?.toJson(),
+      'vegetarian': vegetarian,
+      'vegan': vegan,
+      'glutenFree': glutenFree,
+      'dairyFree': dairyFree,
+      'pricePerServing': pricePerServing,
+      'dishTypes': dishTypes,
+      'cuisines': cuisines,
+    };
+  }
+
   String get formattedPrice {
     if (pricePerServing == null) return 'R\$ -';
     final priceInReais = (pricePerServing! / 100) * 5; // Conversão aproximada
@@ -128,6 +156,17 @@ class Ingredient {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'original': original,
+      'amount': amount,
+      'unit': unit,
+      'image': image,
+    };
+  }
+
   String get imageUrl =>
       image != null ? 'https://spoonacular.com/cdn/ingredients_100x100/$image' : '';
 }
@@ -159,6 +198,15 @@ class RecipeStep {
           : [],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'number': number,
+      'step': step,
+      'ingredients': ingredients.map((i) => i.toJson()).toList(),
+      'equipment': equipment.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
 class Equipment {
@@ -178,6 +226,14 @@ class Equipment {
       name: json['name'] ?? '',
       image: json['image'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'image': image,
+    };
   }
 }
 
@@ -219,6 +275,12 @@ class NutritionInfo {
       carbs: findNutrient('Carbohydrates'),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'nutrients': nutrients.map((n) => n.toJson()).toList(),
+    };
+  }
 }
 
 class Nutrient {
@@ -238,6 +300,14 @@ class Nutrient {
       amount: (json['amount'] ?? 0).toDouble(),
       unit: json['unit'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'amount': amount,
+      'unit': unit,
+    };
   }
 
   String get formatted => '${amount.toStringAsFixed(1)}$unit';
