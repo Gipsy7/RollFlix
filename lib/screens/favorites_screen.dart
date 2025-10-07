@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/favorites_controller.dart';
+import '../controllers/app_mode_controller.dart';
 import '../models/favorite_item.dart';
 import '../theme/app_theme.dart';
 import '../constants/app_constants.dart';
@@ -13,86 +14,167 @@ class FavoritesScreen extends StatefulWidget {
   State<FavoritesScreen> createState() => _FavoritesScreenState();
 }
 
-class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProviderStateMixin {
+class _FavoritesScreenState extends State<FavoritesScreen> {
   late final FavoritesController _favoritesController;
-  late final TabController _tabController;
+  late final AppModeController _appModeController;
   
   @override
   void initState() {
     super.initState();
     _favoritesController = FavoritesController.instance;
-    _tabController = TabController(length: 3, vsync: this);
-  }
-  
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+    _appModeController = AppModeController.instance;
   }
 
   @override
   Widget build(BuildContext context) {
     final isMobile = ResponsiveUtils.isMobile(context);
     
-    return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
-      appBar: AppBar(
-        title: SafeText(
-          'Meus Favoritos',
-          style: AppTextStyles.headlineSmall.copyWith(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
+    return ListenableBuilder(
+      listenable: Listenable.merge([
+        _favoritesController,
+        _appModeController,
+      ]),
+      builder: (context, _) {
+        // Obtém os favoritos baseado no modo atual
+        final currentFavorites = _appModeController.isSeriesMode
+            ? _favoritesController.favoriteTVShows
+            : _favoritesController.favoriteMovies;
+        
+        // Gradiente baseado no modo
+        final currentGradient = _appModeController.isSeriesMode 
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color.fromARGB(255, 0, 0, 0),
+                  Color.fromARGB(255, 45, 3, 56),
+                  Color.fromARGB(255, 255, 0, 128),
+                ],
+              )
+            : AppColors.cinemaGradient;
+        
+        final accentColor = _appModeController.isSeriesMode 
+            ? const Color(0xFFBB86FC)
+            : AppColors.primary;
+        
+        return Scaffold(
+          backgroundColor: AppColors.backgroundDark,
+          appBar: AppBar(
+            title: SafeText(
+              'Meus Favoritos',
+              style: AppTextStyles.headlineSmall.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: currentGradient,
+              ),
+            ),
+            iconTheme: IconThemeData(color: accentColor),
+            elevation: 0,
+            actions: [
+              // Botão de Swap Filme/Série
+              _buildSwapButton(isMobile, accentColor),
+              const SizedBox(width: 8),
+              // Botão de limpar
+              IconButton(
+                icon: const Icon(Icons.delete_sweep),
+                tooltip: 'Limpar todos',
+                color: accentColor,
+                onPressed: currentFavorites.isEmpty ? null : _showClearAllDialog,
+              ),
+              const SizedBox(width: 8),
+            ],
           ),
-        ),
-        backgroundColor: AppColors.surfaceDark,
-        iconTheme: const IconThemeData(color: AppColors.primary),
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_sweep),
-            tooltip: 'Limpar todos',
-            onPressed: _showClearAllDialog,
+          body: _buildBody(currentFavorites, isMobile, accentColor),
+        );
+      },
+    );
+  }
+
+  Widget _buildSwapButton(bool isMobile, Color accentColor) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        gradient: _appModeController.isSeriesMode 
+            ? LinearGradient(
+                colors: [
+                  const Color.fromARGB(255, 147, 51, 234).withValues(alpha: 0.8),
+                  const Color.fromARGB(255, 219, 39, 119).withValues(alpha: 0.8),
+                ],
+              )
+            : LinearGradient(
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.8),
+                  AppColors.primaryLight.withValues(alpha: 0.8),
+                ],
+              ),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: accentColor.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: AppColors.primary,
-          unselectedLabelColor: AppColors.textSecondary,
-          indicatorColor: AppColors.primary,
-          tabs: const [
-            Tab(text: 'Todos', icon: Icon(Icons.star)),
-            Tab(text: 'Filmes', icon: Icon(Icons.movie)),
-            Tab(text: 'Séries', icon: Icon(Icons.tv)),
-          ],
-        ),
       ),
-      body: ListenableBuilder(
-        listenable: _favoritesController,
-        builder: (context, _) {
-          if (_favoritesController.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
-            );
-          }
-
-          return TabBarView(
-            controller: _tabController,
-            children: [
-              _buildFavoritesList(_favoritesController.favorites, isMobile),
-              _buildFavoritesList(_favoritesController.favoriteMovies, isMobile),
-              _buildFavoritesList(_favoritesController.favoriteTVShows, isMobile),
-            ],
-          );
-        },
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(30),
+          onTap: () => _appModeController.toggleMode(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 12 : 16,
+              vertical: 8,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
+                  color: AppColors.textPrimary,
+                  size: isMobile ? 18 : 20,
+                ),
+                const SizedBox(width: 8),
+                SafeText(
+                  _appModeController.isSeriesMode ? 'SÉRIES' : 'FILMES',
+                  style: (isMobile 
+                      ? AppTextStyles.labelMedium
+                      : AppTextStyles.labelLarge).copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.swap_horiz,
+                  color: AppColors.textPrimary,
+                  size: isMobile ? 18 : 20,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildFavoritesList(List<FavoriteItem> favorites, bool isMobile) {
+  Widget _buildBody(List<FavoriteItem> favorites, bool isMobile, Color accentColor) {
+    if (_favoritesController.isLoading) {
+      return Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(accentColor),
+        ),
+      );
+    }
+
     if (favorites.isEmpty) {
-      return _buildEmptyState();
+      return _buildEmptyState(accentColor);
     }
 
     return ListView.builder(
@@ -100,20 +182,22 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
       itemCount: favorites.length,
       itemBuilder: (context, index) {
         final favorite = favorites[index];
-        return _buildFavoriteCard(favorite, isMobile);
+        return _buildFavoriteCard(favorite, isMobile, accentColor);
       },
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(Color accentColor) {
+    final contentType = _appModeController.isSeriesMode ? 'séries' : 'filmes';
+    
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.favorite_border,
+            _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
             size: 80,
-            color: AppColors.textSecondary.withValues(alpha: 0.5),
+            color: accentColor.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           SafeText(
@@ -124,7 +208,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
           ),
           const SizedBox(height: 8),
           SafeText(
-            'Adicione filmes e séries aos favoritos\npara vê-los aqui!',
+            'Adicione $contentType aos favoritos\npara vê-los aqui!',
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.textTertiary,
             ),
@@ -135,7 +219,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
     );
   }
 
-  Widget _buildFavoriteCard(FavoriteItem favorite, bool isMobile) {
+  Widget _buildFavoriteCard(FavoriteItem favorite, bool isMobile, Color accentColor) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       color: AppColors.surfaceDark,
@@ -143,9 +227,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: favorite.isTVShow 
-              ? const Color(0xFFBB86FC).withValues(alpha: 0.3)
-              : AppColors.primary.withValues(alpha: 0.3),
+          color: accentColor.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -182,11 +264,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
                     Row(
                       children: [
                         Icon(
-                          favorite.isTVShow ? Icons.tv : Icons.movie,
+                          _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
                           size: 16,
-                          color: favorite.isTVShow 
-                              ? const Color(0xFFBB86FC)
-                              : AppColors.primary,
+                          color: accentColor,
                         ),
                         const SizedBox(width: 4),
                         Expanded(
@@ -208,7 +288,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
                         Icon(
                           Icons.star,
                           size: 16,
-                          color: AppColors.primary,
+                          color: accentColor,
                         ),
                         const SizedBox(width: 4),
                         SafeText(
@@ -321,11 +401,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
   }
 
   void _showClearAllDialog() {
-    if (!_favoritesController.hasFavorites) {
-      AppSnackBar.showInfo(context, 'Não há favoritos para limpar');
+    final currentFavorites = _appModeController.isSeriesMode
+        ? _favoritesController.favoriteTVShows
+        : _favoritesController.favoriteMovies;
+    
+    if (currentFavorites.isEmpty) {
+      final contentType = _appModeController.isSeriesMode ? 'séries' : 'filmes';
+      AppSnackBar.showInfo(context, 'Não há $contentType favoritos para limpar');
       return;
     }
 
+    final contentType = _appModeController.isSeriesMode ? 'séries' : 'filmes';
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -337,7 +424,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
           ),
         ),
         content: SafeText(
-          'Todos os ${_favoritesController.count} favoritos serão removidos. Esta ação não pode ser desfeita.',
+          'Todos os ${currentFavorites.length} $contentType favoritos serão removidos. Esta ação não pode ser desfeita.',
           style: AppTextStyles.bodyMedium.copyWith(
             color: AppColors.textSecondary,
           ),
@@ -354,9 +441,12 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
           ),
           TextButton(
             onPressed: () {
-              _favoritesController.clearAll();
+              // Remove apenas os favoritos do modo atual
+              for (var favorite in currentFavorites) {
+                _favoritesController.removeFavorite(favorite.id);
+              }
               Navigator.pop(context);
-              AppSnackBar.showSuccess(context, 'Todos os favoritos foram removidos');
+              AppSnackBar.showSuccess(context, 'Todos os $contentType favoritos foram removidos');
             },
             child: SafeText(
               'Limpar Tudo',
