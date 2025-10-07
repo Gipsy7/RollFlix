@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import '../models/movie.dart';
 import '../models/cast.dart';
 import '../models/watch_providers.dart';
@@ -169,6 +170,42 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     );
   }
 
+  void _shareMovie() {
+    final movie = detailedMovie ?? widget.movie;
+    final year = movie.releaseDate.isNotEmpty 
+        ? movie.releaseDate.split('-')[0] 
+        : '';
+    final rating = movie.voteAverage > 0 
+        ? '⭐ ${movie.voteAverage.toStringAsFixed(1)}/10' 
+        : '';
+    
+    String shareText = '🎬 ${movie.title}';
+    if (year.isNotEmpty) {
+      shareText += ' ($year)';
+    }
+    shareText += '\n\n';
+    
+    if (rating.isNotEmpty) {
+      shareText += '$rating\n\n';
+    }
+    
+    if (movie.overview.isNotEmpty) {
+      shareText += '📖 ${movie.overview}\n\n';
+    }
+    
+    if (movie.genres.isNotEmpty) {
+      final genres = movie.genres.map((g) => g.name).join(', ');
+      shareText += '🎭 Gêneros: $genres\n\n';
+    }
+    
+    shareText += '🍿 Descubra mais filmes incríveis no RollFlix!';
+    
+    Share.share(
+      shareText,
+      subject: movie.title,
+    );
+  }
+
   void _navigateToDirectorDetails(CrewMember director) {
     Navigator.push(
       context,
@@ -196,6 +233,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             backgroundColor: AppColors.backgroundDark,
             foregroundColor: AppColors.textPrimary,
             actions: [
+              IconButton(
+                icon: const Icon(Icons.share),
+                tooltip: 'Compartilhar filme',
+                onPressed: _shareMovie,
+              ),
               ListenableBuilder(
                 listenable: _favoritesController,
                 builder: (context, _) {

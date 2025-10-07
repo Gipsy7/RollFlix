@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import '../models/tv_show.dart';
 import '../models/cast.dart';
 import '../models/watch_providers.dart';
@@ -118,12 +119,61 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
     );
   }
 
+  void _shareTVShow() {
+    final tvShow = detailedTVShow ?? widget.tvShow;
+    final year = tvShow.firstAirDate.isNotEmpty 
+        ? tvShow.firstAirDate.split('-')[0] 
+        : '';
+    final rating = tvShow.voteAverage > 0 
+        ? '⭐ ${tvShow.voteAverage.toStringAsFixed(1)}/10' 
+        : '';
+    
+    String shareText = '📺 ${tvShow.name}';
+    if (year.isNotEmpty) {
+      shareText += ' ($year)';
+    }
+    shareText += '\n\n';
+    
+    if (rating.isNotEmpty) {
+      shareText += '$rating\n\n';
+    }
+    
+    if (tvShow.numberOfSeasons > 0) {
+      shareText += '📺 ${tvShow.numberOfSeasons} temporada${tvShow.numberOfSeasons > 1 ? 's' : ''}';
+      if (tvShow.numberOfEpisodes > 0) {
+        shareText += ' • ${tvShow.numberOfEpisodes} episódios';
+      }
+      shareText += '\n\n';
+    }
+    
+    if (tvShow.overview.isNotEmpty) {
+      shareText += '📖 ${tvShow.overview}\n\n';
+    }
+    
+    if (tvShow.genres.isNotEmpty) {
+      final genres = tvShow.genres.map((g) => g.name).join(', ');
+      shareText += '🎭 Gêneros: $genres\n\n';
+    }
+    
+    shareText += '🍿 Descubra mais séries incríveis no RollFlix!';
+    
+    Share.share(
+      shareText,
+      subject: tvShow.name,
+    );
+  }
+
   Widget _buildSliverAppBar() {
     return SliverAppBar(
       backgroundColor: Colors.black,
       expandedHeight: 300,
       pinned: true,
       actions: [
+        IconButton(
+          icon: const Icon(Icons.share),
+          tooltip: 'Compartilhar série',
+          onPressed: _shareTVShow,
+        ),
         ListenableBuilder(
           listenable: _favoritesController,
           builder: (context, _) {
