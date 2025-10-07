@@ -17,6 +17,7 @@ import 'widgets/optimized_widgets.dart';
 import 'widgets/responsive_widgets.dart';
 import 'controllers/movie_controller.dart';
 import 'controllers/tv_show_controller.dart';
+import 'controllers/app_mode_controller.dart';
 import 'repositories/tv_show_repository.dart';
 import 'mixins/animation_mixin.dart';
 
@@ -49,10 +50,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   late final MovieController _movieController;
   late final TVShowController _tvShowController;
   late final TVShowRepository _tvShowRepository;
+  late final AppModeController _appModeController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  // Variáveis para controle do toggle filme/série
-  bool _isSeriesMode = false;
   
   // Filme ou série selecionada
   Movie? _selectedMovie;
@@ -63,7 +62,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   String? _errorMessage;
 
   // Gêneros dinâmicos baseados no modo
-  List<String> get currentGenres => _isSeriesMode 
+  List<String> get currentGenres => _appModeController.isSeriesMode 
       ? MovieService.getTVGenres() 
       : AppConstants.movieGenres;
   
@@ -77,8 +76,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     _movieController = MovieController();
     _tvShowController = TVShowController();
     _tvShowRepository = TVShowRepository();
+    _appModeController = AppModeController();
     _movieController.addListener(_onMovieStateChanged);
     _tvShowController.addListener(_onTVShowStateChanged);
+    _appModeController.addListener(_onModeChanged);
     
     // Pré-carrega dados populares para melhor performance
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -92,7 +93,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       // Seleciona automaticamente o primeiro gênero do modo atual
       if (currentGenres.isNotEmpty) {
         _selectedGenre = currentGenres.first;
-        if (!_isSeriesMode) {
+        if (!_appModeController.isSeriesMode) {
           _movieController.selectGenre(currentGenres.first);
         } else {
           _tvShowController.selectGenre(currentGenres.first);
@@ -106,10 +107,27 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   void dispose() {
     _movieController.removeListener(_onMovieStateChanged);
     _tvShowController.removeListener(_onTVShowStateChanged);
+    _appModeController.removeListener(_onModeChanged);
     _movieController.dispose();
     _tvShowController.dispose();
     _tvShowRepository.cleanExpiredCache();
     super.dispose();
+  }
+
+  /// Listener para mudanças no modo (filme/série)
+  void _onModeChanged() {
+    setState(() {
+      // Força rebuild completo ao mudar de modo
+      _selectedMovie = null;
+      _selectedTVShow = null;
+      _selectedGenre = null;
+      _errorMessage = null;
+      
+      // Auto-seleciona o primeiro gênero do novo modo
+      if (currentGenres.isNotEmpty) {
+        _selectedGenre = currentGenres.first;
+      }
+    });
   }
 
   /// Listener otimizado para mudanças de estado de filmes
@@ -150,18 +168,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   /// Método para alternar entre filmes e séries
   void _toggleContentMode() {
-    setState(() {
-      _isSeriesMode = !_isSeriesMode;
-      _selectedMovie = null;
-      _selectedTVShow = null;
-      _selectedGenre = null;
-      _errorMessage = null;
-    });
-    
-    // Auto-seleciona o primeiro gênero do novo modo
-    if (currentGenres.isNotEmpty) {
-      _selectedGenre = currentGenres.first;
-    }
+    _appModeController.toggleMode();
   }
 
   /// Método unificado para sortear filmes ou séries
@@ -177,7 +184,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     });
 
     try {
-      if (_isSeriesMode) {
+      if (_appModeController.isSeriesMode) {
         // Usa o controller para séries com histórico anti-repetição
         if (_tvShowController.canRollShow || _selectedGenre != _tvShowController.selectedGenre) {
           _tvShowController.selectGenre(_selectedGenre!);
@@ -200,7 +207,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Erro ao buscar ${_isSeriesMode ? 'série' : 'filme'}: $e';
+        _errorMessage = 'Erro ao buscar ${_appModeController.isSeriesMode ? 'série' : 'filme'}: $e';
       });
     } finally {
       setState(() {
@@ -210,7 +217,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   /// Obtém as cores baseadas no modo atual
-  LinearGradient get currentGradient => _isSeriesMode 
+  LinearGradient get currentGradient => _appModeController.isSeriesMode 
       ? const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -222,12 +229,12 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         )
       : AppColors.cinemaGradient; // Amarelo/dourado padrão
 
-  Color get currentAccentColor => _isSeriesMode 
+  Color get currentAccentColor => _appModeController.isSeriesMode 
       ? const Color.fromARGB(255, 240, 43, 109) // Roxo vibrante
       : AppColors.primary; // Dourado original
 
-  String get currentContentType => _isSeriesMode ? 'Série' : 'Filme';
-  String get currentModeLabel => _isSeriesMode ? 'Séries' : 'Filmes';
+  String get currentContentType => _appModeController.isSeriesMode ? 'Série' : 'Filme';
+  String get currentModeLabel => _appModeController.isSeriesMode ? 'Séries' : 'Filmes';
 
   @override
   Widget build(BuildContext context) {
@@ -304,7 +311,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        gradient: _isSeriesMode 
+        gradient: _appModeController.isSeriesMode 
             ? LinearGradient(
                 colors: [
                   const Color.fromARGB(255, 147, 51, 234).withValues(alpha: 0.8),
@@ -344,14 +351,14 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  _isSeriesMode ? Icons.tv : Icons.movie_filter,
+                  _appModeController.isSeriesMode ? Icons.tv : Icons.movie_filter,
                   color: AppColors.textPrimary,
                   size: isMobile ? 20 : 24,
                 ),
                 SizedBox(width: isMobile ? 6 : 8),
                 if (!isMobile) ...[
                   Text(
-                    _isSeriesMode ? 'Séries' : 'Filmes',
+                    _appModeController.isSeriesMode ? 'Séries' : 'Filmes',
                     style: AppTextStyles.labelLarge.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
@@ -428,7 +435,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                   },
                 ),
                 // Exibe apenas a pesquisa correspondente ao modo atual
-                if (!_isSeriesMode)
+                if (!_appModeController.isSeriesMode)
                   _buildDrawerItem(
                     icon: Icons.search,
                     title: 'Pesquisar Filmes',
@@ -442,7 +449,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                       );
                     },
                   ),
-                if (_isSeriesMode)
+                if (_appModeController.isSeriesMode)
                   _buildDrawerItem(
                     icon: Icons.search,
                     title: 'Pesquisar Séries',
@@ -718,8 +725,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                   });
                 },
                 onRandomSpin: () {},
-                accentColor: _isSeriesMode ? currentAccentColor : null,
-                isSeriesMode: _isSeriesMode,
+                accentColor: _appModeController.isSeriesMode ? currentAccentColor : null,
+                isSeriesMode: _appModeController.isSeriesMode,
               ),
             ),
           ),
@@ -765,10 +772,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       text: _isLoading 
           ? 'Rolando...' 
           : (_selectedMovie != null || _selectedTVShow != null 
-              ? 'Rolar Nov${_isSeriesMode ? 'a Série' : 'o Filme'}' 
-              : 'Rolar ${_isSeriesMode ? 'Série' : 'Filme'}'),
+              ? 'Rolar Nov${_appModeController.isSeriesMode ? 'a Série' : 'o Filme'}' 
+              : 'Rolar ${_appModeController.isSeriesMode ? 'Série' : 'Filme'}'),
       isLoading: _isLoading,
-      icon: _isLoading ? null : (_isSeriesMode ? Icons.tv : Icons.local_movies),
+      icon: _isLoading ? null : (_appModeController.isSeriesMode ? Icons.tv : Icons.local_movies),
       backgroundColor: currentAccentColor,
     );
   }
@@ -812,9 +819,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         _buildMovieCounter(),
         const SizedBox(height: 12),
         // Card do filme ou série
-        if (_isSeriesMode && _selectedTVShow != null)
+        if (_appModeController.isSeriesMode && _selectedTVShow != null)
           _buildTVShowCard(context, isMobile)
-        else if (!_isSeriesMode && _selectedMovie != null)
+        else if (!_appModeController.isSeriesMode && _selectedMovie != null)
           _buildMovieCard(context, isMobile)
         else
           const SizedBox.shrink(),
@@ -1045,7 +1052,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     String counterText;
     IconData icon;
     
-    if (_isSeriesMode) {
+    if (_appModeController.isSeriesMode) {
       count = _tvShowController.showCount;
       icon = Icons.tv;
       counterText = 'Série $count sorteada';
@@ -1056,7 +1063,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     }
     
     debugPrint('=== CONTADOR DEBUG ===');
-    debugPrint('Modo Séries: $_isSeriesMode');
+    debugPrint('Modo Séries: $_appModeController.isSeriesMode');
     debugPrint('Count: $count');
     debugPrint('Texto: $counterText');
     debugPrint('====================');
