@@ -444,6 +444,7 @@ class FilmReelPainter extends CustomPainter {
 
   void _drawFilmBackground(Canvas canvas, Size size) {
     // Fundo principal do filme - estilo cinema clássico
+    // Agora desenha de borda a borda sem margens
     final filmPaint = Paint()
       ..color = AppColors.backgroundDark.withValues(alpha:0.8)
       ..style = PaintingStyle.fill;
@@ -451,23 +452,25 @@ class FilmReelPainter extends CustomPainter {
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(0, size.height * 0.2, size.width, size.height * 0.6),
-        const Radius.circular(8),
+        const Radius.circular(0), // Sem bordas arredondadas nas laterais
       ),
       filmPaint,
     );
     
-    // Bordas superior e inferior do filme - douradas
+    // Bordas superior e inferior do filme - com cor dinâmica
     final borderPaint = Paint()
       ..color = accentColor.withValues(alpha:0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
     
+    // Linha superior - vai até as bordas
     canvas.drawLine(
       Offset(0, size.height * 0.2),
       Offset(size.width, size.height * 0.2),
       borderPaint,
     );
     
+    // Linha inferior - vai até as bordas
     canvas.drawLine(
       Offset(0, size.height * 0.8),
       Offset(size.width, size.height * 0.8),
@@ -484,10 +487,10 @@ class FilmReelPainter extends CustomPainter {
     // Agora scrollOffset representa diretamente a posição do gênero (0, 1, 2, etc.)
     final scrollPixels = scrollOffset * genreSpacing;
     
-    // Calcula quantos círculos são necessários para preencher a tela + buffer para rolagem suave
+    // Calcula quantos círculos são necessários para preencher a tela COMPLETA + buffer
     final screenWidth = size.width;
     final circlesOnScreen = (screenWidth / genreSpacing).ceil();
-    final bufferCircles = 4; // Círculos extras de cada lado para rolagem suave
+    final bufferCircles = 6; // Buffer maior para garantir cobertura total nas bordas
     final totalCirclesToDraw = circlesOnScreen + (bufferCircles * 2);
     
     // Encontra o índice base baseado na posição atual
@@ -503,8 +506,8 @@ class FilmReelPainter extends CustomPainter {
       
       final xPosition = center.dx + (currentIndex * genreSpacing) - scrollPixels;
       
-      // Só desenha se estiver próximo da área visível (com uma margem maior)
-      if (xPosition > -genreRadius * 2 && xPosition < screenWidth + genreRadius * 2) {
+      // Desenha se estiver visível ou MUITO próximo das bordas (para garantir cobertura total)
+      if (xPosition > -genreRadius * 3 && xPosition < screenWidth + genreRadius * 3) {
         final position = Offset(xPosition, yPosition);
         
         // Determina se é o gênero central (destacado) - usa critério mais rigoroso
@@ -614,13 +617,14 @@ class FilmReelPainter extends CustomPainter {
     // Calcula o offset dos furos para rolagem infinita
     final holeOffset = scrollPixels % holeSpacing;
     
-    // Calcula quantos furos são necessários para cobrir a largura + buffer
-    final holesNeeded = (size.width / holeSpacing).ceil() + 4;
+    // Calcula quantos furos são necessários para cobrir a largura COMPLETA + buffer
+    final holesNeeded = (size.width / holeSpacing).ceil() + 6; // Mais buffer para cobrir bordas
     
     // Furos superiores - estilo cinema clássico
-    for (int i = 0; i < holesNeeded; i++) {
-      final x = (i * holeSpacing) - holeOffset - holeSpacing;
-      if (x > -holeRadius && x < size.width + holeRadius) {
+    for (int i = -2; i < holesNeeded; i++) { // Começa antes da borda
+      final x = (i * holeSpacing) - holeOffset;
+      // Desenha mesmo que esteja ligeiramente fora para garantir cobertura total
+      if (x > -holeRadius * 2 && x < size.width + holeRadius * 2) {
         canvas.drawCircle(
           Offset(x, size.height * 0.1),
           holeRadius,
@@ -642,9 +646,10 @@ class FilmReelPainter extends CustomPainter {
     }
     
     // Furos inferiores - estilo cinema clássico
-    for (int i = 0; i < holesNeeded; i++) {
-      final x = (i * holeSpacing) - holeOffset - holeSpacing;
-      if (x > -holeRadius && x < size.width + holeRadius) {
+    for (int i = -2; i < holesNeeded; i++) { // Começa antes da borda
+      final x = (i * holeSpacing) - holeOffset;
+      // Desenha mesmo que esteja ligeiramente fora para garantir cobertura total
+      if (x > -holeRadius * 2 && x < size.width + holeRadius * 2) {
         canvas.drawCircle(
           Offset(x, size.height * 0.9),
           holeRadius,

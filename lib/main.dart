@@ -453,53 +453,69 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildContent(bool isMobile) {
+    final horizontalPadding = isMobile ? 20.0 : 32.0;
+    
     return SliverToBoxAdapter(
-      child: Padding(
-        padding: EdgeInsets.all(isMobile ? 20 : 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildGenreSelection(isMobile),
-            const SizedBox(height: 24),
-            _buildActionButtons(isMobile),
-            const SizedBox(height: 24),
-            if (_selectedMovie != null || _selectedTVShow != null) 
-              _buildContentCard(context, isMobile),
-            if (_errorMessage != null) _buildErrorMessage(),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // GenreSelection SEM padding para ocupar 100% da largura
+          _buildGenreSelection(isMobile),
+          
+          // Outros elementos COM padding
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 24),
+                _buildActionButtons(isMobile),
+                const SizedBox(height: 24),
+                if (_selectedMovie != null || _selectedTVShow != null) 
+                  _buildContentCard(context, isMobile),
+                if (_errorMessage != null) _buildErrorMessage(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildGenreSelection(bool isMobile) {
-    return Container(
-      padding: EdgeInsets.all(isMobile ? 24 : 32),
-      decoration: const BoxDecoration(
-        color: Colors.transparent,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildGenreHeader(isMobile),
-          const SizedBox(height: 32),
-          Center(
-            child: SizedBox(
-              height: isMobile ? 400 : 450,
-              child: GenreWheel(
-                genres: currentGenres,
-                selectedGenre: _appModeController.selectedGenre,
-                onGenreSelected: (genre) {
-                  _appModeController.selectGenre(genre);
-                },
-                onRandomSpin: () {},
-                accentColor: _appModeController.isSeriesMode ? currentAccentColor : null,
-                isSeriesMode: _appModeController.isSeriesMode,
-              ),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Espaçamento superior
+        SizedBox(height: isMobile ? 24 : 32),
+        
+        // Header com padding apenas nas laterais
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 32),
+          child: _buildGenreHeader(isMobile),
+        ),
+        
+        const SizedBox(height: 32),
+        
+        // GenreWheel SEM qualquer padding - ocupa 100% da largura
+        SizedBox(
+          height: isMobile ? 400 : 450,
+          width: double.infinity,
+          child: GenreWheel(
+            genres: currentGenres,
+            selectedGenre: _appModeController.selectedGenre,
+            onGenreSelected: (genre) {
+              _appModeController.selectGenre(genre);
+            },
+            onRandomSpin: () {},
+            accentColor: _appModeController.isSeriesMode ? currentAccentColor : null,
+            isSeriesMode: _appModeController.isSeriesMode,
           ),
-        ],
-      ),
+        ),
+        
+        // Espaçamento inferior
+        SizedBox(height: isMobile ? 24 : 32),
+      ],
     );
   }
 
