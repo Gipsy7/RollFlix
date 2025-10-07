@@ -190,61 +190,61 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   Widget build(BuildContext context) {
     final isMobile = ResponsiveUtils.isMobile(context);
     
-    return Scaffold(
-      key: _scaffoldKey,
-      drawer: _buildDrawer(context, isMobile),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color.fromARGB(255, 32, 31, 31).withValues(alpha: 0.95),
-              const Color.fromARGB(255, 29, 26, 26).withValues(alpha: 0.98),
-              const Color.fromARGB(211, 30, 31, 29),
-            ],
-            stops: const [0.0, 0.5, 1.0],
-          ),
-        ),
-        child: ListenableBuilder(
-          listenable: Listenable.merge([
-            _movieController,
-            _tvShowController,
-            _appModeController,
-          ]),
-          builder: (context, _) {
-            // Anima o card quando há um novo filme/série
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!mounted) return;
-              
-              if (_appModeController.isSeriesMode) {
-                if (_tvShowController.hasShow) {
-                  animateMovieCard();
-                }
-                if (_tvShowController.errorMessage != null) {
-                  AppSnackBar.showError(context, _tvShowController.errorMessage!);
-                  _tvShowController.clearError();
-                }
-              } else {
-                if (_movieController.hasMovie) {
-                  animateMovieCard();
-                }
-                if (_movieController.errorMessage != null) {
-                  AppSnackBar.showError(context, _movieController.errorMessage!);
-                  _movieController.clearError();
-                }
-              }
-            });
-            
-            return CustomScrollView(
+    return ListenableBuilder(
+      listenable: Listenable.merge([
+        _movieController,
+        _tvShowController,
+        _appModeController,
+      ]),
+      builder: (context, _) {
+        // Anima o card quando há um novo filme/série
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          
+          if (_appModeController.isSeriesMode) {
+            if (_tvShowController.hasShow) {
+              animateMovieCard();
+            }
+            if (_tvShowController.errorMessage != null) {
+              AppSnackBar.showError(context, _tvShowController.errorMessage!);
+              _tvShowController.clearError();
+            }
+          } else {
+            if (_movieController.hasMovie) {
+              animateMovieCard();
+            }
+            if (_movieController.errorMessage != null) {
+              AppSnackBar.showError(context, _movieController.errorMessage!);
+              _movieController.clearError();
+            }
+          }
+        });
+        
+        return Scaffold(
+          key: _scaffoldKey,
+          drawer: _buildDrawer(context, isMobile),
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  const Color.fromARGB(255, 32, 31, 31).withValues(alpha: 0.95),
+                  const Color.fromARGB(255, 29, 26, 26).withValues(alpha: 0.98),
+                  const Color.fromARGB(211, 30, 31, 29),
+                ],
+                stops: const [0.0, 0.5, 1.0],
+              ),
+            ),
+            child: CustomScrollView(
               slivers: [
                 _buildAppBar(isMobile),
                 _buildContent(isMobile),
               ],
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 

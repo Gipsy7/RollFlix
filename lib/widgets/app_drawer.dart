@@ -42,6 +42,20 @@ class AppDrawer extends StatelessWidget {
   }
 
   Widget _buildDrawerHeader() {
+    // Ícone e texto adaptativos baseados no modo
+    final headerIcon = appModeController.isSeriesMode 
+        ? Icons.tv // TV para séries
+        : Icons.local_movies; // Cinema para filmes
+    
+    final headerSubtitle = appModeController.isSeriesMode
+        ? 'Descubra séries incríveis'
+        : 'Roll and chill';
+    
+    // Cor adaptativa para o subtítulo
+    final subtitleColor = appModeController.isSeriesMode 
+        ? const Color(0xFFBB86FC) // Roxo claro para séries
+        : AppColors.textSecondary; // Dourado para filmes
+    
     return DrawerHeader(
       decoration: BoxDecoration(
         gradient: currentGradient,
@@ -53,7 +67,7 @@ class AppDrawer extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.local_movies,
+                headerIcon,
                 color: AppColors.textPrimary,
                 size: 32,
               ),
@@ -69,9 +83,9 @@ class AppDrawer extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           SafeText(
-            'Roll and chill',
+            headerSubtitle,
             style: AppTextStyles.bodyLarge.copyWith(
-              color: AppColors.textSecondary,
+              color: subtitleColor,
               fontStyle: FontStyle.italic,
             ),
           ),
@@ -149,7 +163,11 @@ class AppDrawer extends StatelessWidget {
           },
         ),
         
-        const Divider(color: AppColors.textSecondary),
+        Divider(
+          color: appModeController.isSeriesMode 
+              ? const Color(0xFFBB86FC).withAlpha(80) // Roxo transparente
+              : AppColors.textSecondary, // Dourado
+        ),
         
         _buildDrawerItem(
           context: context,
@@ -180,10 +198,15 @@ class AppDrawer extends StatelessWidget {
     required String title,
     required VoidCallback onTap,
   }) {
+    // Cor adaptativa baseada no modo
+    final iconColor = appModeController.isSeriesMode 
+        ? const Color(0xFFBB86FC) // Roxo claro para séries
+        : AppColors.primary; // Dourado para filmes
+    
     return ListTile(
       leading: Icon(
         icon,
-        color: AppColors.primary,
+        color: iconColor,
         size: 24,
       ),
       title: SafeText(
@@ -193,18 +216,23 @@ class AppDrawer extends StatelessWidget {
         ),
       ),
       onTap: onTap,
-      splashColor: AppColors.primary.withAlpha(1),
-      hoverColor: AppColors.primary.withAlpha(05),
+      splashColor: iconColor.withAlpha(30),
+      hoverColor: iconColor.withAlpha(15),
     );
   }
 
   Widget _buildFooter() {
+    // Cor adaptativa para o texto do footer
+    final footerColor = appModeController.isSeriesMode 
+        ? const Color(0xFFBB86FC).withAlpha(150) // Roxo semi-transparente
+        : AppColors.textSecondary; // Dourado
+    
     return Container(
       padding: const EdgeInsets.all(16),
       child: SafeText(
         'Versão ${AppConstants.appVersion}',
         style: AppTextStyles.bodySmall.copyWith(
-          color: AppColors.textSecondary,
+          color: footerColor,
         ),
         textAlign: TextAlign.center,
       ),
@@ -212,6 +240,15 @@ class AppDrawer extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    // Cor adaptativa para textos e botão
+    final accentColor = appModeController.isSeriesMode 
+        ? const Color(0xFFBB86FC) // Roxo claro para séries
+        : AppColors.primary; // Dourado para filmes
+    
+    final secondaryTextColor = appModeController.isSeriesMode 
+        ? const Color(0xFFBB86FC).withAlpha(180) // Roxo mais transparente
+        : AppColors.textSecondary; // Dourado
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -229,21 +266,21 @@ class AppDrawer extends StatelessWidget {
             SafeText(
               'Aplicativo para descobrir filmes e séries aleatórios por gênero.',
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+                color: secondaryTextColor,
               ),
             ),
             const SizedBox(height: 16),
             SafeText(
               'Desenvolvido com Flutter',
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: secondaryTextColor,
               ),
             ),
             const SizedBox(height: 8),
             SafeText(
               'Dados fornecidos por The Movie Database (TMDb)',
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: secondaryTextColor,
               ),
             ),
           ],
@@ -254,7 +291,7 @@ class AppDrawer extends StatelessWidget {
             child: SafeText(
               'Fechar',
               style: AppTextStyles.labelLarge.copyWith(
-                color: AppColors.primary,
+                color: accentColor,
               ),
             ),
           ),
