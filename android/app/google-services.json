@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "532332079577",
+    "project_id": "rollflix-6640f",
+    "storage_bucket": "rollflix-6640f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532332079577:android:535576379220fab3b691c8",
+        "android_client_info": {
+          "package_name": "com.rollflix.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAISnI4auhuCG-oG-FQAL2t7W3IBf1o19w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

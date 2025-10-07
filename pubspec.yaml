@@ -1,5 +1,5 @@
-name: testeapp
-description: "App sorteador de filmes por gênero - escolha entre 18 gêneros diferentes e descubra que filme assistir!"
+name: rollflix
+description: "Rollflix - App sorteador de filmes por gênero - escolha entre 18 gêneros diferentes e descubra que filme assistir!"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -40,6 +40,12 @@ dependencies:
   flutter_svg: ^2.0.9
   shared_preferences: ^2.2.2
   share_plus: ^7.2.1
+  
+  # Firebase Authentication
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+  google_sign_in: ^6.1.6
+  flutter_facebook_auth: ^6.0.4
 
 dev_dependencies:
   flutter_test:

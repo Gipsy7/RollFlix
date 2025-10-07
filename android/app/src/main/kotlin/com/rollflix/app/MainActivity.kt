@@ -1,4 +1,4 @@
-package com.example.testeapp
+package com.rollflix.app
 
 import io.flutter.embedding.android.FlutterActivity
 

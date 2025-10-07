@@ -9,6 +9,9 @@ import '../screens/search_screen.dart';
 import '../screens/tv_series_search_screen.dart';
 import '../screens/date_night_screen.dart';
 import '../screens/favorites_screen.dart';
+import '../screens/profile_screen.dart';
+import '../screens/login_screen.dart';
+import '../services/auth_service.dart';
 
 /// Widget do menu lateral (drawer) da aplicação
 /// Gerencia navegação e opções do app
@@ -138,6 +141,30 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           
+        _buildDrawerItem(
+          context: context,
+          icon: AuthService.isUserLoggedIn() ? Icons.person : Icons.login,
+          title: AuthService.isUserLoggedIn() ? 'Meu Perfil' : 'Entrar',
+          onTap: () {
+            Navigator.pop(context);
+            if (AuthService.isUserLoggedIn()) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProfileScreen(),
+                ),
+              );
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginScreen(),
+                ),
+              );
+            }
+          },
+        ),
+        
         _buildDrawerItem(
           context: context,
           icon: Icons.favorite,

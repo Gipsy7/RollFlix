@@ -1,0 +1,388 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../services/auth_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/responsive_widgets.dart';
+import '../widgets/error_widgets.dart';
+import 'login_screen.dart';
+
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  User? _user;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = AuthService.currentUser;
+  }
+
+  Future<void> _handleLogout() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surfaceDark,
+        title: SafeText(
+          'Sair da conta?',
+          style: AppTextStyles.headlineSmall.copyWith(
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: SafeText(
+          'Você será desconectado e precisará fazer login novamente.',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: SafeText(
+              'Cancelar',
+              style: AppTextStyles.labelLarge.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: SafeText(
+              'Sair',
+              style: AppTextStyles.labelLarge.copyWith(
+                color: AppColors.error,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      setState(() => _isLoading = true);
+      
+      try {
+        await AuthService.signOut();
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erro ao fazer logout: $e'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = ResponsiveUtils.isMobile(context);
+    final provider = AuthService.getLoginProvider();
+
+    return Scaffold(
+      backgroundColor: AppColors.backgroundDark,
+      appBar: AppBar(
+        title: SafeText(
+          'Meu Perfil',
+          style: AppTextStyles.headlineSmall.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: AppColors.surfaceDark,
+        iconTheme: const IconThemeData(color: AppColors.primary),
+        elevation: 0,
+      ),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
+            )
+          : SingleChildScrollView(
+              padding: EdgeInsets.all(isMobile ? 16 : 24),
+              child: Column(
+                children: [
+                  // Avatar e informações básicas
+                  _buildProfileHeader(isMobile),
+                  const SizedBox(height: 32),
+                  
+                  // Informações da conta
+                  _buildAccountInfo(isMobile, provider),
+                  const SizedBox(height: 24),
+                  
+                  // Estatísticas (futuro)
+                  _buildStatsSection(isMobile),
+                  const SizedBox(height: 32),
+                  
+                  // Botão de logout
+                  _buildLogoutButton(isMobile),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget _buildProfileHeader(bool isMobile) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: AppColors.cinemaGradient,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Avatar
+          CircleAvatar(
+            radius: isMobile ? 50 : 60,
+            backgroundColor: AppColors.surfaceDark,
+            backgroundImage: _user?.photoURL != null
+                ? NetworkImage(_user!.photoURL!)
+                : null,
+            child: _user?.photoURL == null
+                ? Icon(
+                    Icons.person,
+                    size: isMobile ? 50 : 60,
+                    color: AppColors.textSecondary,
+                  )
+                : null,
+          ),
+          const SizedBox(height: 16),
+          
+          // Nome
+          SafeText(
+            _user?.displayName ?? 'Usuário',
+            style: (isMobile 
+                ? AppTextStyles.headlineSmall
+                : AppTextStyles.headlineMedium).copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          
+          // Email
+          if (_user?.email != null)
+            SafeText(
+              _user!.email!,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAccountInfo(bool isMobile, String? provider) {
+    return Card(
+      color: AppColors.surfaceDark,
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SafeText(
+              'Informações da Conta',
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            _buildInfoRow(
+              Icons.badge,
+              'ID do Usuário',
+              _user?.uid ?? 'N/A',
+            ),
+            Divider(color: AppColors.textSecondary.withAlpha(80)),
+            
+            if (provider != null)
+              _buildInfoRow(
+                provider == 'Google' ? Icons.g_mobiledata : Icons.facebook,
+                'Conectado via',
+                provider,
+              ),
+            if (provider != null)
+              Divider(color: AppColors.textSecondary.withAlpha(80)),
+            
+            _buildInfoRow(
+              _user?.emailVerified == true ? Icons.verified : Icons.email,
+              'Email verificado',
+              _user?.emailVerified == true ? 'Sim' : 'Não',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.primary, size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SafeText(
+                  label,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                SafeText(
+                  value,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsSection(bool isMobile) {
+    return Card(
+      color: AppColors.surfaceDark,
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SafeText(
+              'Estatísticas',
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildStatItem(Icons.favorite, 'Favoritos', '0', isMobile),
+                _buildStatItem(Icons.casino, 'Sorteios', '0', isMobile),
+                _buildStatItem(Icons.search, 'Pesquisas', '0', isMobile),
+              ],
+            ),
+            
+            const SizedBox(height: 12),
+            SafeText(
+              'Em breve você poderá ver suas estatísticas detalhadas!',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textTertiary,
+                fontStyle: FontStyle.italic,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatItem(IconData icon, String label, String value, bool isMobile) {
+    return Column(
+      children: [
+        Icon(icon, color: AppColors.primary, size: isMobile ? 32 : 40),
+        const SizedBox(height: 8),
+        SafeText(
+          value,
+          style: (isMobile 
+              ? AppTextStyles.headlineSmall
+              : AppTextStyles.headlineMedium).copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SafeText(
+          label,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLogoutButton(bool isMobile) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _handleLogout,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.error,
+          foregroundColor: AppColors.textPrimary,
+          padding: EdgeInsets.symmetric(
+            vertical: isMobile ? 16 : 20,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.logout),
+            const SizedBox(width: 8),
+            SafeText(
+              'Sair da Conta',
+              style: (isMobile 
+                  ? AppTextStyles.labelLarge
+                  : AppTextStyles.bodyLarge).copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
