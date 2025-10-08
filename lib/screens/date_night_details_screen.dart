@@ -1306,9 +1306,11 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       message.writeln('Criado com Rollflix 🎬🍿');
       
       // Compartilhar o texto
-      await Share.share(
-        message.toString(),
-        subject: '🎬 Plano de Encontro Perfeito',
+      await SharePlus.instance.share(
+        ShareParams(
+          text: message.toString(),
+          subject: '🎬 Plano de Encontro Perfeito',
+        ),
       );
     } catch (e) {
       if (!mounted) return;

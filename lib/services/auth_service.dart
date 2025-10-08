@@ -18,7 +18,7 @@ class AuthService {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      
+
       if (googleUser == null) {
         // O usuário cancelou o login
         return null;
@@ -39,15 +39,11 @@ class AuthService {
       AppLogger.error('Erro ao fazer login com Google', error: e, stackTrace: stack);
       rethrow;
     }
-  }
-
-  // Logout
+  }  // Logout
   static Future<void> signOut() async {
     try {
       // Logout do Google
-      if (await _googleSignIn.isSignedIn()) {
-        await _googleSignIn.signOut();
-      }
+      await _googleSignIn.signOut();
       
       // Logout do Firebase
       await _auth.signOut();

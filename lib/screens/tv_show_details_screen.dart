@@ -160,9 +160,11 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
     
     shareText += '🍿 Descubra mais séries incríveis no RollFlix!';
     
-    Share.share(
-      shareText,
-      subject: tvShow.name,
+    SharePlus.instance.share(
+      ShareParams(
+        text: shareText,
+        subject: tvShow.name,
+      ),
     );
   }
 

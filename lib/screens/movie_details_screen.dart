@@ -204,9 +204,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     
     shareText += '🍿 Descubra mais filmes incríveis no RollFlix!';
     
-    Share.share(
-      shareText,
-      subject: movie.title,
+    SharePlus.instance.share(
+      ShareParams(
+        text: shareText,
+        subject: movie.title,
+      ),
     );
   }
 

@@ -271,7 +271,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
               width: width,
               height: height,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => _buildPlaceholder(width, height),
+              errorBuilder: (_, _, _) => _buildPlaceholder(width, height),
             )
           : _buildPlaceholder(width, height),
     );
