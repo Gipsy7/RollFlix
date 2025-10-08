@@ -3,6 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
+import '../controllers/favorites_controller.dart';
+import '../controllers/watched_controller.dart';
+import '../controllers/movie_controller.dart';
+import '../controllers/tv_show_controller.dart';
 import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -15,11 +19,39 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   User? _user;
   bool _isLoading = false;
+  late final FavoritesController _favoritesController;
+  late final WatchedController _watchedController;
+  late final MovieController _movieController;
+  late final TVShowController _tvShowController;
 
   @override
   void initState() {
     super.initState();
     _user = AuthService.currentUser;
+    _favoritesController = FavoritesController.instance;
+    _watchedController = WatchedController.instance;
+    _movieController = MovieController.instance;
+    _tvShowController = TVShowController.instance;
+
+    _favoritesController.addListener(_onDataChanged);
+    _watchedController.addListener(_onDataChanged);
+    _movieController.addListener(_onDataChanged);
+    _tvShowController.addListener(_onDataChanged);
+  }
+
+  void _onDataChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _favoritesController.removeListener(_onDataChanged);
+    _watchedController.removeListener(_onDataChanged);
+    _movieController.removeListener(_onDataChanged);
+    _tvShowController.removeListener(_onDataChanged);
+    super.dispose();
   }
 
   Future<void> _handleLogout() async {
@@ -282,6 +314,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildStatsSection(bool isMobile) {
+    final favoritesCount = _favoritesController.count;
+    final watchedCount = _watchedController.count;
+    final rollCount = _movieController.movieCount + _tvShowController.showCount;
+
     return Card(
       color: AppColors.surfaceDark,
       elevation: 4,
@@ -305,9 +341,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildStatItem(Icons.favorite, 'Favoritos', '0', isMobile),
-                _buildStatItem(Icons.casino, 'Sorteios', '0', isMobile),
-                _buildStatItem(Icons.search, 'Pesquisas', '0', isMobile),
+                _buildStatItem(Icons.favorite, 'Favoritos', favoritesCount.toString(), isMobile),
+                _buildStatItem(Icons.casino, 'Sorteios', rollCount.toString(), isMobile),
+                _buildStatItem(Icons.visibility, 'Assistidos', watchedCount.toString(), isMobile),
               ],
             ),
             
