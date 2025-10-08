@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../models/date_night_preferences.dart';
+import '../utils/app_logger.dart';
 
 class PreferencesService {
   static const String _preferencesKey = 'date_night_preferences';
@@ -11,9 +12,9 @@ class PreferencesService {
       final prefs = await SharedPreferences.getInstance();
       final jsonString = jsonEncode(preferences.toJson());
       await prefs.setString(_preferencesKey, jsonString);
-      print('✓ Preferências salvas com sucesso');
-    } catch (e) {
-      print('Erro ao salvar preferências: $e');
+      AppLogger.debug('✓ Preferências salvas com sucesso');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao salvar preferências: $e', stackTrace: stackTrace);
     }
   }
 
@@ -25,15 +26,15 @@ class PreferencesService {
       
       if (jsonString != null) {
         final json = jsonDecode(jsonString);
-        print('✓ Preferências carregadas do cache');
+        AppLogger.debug('✓ Preferências carregadas do cache');
         return DateNightPreferences.fromJson(json);
       }
-    } catch (e) {
-      print('Erro ao carregar preferências: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao carregar preferências: $e', stackTrace: stackTrace);
     }
     
     // Retornar preferências padrão
-    print('✓ Usando preferências padrão');
+    AppLogger.debug('✓ Usando preferências padrão');
     return const DateNightPreferences();
   }
 
@@ -42,9 +43,9 @@ class PreferencesService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_preferencesKey);
-      print('✓ Preferências limpas');
-    } catch (e) {
-      print('Erro ao limpar preferências: $e');
+      AppLogger.debug('✓ Preferências limpas');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao limpar preferências: $e', stackTrace: stackTrace);
     }
   }
 }

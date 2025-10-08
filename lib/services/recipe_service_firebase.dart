@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/recipe.dart';
+import '../utils/app_logger.dart';
 
 class RecipeServiceFirebase {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -15,7 +16,7 @@ class RecipeServiceFirebase {
   static void clearCache() {
     _cachedRecipes.clear();
     _lastFetchTime = null;
-    print('🗑️ Cache limpo');
+    AppLogger.debug('🗑️ Cache limpo');
   }
 
   // Buscar receitas por categoria
@@ -25,13 +26,13 @@ class RecipeServiceFirebase {
     String? cuisine,
     String? diet,
   }) async {
-    print('🍽️ Buscando receitas Firebase para: $type');
+    AppLogger.debug('🍽️ Buscando receitas Firebase para: $type');
     
     // Verificar cache
     if (_cachedRecipes.containsKey(type) && _lastFetchTime != null) {
       final timeSinceLastFetch = DateTime.now().difference(_lastFetchTime!);
       if (timeSinceLastFetch < _cacheExpiration) {
-        print('📦 Usando cache para $type');
+        AppLogger.debug('📦 Usando cache para $type');
         final cached = _cachedRecipes[type]!;
         final shuffled = List<Recipe>.from(cached)..shuffle(_random);
         return shuffled.take(number).toList();
@@ -46,7 +47,7 @@ class RecipeServiceFirebase {
           .get();
 
       if (snapshot.docs.isEmpty) {
-        print('⚠️ Nenhuma receita encontrada para $type no Firebase');
+        AppLogger.debug('⚠️ Nenhuma receita encontrada para $type no Firebase');
         return [];
       }
 
@@ -59,20 +60,20 @@ class RecipeServiceFirebase {
       _cachedRecipes[type] = recipes;
       _lastFetchTime = DateTime.now();
 
-      print('✅ ${recipes.length} receitas carregadas do Firebase para $type');
+      AppLogger.debug('✅ ${recipes.length} receitas carregadas do Firebase para $type');
 
       // Embaralhar e retornar quantidade solicitada
       final shuffled = List<Recipe>.from(recipes)..shuffle(_random);
       return shuffled.take(number).toList();
-    } catch (e) {
-      print('❌ Erro ao buscar receitas do Firebase: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('❌ Erro ao buscar receitas do Firebase: $e', stackTrace: stackTrace);
       return [];
     }
   }
 
   // Buscar detalhes de uma receita específica
   static Future<Recipe> getRecipeDetails(int recipeId) async {
-    print('📖 Buscando detalhes da receita $recipeId no Firebase');
+    AppLogger.debug('📖 Buscando detalhes da receita $recipeId no Firebase');
 
     try {
       final doc = await _firestore
@@ -81,15 +82,15 @@ class RecipeServiceFirebase {
           .get();
 
       if (!doc.exists) {
-        print('⚠️ Receita $recipeId não encontrada no Firebase');
+        AppLogger.debug('⚠️ Receita $recipeId não encontrada no Firebase');
         return _getPlaceholderRecipe();
       }
 
       final recipe = Recipe.fromFirestore(doc.data()!, doc.id);
-      print('✅ Receita carregada: ${recipe.title}');
+      AppLogger.debug('✅ Receita carregada: ${recipe.title}');
       return recipe;
-    } catch (e) {
-      print('❌ Erro ao buscar receita $recipeId: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('❌ Erro ao buscar receita $recipeId: $e', stackTrace: stackTrace);
       return _getPlaceholderRecipe();
     }
   }
@@ -100,7 +101,7 @@ class RecipeServiceFirebase {
     String? recipeType,
     int maxRetries = 3,
   }) async {
-    print('🔄 Buscando receita $recipeId com retry (max: $maxRetries)');
+    AppLogger.debug('🔄 Buscando receita $recipeId com retry (max: $maxRetries)');
 
     for (int attempt = 1; attempt <= maxRetries; attempt++) {
       try {
@@ -113,14 +114,14 @@ class RecipeServiceFirebase {
 
         // Se é placeholder e ainda tem tentativas, tenta novamente
         if (attempt < maxRetries) {
-          print('⚠️ Tentativa $attempt falhou, tentando novamente...');
+          AppLogger.debug('⚠️ Tentativa $attempt falhou, tentando novamente...');
           await Future.delayed(Duration(seconds: attempt)); // Backoff exponencial
           continue;
         }
 
         return recipe; // Última tentativa, retorna placeholder
-      } catch (e) {
-        print('❌ Erro na tentativa $attempt: $e');
+      } catch (e, stackTrace) {
+        AppLogger.error('❌ Erro na tentativa $attempt: $e', stackTrace: stackTrace);
         
         if (attempt == maxRetries) {
           return _getPlaceholderRecipe();
@@ -139,7 +140,7 @@ class RecipeServiceFirebase {
     String? diet,
     String? dateType,
   }) async {
-    print('🍽️ Gerando menu completo do Firebase...');
+    AppLogger.debug('🍽️ Gerando menu completo do Firebase...');
 
     try {
       // Buscar receitas de todas as categorias em paralelo
@@ -158,7 +159,7 @@ class RecipeServiceFirebase {
       // Verificar se conseguiu receitas de todas as categorias
       if (mainCourses.isEmpty || desserts.isEmpty || 
           appetizers.isEmpty || sideDishes.isEmpty) {
-        print('⚠️ Algumas categorias não têm receitas disponíveis');
+        AppLogger.debug('⚠️ Algumas categorias não têm receitas disponíveis');
       }
 
       final menu = {
@@ -168,10 +169,10 @@ class RecipeServiceFirebase {
         'sideDish': sideDishes.isNotEmpty ? sideDishes.first : _getPlaceholderRecipe(),
       };
 
-      print('✅ Menu gerado com sucesso!');
+      AppLogger.debug('✅ Menu gerado com sucesso!');
       return menu;
-    } catch (e) {
-      print('❌ Erro ao gerar menu: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('❌ Erro ao gerar menu: $e', stackTrace: stackTrace);
       
       // Retornar menu com placeholders em caso de erro
       return {

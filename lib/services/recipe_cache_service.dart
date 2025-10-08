@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/recipe.dart';
+import '../utils/app_logger.dart';
 
 class RecipeCacheService {
   // Cache em memória (válido durante a execução do app)
@@ -35,11 +36,11 @@ class RecipeCacheService {
     if (_isInitialized) return;
     
     try {
-      print('🔧 Inicializando RecipeCacheService...');
+      AppLogger.debug('🔧 Inicializando RecipeCacheService...');
       
       // Carregar IDs inválidos de forma assíncrona
       _loadInvalidIds().then((_) {
-        print('  ✓ IDs inválidos carregados: ${_invalidRecipeIds.length}');
+        AppLogger.debug('  ✓ IDs inválidos carregados: ${_invalidRecipeIds.length}');
       });
       
       // Executar limpeza em background
@@ -48,9 +49,9 @@ class RecipeCacheService {
       });
       
       _isInitialized = true;
-      print('✅ RecipeCacheService inicializado');
-    } catch (e) {
-      print('❌ Erro ao inicializar RecipeCacheService: $e');
+      AppLogger.debug('✅ RecipeCacheService inicializado');
+    } catch (e, stackTrace) {
+      AppLogger.error('❌ Erro ao inicializar RecipeCacheService: $e', stackTrace: stackTrace);
     }
   }
 
@@ -74,8 +75,8 @@ class RecipeCacheService {
       
       // Cache persistente (assíncrono, não bloqueia)
       _saveToPersistentCache(recipe);
-    } catch (e) {
-      print('❌ Erro ao salvar receita no cache: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('❌ Erro ao salvar receita no cache: $e', stackTrace: stackTrace);
     }
   }
 
@@ -88,8 +89,8 @@ class RecipeCacheService {
       
       await prefs.setString(key, jsonEncode(recipe.toJson()));
       await prefs.setInt(timestampKey, DateTime.now().millisecondsSinceEpoch);
-    } catch (e) {
-      print('⚠ Erro ao salvar no cache persistente: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('⚠ Erro ao salvar no cache persistente: $e', stackTrace: stackTrace);
     }
   }
 
@@ -111,9 +112,9 @@ class RecipeCacheService {
         _lastAccessTime.remove(key);
       }
       
-      print('🧹 Limpeza rápida: $toRemove receitas removidas');
-    } catch (e) {
-      print('⚠ Erro na limpeza rápida: $e');
+      AppLogger.debug('🧹 Limpeza rápida: $toRemove receitas removidas');
+    } catch (e, stackTrace) {
+      AppLogger.error('⚠ Erro na limpeza rápida: $e', stackTrace: stackTrace);
     }
   }
 
@@ -159,8 +160,8 @@ class RecipeCacheService {
       _lastAccessTime[key] = DateTime.now();
       
       return recipe;
-    } catch (e) {
-      print('⚠ Erro ao buscar receita #$recipeId no cache: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('⚠ Erro ao buscar receita #$recipeId no cache: $e', stackTrace: stackTrace);
       return null;
     }
   }
@@ -204,9 +205,9 @@ class RecipeCacheService {
       await prefs.remove(timestampKey);
       await prefs.remove(accessKey);
       
-      print('✓ Receita #$recipeId removida do cache');
-    } catch (e) {
-      print('⚠ Erro ao remover receita do cache: $e');
+      AppLogger.debug('✓ Receita #$recipeId removida do cache');
+    } catch (e, stackTrace) {
+      AppLogger.error('⚠ Erro ao remover receita do cache: $e', stackTrace: stackTrace);
     }
   }
 
@@ -221,8 +222,8 @@ class RecipeCacheService {
       final prefs = await SharedPreferences.getInstance();
       final ids = _invalidRecipeIds.toList();
       await prefs.setString(_invalidIdsKey, jsonEncode(ids));
-    } catch (e) {
-      print('⚠ Erro ao salvar IDs inválidos: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('⚠ Erro ao salvar IDs inválidos: $e', stackTrace: stackTrace);
     }
   }
 
@@ -235,8 +236,8 @@ class RecipeCacheService {
         final ids = List<int>.from(jsonDecode(idsJson));
         _invalidRecipeIds.addAll(ids);
       }
-    } catch (e) {
-      print('Erro ao carregar IDs inválidos: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao carregar IDs inválidos: $e', stackTrace: stackTrace);
     }
   }
 
@@ -273,8 +274,8 @@ class RecipeCacheService {
       final recipeIds = recipes.map((r) => r.id).toList();
       await prefs.setString(key, jsonEncode(recipeIds));
       await prefs.setInt(timestampKey, DateTime.now().millisecondsSinceEpoch);
-    } catch (e) {
-      print('Erro ao salvar busca no cache: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao salvar busca no cache: $e', stackTrace: stackTrace);
     }
   }
 
@@ -331,8 +332,8 @@ class RecipeCacheService {
       }
       
       return null;
-    } catch (e) {
-      print('Erro ao buscar resultados no cache: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao buscar resultados no cache: $e', stackTrace: stackTrace);
       return null;
     }
   }
@@ -375,8 +376,8 @@ class RecipeCacheService {
       
       await prefs.setString(key, jsonEncode(menuIds));
       await prefs.setInt(timestampKey, DateTime.now().millisecondsSinceEpoch);
-    } catch (e) {
-      print('Erro ao salvar menu no cache: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao salvar menu no cache: $e', stackTrace: stackTrace);
     }
   }
 
@@ -433,8 +434,8 @@ class RecipeCacheService {
       }
       
       return null;
-    } catch (e) {
-      print('Erro ao buscar menu no cache: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao buscar menu no cache: $e', stackTrace: stackTrace);
       return null;
     }
   }
@@ -452,7 +453,7 @@ class RecipeCacheService {
 
   /// Limpar todo o cache (memória + persistente)
   static Future<void> clearAllCache() async {
-    print('🧹 Limpando todo o cache...');
+    AppLogger.debug('🧹 Limpando todo o cache...');
     
     // Limpar memória
     clearMemoryCache();
@@ -473,9 +474,9 @@ class RecipeCacheService {
         }
       }
       
-      print('✅ Cache limpo: $removedCount itens removidos');
-    } catch (e) {
-      print('Erro ao limpar cache: $e');
+      AppLogger.debug('✅ Cache limpo: $removedCount itens removidos');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao limpar cache: $e', stackTrace: stackTrace);
     }
   }
 
@@ -505,10 +506,10 @@ class RecipeCacheService {
       }
       
       if (removedCount > 0) {
-        print('🧹 Limpeza automática: $removedCount itens expirados removidos');
+        AppLogger.debug('🧹 Limpeza automática: $removedCount itens expirados removidos');
       }
-    } catch (e) {
-      print('Erro ao limpar cache expirado: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao limpar cache expirado: $e', stackTrace: stackTrace);
     }
   }
 
@@ -534,9 +535,9 @@ class RecipeCacheService {
         removedCount++;
       }
       
-      print('🧹 Limpeza LRU: $removedCount receitas menos usadas removidas da memória');
-    } catch (e) {
-      print('Erro ao limpar receitas menos usadas: $e');
+      AppLogger.debug('🧹 Limpeza LRU: $removedCount receitas menos usadas removidas da memória');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao limpar receitas menos usadas: $e', stackTrace: stackTrace);
     }
   }
 
@@ -578,16 +579,16 @@ class RecipeCacheService {
       }
       
       if (removedCount > 0) {
-        print('🧹 Limpeza de buscas: $removedCount buscas antigas removidas');
+        AppLogger.debug('🧹 Limpeza de buscas: $removedCount buscas antigas removidas');
       }
-    } catch (e) {
-      print('Erro ao limpar cache de buscas antigas: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao limpar cache de buscas antigas: $e', stackTrace: stackTrace);
     }
   }
 
   /// Limpeza inteligente completa
   static Future<void> smartCleanup() async {
-    print('🧹 Iniciando limpeza inteligente do cache...');
+    AppLogger.debug('🧹 Iniciando limpeza inteligente do cache...');
     
     final startTime = DateTime.now();
     
@@ -607,13 +608,13 @@ class RecipeCacheService {
       for (var key in keys) {
         _searchCache.remove(key);
       }
-      print('🧹 Removidas $toRemove buscas da memória');
+      AppLogger.debug('🧹 Removidas $toRemove buscas da memória');
     }
     
     final duration = DateTime.now().difference(startTime);
     final stats = getCacheStats();
-    print('✅ Limpeza concluída em ${duration.inMilliseconds}ms');
-    print('📊 Cache atual: ${stats['recipes']} receitas, ${stats['searches']} buscas, ${stats['menus']} menus');
+    AppLogger.debug('✅ Limpeza concluída em ${duration.inMilliseconds}ms');
+    AppLogger.debug('📊 Cache atual: ${stats['recipes']} receitas, ${stats['searches']} buscas, ${stats['menus']} menus');
   }
 
   // ========== ESTATÍSTICAS ==========
@@ -679,8 +680,8 @@ class RecipeCacheService {
           'maxSearchCache': _maxSearchCacheSize,
         },
       };
-    } catch (e) {
-      print('Erro ao obter estatísticas detalhadas: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao obter estatísticas detalhadas: $e', stackTrace: stackTrace);
       return {};
     }
   }
