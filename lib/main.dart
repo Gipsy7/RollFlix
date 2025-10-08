@@ -7,7 +7,6 @@ import 'models/movie.dart';
 import 'models/tv_show.dart';
 import 'services/movie_service.dart';
 import 'widgets/genre_wheel.dart';
-import 'widgets/common_widgets.dart';
 import 'widgets/error_widgets.dart';
 import 'widgets/responsive_widgets.dart';
 import 'widgets/app_drawer.dart';
@@ -508,8 +507,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 16),
-                _buildActionButtons(isMobile),
+                // Removido o botão _buildActionButtons - agora está no GenreWheel
                 const SizedBox(height: 16),
                 if (_selectedMovie != null || _selectedTVShow != null) 
                   Builder(
@@ -552,6 +550,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               _appModeController.selectGenre(genre);
             },
             onRandomSpin: () {},
+            onRollContent: _handleRollContent,
+            isLoadingContent: _isLoading,
             accentColor: _appModeController.isSeriesMode ? currentAccentColor : null,
             isSeriesMode: _appModeController.isSeriesMode,
           ),
@@ -591,20 +591,6 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildActionButtons(bool isMobile) {
-    return AppButton(
-      onPressed: _appModeController.selectedGenre != null && !_isLoading ? _handleRollContent : null,
-      text: _isLoading 
-          ? 'Rolando...' 
-          : (_selectedMovie != null || _selectedTVShow != null 
-              ? 'Rolar Nov${_appModeController.isSeriesMode ? 'a Série' : 'o Filme'}' 
-              : 'Rolar ${_appModeController.isSeriesMode ? 'Série' : 'Filme'}'),
-      isLoading: _isLoading,
-      icon: _isLoading ? null : (_appModeController.isSeriesMode ? Icons.tv : Icons.local_movies),
-      backgroundColor: currentAccentColor,
     );
   }
 

@@ -7,6 +7,8 @@ class GenreWheel extends StatefulWidget {
   final String? selectedGenre;
   final Function(String) onGenreSelected;
   final VoidCallback? onRandomSpin;
+  final VoidCallback? onRollContent;
+  final bool isLoadingContent;
   final Color? accentColor;
   final bool isSeriesMode;
 
@@ -16,6 +18,8 @@ class GenreWheel extends StatefulWidget {
     this.selectedGenre,
     required this.onGenreSelected,
     this.onRandomSpin,
+    this.onRollContent,
+    this.isLoadingContent = false,
     this.accentColor,
     this.isSeriesMode = false,
   });
@@ -347,13 +351,69 @@ class _GenreWheelState extends State<GenreWheel>
             right: 20,
             child: Row(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Botão de rolar filme/série
+                if (widget.onRollContent != null && widget.selectedGenre != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: GestureDetector(
+                      onTap: widget.isLoadingContent ? null : widget.onRollContent,
+                      child: Container(
+                        height: 48,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              primaryColor,
+                              primaryColor.withValues(alpha: 0.8),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: primaryColor.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              widget.isLoadingContent 
+                                  ? Icons.refresh 
+                                  : (widget.isSeriesMode ? Icons.tv : Icons.local_movies),
+                              color: AppColors.backgroundDark,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              widget.isLoadingContent 
+                                  ? 'Rolando...' 
+                                  : 'Rolar ${widget.isSeriesMode ? 'Série' : 'Filme'}',
+                              style: TextStyle(
+                                color: AppColors.backgroundDark,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                
                 // Botão de sorteio de gênero
                 GestureDetector(
                   onTap: _spinFilmReel,
                   child: Container(
-                    width: 60,
-                    height: 60,
+                    width: 48,
+                    height: 48,
                     decoration: BoxDecoration(
                       color: primaryColor,
                       shape: BoxShape.circle,
@@ -368,20 +428,20 @@ class _GenreWheelState extends State<GenreWheel>
                     child: _isSpinning
                         ? Center(
                             child: SizedBox(
-                              width: 24,
-                              height: 24,
+                              width: 20,
+                              height: 20,
                               child: CircularProgressIndicator(
                                 valueColor: AlwaysStoppedAnimation<Color>(
                                   AppColors.backgroundDark,
                                 ),
-                                strokeWidth: 3,
+                                strokeWidth: 2.5,
                               ),
                             ),
                           )
                         : Icon(
                             Icons.shuffle,
                             color: AppColors.backgroundDark,
-                            size: 30,
+                            size: 24,
                           ),
                   ),
                 ),
