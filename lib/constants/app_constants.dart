@@ -60,6 +60,10 @@ class AppConstants {
     'Western': 37,
   };
 
-  // Genre list for UI
-  static final List<String> movieGenres = genreIds.keys.toList();
+  // Genre list for UI (includes special local genres)
+  static final List<String> movieGenres = [
+    ...genreIds.keys,
+    'Favoritos',
+    'Assistidos',
+  ];
 }

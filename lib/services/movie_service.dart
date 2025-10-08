@@ -970,7 +970,11 @@ class MovieService {
   }
 
   static List<String> getTVGenres() {
-    return _tvGenreMap.keys.toList();
+    return [
+      ..._tvGenreMap.keys,
+      'Favoritos',
+      'Assistidos',
+    ];
   }
 
   static Future<List<TVShow>?> getPopularTVShows({int page = 1}) async {

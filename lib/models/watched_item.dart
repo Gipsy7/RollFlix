@@ -1,8 +1,8 @@
 import 'movie.dart';
 import 'tv_show.dart';
 
-/// Modelo unificado para itens favoritos (filmes e séries)
-class FavoriteItem {
+/// Modelo unificado para itens assistidos (filmes e séries)
+class WatchedItem {
   final String id;
   final String title;
   final String? posterPath;
@@ -10,7 +10,7 @@ class FavoriteItem {
   final double voteAverage;
   final String releaseDate;
   final bool isTVShow;
-  final DateTime addedAt;
+  final DateTime watchedAt;
   
   // Campos específicos de filme
   final String? originalTitle;
@@ -21,7 +21,7 @@ class FavoriteItem {
   final int? numberOfSeasons;
   final int? numberOfEpisodes;
 
-  FavoriteItem({
+  WatchedItem({
     required this.id,
     required this.title,
     this.posterPath,
@@ -29,7 +29,7 @@ class FavoriteItem {
     required this.voteAverage,
     required this.releaseDate,
     required this.isTVShow,
-    required this.addedAt,
+    required this.watchedAt,
     this.originalTitle,
     this.runtime,
     this.originalName,
@@ -37,9 +37,9 @@ class FavoriteItem {
     this.numberOfEpisodes,
   });
 
-  /// Cria um FavoriteItem a partir de um Movie
-  factory FavoriteItem.fromMovie(Movie movie) {
-    return FavoriteItem(
+  /// Cria um WatchedItem a partir de um Movie
+  factory WatchedItem.fromMovie(Movie movie) {
+    return WatchedItem(
       id: movie.id.toString(),
       title: movie.title,
       posterPath: movie.posterPath,
@@ -47,15 +47,15 @@ class FavoriteItem {
       voteAverage: movie.voteAverage,
       releaseDate: movie.releaseDate,
       isTVShow: false,
-      addedAt: DateTime.now(),
+      watchedAt: DateTime.now(),
       originalTitle: movie.originalTitle,
       runtime: movie.runtime,
     );
   }
 
-  /// Cria um FavoriteItem a partir de uma TVShow
-  factory FavoriteItem.fromTVShow(TVShow show) {
-    return FavoriteItem(
+  /// Cria um WatchedItem a partir de uma TVShow
+  factory WatchedItem.fromTVShow(TVShow show) {
+    return WatchedItem(
       id: show.id.toString(),
       title: show.name,
       posterPath: show.posterPath,
@@ -63,7 +63,7 @@ class FavoriteItem {
       voteAverage: show.voteAverage,
       releaseDate: show.firstAirDate,
       isTVShow: true,
-      addedAt: DateTime.now(),
+      watchedAt: DateTime.now(),
       originalName: show.originalName,
       numberOfSeasons: show.numberOfSeasons,
       numberOfEpisodes: show.numberOfEpisodes,
@@ -80,7 +80,7 @@ class FavoriteItem {
       'voteAverage': voteAverage,
       'releaseDate': releaseDate,
       'isTVShow': isTVShow,
-      'addedAt': addedAt.toIso8601String(),
+      'watchedAt': watchedAt.toIso8601String(),
       'originalTitle': originalTitle,
       'runtime': runtime,
       'originalName': originalName,
@@ -90,8 +90,8 @@ class FavoriteItem {
   }
 
   /// Cria a partir de JSON
-  factory FavoriteItem.fromJson(Map<String, dynamic> json) {
-    return FavoriteItem(
+  factory WatchedItem.fromJson(Map<String, dynamic> json) {
+    return WatchedItem(
       id: json['id'] as String,
       title: json['title'] as String,
       posterPath: json['posterPath'] as String?,
@@ -99,7 +99,7 @@ class FavoriteItem {
       voteAverage: (json['voteAverage'] as num).toDouble(),
       releaseDate: json['releaseDate'] as String,
       isTVShow: json['isTVShow'] as bool,
-      addedAt: DateTime.parse(json['addedAt'] as String),
+      watchedAt: DateTime.parse(json['watchedAt'] as String),
       originalTitle: json['originalTitle'] as String?,
       runtime: json['runtime'] as int?,
       originalName: json['originalName'] as String?,
@@ -108,73 +108,59 @@ class FavoriteItem {
     );
   }
 
-  /// Retorna o ano de lançamento
-  String get year {
-    try {
-      return releaseDate.split('-')[0];
-    } catch (e) {
-      return 'N/A';
-    }
-  }
-
-  /// Retorna uma descrição curta
-  String get typeDescription {
-    if (isTVShow) {
-      if (numberOfSeasons != null) {
-        return '$numberOfSeasons temporada${numberOfSeasons! > 1 ? 's' : ''}';
-      }
-      return 'Série';
-    } else {
-      if (runtime != null && runtime! > 0) {
-        return '$runtime min';
-      }
-      return 'Filme';
-    }
-  }
-
-  /// Converte FavoriteItem de volta para Movie
+  /// Converte para Movie (se for filme)
   Movie toMovie() {
     return Movie(
       id: int.parse(id),
       title: title,
-      overview: overview ?? '',
       posterPath: posterPath ?? '',
       backdropPath: '',
+      overview: overview ?? '',
       voteAverage: voteAverage,
-      voteCount: 0,
       releaseDate: releaseDate,
-      genreIds: [],
-      genres: [],
-      runtime: runtime ?? 0,
       originalTitle: originalTitle ?? title,
       adult: false,
+      genreIds: [],
+      popularity: 0,
+      voteCount: 0,
+      runtime: runtime ?? 0,
       originalLanguage: '',
-      popularity: voteAverage * 10, // Estimativa baseada na nota
       video: false,
       productionCompanies: [],
+      genres: [],
     );
   }
 
-  /// Converte FavoriteItem de volta para TVShow
+  /// Converte para TVShow (se for série)
   TVShow toTVShow() {
     return TVShow(
       id: int.parse(id),
       name: title,
-      firstAirDate: releaseDate,
-      overview: overview ?? '',
       posterPath: posterPath ?? '',
       backdropPath: '',
+      overview: overview ?? '',
       voteAverage: voteAverage,
-      voteCount: 0,
-      originCountry: [],
-      originalLanguage: '',
+      firstAirDate: releaseDate,
       originalName: originalName ?? title,
-      popularity: 0.0,
       adult: false,
       genreIds: [],
-      genres: [],
+      popularity: 0,
+      voteCount: 0,
       numberOfSeasons: numberOfSeasons ?? 0,
       numberOfEpisodes: numberOfEpisodes ?? 0,
+      originCountry: [],
+      originalLanguage: '',
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WatchedItem &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          isTVShow == other.isTVShow;
+
+  @override
+  int get hashCode => id.hashCode ^ isTVShow.hashCode;
 }

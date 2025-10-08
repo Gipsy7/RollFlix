@@ -9,6 +9,7 @@ import '../screens/search_screen.dart';
 import '../screens/tv_series_search_screen.dart';
 import '../screens/date_night_screen.dart';
 import '../screens/favorites_screen.dart';
+import '../screens/watched_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/quiz_menu_screen.dart';
@@ -177,6 +178,21 @@ class AppDrawer extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => const FavoritesScreen(),
+              ),
+            );
+          },
+        ),
+        
+        _buildDrawerItem(
+          context: context,
+          icon: Icons.check_circle,
+          title: 'Já Assisti',
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const WatchedScreen(),
               ),
             );
           },

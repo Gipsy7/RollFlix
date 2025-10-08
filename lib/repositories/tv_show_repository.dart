@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../models/tv_show.dart';
 import '../models/roll_preferences.dart';
 import '../services/movie_service.dart';
+import '../controllers/watched_controller.dart';
+import '../controllers/favorites_controller.dart';
 
 /// Repository pattern para gerenciamento de dados de séries TV
 /// Implementa cache em memória e histórico para evitar repetições
@@ -83,6 +85,14 @@ class TVShowRepository extends ChangeNotifier {
     debugPrint('Buscando série aleatória do gênero: $genre (Excluindo: $excludeShowId)');
     debugPrint('Preferências: ${preferences?.toJson()}');
     
+    // Casos especiais para gêneros locais
+    if (genre == 'Favoritos') {
+      return await _getRandomFromFavorites(excludeShowId: excludeShowId);
+    }
+    if (genre == 'Assistidos') {
+      return await _getRandomFromWatched(excludeShowId: excludeShowId);
+    }
+    
     final tvShows = await getTVShowsByGenre(genre, preferences: preferences);
     if (tvShows.isEmpty) {
       throw Exception('Nenhuma série encontrada para o gênero $genre');
@@ -158,6 +168,15 @@ class TVShowRepository extends ChangeNotifier {
   /// Aplica filtros de preferências a uma série
   bool _applyPreferenceFilters(TVShow show, RollPreferences? preferences) {
     if (preferences == null) return true;
+    
+    // Filtro de excluir assistidos
+    if (preferences.excludeWatched) {
+      final watchedController = WatchedController.instance;
+      if (watchedController.isTVShowWatched(show)) {
+        debugPrint('  ❌ Filtrado: ${show.name} - Já assistido');
+        return false;
+      }
+    }
     
     // Filtro de ano (extrai do firstAirDate)
     if ((preferences.minYear != null || preferences.maxYear != null) && show.firstAirDate.isNotEmpty) {
@@ -249,5 +268,86 @@ class TVShowRepository extends ChangeNotifier {
       totalSize += shows.length * 1024; // Estimativa de 1KB por série
     }
     return totalSize / (1024 * 1024); // Converte para MB
+  }
+
+  /// Obtém uma série aleatória da lista de favoritos
+  Future<TVShow> _getRandomFromFavorites({int? excludeShowId}) async {
+    debugPrint('🌟 Buscando série aleatória dos favoritos');
+    final favoritesController = FavoritesController.instance;
+    final favoriteItems = favoritesController.favoriteTVShows;
+    
+    if (favoriteItems.isEmpty) {
+      throw Exception('Você ainda não tem séries favoritas');
+    }
+    
+    // Se só há 1 série, retorna ela mesma (permite repetir)
+    if (favoriteItems.length == 1) {
+      final selectedItem = favoriteItems.first;
+      final selectedShow = selectedItem.toTVShow();
+      debugPrint('🌟 Única série favorita selecionada: ${selectedShow.name}');
+      return selectedShow;
+    }
+    
+    // Filtra excluindo a série atual se especificado (só se houver mais de 1)
+    final availableItems = favoriteItems.where((item) {
+      return excludeShowId == null || int.parse(item.id) != excludeShowId;
+    }).toList();
+    
+    if (availableItems.isEmpty) {
+      // Fallback: se todos foram filtrados, usa a lista completa
+      final selectedItem = favoriteItems[Random().nextInt(favoriteItems.length)];
+      final selectedShow = selectedItem.toTVShow();
+      debugPrint('🌟 Série favorita selecionada (fallback): ${selectedShow.name}');
+      return selectedShow;
+    }
+    
+    // Seleciona aleatoriamente
+    final random = Random();
+    final selectedItem = availableItems[random.nextInt(availableItems.length)];
+    final selectedShow = selectedItem.toTVShow();
+    
+    debugPrint('🌟 Série favorita selecionada: ${selectedShow.name}');
+    return selectedShow;
+  }
+
+  /// Obtém uma série aleatória da lista de assistidos
+  Future<TVShow> _getRandomFromWatched({int? excludeShowId}) async {
+    debugPrint('✓ Buscando série aleatória dos assistidos');
+    final watchedController = WatchedController.instance;
+    final watchedItems = watchedController.tvShows;
+    
+    if (watchedItems.isEmpty) {
+      throw Exception('Você ainda não marcou nenhuma série como assistida');
+    }
+    
+    // Se só há 1 série, retorna ela mesma (permite repetir)
+    if (watchedItems.length == 1) {
+      final selectedItem = watchedItems.first;
+      final selectedShow = selectedItem.toTVShow();
+      debugPrint('✓ Única série assistida selecionada: ${selectedShow.name}');
+      return selectedShow;
+    }
+    
+    // Filtra excluindo a série atual se especificado (só se houver mais de 1)
+    final availableItems = watchedItems.where((item) {
+      if (excludeShowId == null) return true;
+      return int.parse(item.id) != excludeShowId;
+    }).toList();
+    
+    if (availableItems.isEmpty) {
+      // Fallback: se todos foram filtrados, usa a lista completa
+      final selectedItem = watchedItems[Random().nextInt(watchedItems.length)];
+      final selectedShow = selectedItem.toTVShow();
+      debugPrint('✓ Série assistida selecionada (fallback): ${selectedShow.name}');
+      return selectedShow;
+    }
+    
+    // Seleciona aleatoriamente
+    final random = Random();
+    final selectedItem = availableItems[random.nextInt(availableItems.length)];
+    final selectedShow = selectedItem.toTVShow();
+    
+    debugPrint('✓ Série assistida selecionada: ${selectedShow.name}');
+    return selectedShow;
   }
 }

@@ -8,6 +8,7 @@ import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
 import '../controllers/favorites_controller.dart';
+import '../controllers/watched_controller.dart';
 import 'actor_details_screen.dart';
 
 class TVShowDetailsScreen extends StatefulWidget {
@@ -27,11 +28,13 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
   SoundtrackInfo? soundtrackInfo;
   bool isLoading = true;
   late final FavoritesController _favoritesController;
+  late final WatchedController _watchedController;
 
   @override
   void initState() {
     super.initState();
     _favoritesController = FavoritesController.instance;
+    _watchedController = WatchedController.instance;
     _loadTVShowDetails();
   }
 
@@ -174,6 +177,35 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           tooltip: 'Compartilhar série',
           onPressed: _shareTVShow,
         ),
+        // Botão de Assistido
+        ListenableBuilder(
+          listenable: _watchedController,
+          builder: (context, _) {
+            final isWatched = _watchedController.isTVShowWatched(widget.tvShow);
+            return IconButton(
+              icon: Icon(
+                isWatched ? Icons.check_circle : Icons.check_circle_outline,
+                color: isWatched ? Colors.green : Colors.white,
+              ),
+              tooltip: isWatched ? 'Marcar como não assistido' : 'Marcar como assistido',
+              onPressed: () {
+                _watchedController.toggleTVShowWatched(widget.tvShow);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      isWatched 
+                          ? 'Removido de assistidos' 
+                          : 'Marcado como assistido',
+                    ),
+                    duration: const Duration(seconds: 2),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+            );
+          },
+        ),
+        // Botão de Favorito
         ListenableBuilder(
           listenable: _favoritesController,
           builder: (context, _) {

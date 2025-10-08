@@ -68,7 +68,12 @@ class MovieController extends ChangeNotifier {
       _movieCount++; // Incrementa contador de filmes sorteados
       debugPrint('Filme final selecionado: ${_selectedMovie!.title} (Gênero: $_selectedGenre) - Total sorteados: $_movieCount');
     } catch (e) {
-      _errorMessage = 'Erro ao buscar filme: ${e.toString()}';
+      // Extrai a mensagem limpa do erro
+      String errorMsg = e.toString();
+      if (errorMsg.startsWith('Exception: ')) {
+        errorMsg = errorMsg.substring('Exception: '.length);
+      }
+      _errorMessage = errorMsg;
       _selectedMovie = null;
       debugPrint('Error in rollMovie: $e');
     } finally {

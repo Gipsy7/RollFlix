@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../models/movie.dart';
 import '../models/roll_preferences.dart';
 import '../services/movie_service.dart';
+import '../controllers/watched_controller.dart';
+import '../controllers/favorites_controller.dart';
 
 /// Repository pattern para gerenciamento de dados de filmes
 /// Implementa cache em memória para melhor performance
@@ -83,6 +85,15 @@ class MovieRepository extends ChangeNotifier {
     debugPrint('=== INICIANDO BUSCA DE FILME ===');
     debugPrint('Buscando filme aleatório do gênero: $genre (Excluindo: $excludeMovieId)');
     debugPrint('Preferências recebidas: ${preferences?.toJson()}');
+    
+    // Casos especiais para gêneros locais
+    if (genre == 'Favoritos') {
+      return await _getRandomFromFavorites(excludeMovieId: excludeMovieId);
+    }
+    if (genre == 'Assistidos') {
+      return await _getRandomFromWatched(excludeMovieId: excludeMovieId);
+    }
+    
     if (preferences != null) {
       debugPrint('  - Ano mín/máx: ${preferences.minYear} / ${preferences.maxYear}');
       debugPrint('  - Permite +18: ${preferences.allowAdult}');
@@ -113,6 +124,15 @@ class MovieRepository extends ChangeNotifier {
       
       // Aplica filtros de preferências
       if (preferences != null) {
+        // Filtro de excluir assistidos
+        if (preferences.excludeWatched) {
+          final watchedController = WatchedController.instance;
+          if (watchedController.isMovieWatched(movie)) {
+            debugPrint('  ❌ Filtrado: ${movie.title} - Já assistido');
+            return false;
+          }
+        }
+        
         // Filtro de ano mínimo e máximo
         if ((preferences.minYear != null || preferences.maxYear != null) && movie.year.isNotEmpty) {
           try {
@@ -155,6 +175,14 @@ class MovieRepository extends ChangeNotifier {
         
         // Reaplica filtros de preferências
         if (preferences != null) {
+          // Filtro de excluir assistidos
+          if (preferences.excludeWatched) {
+            final watchedController = WatchedController.instance;
+            if (watchedController.isMovieWatched(movie)) {
+              return false;
+            }
+          }
+          
           if ((preferences.minYear != null || preferences.maxYear != null) && movie.year.isNotEmpty) {
             try {
               final movieYear = int.parse(movie.year);
@@ -299,5 +327,86 @@ class MovieRepository extends ChangeNotifier {
       totalSize += movies.length * 1024; // Estimativa de 1KB por filme
     }
     return totalSize / (1024 * 1024); // Converte para MB
+  }
+
+  /// Obtém um filme aleatório da lista de favoritos
+  Future<Movie> _getRandomFromFavorites({int? excludeMovieId}) async {
+    debugPrint('🌟 Buscando filme aleatório dos favoritos');
+    final favoritesController = FavoritesController.instance;
+    final favoriteItems = favoritesController.favoriteMovies;
+    
+    if (favoriteItems.isEmpty) {
+      throw Exception('Você ainda não tem filmes favoritos');
+    }
+    
+    // Se só há 1 filme, retorna ele mesmo (permite repetir)
+    if (favoriteItems.length == 1) {
+      final selectedItem = favoriteItems.first;
+      final selectedMovie = selectedItem.toMovie();
+      debugPrint('🌟 Único filme favorito selecionado: ${selectedMovie.title}');
+      return selectedMovie;
+    }
+    
+    // Filtra excluindo o filme atual se especificado (só se houver mais de 1)
+    final availableItems = favoriteItems.where((item) {
+      return excludeMovieId == null || int.parse(item.id) != excludeMovieId;
+    }).toList();
+    
+    if (availableItems.isEmpty) {
+      // Fallback: se todos foram filtrados, usa a lista completa
+      final selectedItem = favoriteItems[Random().nextInt(favoriteItems.length)];
+      final selectedMovie = selectedItem.toMovie();
+      debugPrint('🌟 Filme favorito selecionado (fallback): ${selectedMovie.title}');
+      return selectedMovie;
+    }
+    
+    // Seleciona aleatoriamente
+    final random = Random();
+    final selectedItem = availableItems[random.nextInt(availableItems.length)];
+    final selectedMovie = selectedItem.toMovie();
+    
+    debugPrint('🌟 Filme favorito selecionado: ${selectedMovie.title}');
+    return selectedMovie;
+  }
+
+  /// Obtém um filme aleatório da lista de assistidos
+  Future<Movie> _getRandomFromWatched({int? excludeMovieId}) async {
+    debugPrint('✓ Buscando filme aleatório dos assistidos');
+    final watchedController = WatchedController.instance;
+    final watchedItems = watchedController.movies;
+    
+    if (watchedItems.isEmpty) {
+      throw Exception('Você ainda não marcou nenhum filme como assistido');
+    }
+    
+    // Se só há 1 filme, retorna ele mesmo (permite repetir)
+    if (watchedItems.length == 1) {
+      final selectedItem = watchedItems.first;
+      final selectedMovie = selectedItem.toMovie();
+      debugPrint('✓ Único filme assistido selecionado: ${selectedMovie.title}');
+      return selectedMovie;
+    }
+    
+    // Filtra excluindo o filme atual se especificado (só se houver mais de 1)
+    final availableItems = watchedItems.where((item) {
+      if (excludeMovieId == null) return true;
+      return int.parse(item.id) != excludeMovieId;
+    }).toList();
+    
+    if (availableItems.isEmpty) {
+      // Fallback: se todos foram filtrados, usa a lista completa
+      final selectedItem = watchedItems[Random().nextInt(watchedItems.length)];
+      final selectedMovie = selectedItem.toMovie();
+      debugPrint('✓ Filme assistido selecionado (fallback): ${selectedMovie.title}');
+      return selectedMovie;
+    }
+    
+    // Seleciona aleatoriamente
+    final random = Random();
+    final selectedItem = availableItems[random.nextInt(availableItems.length)];
+    final selectedMovie = selectedItem.toMovie();
+    
+    debugPrint('✓ Filme assistido selecionado: ${selectedMovie.title}');
+    return selectedMovie;
   }
 }

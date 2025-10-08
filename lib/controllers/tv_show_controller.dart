@@ -67,7 +67,12 @@ class TVShowController extends ChangeNotifier {
       _showCount++; // Incrementa contador de séries sorteadas
       debugPrint('Série final selecionada: ${_selectedShow!.name} (Gênero: $_selectedGenre) - Total sorteadas: $_showCount');
     } catch (e) {
-      _errorMessage = 'Erro ao buscar série: ${e.toString()}';
+      // Extrai a mensagem limpa do erro
+      String errorMsg = e.toString();
+      if (errorMsg.startsWith('Exception: ')) {
+        errorMsg = errorMsg.substring('Exception: '.length);
+      }
+      _errorMessage = errorMsg;
       _selectedShow = null;
       debugPrint('Error in rollShow: $e');
     } finally {

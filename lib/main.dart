@@ -268,12 +268,23 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           if (!mounted) return;
           
           // Se não há gênero selecionado mas há gêneros disponíveis, seleciona o primeiro
+          // Só faz isso na inicialização (quando não há erro e não há filme/série selecionado)
           if (_appModeController.selectedGenre == null && currentGenres.isNotEmpty) {
-            _appModeController.selectGenre(currentGenres.first);
-            if (_appModeController.isSeriesMode) {
-              _tvShowController.selectGenre(currentGenres.first);
-            } else {
-              _movieController.selectGenre(currentGenres.first);
+            final hasError = _appModeController.isSeriesMode 
+                ? _tvShowController.errorMessage != null 
+                : _movieController.errorMessage != null;
+            final hasContent = _appModeController.isSeriesMode 
+                ? _tvShowController.hasShow 
+                : _movieController.hasMovie;
+            
+            // Só auto-seleciona se não houver erro e não houver conteúdo
+            if (!hasError && !hasContent) {
+              _appModeController.selectGenre(currentGenres.first);
+              if (_appModeController.isSeriesMode) {
+                _tvShowController.selectGenre(currentGenres.first);
+              } else {
+                _movieController.selectGenre(currentGenres.first);
+              }
             }
           }
           
