@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../theme/app_theme.dart';
 import '../models/date_night_combo.dart';
 import '../models/movie.dart';
@@ -82,6 +83,13 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
         icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
         onPressed: () => Navigator.pop(context),
       ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.share, color: AppColors.textPrimary),
+          onPressed: _shareDetails,
+          tooltip: 'Compartilhar',
+        ),
+      ],
       flexibleSpace: FlexibleSpaceBar(
         title: SafeText(
           'Detalhes do Encontro',
@@ -1144,6 +1152,92 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('❌ Erro ao trocar menu: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  // Compartilhar detalhes do encontro
+  Future<void> _shareDetails() async {
+    try {
+      // Buscar informações do trailer
+      final videos = await MovieService.getMovieVideos(_currentCombo.movieId);
+      String? trailerUrl;
+      
+      if (videos != null && videos.trailers.isNotEmpty) {
+        // Pegar o primeiro trailer oficial se disponível
+        final officialTrailer = videos.trailers.firstWhere(
+          (video) => video.official,
+          orElse: () => videos.trailers.first,
+        );
+        trailerUrl = officialTrailer.youtubeUrl;
+      }
+      
+      // Criar texto formatado com os detalhes do encontro
+      final StringBuffer message = StringBuffer();
+      
+      message.writeln('🎬✨ PLANO DE ENCONTRO PERFEITO ✨🍽️');
+      message.writeln('');
+      message.writeln('═══════════════════════════');
+      message.writeln('🎬 FILME');
+      message.writeln('═══════════════════════════');
+      message.writeln('Título: ${_currentCombo.movieTitle}');
+      message.writeln('Ano: ${_currentCombo.movieYear}');
+      message.writeln('⭐ Avaliação: ${_currentCombo.movieRating.toStringAsFixed(1)}/10');
+      
+      if (_currentCombo.movieGenres.isNotEmpty) {
+        message.writeln('Gêneros: ${_currentCombo.movieGenres.join(", ")}');
+      }
+      
+      if (_currentCombo.movieRuntime.isNotEmpty && _currentCombo.movieRuntime != 'N/A') {
+        message.writeln('Duração: ${_currentCombo.movieRuntime}');
+      }
+      
+      // Adicionar poster do filme
+      if (_currentCombo.moviePosterPath.isNotEmpty) {
+        message.writeln('');
+        message.writeln('🖼️ Poster: https://image.tmdb.org/t/p/w500${_currentCombo.moviePosterPath}');
+      }
+      
+      // Adicionar trailer se disponível
+      if (trailerUrl != null && trailerUrl.isNotEmpty) {
+        message.writeln('');
+        message.writeln('🎥 Trailer: $trailerUrl');
+      }
+      
+      message.writeln('');
+      message.writeln('═══════════════════════════');
+      message.writeln('🍽️ MENU');
+      message.writeln('═══════════════════════════');
+      message.writeln('Prato Principal: ${_currentCombo.mainDish}');
+      message.writeln('Sobremesa: ${_currentCombo.dessert}');
+      message.writeln('Bebida: ${_currentCombo.drink}');
+      
+      if (_currentCombo.snacks.isNotEmpty) {
+        message.writeln('Petiscos: ${_currentCombo.snacks.join(", ")}');
+      }
+      
+      message.writeln('');
+      message.writeln('⏱️ Tempo de Preparo: ${_currentCombo.preparationTime}');
+      message.writeln('📊 Dificuldade: ${_currentCombo.difficulty}');
+      
+      message.writeln('');
+      message.writeln('═══════════════════════════');
+      message.writeln('Criado com Rollflix 🎬🍿');
+      
+      // Compartilhar o texto
+      await Share.share(
+        message.toString(),
+        subject: '🎬 Plano de Encontro Perfeito',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ Erro ao compartilhar: $e'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
