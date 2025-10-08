@@ -18,6 +18,8 @@ import 'controllers/tv_show_controller.dart';
 import 'controllers/app_mode_controller.dart';
 import 'repositories/tv_show_repository.dart';
 import 'mixins/animation_mixin.dart';
+import 'screens/movie_details_screen.dart';
+import 'screens/tv_show_details_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,6 +62,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   
   // Flag para controlar quando a animação deve disparar
   bool _shouldAnimateCard = false;
+  bool _showResultCard = false;
 
   // Getters para acessar estado dos controllers
   Movie? get _selectedMovie => _movieController.selectedMovie;
@@ -141,6 +144,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     // Reseta a flag ao trocar de modo para evitar animação automática
     setState(() {
       _shouldAnimateCard = false;
+      _showResultCard = false;
     });
     
     // Auto-seleciona o primeiro gênero do novo modo
@@ -205,17 +209,21 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
     // Ativa a flag para permitir animação após o sorteio
     setState(() {
-      _shouldAnimateCard = true;
+      _shouldAnimateCard = false;
+      _showResultCard = false;
     });
 
     try {
+      var rollExecuted = false;
       if (_appModeController.isSeriesMode) {
         debugPrint('Chamando rollShow para série...');
         // Usa o controller para séries
         if (_tvShowController.canRollShow || selectedGenre != _tvShowController.selectedGenre) {
           _tvShowController.selectGenre(selectedGenre);
           await _tvShowController.rollShow(preferences: _rollPreferences);
+          if (!mounted) return;
           debugPrint('rollShow concluído. selectedShow: ${_tvShowController.selectedShow?.name}');
+          rollExecuted = true;
         }
       } else {
         debugPrint('Chamando rollMovie para filme...');
@@ -224,12 +232,51 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           debugPrint('Preferências ANTES de chamar rollMovie: ${_rollPreferences.toJson()}');
           _movieController.selectGenre(selectedGenre);
           await _movieController.rollMovie(preferences: _rollPreferences);
+          if (!mounted) return;
           debugPrint('rollMovie concluído. selectedMovie: ${_movieController.selectedMovie?.title}');
+          rollExecuted = true;
         }
+      }
+
+      if (rollExecuted) {
+        await _openRolledContentDetails();
       }
     } catch (e) {
       debugPrint('Erro em _handleRollContent: $e');
+      if (!mounted) return;
+      AppSnackBar.showError(context, 'Não foi possível realizar o sorteio. Tente novamente.');
     }
+  }
+
+  Future<void> _openRolledContentDetails() async {
+    if (!mounted) return;
+
+    if (_appModeController.isSeriesMode) {
+      final tvShow = _tvShowController.selectedShow;
+      if (tvShow == null) {
+        AppSnackBar.showInfo(context, 'Nenhuma série encontrada para esse filtro. Tente novamente.');
+        return;
+      }
+
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => TVShowDetailsScreen(tvShow: tvShow),
+        ),
+      );
+      return;
+    }
+
+    final movie = _movieController.selectedMovie;
+    if (movie == null) {
+      AppSnackBar.showInfo(context, 'Nenhum filme encontrado para esse filtro. Tente novamente.');
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MovieDetailsScreen(movie: movie),
+      ),
+    );
   }
 
   /// Obtém as cores baseadas no modo atual
@@ -634,7 +681,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               children: [
                 // Removido o botão _buildActionButtons - agora está no GenreWheel
                 const SizedBox(height: 16),
-                if (_selectedMovie != null || _selectedTVShow != null) 
+                if (_showResultCard && (_selectedMovie != null || _selectedTVShow != null)) 
                   Builder(
                     builder: (context) => _buildContentCard(context, isMobile),
                   ),
