@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../models/quiz_question.dart';
+import '../utils/color_extensions.dart';
 import 'movie_quiz_screen.dart';
 
 class QuizMenuScreen extends StatefulWidget {
@@ -149,7 +151,7 @@ class _QuizMenuScreenState extends State<QuizMenuScreen> {
                       border: Border.all(color: Colors.grey[300]!),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withOpacitySafe(0.05),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -370,7 +372,7 @@ class _DifficultyCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.white,
+          color: isSelected ? color.withOpacitySafe(0.1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? color : Colors.grey[300]!,
@@ -378,7 +380,7 @@ class _DifficultyCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withOpacitySafe(0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -390,7 +392,7 @@ class _DifficultyCard extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
+                color: color.withOpacitySafe(0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(

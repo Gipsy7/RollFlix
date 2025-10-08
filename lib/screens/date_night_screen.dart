@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../models/movie.dart';
+
 import '../models/date_night_combo.dart';
 import '../models/date_night_preferences.dart';
-import '../models/watch_providers.dart';
+import '../models/movie.dart';
 import '../models/recipe.dart';
+import '../models/watch_providers.dart';
 import '../services/movie_service.dart';
-import '../services/recipe_service_firebase.dart';
 import '../services/preferences_service.dart';
-import '../widgets/responsive_widgets.dart';
+import '../services/recipe_service_firebase.dart';
+import '../theme/app_theme.dart';
+import '../utils/app_logger.dart';
 import '../widgets/common_widgets.dart';
+import '../widgets/responsive_widgets.dart';
 import 'date_night_details_screen.dart';
 import 'date_night_preferences_screen.dart';
 
@@ -126,10 +128,10 @@ class _DateNightScreenState extends State<DateNightScreen> {
           final cuisine = RecipeServiceFirebase.getDateTypeCuisine(_selectedDateType!);
           final diet = RecipeServiceFirebase.getDietFromRestriction(_preferences.dietaryRestriction.toString());
           
-          print('🍽️ Preferências aplicadas:');
-          print('  - Restrição Dietética: ${_preferences.dietaryRestriction}');
-          print('  - Diet para API: $diet');
-          print('  - Culinária: $cuisine');
+          AppLogger.debug('🍽️ Preferências aplicadas:');
+          AppLogger.debug('  - Restrição Dietética: ${_preferences.dietaryRestriction}');
+          AppLogger.debug('  - Diet para API: $diet');
+          AppLogger.debug('  - Culinária: $cuisine');
           
           final results = await Future.wait([
             MovieService.getMovieDetails(randomMovie.id),
@@ -201,11 +203,11 @@ class _DateNightScreenState extends State<DateNightScreen> {
           final sideDish = recipeMenu['sideDish'];
           
           // Log para verificar se os IDs estão corretos
-          print('📋 Verificando receitas do combo:');
-          print('  - Main Course: ${mainCourse?.title} (ID: ${mainCourse?.id})');
-          print('  - Dessert: ${dessert?.title} (ID: ${dessert?.id})');
-          print('  - Appetizer: ${appetizer?.title} (ID: ${appetizer?.id})');
-          print('  - Side Dish: ${sideDish?.title} (ID: ${sideDish?.id})');
+          AppLogger.debug('📋 Verificando receitas do combo:');
+          AppLogger.debug('  - Main Course: ${mainCourse?.title} (ID: ${mainCourse?.id})');
+          AppLogger.debug('  - Dessert: ${dessert?.title} (ID: ${dessert?.id})');
+          AppLogger.debug('  - Appetizer: ${appetizer?.title} (ID: ${appetizer?.id})');
+          AppLogger.debug('  - Side Dish: ${sideDish?.title} (ID: ${sideDish?.id})');
           
           // Criar novo combo com IDs das receitas
           final updatedCombo = DateNightCombo(
@@ -311,7 +313,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
       setState(() {
         _preferences = result;
       });
-      print('✓ Preferências atualizadas: ${_preferences.dietaryRestriction.label}');
+  AppLogger.debug('✓ Preferências atualizadas: ${_preferences.dietaryRestriction.label}');
     }
   }
 

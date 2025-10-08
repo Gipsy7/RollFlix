@@ -1,6 +1,7 @@
 import 'dart:math';
 import '../models/quiz_question.dart';
 import '../models/movie.dart';
+import '../utils/app_logger.dart';
 import 'movie_service.dart';
 
 class QuizService {
@@ -59,8 +60,8 @@ class QuizService {
       // Embaralhar as perguntas
       questions.shuffle();
       
-    } catch (e) {
-      print('Erro ao gerar quiz: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error('Erro ao gerar quiz: $e', stackTrace: stackTrace);
       return _getFallbackQuestions();
     }
     

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 import '../models/date_night_preferences.dart';
+import '../utils/color_extensions.dart';
 import '../widgets/responsive_widgets.dart';
 
 class DateNightGamesScreen extends StatelessWidget {
@@ -319,7 +321,7 @@ class _GameCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1E1E1E),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _primaryRose.withOpacity(0.3)),
+  border: Border.all(color: _primaryRose.withOpacitySafe(0.3)),
       ),
       child: Theme(
         data: ThemeData(
@@ -387,7 +389,7 @@ class _GameCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: _primaryRose.withOpacity(0.1),
+                color: _primaryRose.withOpacitySafe(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -420,7 +422,7 @@ class _GameCard extends StatelessWidget {
                             height: 20,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: _secondaryGold.withOpacity(0.3),
+                              color: _secondaryGold.withOpacitySafe(0.3),
                             ),
                             child: Center(
                               child: Text(
@@ -479,7 +481,7 @@ class _ConversationCardState extends State<_ConversationCard> {
       decoration: BoxDecoration(
         color: const Color(0xFF1E1E1E),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _secondaryGold.withOpacity(0.3)),
+  border: Border.all(color: _secondaryGold.withOpacitySafe(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -504,7 +506,7 @@ class _ConversationCardState extends State<_ConversationCard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _secondaryGold.withOpacity(0.2),
+                  color: _secondaryGold.withOpacitySafe(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -524,8 +526,8 @@ class _ConversationCardState extends State<_ConversationCard> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  _primaryRose.withOpacity(0.2),
-                  _secondaryGold.withOpacity(0.1),
+                  _primaryRose.withOpacitySafe(0.2),
+                  _secondaryGold.withOpacitySafe(0.1),
                 ],
               ),
               borderRadius: BorderRadius.circular(12),
@@ -599,7 +601,7 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+  color: color.withOpacitySafe(0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

@@ -163,6 +163,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       ),
     );
 
+    if (!mounted) return;
+
     if (result != null) {
       setState(() {
         _rollPreferences = result;

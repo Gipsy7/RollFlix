@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../models/quiz_question.dart';
+import '../utils/color_extensions.dart';
 
 class QuizResultScreen extends StatelessWidget {
   final QuizResult result;
@@ -27,7 +29,7 @@ class QuizResultScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    _getGradeColor().withOpacity(0.8),
+                    _getGradeColor().withOpacitySafe(0.8),
                     _getGradeColor(),
                   ],
                   begin: Alignment.topLeft,
@@ -36,7 +38,7 @@ class QuizResultScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: _getGradeColor().withOpacity(0.3),
+                    color: _getGradeColor().withOpacitySafe(0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -233,7 +235,7 @@ class _StatCard extends StatelessWidget {
         border: Border.all(color: Colors.grey[300]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacitySafe(0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -286,7 +288,7 @@ class _QuestionReviewCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacitySafe(0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -395,7 +397,7 @@ class _QuestionReviewCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withOpacitySafe(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(

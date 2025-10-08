@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
+
 import '../constants/app_constants.dart';
 import '../models/movie.dart';
 import '../models/tv_show.dart';
@@ -9,6 +10,7 @@ import '../models/watch_providers.dart';
 import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
 import '../models/actor_details.dart';
+import '../utils/app_logger.dart';
 
 class MovieService {
   // Use constants from AppConstants
@@ -94,7 +96,7 @@ class MovieService {
         // Se NÃO permite adulto (allowAdult=false), exclui conteúdo adulto
         if (allowAdult != null && !allowAdult) {
           urlString += '&include_adult=false';
-          print('🔞 Filtro aplicado: Apenas conteúdo não adulto (include_adult=false)');
+          AppLogger.debug('🔞 Filtro aplicado: Apenas conteúdo não adulto (include_adult=false)');
         }
         
         // Adiciona filtros de preferências
@@ -119,7 +121,7 @@ class MovieService {
               .toList();
           
           if (validMovies.isEmpty && attempts < maxAttempts) {
-            print('Tentativa $attempts: Nenhum filme encontrado, tentando outra página...');
+            AppLogger.debug('Tentativa $attempts: Nenhum filme encontrado, tentando outra página...');
           }
         } else {
           throw Exception('Erro ao buscar filmes: ${response.statusCode}');
@@ -127,8 +129,8 @@ class MovieService {
       }
 
       return validMovies;
-    } catch (e) {
-      print('Erro no MovieService: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro no MovieService', error: e, stackTrace: stack);
       // Fallback para lista estática em caso de erro
       return _getFallbackMovies(genre);
     }
@@ -156,7 +158,7 @@ class MovieService {
         // Adiciona filtro de classificação indicativa
         if (allowAdult != null && !allowAdult) {
           urlString += '&include_adult=false';
-          print('🔞 Filtro aplicado (Novidades): Apenas conteúdo não adulto (include_adult=false)');
+          AppLogger.debug('🔞 Filtro aplicado (Novidades): Apenas conteúdo não adulto (include_adult=false)');
         }
         
         if (minYear != null) {
@@ -180,7 +182,7 @@ class MovieService {
               .toList();
           
           if (validMovies.isEmpty && attempts < maxAttempts) {
-            print('Tentativa $attempts (Novidades): Nenhum filme encontrado, tentando outra página...');
+            AppLogger.debug('Tentativa $attempts (Novidades): Nenhum filme encontrado, tentando outra página...');
           }
         } else {
           throw Exception('Erro ao buscar filmes em cartaz: ${response.statusCode}');
@@ -188,8 +190,8 @@ class MovieService {
       }
 
       return validMovies;
-    } catch (e) {
-      print('Erro ao buscar novidades: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar novidades', error: e, stackTrace: stack);
       return await _getRecentPopularMovies();
     }
   }
@@ -218,8 +220,8 @@ class MovieService {
       } else {
         return [];
       }
-    } catch (e) {
-      print('Erro ao buscar filmes populares recentes: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar filmes populares recentes', error: e, stackTrace: stack);
       return [];
     }
   }
@@ -248,8 +250,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar detalhes do filme: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar detalhes: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar detalhes do filme $movieId', error: e, stackTrace: stack);
       rethrow;
     }
   }
@@ -268,8 +270,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar elenco: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar elenco: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar elenco do filme $movieId', error: e, stackTrace: stack);
       return MovieCredits(cast: [], crew: []);
     }
   }
@@ -296,8 +298,8 @@ class MovieService {
       } else {
         return null;
       }
-    } catch (e) {
-      print('Erro ao buscar provedores: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar provedores do filme $movieId', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -331,8 +333,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar vídeos: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar vídeos: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar vídeos do filme $movieId', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -689,8 +691,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar filmes populares: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar filmes populares: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar filmes populares (page: $page)', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -710,8 +712,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar novidades: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar novidades: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar novidades de filmes (page: $page)', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -731,8 +733,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar filmes por gêneros: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar filmes por gêneros: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar filmes por gêneros $genreIds (page: $page)', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -754,8 +756,8 @@ class MovieService {
       } else {
         throw Exception('Erro na pesquisa: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro na pesquisa: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro na pesquisa de filmes: $query (page: $page)', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -797,7 +799,7 @@ class MovieService {
         // Adiciona filtro de classificação indicativa
         if (allowAdult != null && !allowAdult) {
           urlString += '&include_adult=false';
-          print('🔞 Filtro aplicado (TV): Apenas conteúdo não adulto (include_adult=false)');
+          AppLogger.debug('🔞 Filtro aplicado (TV): Apenas conteúdo não adulto (include_adult=false)');
         }
         
         // Adiciona filtros de preferências
@@ -822,7 +824,7 @@ class MovieService {
               .toList();
           
           if (validTVShows.isEmpty && attempts < maxAttempts) {
-            print('Tentativa $attempts: Nenhuma série encontrada, tentando outra página...');
+            AppLogger.debug('Tentativa $attempts: Nenhuma série encontrada, tentando outra página...');
           }
         } else {
           throw Exception('Erro ao buscar séries: ${response.statusCode}');
@@ -830,8 +832,8 @@ class MovieService {
       }
 
       return validTVShows;
-    } catch (e) {
-      print('Erro no TVService: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro no TVService', error: e, stackTrace: stack);
       throw Exception('Falha ao buscar séries: $e');
     }
   }
@@ -861,7 +863,7 @@ class MovieService {
         // Adiciona filtro de classificação indicativa
         if (allowAdult != null && !allowAdult) {
           urlString += '&include_adult=false';
-          print('🔞 Filtro aplicado (TV Novidades): Apenas conteúdo não adulto (include_adult=false)');
+          AppLogger.debug('🔞 Filtro aplicado (TV Novidades): Apenas conteúdo não adulto (include_adult=false)');
         }
         
         // Adiciona filtros de preferências
@@ -886,7 +888,7 @@ class MovieService {
               .toList();
           
           if (validTVShows.isEmpty && attempts < maxAttempts) {
-            print('Tentativa $attempts (Novidades TV): Nenhuma série encontrada, tentando outra página...');
+            AppLogger.debug('Tentativa $attempts (Novidades TV): Nenhuma série encontrada, tentando outra página...');
           }
         } else {
           throw Exception('Erro ao buscar séries no ar: ${response.statusCode}');
@@ -894,8 +896,8 @@ class MovieService {
       }
 
       return validTVShows;
-    } catch (e) {
-      print('Erro ao buscar novidades de séries: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar novidades de séries', error: e, stackTrace: stack);
       return await _getRecentPopularTVShows();
     }
   }
@@ -944,8 +946,8 @@ class MovieService {
       } else {
         return [];
       }
-    } catch (e) {
-      print('Erro ao buscar séries populares recentes: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar séries populares recentes', error: e, stackTrace: stack);
       return [];
     }
   }
@@ -963,8 +965,8 @@ class MovieService {
       }
       
       return null;
-    } catch (e) {
-      print('Erro ao buscar série aleatória: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar série aleatória', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -992,8 +994,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar séries populares: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar séries populares: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar séries populares (page: $page)', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -1013,8 +1015,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar séries mais bem avaliadas: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar séries mais bem avaliadas: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar séries mais bem avaliadas (page: $page)', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -1034,8 +1036,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar séries no ar: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar séries no ar: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar séries no ar (page: $page)', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -1057,8 +1059,8 @@ class MovieService {
       } else {
         throw Exception('Erro na pesquisa de séries: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro na pesquisa de séries: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro na pesquisa de séries: $query (page: $page)', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -1078,8 +1080,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar detalhes da série: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar detalhes da série: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar detalhes da série $tvShowId', error: e, stackTrace: stack);
       rethrow;
     }
   }
@@ -1098,8 +1100,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar elenco da série: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar elenco da série: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar elenco da série $tvShowId', error: e, stackTrace: stack);
       return MovieCredits(cast: [], crew: []);
     }
   }
@@ -1126,8 +1128,8 @@ class MovieService {
       } else {
         return null;
       }
-    } catch (e) {
-      print('Erro ao buscar provedores da série: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar provedores da série $tvShowId', error: e, stackTrace: stack);
       return null;
     }
   }
@@ -1161,8 +1163,8 @@ class MovieService {
       } else {
         throw Exception('Erro ao buscar vídeos da série: ${response.statusCode}');
       }
-    } catch (e) {
-      print('Erro ao buscar vídeos da série: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar vídeos da série $tvShowId', error: e, stackTrace: stack);
       return null;
     }
   }

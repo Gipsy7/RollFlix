@@ -235,6 +235,7 @@ class AppDrawer extends StatelessWidget {
           onTap: () async {
             movieController.clearCache();
             await RecipeCacheService.clearAllCache();
+            if (!context.mounted) return;
             Navigator.pop(context);
             AppSnackBar.showSuccess(context, 'Cache de filmes e receitas limpo!');
           },

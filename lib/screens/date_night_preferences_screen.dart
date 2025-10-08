@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 import '../models/date_night_preferences.dart';
-import '../widgets/responsive_widgets.dart';
 import '../services/preferences_service.dart';
+import '../utils/color_extensions.dart';
+import '../widgets/responsive_widgets.dart';
 
 class DateNightPreferencesScreen extends StatefulWidget {
   final DateNightPreferences? initialPreferences;
@@ -200,7 +202,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
         color: const Color(0xFF1E1E1E),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _primaryRose.withOpacity(0.2),
+          color: _primaryRose.withOpacitySafe(0.2),
           width: 1,
         ),
       ),
@@ -250,7 +252,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
               );
             });
           },
-          selectedColor: _primaryRose.withOpacity(0.3),
+          selectedColor: _primaryRose.withOpacitySafe(0.3),
           checkmarkColor: Colors.white,
           labelStyle: TextStyle(
             color: isSelected ? Colors.white : Colors.white70,
@@ -277,11 +279,11 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: isSelected 
-                    ? _primaryRose.withOpacity(0.2) 
+                    ? _primaryRose.withOpacitySafe(0.2) 
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isSelected ? _primaryRose : Colors.grey.withOpacity(0.3),
+                  color: isSelected ? _primaryRose : Colors.grey.withOpacitySafe(0.3),
                   width: isSelected ? 2 : 1,
                 ),
               ),
@@ -341,11 +343,11 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: isSelected 
-                    ? _secondaryGold.withOpacity(0.2) 
+                    ? _secondaryGold.withOpacitySafe(0.2) 
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isSelected ? _secondaryGold : Colors.grey.withOpacity(0.3),
+                  color: isSelected ? _secondaryGold : Colors.grey.withOpacitySafe(0.3),
                   width: isSelected ? 2 : 1,
                 ),
               ),
@@ -405,11 +407,11 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: isSelected 
-                    ? _primaryRose.withOpacity(0.2) 
+                    ? _primaryRose.withOpacitySafe(0.2) 
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isSelected ? _primaryRose : Colors.grey.withOpacity(0.3),
+                  color: isSelected ? _primaryRose : Colors.grey.withOpacitySafe(0.3),
                   width: isSelected ? 2 : 1,
                 ),
               ),
@@ -519,7 +521,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
                   );
                 });
               },
-              selectedColor: Colors.red.withOpacity(0.3),
+              selectedColor: Colors.red.withOpacitySafe(0.3),
               checkmarkColor: Colors.white,
               labelStyle: TextStyle(
                 color: isDisliked ? Colors.white : Colors.white70,

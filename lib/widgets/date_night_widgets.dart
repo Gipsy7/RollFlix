@@ -1,5 +1,8 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+
+import '../utils/color_extensions.dart';
 
 class CookingTimerWidget extends StatefulWidget {
   final int totalMinutes;
@@ -92,12 +95,12 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            _primaryRose.withOpacity(0.1),
-            _secondaryGold.withOpacity(0.1),
+            _primaryRose.withOpacitySafe(0.1),
+            _secondaryGold.withOpacitySafe(0.1),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _primaryRose.withOpacity(0.3)),
+        border: Border.all(color: _primaryRose.withOpacitySafe(0.3)),
       ),
       child: Column(
         children: [
@@ -111,7 +114,7 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
                 child: CircularProgressIndicator(
                   value: _progress,
                   strokeWidth: 8,
-                  backgroundColor: Colors.grey.withOpacity(0.2),
+                  backgroundColor: Colors.grey.withOpacitySafe(0.2),
                   valueColor: AlwaysStoppedAnimation<Color>(
                     _isCompleted ? Colors.green : _primaryRose,
                   ),
@@ -138,8 +141,8 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
                       'Pronto!',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white70,
                       ),
                     ),
                 ],
@@ -251,7 +254,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
       decoration: BoxDecoration(
         color: const Color(0xFF1E1E1E),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _primaryRose.withOpacity(0.3)),
+        border: Border.all(color: _primaryRose.withOpacitySafe(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,7 +298,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
             child: LinearProgressIndicator(
               value: _completionPercentage / 100,
               minHeight: 8,
-              backgroundColor: Colors.grey.withOpacity(0.2),
+              backgroundColor: Colors.grey.withOpacitySafe(0.2),
               valueColor: AlwaysStoppedAnimation<Color>(
                 _completionPercentage == 100 ? Colors.green : _primaryRose,
               ),
@@ -360,7 +363,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.2),
+                color: Colors.green.withOpacitySafe(0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Row(
@@ -410,7 +413,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: _primaryRose.withOpacity(0.2),
+                color: _primaryRose.withOpacitySafe(0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -451,14 +454,14 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: isChecked 
-                ? Colors.green.withOpacity(0.1) 
-                : Colors.transparent,
+      color: isChecked 
+        ? Colors.green.withOpacitySafe(0.1) 
+        : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isChecked 
-                  ? Colors.green 
-                  : Colors.grey.withOpacity(0.3),
+        color: isChecked 
+          ? Colors.green 
+          : Colors.grey.withOpacitySafe(0.3),
             ),
           ),
           child: Row(
@@ -508,7 +511,7 @@ class DateNightScheduleWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1E1E1E),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _secondaryGold.withOpacity(0.3)),
+  border: Border.all(color: _secondaryGold.withOpacitySafe(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -561,7 +564,7 @@ class DateNightScheduleWidget extends StatelessWidget {
                       Container(
                         width: 2,
                         height: 60,
-                        color: _primaryRose.withOpacity(0.3),
+                        color: _primaryRose.withOpacitySafe(0.3),
                       ),
                   ],
                 ),

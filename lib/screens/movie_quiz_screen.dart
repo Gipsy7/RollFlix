@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+
 import '../models/quiz_question.dart';
 import '../services/quiz_service.dart';
+import '../utils/color_extensions.dart';
 import '../widgets/app_card.dart';
 import 'quiz_result_screen.dart';
 
@@ -320,7 +323,7 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: _getDifficultyColor(currentQuestion.difficulty)
-                                      .withOpacity(0.2),
+                                      .withOpacitySafe(0.2),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
@@ -359,14 +362,14 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
                     
                     if (_isAnswered) {
                       if (isCorrect) {
-                        backgroundColor = Colors.green.withOpacity(0.1);
+                        backgroundColor = Colors.green.withOpacitySafe(0.1);
                         borderColor = Colors.green;
                       } else if (isSelected) {
-                        backgroundColor = Colors.red.withOpacity(0.1);
+                        backgroundColor = Colors.red.withOpacitySafe(0.1);
                         borderColor = Colors.red;
                       }
                     } else if (isSelected) {
-                      backgroundColor = Colors.blue.withOpacity(0.1);
+                      backgroundColor = Colors.blue.withOpacitySafe(0.1);
                       borderColor = Colors.blue;
                     }
                     
@@ -385,7 +388,7 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withOpacitySafe(0.05),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),

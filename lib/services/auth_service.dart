@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../utils/app_logger.dart';
+
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -33,8 +35,8 @@ class AuthService {
 
       // Sign in to Firebase with the Google credential
       return await _auth.signInWithCredential(credential);
-    } catch (e) {
-      print('Erro ao fazer login com Google: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao fazer login com Google', error: e, stackTrace: stack);
       rethrow;
     }
   }
@@ -49,8 +51,8 @@ class AuthService {
       
       // Logout do Firebase
       await _auth.signOut();
-    } catch (e) {
-      print('Erro ao fazer logout: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao fazer logout', error: e, stackTrace: stack);
       rethrow;
     }
   }

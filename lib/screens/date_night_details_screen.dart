@@ -1,11 +1,14 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+
 import '../theme/app_theme.dart';
 import '../models/date_night_combo.dart';
 import '../models/movie.dart';
 import '../services/recipe_service_firebase.dart';
 import '../services/movie_service.dart';
+import '../utils/app_logger.dart';
+import '../utils/color_extensions.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/optimized_widgets.dart';
@@ -1397,13 +1400,13 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  _primaryRose.withOpacity(0.1),
-                  _secondaryGold.withOpacity(0.1),
+                  _primaryRose.withOpacitySafe(0.1),
+                  _secondaryGold.withOpacitySafe(0.1),
                 ],
               ),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: _secondaryGold.withOpacity(0.3),
+                color: _secondaryGold.withOpacitySafe(0.3),
                 width: 1,
               ),
             ),
@@ -1642,8 +1645,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
           categorized['sideDish'] = recipe.extendedIngredients!.map((i) => i.original).toList();
         }
       }
-    } catch (e) {
-      print('Erro ao buscar ingredientes categorizados: $e');
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar ingredientes categorizados', error: e, stackTrace: stack);
     }
 
     return categorized;
