@@ -525,14 +525,14 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                 _allowAdult = value;
               });
             },
-            thumbColor: MaterialStateProperty.resolveWith((states) {
-              if (states.contains(MaterialState.selected)) {
+            thumbColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
                 return _accentColor;
               }
               return _inactiveThumbColor;
             }),
-            trackColor: MaterialStateProperty.resolveWith((states) {
-              if (states.contains(MaterialState.selected)) {
+            trackColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
                 return _accentColorSoft.withValues(alpha: 0.6);
               }
               return _inactiveTrackColor;

@@ -472,7 +472,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
           _preferences = _preferences.copyWith(includeAlcohol: value);
         });
       },
-      activeColor: _primaryRose,
+      activeThumbColor: _primaryRose,
       contentPadding: EdgeInsets.zero,
     );
   }

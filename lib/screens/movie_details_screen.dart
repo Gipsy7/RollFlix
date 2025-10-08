@@ -8,6 +8,7 @@ import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_logger.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
 import 'actor_details_screen.dart';
@@ -696,14 +697,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     await launchUrl(uri, mode: LaunchMode.externalApplication);
                                   }
                                 } catch (e) {
-                                  if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Erro ao abrir vídeo'),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }
+                                  // Erro ao abrir vídeo - não mostramos SnackBar para evitar problemas de contexto
+                                  AppLogger.debug('Erro ao abrir vídeo: $e');
                                 }
                               },
                               child: Column(

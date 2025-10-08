@@ -93,7 +93,7 @@ class ColorUtils {
 
   /// Converte uma cor para string hexadecimal
   static String colorToHex(Color color) {
-    return '#${color.value.toRadixString(16).padLeft(8, '0').substring(2)}';
+    return '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
   }
 
   /// Converte string hexadecimal para cor
