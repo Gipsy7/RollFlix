@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/watched_item.dart';
 import '../models/movie.dart';
 import '../models/tv_show.dart';
+import '../services/user_data_service.dart';
+import '../services/auth_service.dart';
 
 /// Controller para gerenciar lista de assistidos
 /// Singleton pattern para garantir instância única
@@ -26,22 +28,31 @@ class WatchedController extends ChangeNotifier {
   int get count => _watchedItems.length;
   bool get hasWatchedItems => _watchedItems.isNotEmpty;
 
-  /// Carrega assistidos do armazenamento local
+  /// Carrega assistidos do armazenamento (Firebase se logado, senão SharedPreferences)
   Future<void> _loadWatchedItems() async {
     try {
       _isLoading = true;
       notifyListeners();
 
-      final prefs = await SharedPreferences.getInstance();
-      final watchedJson = prefs.getString(_watchedKey);
-
-      if (watchedJson != null) {
-        final List<dynamic> decoded = jsonDecode(watchedJson);
+      // Se usuário está logado, carrega do Firebase
+      if (AuthService.isUserLoggedIn()) {
+        final cloudWatched = await UserDataService.loadWatched();
         _watchedItems.clear();
-        _watchedItems.addAll(
-          decoded.map((json) => WatchedItem.fromJson(json)).toList(),
-        );
-        debugPrint('✅ ${_watchedItems.length} itens assistidos carregados');
+        _watchedItems.addAll(cloudWatched);
+        debugPrint('✅ ${_watchedItems.length} assistidos carregados do Firebase');
+      } else {
+        // Senão, carrega do SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        final watchedJson = prefs.getString(_watchedKey);
+
+        if (watchedJson != null) {
+          final List<dynamic> decoded = jsonDecode(watchedJson);
+          _watchedItems.clear();
+          _watchedItems.addAll(
+            decoded.map((json) => WatchedItem.fromJson(json)).toList(),
+          );
+          debugPrint('✅ ${_watchedItems.length} assistidos carregados do local');
+        }
       }
     } catch (e) {
       debugPrint('❌ Erro ao carregar assistidos: $e');
@@ -51,15 +62,23 @@ class WatchedController extends ChangeNotifier {
     }
   }
 
-  /// Salva assistidos no armazenamento local
+  /// Salva assistidos (Firebase se logado, SharedPreferences sempre)
   Future<void> _saveWatchedItems() async {
     try {
+      // Sempre salva local (backup)
       final prefs = await SharedPreferences.getInstance();
       final watchedJson = jsonEncode(
         _watchedItems.map((item) => item.toJson()).toList(),
       );
       await prefs.setString(_watchedKey, watchedJson);
-      debugPrint('✅ Assistidos salvos: ${_watchedItems.length}');
+      
+      // Se usuário está logado, também salva no Firebase
+      if (AuthService.isUserLoggedIn()) {
+        await UserDataService.saveWatched(_watchedItems);
+        debugPrint('✅ Assistidos salvos (local + Firebase): ${_watchedItems.length}');
+      } else {
+        debugPrint('✅ Assistidos salvos (apenas local): ${_watchedItems.length}');
+      }
     } catch (e) {
       debugPrint('❌ Erro ao salvar assistidos: $e');
     }
@@ -183,5 +202,50 @@ class WatchedController extends ChangeNotifier {
       'movies': movies.length,
       'tvShows': tvShows.length,
     };
+  }
+
+  /// Sincroniza após login (mescla dados locais com Firebase)
+  Future<void> syncAfterLogin() async {
+    try {
+      debugPrint('🔄 Sincronizando assistidos após login...');
+      
+      // Carrega dados locais atuais
+      final prefs = await SharedPreferences.getInstance();
+      final localJson = prefs.getString(_watchedKey);
+      final List<WatchedItem> localWatched = [];
+      
+      if (localJson != null) {
+        final List<dynamic> decoded = jsonDecode(localJson);
+        localWatched.addAll(
+          decoded.map((json) => WatchedItem.fromJson(json)).toList(),
+        );
+      }
+      
+      // Carrega dados do Firebase
+      final cloudWatched = await UserDataService.loadWatched();
+      
+      // Mescla (remove duplicatas, mantém mais recentes)
+      final Map<String, WatchedItem> merged = {};
+      
+      for (final item in localWatched) {
+        merged[item.id] = item;
+      }
+      
+      for (final item in cloudWatched) {
+        merged[item.id] = item; // Prioriza dados da nuvem
+      }
+      
+      _watchedItems.clear();
+      _watchedItems.addAll(merged.values.toList()
+        ..sort((a, b) => b.watchedAt.compareTo(a.watchedAt)));
+      
+      // Salva dados mesclados
+      await _saveWatchedItems();
+      notifyListeners();
+      
+      debugPrint('✅ Assistidos sincronizados: ${_watchedItems.length} itens');
+    } catch (e) {
+      debugPrint('❌ Erro ao sincronizar assistidos: $e');
+    }
   }
 }

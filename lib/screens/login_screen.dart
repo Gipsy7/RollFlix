@@ -3,6 +3,8 @@ import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
 import '../main.dart';
+import '../controllers/favorites_controller.dart';
+import '../controllers/watched_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,10 +23,18 @@ class _LoginScreenState extends State<LoginScreen> {
       final userCredential = await AuthService.signInWithGoogle();
       
       if (userCredential != null && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MyApp()),
-        );
+        // Sincroniza favoritos e assistidos após login
+        await Future.wait([
+          FavoritesController.instance.syncAfterLogin(),
+          WatchedController.instance.syncAfterLogin(),
+        ]);
+        
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MyApp()),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {

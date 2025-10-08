@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/favorite_item.dart';
 import '../models/movie.dart';
 import '../models/tv_show.dart';
+import '../services/user_data_service.dart';
+import '../services/auth_service.dart';
 
 /// Controller para gerenciar lista de favoritos
 /// Singleton pattern para garantir instância única
@@ -26,22 +28,31 @@ class FavoritesController extends ChangeNotifier {
   int get count => _favorites.length;
   bool get hasFavorites => _favorites.isNotEmpty;
 
-  /// Carrega favoritos do armazenamento local
+  /// Carrega favoritos do armazenamento (Firebase se logado, senão SharedPreferences)
   Future<void> _loadFavorites() async {
     try {
       _isLoading = true;
       notifyListeners();
 
-      final prefs = await SharedPreferences.getInstance();
-      final favoritesJson = prefs.getString(_favoritesKey);
-
-      if (favoritesJson != null) {
-        final List<dynamic> decoded = jsonDecode(favoritesJson);
+      // Se usuário está logado, carrega do Firebase
+      if (AuthService.isUserLoggedIn()) {
+        final cloudFavorites = await UserDataService.loadFavorites();
         _favorites.clear();
-        _favorites.addAll(
-          decoded.map((json) => FavoriteItem.fromJson(json)).toList(),
-        );
-        debugPrint('✅ ${_favorites.length} favoritos carregados');
+        _favorites.addAll(cloudFavorites);
+        debugPrint('✅ ${_favorites.length} favoritos carregados do Firebase');
+      } else {
+        // Senão, carrega do SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        final favoritesJson = prefs.getString(_favoritesKey);
+
+        if (favoritesJson != null) {
+          final List<dynamic> decoded = jsonDecode(favoritesJson);
+          _favorites.clear();
+          _favorites.addAll(
+            decoded.map((json) => FavoriteItem.fromJson(json)).toList(),
+          );
+          debugPrint('✅ ${_favorites.length} favoritos carregados do local');
+        }
       }
     } catch (e) {
       debugPrint('❌ Erro ao carregar favoritos: $e');
@@ -51,15 +62,23 @@ class FavoritesController extends ChangeNotifier {
     }
   }
 
-  /// Salva favoritos no armazenamento local
+  /// Salva favoritos (Firebase se logado, SharedPreferences sempre)
   Future<void> _saveFavorites() async {
     try {
+      // Sempre salva local (backup)
       final prefs = await SharedPreferences.getInstance();
       final favoritesJson = jsonEncode(
         _favorites.map((fav) => fav.toJson()).toList(),
       );
       await prefs.setString(_favoritesKey, favoritesJson);
-      debugPrint('✅ Favoritos salvos: ${_favorites.length}');
+      
+      // Se usuário está logado, também salva no Firebase
+      if (AuthService.isUserLoggedIn()) {
+        await UserDataService.saveFavorites(_favorites);
+        debugPrint('✅ Favoritos salvos (local + Firebase): ${_favorites.length}');
+      } else {
+        debugPrint('✅ Favoritos salvos (apenas local): ${_favorites.length}');
+      }
     } catch (e) {
       debugPrint('❌ Erro ao salvar favoritos: $e');
     }
@@ -175,5 +194,50 @@ class FavoritesController extends ChangeNotifier {
   /// Recarrega favoritos
   Future<void> reload() async {
     await _loadFavorites();
+  }
+
+  /// Sincroniza após login (mescla dados locais com Firebase)
+  Future<void> syncAfterLogin() async {
+    try {
+      debugPrint('🔄 Sincronizando favoritos após login...');
+      
+      // Carrega dados locais atuais
+      final prefs = await SharedPreferences.getInstance();
+      final localJson = prefs.getString(_favoritesKey);
+      final List<FavoriteItem> localFavorites = [];
+      
+      if (localJson != null) {
+        final List<dynamic> decoded = jsonDecode(localJson);
+        localFavorites.addAll(
+          decoded.map((json) => FavoriteItem.fromJson(json)).toList(),
+        );
+      }
+      
+      // Carrega dados do Firebase
+      final cloudFavorites = await UserDataService.loadFavorites();
+      
+      // Mescla (remove duplicatas, mantém mais recentes)
+      final Map<String, FavoriteItem> merged = {};
+      
+      for (final item in localFavorites) {
+        merged[item.id] = item;
+      }
+      
+      for (final item in cloudFavorites) {
+        merged[item.id] = item; // Prioriza dados da nuvem
+      }
+      
+      _favorites.clear();
+      _favorites.addAll(merged.values.toList()
+        ..sort((a, b) => b.addedAt.compareTo(a.addedAt)));
+      
+      // Salva dados mesclados
+      await _saveFavorites();
+      notifyListeners();
+      
+      debugPrint('✅ Favoritos sincronizados: ${_favorites.length} itens');
+    } catch (e) {
+      debugPrint('❌ Erro ao sincronizar favoritos: $e');
+    }
   }
 }
