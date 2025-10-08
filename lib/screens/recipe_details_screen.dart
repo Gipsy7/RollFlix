@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/optimized_widgets.dart';
+import '../widgets/date_night_widgets.dart';
 
 class RecipeDetailsScreen extends StatelessWidget {
   final Recipe recipe;
@@ -106,6 +107,25 @@ class RecipeDetailsScreen extends StatelessWidget {
             // Informações rápidas
             _buildQuickInfo(),
             const SizedBox(height: 24),
+
+            // Timer de Preparo
+            if (recipe.readyInMinutes > 0) ...[
+              Builder(
+                builder: (context) => CookingTimerWidget(
+                  totalMinutes: recipe.readyInMinutes,
+                  onComplete: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('⏰ ${recipe.title} está pronto!'),
+                        duration: const Duration(seconds: 3),
+                        backgroundColor: _primaryRose,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
 
             // Tags dietéticas
             if (recipe.dietaryTags.isNotEmpty) ...[
@@ -279,6 +299,7 @@ class RecipeDetailsScreen extends StatelessWidget {
           const SizedBox(height: 16),
           SafeText(
             cleanSummary,
+            maxLines: null,
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.textSecondary,
               height: 1.5,
@@ -379,30 +400,40 @@ class RecipeDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildIngredients() {
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.shopping_basket, color: _primaryRose, size: 24),
-              const SizedBox(width: 12),
-              SafeText(
-                'Ingredientes',
-                style: AppTextStyles.headlineSmall.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surfaceDark,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _primaryRose.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Theme(
+        data: ThemeData(
+          dividerColor: Colors.transparent,
+          splashColor: _primaryRose.withValues(alpha: 0.1),
+        ),
+        child: ExpansionTile(
+          initiallyExpanded: true,
+          tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          childrenPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          leading: Icon(Icons.shopping_basket, color: _primaryRose, size: 24),
+          title: SafeText(
+            'Ingredientes (${recipe.extendedIngredients!.length})',
+            style: AppTextStyles.headlineSmall.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          const SizedBox(height: 16),
-          ...recipe.extendedIngredients!.map((ingredient) {
+          iconColor: _primaryRose,
+          collapsedIconColor: AppColors.textSecondary,
+          children: recipe.extendedIngredients!.map((ingredient) {
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.surfaceDark,
+                color: AppColors.backgroundDark,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -450,31 +481,41 @@ class RecipeDetailsScreen extends StatelessWidget {
               ),
             );
           }).toList(),
-        ],
+        ),
       ),
     );
   }
 
   Widget _buildInstructions() {
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.restaurant, color: _secondaryGold, size: 24),
-              const SizedBox(width: 12),
-              SafeText(
-                'Modo de Preparo',
-                style: AppTextStyles.headlineSmall.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surfaceDark,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _secondaryGold.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Theme(
+        data: ThemeData(
+          dividerColor: Colors.transparent,
+          splashColor: _secondaryGold.withValues(alpha: 0.1),
+        ),
+        child: ExpansionTile(
+          initiallyExpanded: false,
+          tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          childrenPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          leading: Icon(Icons.menu_book, color: _secondaryGold, size: 24),
+          title: SafeText(
+            'Modo de Preparo (${recipe.analyzedInstructions!.length} passos)',
+            style: AppTextStyles.headlineSmall.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          const SizedBox(height: 16),
-          ...recipe.analyzedInstructions!.asMap().entries.map((entry) {
+          iconColor: _secondaryGold,
+          collapsedIconColor: AppColors.textSecondary,
+          children: recipe.analyzedInstructions!.asMap().entries.map((entry) {
             final step = entry.value;
             return Container(
               margin: const EdgeInsets.only(bottom: 16),
@@ -513,7 +554,7 @@ class RecipeDetailsScreen extends StatelessWidget {
               ),
             );
           }).toList(),
-        ],
+        ),
       ),
     );
   }

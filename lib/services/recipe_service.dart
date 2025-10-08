@@ -82,6 +82,8 @@ class RecipeService {
         queryParameters: {
           'apiKey': _apiKey,
           'includeNutrition': 'true',
+          'addRecipeInformation': 'true',
+          'fillIngredients': 'true',
         },
       );
 

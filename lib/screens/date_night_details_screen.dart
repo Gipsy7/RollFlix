@@ -664,36 +664,10 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
   }
 
   Widget _buildMealTab(bool isMobile) {
-    // Extrair tempo de preparo em minutos
-    int preparationMinutes = 45; // padrão
-    try {
-      final timeMatch = RegExp(r'(\d+)').firstMatch(widget.combo.preparationTime);
-      if (timeMatch != null) {
-        preparationMinutes = int.parse(timeMatch.group(1)!);
-      }
-    } catch (e) {
-      // Usar padrão
-    }
-
     return SingleChildScrollView(
       padding: EdgeInsets.all(isMobile ? 16 : 24),
       child: Column(
         children: [
-          // Timer de Cozinha
-          CookingTimerWidget(
-            totalMinutes: preparationMinutes,
-            onComplete: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('⏰ Tempo de preparo finalizado!'),
-                  duration: Duration(seconds: 3),
-                ),
-              );
-            },
-          ),
-
-          const SizedBox(height: 16),
-
           // Prato Principal
           _buildRecipeCard(
             title: 'Prato Principal',
