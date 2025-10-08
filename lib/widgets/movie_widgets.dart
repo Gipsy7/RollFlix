@@ -4,7 +4,7 @@ import '../constants/app_constants.dart';
 import '../utils/app_utils.dart';
 import '../models/movie.dart';
 import 'common_widgets.dart';
-import 'responsive_widgets.dart' as ResponsiveWidgets;
+import 'responsive_widgets.dart' as responsive_widgets;
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
@@ -73,7 +73,7 @@ class MovieCard extends StatelessWidget {
                     children: [
                       // Title - always visible
                       Flexible(
-                        child: ResponsiveWidgets.SafeText(
+                        child: responsive_widgets.SafeText(
                           movie.title,
                           style: AppTextStyles.labelLarge,
                           maxLines: 2,
@@ -88,7 +88,7 @@ class MovieCard extends StatelessWidget {
                           children: [
                             if (movie.year.isNotEmpty) ...[
                               Flexible(
-                                child: ResponsiveWidgets.SafeText(
+                                child: responsive_widgets.SafeText(
                                   movie.year,
                                   style: AppTextStyles.labelSmall,
                                 ),
@@ -103,7 +103,7 @@ class MovieCard extends StatelessWidget {
                                 color: Colors.amber,
                               ),
                               const SizedBox(width: 2),
-                              ResponsiveWidgets.SafeText(
+                              responsive_widgets.SafeText(
                                 movie.voteAverage.toStringAsFixed(1),
                                 style: AppTextStyles.labelSmall,
                               ),

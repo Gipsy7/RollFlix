@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/movie.dart';
 import '../models/tv_show.dart';
 import '../theme/app_theme.dart';
-import '../utils/app_utils.dart' as AppUtils;
+import '../utils/app_utils.dart' as app_utils;
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/optimized_widgets.dart';
@@ -255,7 +255,7 @@ class ContentCard extends StatelessWidget {
         const SizedBox(width: 8),
         Flexible(
           child: SafeText(
-            AppUtils.DateUtils.formatReleaseDate(date),
+            app_utils.DateUtils.formatReleaseDate(date),
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,

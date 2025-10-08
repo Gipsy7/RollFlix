@@ -7,10 +7,10 @@ class ProjectorAnimation extends StatefulWidget {
   final bool isAnimating;
   
   const ProjectorAnimation({
-    Key? key,
+    super.key,
     this.size = 80,
     this.isAnimating = true,
-  }) : super(key: key);
+  });
 
   @override
   State<ProjectorAnimation> createState() => _ProjectorAnimationState();
@@ -208,10 +208,10 @@ class PopcornAnimation extends StatefulWidget {
   final bool isAnimating;
   
   const PopcornAnimation({
-    Key? key,
+    super.key,
     this.size = 60,
     this.isAnimating = true,
-  }) : super(key: key);
+  });
 
   @override
   State<PopcornAnimation> createState() => _PopcornAnimationState();
@@ -383,10 +383,10 @@ class FilmStripDecoration extends StatelessWidget {
   final double height;
   
   const FilmStripDecoration({
-    Key? key,
+    super.key,
     required this.child,
     this.height = 100,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -436,10 +436,10 @@ class CurtainAnimation extends StatefulWidget {
   final bool isOpen;
   
   const CurtainAnimation({
-    Key? key,
+    super.key,
     required this.child,
     this.isOpen = true,
-  }) : super(key: key);
+  });
 
   @override
   State<CurtainAnimation> createState() => _CurtainAnimationState();
