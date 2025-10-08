@@ -23,6 +23,46 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
   late String _sortBy;
   late bool _allowAdult;
 
+  Color get _accentColor => widget.isSeriesMode
+    ? const Color(0xFFF02B6D)
+    : AppColors.primary;
+
+  Color get _accentColorSoft => widget.isSeriesMode
+    ? const Color(0xFFFF4FA6)
+    : AppColors.primaryLight;
+
+  Color get _backgroundColor => widget.isSeriesMode
+    ? const Color(0xFF120017)
+    : AppColors.backgroundDark;
+
+  Color get _surfaceColor => widget.isSeriesMode
+    ? const Color(0xFF1E0A2A)
+    : AppColors.surfaceDark;
+
+  Color get _surfaceOverlayColor => widget.isSeriesMode
+    ? const Color(0xFF2A1438).withValues(alpha: 0.85)
+    : AppColors.surfaceDark.withValues(alpha: 0.5);
+
+  Color get _borderTintColor => widget.isSeriesMode
+    ? const Color(0xFF7A3EB1).withValues(alpha: 0.4)
+    : AppColors.primary.withValues(alpha: 0.2);
+
+  Color get _secondaryTextColor => widget.isSeriesMode
+    ? const Color(0xFFE8AFFF)
+    : AppColors.textSecondary;
+
+  Color get _mutedTextColor => widget.isSeriesMode
+    ? const Color(0xFFB98BCD)
+    : AppColors.textSecondary.withValues(alpha: 0.7);
+
+  Color get _inactiveThumbColor => widget.isSeriesMode
+    ? const Color(0xFFB98BCD)
+    : AppColors.textSecondary;
+
+  Color get _inactiveTrackColor => widget.isSeriesMode
+    ? const Color(0xFF7A3EB1).withValues(alpha: 0.35)
+    : AppColors.textSecondary.withValues(alpha: 0.3);
+
   @override
   void initState() {
     super.initState();
@@ -38,7 +78,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
     final isMobile = MediaQuery.of(context).size.width < 600;
 
     return Dialog(
-      backgroundColor: AppColors.backgroundDark,
+      backgroundColor: _backgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -57,7 +97,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
               children: [
                 Icon(
                   Icons.tune,
-                  color: AppColors.primary,
+                  color: _accentColor,
                   size: 28,
                 ),
                 const SizedBox(width: 12),
@@ -72,7 +112,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.close, color: AppColors.textSecondary),
+                  icon: Icon(Icons.close, color: _secondaryTextColor),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -120,8 +160,8 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                   child: OutlinedButton(
                     onPressed: _resetPreferences,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.textSecondary,
-                      side: BorderSide(color: AppColors.textSecondary.withValues(alpha: 0.3)),
+                      foregroundColor: _secondaryTextColor,
+                      side: BorderSide(color: _secondaryTextColor.withValues(alpha: 0.3)),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -136,7 +176,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                   child: ElevatedButton(
                     onPressed: _applyPreferences,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: _accentColor,
                       foregroundColor: AppColors.backgroundDark,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
@@ -172,11 +212,9 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceDark.withValues(alpha: 0.5),
+        color: _surfaceOverlayColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: _borderTintColor),
       ),
       child: Column(
         children: [
@@ -189,7 +227,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                     Text(
                       'De',
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: _mutedTextColor,
                         fontSize: 12,
                       ),
                     ),
@@ -199,10 +237,10 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         decoration: BoxDecoration(
-                          color: AppColors.backgroundDark,
+                          color: _surfaceColor,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: AppColors.primary.withValues(alpha: 0.3),
+                            color: _accentColor.withValues(alpha: widget.isSeriesMode ? 0.45 : 0.3),
                           ),
                         ),
                         child: Text(
@@ -225,7 +263,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                     Text(
                       'Até',
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: _mutedTextColor,
                         fontSize: 12,
                       ),
                     ),
@@ -235,10 +273,10 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         decoration: BoxDecoration(
-                          color: AppColors.backgroundDark,
+                          color: _surfaceColor,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: AppColors.primary.withValues(alpha: 0.3),
+                            color: _accentColor.withValues(alpha: widget.isSeriesMode ? 0.45 : 0.3),
                           ),
                         ),
                         child: Text(
@@ -264,10 +302,10 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                   _maxYear = null;
                 });
               },
-              icon: Icon(Icons.clear, size: 16, color: AppColors.textSecondary),
+              icon: Icon(Icons.clear, size: 16, color: _secondaryTextColor),
               label: Text(
                 'Limpar período',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                style: TextStyle(color: _secondaryTextColor, fontSize: 12),
               ),
             ),
           ],
@@ -285,7 +323,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
     await showDialog(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: AppColors.backgroundDark,
+        backgroundColor: _backgroundColor,
         child: Container(
           padding: const EdgeInsets.all(24),
           constraints: const BoxConstraints(maxHeight: 400, maxWidth: 300),
@@ -313,7 +351,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                         year.toString(),
                         style: TextStyle(
                           color: year == initialYear 
-                              ? AppColors.primary 
+                              ? _accentColor 
                               : AppColors.textPrimary,
                           fontWeight: year == initialYear 
                               ? FontWeight.bold 
@@ -382,13 +420,13 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isSelected 
-              ? AppColors.primary.withValues(alpha: 0.2)
-              : AppColors.surfaceDark.withValues(alpha: 0.5),
+              ? _accentColor.withValues(alpha: widget.isSeriesMode ? 0.25 : 0.2)
+              : _surfaceOverlayColor,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected 
-                ? AppColors.primary 
-                : AppColors.primary.withValues(alpha: 0.1),
+                ? _accentColor 
+                : _accentColor.withValues(alpha: widget.isSeriesMode ? 0.35 : 0.1),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -396,7 +434,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              color: isSelected ? _accentColor : _secondaryTextColor,
               size: 24,
             ),
             const SizedBox(width: 12),
@@ -407,7 +445,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                   Text(
                     title,
                     style: TextStyle(
-                      color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                      color: isSelected ? _accentColor : AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -415,7 +453,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: _mutedTextColor,
                       fontSize: 12,
                     ),
                   ),
@@ -425,7 +463,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
             if (isSelected)
               Icon(
                 Icons.check_circle,
-                color: AppColors.primary,
+                color: _accentColor,
                 size: 20,
               ),
           ],
@@ -438,12 +476,12 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceDark.withValues(alpha: 0.5),
+        color: _surfaceOverlayColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: !_allowAdult 
-              ? AppColors.primary 
-              : AppColors.primary.withValues(alpha: 0.2),
+              ? _accentColor 
+              : _accentColor.withValues(alpha: widget.isSeriesMode ? 0.35 : 0.2),
           width: !_allowAdult ? 2 : 1,
         ),
       ),
@@ -451,7 +489,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
         children: [
           Icon(
             _allowAdult ? Icons.public : Icons.family_restroom,
-            color: !_allowAdult ? AppColors.primary : AppColors.textSecondary,
+            color: !_allowAdult ? _accentColor : _secondaryTextColor,
             size: 24,
           ),
           const SizedBox(width: 12),
@@ -473,7 +511,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                       ? 'Exibir todo tipo de conteúdo' 
                       : 'Apenas conteúdo não adulto',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: _mutedTextColor,
                     fontSize: 12,
                   ),
                 ),
@@ -487,10 +525,10 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                 _allowAdult = value;
               });
             },
-            activeColor: AppColors.primary,
-            activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
-            inactiveThumbColor: AppColors.textSecondary,
-            inactiveTrackColor: AppColors.textSecondary.withValues(alpha: 0.3),
+            activeColor: _accentColor,
+            activeTrackColor: _accentColorSoft.withValues(alpha: 0.6),
+            inactiveThumbColor: _inactiveThumbColor,
+            inactiveTrackColor: _inactiveTrackColor,
           ),
         ],
       ),
@@ -499,6 +537,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
 
   Widget _buildExcludeWatchedOption() {
     return InkWell(
+      borderRadius: BorderRadius.circular(12),
       onTap: () {
         setState(() {
           _excludeWatched = !_excludeWatched;
@@ -507,19 +546,20 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceDark.withValues(alpha: 0.5),
+          color: _surfaceOverlayColor,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _excludeWatched 
-                ? AppColors.primary 
-                : AppColors.primary.withValues(alpha: 0.1),
+                ? _accentColor 
+                : _accentColor.withValues(alpha: widget.isSeriesMode ? 0.35 : 0.1),
+            width: _excludeWatched ? 2 : 1,
           ),
         ),
         child: Row(
           children: [
             Icon(
               _excludeWatched ? Icons.check_box : Icons.check_box_outline_blank,
-              color: _excludeWatched ? AppColors.primary : AppColors.textSecondary,
+              color: _excludeWatched ? _accentColor : _secondaryTextColor,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -537,7 +577,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                   Text(
                     'Não mostra conteúdos já marcados como assistidos',
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: _mutedTextColor,
                       fontSize: 12,
                     ),
                   ),
