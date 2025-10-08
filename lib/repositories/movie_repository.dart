@@ -59,6 +59,7 @@ class MovieRepository extends ChangeNotifier {
         genre,
         minYear: preferences?.minYear,
         maxYear: preferences?.maxYear,
+        allowAdult: preferences?.allowAdult,
       );
       
       if (movies.isEmpty) {
@@ -84,7 +85,7 @@ class MovieRepository extends ChangeNotifier {
     debugPrint('Preferências recebidas: ${preferences?.toJson()}');
     if (preferences != null) {
       debugPrint('  - Ano mín/máx: ${preferences.minYear} / ${preferences.maxYear}');
-      debugPrint('  - Classificação: ${preferences.ageRating}');
+      debugPrint('  - Permite +18: ${preferences.allowAdult}');
       debugPrint('  - Ordenação: ${preferences.sortBy}');
     }
     
@@ -128,16 +129,10 @@ class MovieRepository extends ChangeNotifier {
           }
         }
         
-        // Filtro de classificação indicativa usando o campo 'adult'
-        // Filmes com adult=true são considerados NC-17/18+
-        if (preferences.ageRating != null) {
-          if (preferences.ageRating == 'G' || preferences.ageRating == 'PG' || preferences.ageRating == 'PG-13') {
-            // Se busca classificações mais baixas, exclui filmes adultos
-            if (movie.adult) {
-              return false;
-            }
-          }
-          // Para R e NC-17, permite qualquer filme
+        // Filtro de classificação indicativa (filtro adicional local)
+        // Se NÃO permite adulto, exclui filmes com adult=true
+        if (!preferences.allowAdult && movie.adult) {
+          return false;
         }
       }
       
@@ -174,12 +169,9 @@ class MovieRepository extends ChangeNotifier {
             }
           }
           
-          if (preferences.ageRating != null) {
-            if (preferences.ageRating == 'G' || preferences.ageRating == 'PG' || preferences.ageRating == 'PG-13') {
-              if (movie.adult) {
-                return false;
-              }
-            }
+          // Filtro de classificação indicativa (adicional local)
+          if (!preferences.allowAdult && movie.adult) {
+            return false;
           }
         }
         

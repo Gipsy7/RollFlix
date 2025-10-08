@@ -59,6 +59,7 @@ class TVShowRepository extends ChangeNotifier {
         genre,
         minYear: preferences?.minYear,
         maxYear: preferences?.maxYear,
+        allowAdult: preferences?.allowAdult,
       );
       
       if (tvShows.isEmpty) {
@@ -169,11 +170,10 @@ class TVShowRepository extends ChangeNotifier {
       }
     }
     
-    // Classificação indicativa
-    if (preferences.ageRating != null) {
-      if (preferences.ageRating == 'G' || preferences.ageRating == 'PG' || preferences.ageRating == 'PG-13') {
-        if (show.adult) return false;
-      }
+    // Classificação indicativa (filtro adicional local)
+    // Se NÃO permite adulto, exclui séries com adult=true
+    if (!preferences.allowAdult && show.adult) {
+      return false;
     }
     
     return true;

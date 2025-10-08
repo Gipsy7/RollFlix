@@ -21,7 +21,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
   late int? _maxYear;
   late bool _excludeWatched;
   late String _sortBy;
-  late String? _ageRating;
+  late bool _allowAdult;
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
     _maxYear = widget.initialPreferences.maxYear;
     _excludeWatched = widget.initialPreferences.excludeWatched;
     _sortBy = widget.initialPreferences.sortBy;
-    _ageRating = widget.initialPreferences.ageRating;
+    _allowAdult = widget.initialPreferences.allowAdult;
   }
 
   @override
@@ -99,7 +99,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                     // Classificação Indicativa
                     _buildSectionTitle('Classificação Indicativa'),
                     const SizedBox(height: 12),
-                    _buildAgeRatingOptions(),
+                    _buildAdultContentToggle(),
                     const SizedBox(height: 24),
 
                     // Outras opções
@@ -434,140 +434,65 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
     );
   }
 
-  Widget _buildAgeRatingOptions() {
-    final ageRatings = [
-      {'value': null, 'label': 'Qualquer classificação', 'description': 'Sem restrição de idade', 'icon': Icons.public},
-      {'value': 'G', 'label': 'Livre (G)', 'description': 'Livre para todos os públicos', 'icon': Icons.family_restroom},
-      {'value': 'PG', 'label': '10+ (PG)', 'description': 'Supervisão dos pais recomendada', 'icon': Icons.child_care},
-      {'value': 'PG-13', 'label': '13+ (PG-13)', 'description': 'Conteúdo sensível para menores de 13', 'icon': Icons.supervised_user_circle},
-      {'value': 'R', 'label': '16+ (R)', 'description': 'Conteúdo adulto restrito', 'icon': Icons.person},
-      {'value': 'NC-17', 'label': '18+ (NC-17)', 'description': 'Apenas para maiores de 18 anos', 'icon': Icons.block},
-    ];
-
-    // Encontra a classificação selecionada
-    final selectedRating = ageRatings.firstWhere(
-      (rating) => rating['value'] == _ageRating,
-      orElse: () => ageRatings[0],
-    );
-
+  Widget _buildAdultContentToggle() {
     return Container(
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surfaceDark.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: _ageRating != null 
+          color: !_allowAdult 
               ? AppColors.primary 
               : AppColors.primary.withValues(alpha: 0.2),
-          width: _ageRating != null ? 2 : 1,
+          width: !_allowAdult ? 2 : 1,
         ),
       ),
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          dividerColor: Colors.transparent,
-        ),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          leading: Icon(
-            selectedRating['icon'] as IconData,
-            color: _ageRating != null ? AppColors.primary : AppColors.textSecondary,
+      child: Row(
+        children: [
+          Icon(
+            _allowAdult ? Icons.public : Icons.family_restroom,
+            color: !_allowAdult ? AppColors.primary : AppColors.textSecondary,
             size: 24,
           ),
-          title: Text(
-            selectedRating['label'] as String,
-            style: TextStyle(
-              color: _ageRating != null ? AppColors.primary : AppColors.textPrimary,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          subtitle: Text(
-            selectedRating['description'] as String,
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 12,
-            ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_ageRating != null) ...[
-                Icon(
-                  Icons.check_circle,
-                  color: AppColors.primary,
-                  size: 18,
-                ),
-                const SizedBox(width: 8),
-              ],
-              Icon(
-                Icons.arrow_drop_down,
-                color: AppColors.textSecondary,
-              ),
-            ],
-          ),
-          children: ageRatings.map((rating) {
-            final isSelected = _ageRating == rating['value'];
-            return InkWell(
-              onTap: () {
-                setState(() {
-                  _ageRating = rating['value'] as String?;
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: isSelected 
-                      ? AppColors.primary.withValues(alpha: 0.1)
-                      : Colors.transparent,
-                  border: Border(
-                    top: BorderSide(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      width: 1,
-                    ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Permitir conteúdo +18',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Icon(
-                      rating['icon'] as IconData,
-                      color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            rating['label'] as String,
-                            style: TextStyle(
-                              color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            rating['description'] as String,
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (isSelected)
-                      Icon(
-                        Icons.check,
-                        color: AppColors.primary,
-                        size: 20,
-                      ),
-                  ],
+                const SizedBox(height: 2),
+                Text(
+                  _allowAdult 
+                      ? 'Exibir todo tipo de conteúdo' 
+                      : 'Apenas conteúdo não adulto',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
                 ),
-              ),
-            );
-          }).toList(),
-        ),
+              ],
+            ),
+          ),
+          Switch(
+            value: _allowAdult,
+            onChanged: (value) {
+              setState(() {
+                _allowAdult = value;
+              });
+            },
+            activeColor: AppColors.primary,
+            activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
+            inactiveThumbColor: AppColors.textSecondary,
+            inactiveTrackColor: AppColors.textSecondary.withValues(alpha: 0.3),
+          ),
+        ],
       ),
     );
   }
@@ -631,7 +556,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
       _maxYear = null;
       _excludeWatched = false;
       _sortBy = 'random';
-      _ageRating = null;
+      _allowAdult = true;
     });
   }
 
@@ -641,7 +566,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
       maxYear: _maxYear,
       excludeWatched: _excludeWatched,
       sortBy: _sortBy,
-      ageRating: _ageRating,
+      allowAdult: _allowAdult,
     );
     Navigator.pop(context, preferences);
   }

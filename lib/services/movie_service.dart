@@ -61,6 +61,7 @@ class MovieService {
   static Future<List<Movie>> getMoviesByGenre(String genre, {
     int? minYear,
     int? maxYear,
+    bool? allowAdult,
   }) async {
     try {
       // Caso especial para "Novidades" - busca filmes em cartaz/recentes
@@ -68,6 +69,7 @@ class MovieService {
         return await _getNowPlayingMovies(
           minYear: minYear,
           maxYear: maxYear,
+          allowAdult: allowAdult,
         );
       }
 
@@ -87,6 +89,13 @@ class MovieService {
         
         // Constrói a URL base
         var urlString = '$_baseUrl/discover/movie?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=pt-BR&sort_by=popularity.desc&page=$randomPage';
+        
+        // Adiciona filtro de classificação indicativa
+        // Se NÃO permite adulto (allowAdult=false), exclui conteúdo adulto
+        if (allowAdult != null && !allowAdult) {
+          urlString += '&include_adult=false';
+          print('🔞 Filtro aplicado: Apenas conteúdo não adulto (include_adult=false)');
+        }
         
         // Adiciona filtros de preferências
         if (minYear != null) {
@@ -129,6 +138,7 @@ class MovieService {
   static Future<List<Movie>> _getNowPlayingMovies({
     int? minYear,
     int? maxYear,
+    bool? allowAdult,
   }) async {
     try {
       // Tenta até 3 páginas diferentes se não encontrar resultados
@@ -142,6 +152,12 @@ class MovieService {
         
         // Usa now_playing sem filtros (mais rápido)
         var urlString = '$_baseUrl/movie/now_playing?api_key=$_apiKey&language=pt-BR&page=$randomPage&region=BR';
+        
+        // Adiciona filtro de classificação indicativa
+        if (allowAdult != null && !allowAdult) {
+          urlString += '&include_adult=false';
+          print('🔞 Filtro aplicado (Novidades): Apenas conteúdo não adulto (include_adult=false)');
+        }
         
         if (minYear != null) {
           urlString += '&primary_release_date.gte=$minYear-01-01';
@@ -749,6 +765,7 @@ class MovieService {
   static Future<List<TVShow>> getTVShowsByGenre(String genre, {
     int? minYear,
     int? maxYear,
+    bool? allowAdult,
   }) async {
     try {
       // Caso especial para "Novidades" - busca séries no ar/recentes
@@ -756,6 +773,7 @@ class MovieService {
         return await _getOnTheAirTVShows(
           minYear: minYear,
           maxYear: maxYear,
+          allowAdult: allowAdult,
         );
       }
 
@@ -775,6 +793,12 @@ class MovieService {
         
         // Constrói a URL base
         var urlString = '$_baseUrl/discover/tv?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=pt-BR&sort_by=popularity.desc&page=$randomPage';
+        
+        // Adiciona filtro de classificação indicativa
+        if (allowAdult != null && !allowAdult) {
+          urlString += '&include_adult=false';
+          print('🔞 Filtro aplicado (TV): Apenas conteúdo não adulto (include_adult=false)');
+        }
         
         // Adiciona filtros de preferências
         if (minYear != null) {
@@ -816,6 +840,7 @@ class MovieService {
   static Future<List<TVShow>> _getOnTheAirTVShows({
     int? minYear,
     int? maxYear,
+    bool? allowAdult,
   }) async {
     try {
       final currentYear = DateTime.now().year;
@@ -832,6 +857,12 @@ class MovieService {
         
         // Constrói a URL base com discover (suporta filtros de nota)
         var urlString = '$_baseUrl/discover/tv?api_key=$_apiKey&language=pt-BR&sort_by=popularity.desc&first_air_date.gte=$lastYear-01-01&page=$randomPage';
+        
+        // Adiciona filtro de classificação indicativa
+        if (allowAdult != null && !allowAdult) {
+          urlString += '&include_adult=false';
+          print('🔞 Filtro aplicado (TV Novidades): Apenas conteúdo não adulto (include_adult=false)');
+        }
         
         // Adiciona filtros de preferências
         if (minYear != null) {

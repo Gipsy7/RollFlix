@@ -4,7 +4,7 @@ class RollPreferences {
   final bool excludeWatched;
   final List<String> excludedGenres;
   final String sortBy; // 'rating', 'popularity', 'random'
-  final String? ageRating; // 'G', 'PG', 'PG-13', 'R', 'NC-17', null (qualquer)
+  final bool allowAdult; // true = permite +18, false = apenas conteúdo não-adulto
 
   const RollPreferences({
     this.minYear,
@@ -12,7 +12,7 @@ class RollPreferences {
     this.excludeWatched = false,
     this.excludedGenres = const [],
     this.sortBy = 'random',
-    this.ageRating,
+    this.allowAdult = true, // Por padrão permite tudo
   });
 
   RollPreferences copyWith({
@@ -21,7 +21,7 @@ class RollPreferences {
     bool? excludeWatched,
     List<String>? excludedGenres,
     String? sortBy,
-    String? ageRating,
+    bool? allowAdult,
   }) {
     return RollPreferences(
       minYear: minYear ?? this.minYear,
@@ -29,7 +29,7 @@ class RollPreferences {
       excludeWatched: excludeWatched ?? this.excludeWatched,
       excludedGenres: excludedGenres ?? this.excludedGenres,
       sortBy: sortBy ?? this.sortBy,
-      ageRating: ageRating ?? this.ageRating,
+      allowAdult: allowAdult ?? this.allowAdult,
     );
   }
 
@@ -40,7 +40,7 @@ class RollPreferences {
       'excludeWatched': excludeWatched,
       'excludedGenres': excludedGenres,
       'sortBy': sortBy,
-      'ageRating': ageRating,
+      'allowAdult': allowAdult,
     };
   }
 
@@ -51,7 +51,7 @@ class RollPreferences {
       excludeWatched: json['excludeWatched'] ?? false,
       excludedGenres: List<String>.from(json['excludedGenres'] ?? []),
       sortBy: json['sortBy'] ?? 'random',
-      ageRating: json['ageRating'],
+      allowAdult: json['allowAdult'] ?? true,
     );
   }
 
@@ -60,6 +60,6 @@ class RollPreferences {
         maxYear != null ||
         excludeWatched ||
         excludedGenres.isNotEmpty ||
-        ageRating != null;
+        !allowAdult; // Considera como filtro se NÃO permite adulto
   }
 }

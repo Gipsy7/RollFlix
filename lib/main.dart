@@ -174,15 +174,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       // Mostra feedback ao usuário
       if (result.hasFilters) {
         final filterParts = <String>[];
-        if (result.ageRating != null) {
-          final ageLabels = {
-            'G': 'Livre',
-            'PG': '10+',
-            'PG-13': '13+',
-            'R': '16+',
-            'NC-17': '18+',
-          };
-          filterParts.add('🔞 ${ageLabels[result.ageRating] ?? result.ageRating}');
+        if (!result.allowAdult) {
+          filterParts.add('🔞 Apenas não adulto');
         }
         if (result.minYear != null || result.maxYear != null) {
           filterParts.add('📅 ${result.minYear ?? "..."}-${result.maxYear ?? "..."}');
