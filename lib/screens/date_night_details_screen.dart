@@ -11,6 +11,7 @@ import '../widgets/common_widgets.dart';
 import '../widgets/optimized_widgets.dart';
 import '../widgets/date_night_widgets.dart';
 import 'recipe_details_screen.dart';
+import 'movie_details_screen.dart';
 
 class DateNightDetailsScreen extends StatefulWidget {
   final DateNightCombo combo;
@@ -252,28 +253,60 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                       children: [
                         // Poster em mobile (layout vertical)
                         Center(
-                          child: Container(
-                            width: 150,
-                            height: 225,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              gradient: _romanticGradient.scale(0.5),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: _currentCombo.moviePosterPath.isNotEmpty
-                                  ? OptimizedNetworkImage(
-                                      imageUrl: 'https://image.tmdb.org/t/p/w500${_currentCombo.moviePosterPath}',
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Container(
-                                      color: AppColors.surfaceDark,
-                                      child: Icon(
-                                        Icons.movie,
-                                        size: 48,
-                                        color: AppColors.textMuted,
+                          child: InkWell(
+                            onTap: _navigateToMovieDetails,
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              width: 150,
+                              height: 225,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                gradient: _romanticGradient.scale(0.5),
+                              ),
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: _currentCombo.moviePosterPath.isNotEmpty
+                                        ? OptimizedNetworkImage(
+                                            imageUrl: 'https://image.tmdb.org/t/p/w500${_currentCombo.moviePosterPath}',
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Container(
+                                            color: AppColors.surfaceDark,
+                                            child: Icon(
+                                              Icons.movie,
+                                              size: 48,
+                                              color: AppColors.textMuted,
+                                            ),
+                                          ),
+                                  ),
+                                  // Ícone de informação no canto
+                                  Positioned(
+                                    bottom: 8,
+                                    right: 8,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        color: _primaryRose,
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(alpha: 0.3),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Icon(
+                                        Icons.info_outline,
+                                        color: Colors.white,
+                                        size: 18,
                                       ),
                                     ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -390,28 +423,60 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Poster para tablet/desktop
-                        Container(
-                          width: 150,
-                          height: 225,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            gradient: _romanticGradient.scale(0.5),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: _currentCombo.moviePosterPath.isNotEmpty
-                                ? OptimizedNetworkImage(
-                                    imageUrl: 'https://image.tmdb.org/t/p/w500${_currentCombo.moviePosterPath}',
-                                    fit: BoxFit.cover,
-                                  )
-                                : Container(
-                                    color: AppColors.surfaceDark,
-                                    child: Icon(
-                                      Icons.movie,
-                                      size: 48,
-                                      color: AppColors.textMuted,
+                        InkWell(
+                          onTap: _navigateToMovieDetails,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            width: 150,
+                            height: 225,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: _romanticGradient.scale(0.5),
+                            ),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: _currentCombo.moviePosterPath.isNotEmpty
+                                      ? OptimizedNetworkImage(
+                                          imageUrl: 'https://image.tmdb.org/t/p/w500${_currentCombo.moviePosterPath}',
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Container(
+                                          color: AppColors.surfaceDark,
+                                          child: Icon(
+                                            Icons.movie,
+                                            size: 48,
+                                            color: AppColors.textMuted,
+                                          ),
+                                        ),
+                                ),
+                                // Ícone de informação no canto
+                                Positioned(
+                                  bottom: 8,
+                                  right: 8,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: _primaryRose,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.3),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Icon(
+                                      Icons.info_outline,
+                                      color: Colors.white,
+                                      size: 18,
                                     ),
                                   ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         
@@ -1238,6 +1303,45 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('❌ Erro ao compartilhar: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  // Navegar para detalhes do filme
+  Future<void> _navigateToMovieDetails() async {
+    try {
+      // Criar objeto Movie a partir dos dados do combo
+      final movie = Movie(
+        id: _currentCombo.movieId,
+        title: _currentCombo.movieTitle,
+        overview: _currentCombo.movieOverview,
+        posterPath: _currentCombo.moviePosterPath,
+        backdropPath: _currentCombo.movieBackdropPath,
+        voteAverage: _currentCombo.movieRating,
+        voteCount: 0,
+        releaseDate: _currentCombo.movieReleaseDate,
+        genreIds: [],
+        genres: _currentCombo.movieGenres.map((name) => Genre(id: 0, name: name)).toList(),
+        runtime: int.tryParse(_currentCombo.movieRuntime.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0,
+        originalLanguage: _currentCombo.movieOriginalLanguage,
+        productionCompanies: _currentCombo.movieProductionCompanies,
+      );
+
+      // Navegar para a tela de detalhes do filme
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => MovieDetailsScreen(movie: movie),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ Erro ao abrir detalhes: $e'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
