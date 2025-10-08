@@ -3,7 +3,6 @@ import '../models/recipe.dart';
 import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
-import '../widgets/optimized_widgets.dart';
 import '../widgets/date_night_widgets.dart';
 
 class RecipeDetailsScreen extends StatelessWidget {
@@ -43,7 +42,7 @@ class RecipeDetailsScreen extends StatelessWidget {
 
   Widget _buildAppBar(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 300,
+      expandedHeight: 100,
       floating: false,
       pinned: true,
       backgroundColor: Colors.transparent,
@@ -54,7 +53,7 @@ class RecipeDetailsScreen extends StatelessWidget {
       flexibleSpace: FlexibleSpaceBar(
         title: SafeText(
           recipe.title,
-          style: AppTextStyles.headlineSmall.copyWith(
+          style: AppTextStyles.bodyLarge.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             shadows: [
@@ -65,29 +64,20 @@ class RecipeDetailsScreen extends StatelessWidget {
               ),
             ],
           ),
-          maxLines: 2,
+          maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            OptimizedNetworkImage(
-              imageUrl: recipe.image,
-              fit: BoxFit.cover,
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primary,
+                AppColors.primaryDark,
+              ],
             ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.7),
-                  ],
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -202,16 +192,6 @@ class RecipeDetailsScreen extends StatelessWidget {
             '${recipe.servings} porções',
             'Serve',
           ),
-          Container(
-            width: 1,
-            height: 40,
-            color: AppColors.textSecondary.withValues(alpha: 0.3),
-          ),
-          _buildInfoItem(
-            Icons.attach_money,
-            recipe.formattedPrice,
-            'Custo',
-          ),
         ],
       ),
     );
@@ -279,33 +259,44 @@ class RecipeDetailsScreen extends StatelessWidget {
         .replaceAll('&nbsp;', ' ')
         .trim();
 
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.description, color: _primaryRose, size: 24),
-              const SizedBox(width: 12),
-              SafeText(
-                'Sobre o Prato',
-                style: AppTextStyles.headlineSmall.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          SafeText(
-            cleanSummary,
-            maxLines: null,
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
-              height: 1.5,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surfaceDark,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _primaryRose.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Theme(
+        data: ThemeData(
+          dividerColor: Colors.transparent,
+          splashColor: _primaryRose.withValues(alpha: 0.1),
+        ),
+        child: ExpansionTile(
+          initiallyExpanded: false,
+          tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          childrenPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          leading: Icon(Icons.description, color: _primaryRose, size: 24),
+          title: SafeText(
+            'Sobre o Prato',
+            style: AppTextStyles.headlineSmall.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
             ),
           ),
-        ],
+          iconColor: _primaryRose,
+          collapsedIconColor: AppColors.textSecondary,
+          children: [
+            Text(
+              cleanSummary,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -415,7 +406,7 @@ class RecipeDetailsScreen extends StatelessWidget {
           splashColor: _primaryRose.withValues(alpha: 0.1),
         ),
         child: ExpansionTile(
-          initiallyExpanded: true,
+          initiallyExpanded: false,
           tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           childrenPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           leading: Icon(Icons.shopping_basket, color: _primaryRose, size: 24),
@@ -438,36 +429,15 @@ class RecipeDetailsScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  if (ingredient.imageUrl.isNotEmpty)
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.white,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          ingredient.imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(Icons.fastfood,
-                                color: _primaryRose, size: 24);
-                          },
-                        ),
-                      ),
-                    )
-                  else
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: _primaryRose.withValues(alpha: 0.2),
-                      ),
-                      child: Icon(Icons.fastfood, color: _primaryRose, size: 24),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: _primaryRose.withValues(alpha: 0.2),
                     ),
+                    child: Icon(Icons.fastfood, color: _primaryRose, size: 24),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: SafeText(
@@ -542,7 +512,7 @@ class RecipeDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: SafeText(
+                    child: Text(
                       step.step,
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: AppColors.textPrimary,

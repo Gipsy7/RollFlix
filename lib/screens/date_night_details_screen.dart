@@ -1,7 +1,10 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../models/date_night_combo.dart';
-import '../services/recipe_service.dart';
+import '../models/movie.dart';
+import '../services/recipe_service_firebase.dart';
+import '../services/movie_service.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/optimized_widgets.dart';
@@ -22,6 +25,9 @@ class DateNightDetailsScreen extends StatefulWidget {
 
 class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with TickerProviderStateMixin {
   late TabController _tabController;
+  late DateNightCombo _currentCombo;
+  bool _isLoadingMovie = false;
+  bool _isLoadingMeal = false;
 
   // Cores do tema romântico
   static const Color _primaryRose = Color(0xFFE91E63);
@@ -42,6 +48,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _currentCombo = widget.combo;
   }
 
   @override
@@ -114,7 +121,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                   ),
                   const SizedBox(height: 16),
                   SafeText(
-                    widget.combo.theme,
+                    _currentCombo.theme,
                     style: AppTextStyles.bodyLarge.copyWith(
                       color: Colors.white.withValues(alpha: 0.9),
                       fontStyle: FontStyle.italic,
@@ -205,6 +212,32 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
           AppCard(
             child: Column(
               children: [
+                // Título com botão de trocar
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SafeText(
+                      '🎬 Filme Selecionado',
+                      style: AppTextStyles.headlineSmall.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    _isLoadingMovie
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : IconButton(
+                            icon: Icon(Icons.refresh, color: _primaryRose),
+                            onPressed: _changeMovie,
+                            tooltip: 'Trocar filme',
+                          ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                
                 // Poster e informações básicas
                 isMobile 
                   ? Column(
@@ -220,9 +253,9 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(12),
-                              child: widget.combo.moviePosterPath.isNotEmpty
+                              child: _currentCombo.moviePosterPath.isNotEmpty
                                   ? OptimizedNetworkImage(
-                                      imageUrl: 'https://image.tmdb.org/t/p/w500${widget.combo.moviePosterPath}',
+                                      imageUrl: 'https://image.tmdb.org/t/p/w500${_currentCombo.moviePosterPath}',
                                       fit: BoxFit.cover,
                                     )
                                   : Container(
@@ -244,7 +277,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SafeText(
-                              widget.combo.movieTitle,
+                              _currentCombo.movieTitle,
                               style: AppTextStyles.headlineSmall.copyWith(
                                 color: AppColors.textPrimary,
                                 fontWeight: FontWeight.bold,
@@ -256,7 +289,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                             ),
                             const SizedBox(height: 12),
                             SafeText(
-                              'Ano: ${widget.combo.movieYear}',
+                              'Ano: ${_currentCombo.movieYear}',
                               style: AppTextStyles.bodyMedium.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -272,7 +305,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                                 ),
                                 const SizedBox(width: 4),
                                 SafeText(
-                                  '${widget.combo.movieRating.toStringAsFixed(1)}/10',
+                                  '${_currentCombo.movieRating.toStringAsFixed(1)}/10',
                                   style: AppTextStyles.bodyLarge.copyWith(
                                     color: AppColors.textPrimary,
                                     fontWeight: FontWeight.w600,
@@ -312,13 +345,13 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                             ),
                             
                             // Gêneros em mobile
-                            if (widget.combo.movieGenres.isNotEmpty) ...[
+                            if (_currentCombo.movieGenres.isNotEmpty) ...[
                               const SizedBox(height: 16),
                               Wrap(
                                 spacing: 8,
                                 runSpacing: 8,
                                 alignment: WrapAlignment.center,
-                                children: widget.combo.movieGenres.map((genre) {
+                                children: _currentCombo.movieGenres.map((genre) {
                                   return Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 12,
@@ -358,9 +391,9 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: widget.combo.moviePosterPath.isNotEmpty
+                            child: _currentCombo.moviePosterPath.isNotEmpty
                                 ? OptimizedNetworkImage(
-                                    imageUrl: 'https://image.tmdb.org/t/p/w500${widget.combo.moviePosterPath}',
+                                    imageUrl: 'https://image.tmdb.org/t/p/w500${_currentCombo.moviePosterPath}',
                                     fit: BoxFit.cover,
                                   )
                                 : Container(
@@ -382,7 +415,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SafeText(
-                                widget.combo.movieTitle,
+                                _currentCombo.movieTitle,
                                 style: AppTextStyles.headlineSmall.copyWith(
                                   color: AppColors.textPrimary,
                                   fontWeight: FontWeight.bold,
@@ -392,26 +425,26 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                               ),
                               const SizedBox(height: 8),
                               SafeText(
-                                'Ano: ${widget.combo.movieYear}',
+                                'Ano: ${_currentCombo.movieYear}',
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   color: AppColors.textSecondary,
                                 ),
                               ),
-                              if (widget.combo.movieReleaseDate.isNotEmpty && widget.combo.movieReleaseDate != 'Data não disponível')
+                              if (_currentCombo.movieReleaseDate.isNotEmpty && _currentCombo.movieReleaseDate != 'Data não disponível')
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: SafeText(
-                                    'Lançamento: ${widget.combo.movieReleaseDate}',
+                                    'Lançamento: ${_currentCombo.movieReleaseDate}',
                                     style: AppTextStyles.bodySmall.copyWith(
                                       color: AppColors.textSecondary,
                                     ),
                                   ),
                                 ),
-                              if (widget.combo.movieRuntime.isNotEmpty && widget.combo.movieRuntime != 'Duração não disponível')
+                              if (_currentCombo.movieRuntime.isNotEmpty && _currentCombo.movieRuntime != 'Duração não disponível')
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: SafeText(
-                                    'Duração: ${widget.combo.movieRuntime}',
+                                    'Duração: ${_currentCombo.movieRuntime}',
                                     style: AppTextStyles.bodySmall.copyWith(
                                       color: AppColors.textSecondary,
                                     ),
@@ -427,7 +460,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                                   ),
                                   const SizedBox(width: 4),
                                   SafeText(
-                                    '${widget.combo.movieRating.toStringAsFixed(1)}/10',
+                                    '${_currentCombo.movieRating.toStringAsFixed(1)}/10',
                                     style: AppTextStyles.bodyLarge.copyWith(
                                       color: AppColors.textPrimary,
                                       fontWeight: FontWeight.w600,
@@ -466,12 +499,12 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                               ),
                               
                               // Gêneros em desktop
-                              if (widget.combo.movieGenres.isNotEmpty) ...[
+                              if (_currentCombo.movieGenres.isNotEmpty) ...[
                                 const SizedBox(height: 16),
                                 Wrap(
                                   spacing: 8,
                                   runSpacing: 8,
-                                  children: widget.combo.movieGenres.map((genre) {
+                                  children: _currentCombo.movieGenres.map((genre) {
                                     return Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12,
@@ -515,8 +548,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                     ),
                     const SizedBox(height: 8),
                     SafeText(
-                      widget.combo.movieOverview.isNotEmpty 
-                          ? widget.combo.movieOverview
+                      _currentCombo.movieOverview.isNotEmpty 
+                          ? _currentCombo.movieOverview
                           : 'Uma história romântica emocionante que vai tornar sua noite ainda mais especial.',
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
@@ -529,8 +562,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                 ),
                 
                 // Informações Técnicas
-                if (widget.combo.movieProductionCompanies.isNotEmpty || 
-                    widget.combo.movieOriginalLanguage.isNotEmpty) ...[
+                if (_currentCombo.movieProductionCompanies.isNotEmpty || 
+                    _currentCombo.movieOriginalLanguage.isNotEmpty) ...[
                   const SizedBox(height: 24),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -544,7 +577,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                       ),
                       const SizedBox(height: 16),
                       
-                      if (widget.combo.movieOriginalLanguage.isNotEmpty)
+                      if (_currentCombo.movieOriginalLanguage.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: Row(
@@ -564,7 +597,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                               ),
                               Expanded(
                                 child: SafeText(
-                                  widget.combo.movieOriginalLanguage.toUpperCase(),
+                                  _currentCombo.movieOriginalLanguage.toUpperCase(),
                                   style: AppTextStyles.bodyMedium.copyWith(
                                     color: AppColors.textPrimary,
                                     fontWeight: FontWeight.w600,
@@ -575,7 +608,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                           ),
                         ),
                         
-                      if (widget.combo.movieProductionCompanies.isNotEmpty) ...[
+                      if (_currentCombo.movieProductionCompanies.isNotEmpty) ...[
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -594,7 +627,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                             ),
                             Expanded(
                               child: SafeText(
-                                widget.combo.movieProductionCompanies.take(3).join(', '),
+                                _currentCombo.movieProductionCompanies.take(3).join(', '),
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   color: AppColors.textPrimary,
                                   fontWeight: FontWeight.w600,
@@ -611,7 +644,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                 ],
                 
                 // Onde Assistir
-                if (widget.combo.movieWatchProviders.isNotEmpty) ...[
+                if (_currentCombo.movieWatchProviders.isNotEmpty) ...[
                   const SizedBox(height: 24),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -668,12 +701,38 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       padding: EdgeInsets.all(isMobile ? 16 : 24),
       child: Column(
         children: [
+          // Título com botão de trocar
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SafeText(
+                '🍽️ Menu Selecionado',
+                style: AppTextStyles.headlineSmall.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              _isLoadingMeal
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : IconButton(
+                      icon: Icon(Icons.refresh, color: _primaryRose),
+                      onPressed: _changeMeal,
+                      tooltip: 'Trocar refeição',
+                    ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
           // Prato Principal
           _buildRecipeCard(
             title: 'Prato Principal',
-            recipeName: widget.combo.mainDish,
+            recipeName: _currentCombo.mainDish,
             icon: Icons.restaurant_menu,
-            recipeId: widget.combo.mainCourseRecipeId,
+            recipeId: _currentCombo.mainCourseRecipeId,
             showDetails: true,
             isMobile: isMobile,
           ),
@@ -683,34 +742,34 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
           // Sobremesa
           _buildRecipeCard(
             title: 'Sobremesa',
-            recipeName: widget.combo.dessert,
+            recipeName: _currentCombo.dessert,
             icon: Icons.cake,
-            recipeId: widget.combo.dessertRecipeId,
+            recipeId: _currentCombo.dessertRecipeId,
             isMobile: isMobile,
           ),
           
           const SizedBox(height: 16),
           
           // Petiscos e Acompanhamentos
-          if (widget.combo.snacks.isNotEmpty) ...[
-            if (widget.combo.appetizerRecipeId != null)
+          if (_currentCombo.snacks.isNotEmpty) ...[
+            if (_currentCombo.appetizerRecipeId != null)
               _buildRecipeCard(
                 title: 'Petisco',
-                recipeName: widget.combo.snacks.isNotEmpty ? widget.combo.snacks[0] : 'Petisco',
+                recipeName: _currentCombo.snacks.isNotEmpty ? _currentCombo.snacks[0] : 'Petisco',
                 icon: Icons.emoji_food_beverage,
-                recipeId: widget.combo.appetizerRecipeId,
+                recipeId: _currentCombo.appetizerRecipeId,
                 isMobile: isMobile,
               ),
             
-            if (widget.combo.appetizerRecipeId != null && widget.combo.sideDishRecipeId != null)
+            if (_currentCombo.appetizerRecipeId != null && _currentCombo.sideDishRecipeId != null)
               const SizedBox(height: 16),
             
-            if (widget.combo.sideDishRecipeId != null)
+            if (_currentCombo.sideDishRecipeId != null)
               _buildRecipeCard(
                 title: 'Acompanhamento',
-                recipeName: widget.combo.snacks.length > 1 ? widget.combo.snacks[1] : 'Acompanhamento',
+                recipeName: _currentCombo.snacks.length > 1 ? _currentCombo.snacks[1] : 'Acompanhamento',
                 icon: Icons.restaurant,
-                recipeId: widget.combo.sideDishRecipeId,
+                recipeId: _currentCombo.sideDishRecipeId,
                 isMobile: isMobile,
               ),
             
@@ -737,7 +796,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                 ),
                 const SizedBox(height: 12),
                 SafeText(
-                  widget.combo.drink,
+                  _currentCombo.drink,
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -768,7 +827,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                 ),
                 const SizedBox(height: 12),
                 SafeText(
-                  widget.combo.cookingTips,
+                  _currentCombo.cookingTips,
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondary,
                     height: 1.4,
@@ -777,6 +836,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
               ],
             ),
           ),
+          
         ],
       ),
     );
@@ -847,9 +907,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
             ),
             if (showDetails) ...[
               const SizedBox(height: 12),
-              _buildInfoRow(Icons.access_time, 'Tempo', widget.combo.preparationTime),
-              _buildInfoRow(Icons.star, 'Dificuldade', widget.combo.difficulty),
-              _buildInfoRow(Icons.attach_money, 'Custo', widget.combo.estimatedCost),
+              _buildInfoRow(Icons.access_time, 'Tempo', _currentCombo.preparationTime),
+              _buildInfoRow(Icons.star, 'Dificuldade', _currentCombo.difficulty),
             ],
           ],
         ),
@@ -869,8 +928,22 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
         ),
       );
 
-      // Buscar detalhes completos da receita
-      final recipe = await RecipeService.getRecipeDetails(recipeId);
+      // Mapear tipo de receita para API
+      final recipeTypeMap = {
+        'Prato Principal': 'main course',
+        'Sobremesa': 'dessert',
+        'Petisco': 'appetizer',
+        'Acompanhamento': 'side dish',
+      };
+      
+      final apiRecipeType = recipeTypeMap[recipeType] ?? 'main course';
+
+      // Buscar detalhes completos da receita com retry automático
+      final recipe = await RecipeServiceFirebase.getRecipeDetailsWithRetry(
+        recipeId: recipeId,
+        recipeType: apiRecipeType,
+        maxRetries: 3,
+      );
 
       if (!mounted) return;
       
@@ -894,8 +967,185 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erro ao carregar receita: $e'),
+          content: Text('Não foi possível carregar a receita. Tente novamente.'),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
+  }
+
+  // Trocar filme por outro aleatório
+  Future<void> _changeMovie() async {
+    setState(() => _isLoadingMovie = true);
+    
+    try {
+      // Buscar filmes do gênero Romance
+      final movies = await MovieService.getMoviesByGenre('Romance');
+      
+      if (movies.isEmpty) {
+        throw Exception('Nenhum filme encontrado');
+      }
+      
+      // Selecionar um filme aleatório diferente do atual
+      Movie? newMovie;
+      final random = Random();
+      
+      // Tentar encontrar um filme diferente do atual
+      for (int i = 0; i < 10 && newMovie == null; i++) {
+        final candidate = movies[random.nextInt(movies.length)];
+        if (candidate.id != _currentCombo.movieId) {
+          newMovie = candidate;
+        }
+      }
+      
+      // Se não encontrou um diferente, usar qualquer um
+      newMovie ??= movies[random.nextInt(movies.length)];
+      
+      // Buscar detalhes completos do filme
+      final movieDetails = await MovieService.getMovieDetails(newMovie.id);
+      
+      // Atualizar combo com novo filme mantendo os dados da refeição
+      _currentCombo = DateNightCombo(
+        // Dados do novo filme
+        movieId: movieDetails.id,
+        movieTitle: movieDetails.title,
+        movieYear: movieDetails.releaseDate.isNotEmpty 
+            ? movieDetails.releaseDate.split('-')[0] 
+            : 'N/A',
+        moviePosterPath: movieDetails.posterPath,
+        movieBackdropPath: movieDetails.backdropPath,
+        movieRating: movieDetails.voteAverage,
+        movieOverview: movieDetails.overview,
+        movieGenres: movieDetails.genres.map((g) => g.name).toList(),
+        movieRuntime: movieDetails.runtime > 0 ? '${movieDetails.runtime} min' : 'N/A',
+        movieReleaseDate: movieDetails.releaseDate,
+        movieOriginalLanguage: movieDetails.originalLanguage,
+        movieProductionCompanies: movieDetails.productionCompanies,
+        movieWatchProviders: [],
+        
+        // Manter dados da refeição atual
+        mainDish: _currentCombo.mainDish,
+        drink: _currentCombo.drink,
+        dessert: _currentCombo.dessert,
+        snacks: _currentCombo.snacks,
+        atmosphere: _currentCombo.atmosphere,
+        preparationTime: _currentCombo.preparationTime,
+        difficulty: _currentCombo.difficulty,
+        ingredients: _currentCombo.ingredients,
+        cookingTips: _currentCombo.cookingTips,
+        theme: _currentCombo.theme,
+        playlistSuggestions: _currentCombo.playlistSuggestions,
+        ambientLighting: _currentCombo.ambientLighting,
+        estimatedCost: _currentCombo.estimatedCost,
+        mainCourseRecipeId: _currentCombo.mainCourseRecipeId,
+        dessertRecipeId: _currentCombo.dessertRecipeId,
+        appetizerRecipeId: _currentCombo.appetizerRecipeId,
+        sideDishRecipeId: _currentCombo.sideDishRecipeId,
+      );
+      
+      setState(() => _isLoadingMovie = false);
+      
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ Novo filme selecionado!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      setState(() => _isLoadingMovie = false);
+      
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ Erro ao trocar filme: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  // Trocar refeição por outra aleatória
+  Future<void> _changeMeal() async {
+    setState(() => _isLoadingMeal = true);
+    
+    try {
+      // Gerar novo menu do Firebase
+      final menu = await RecipeServiceFirebase.generateDateNightMenu();
+      
+      if (menu['mainCourse'] == null || menu['dessert'] == null) {
+        throw Exception('Menu não foi gerado corretamente');
+      }
+      
+      final mainCourse = menu['mainCourse']!;
+      final dessert = menu['dessert']!;
+      
+      // Atualizar combo com nova refeição mantendo os dados do filme
+      _currentCombo = DateNightCombo(
+        // Manter dados do filme atual
+        movieId: _currentCombo.movieId,
+        movieTitle: _currentCombo.movieTitle,
+        movieYear: _currentCombo.movieYear,
+        moviePosterPath: _currentCombo.moviePosterPath,
+        movieBackdropPath: _currentCombo.movieBackdropPath,
+        movieRating: _currentCombo.movieRating,
+        movieOverview: _currentCombo.movieOverview,
+        movieGenres: _currentCombo.movieGenres,
+        movieRuntime: _currentCombo.movieRuntime,
+        movieReleaseDate: _currentCombo.movieReleaseDate,
+        movieOriginalLanguage: _currentCombo.movieOriginalLanguage,
+        movieProductionCompanies: _currentCombo.movieProductionCompanies,
+        movieWatchProviders: _currentCombo.movieWatchProviders,
+        
+        // Dados da nova refeição
+        mainDish: mainCourse.title,
+        drink: 'Vinho ou Suco',
+        dessert: dessert.title,
+        snacks: ['Petiscos variados'],
+        atmosphere: 'Ambiente acolhedor',
+        preparationTime: '${mainCourse.readyInMinutes} min',
+        difficulty: mainCourse.vegetarian == true ? 'Fácil' : 'Médio',
+        ingredients: mainCourse.extendedIngredients
+            ?.map((i) => i.original)
+            .take(8)
+            .toList() ?? ['Ingredientes variados'],
+        cookingTips: 'Siga as instruções da receita',
+        theme: 'Noite romântica',
+        playlistSuggestions: ['Jazz', 'Bossa Nova', 'Música Romântica'],
+        ambientLighting: 'Luzes suaves',
+        estimatedCost: 'R\$ 80-120',
+        mainCourseRecipeId: mainCourse.id,
+        dessertRecipeId: dessert.id,
+        appetizerRecipeId: menu['appetizer']?.id,
+        sideDishRecipeId: menu['sideDish']?.id,
+      );
+      
+      setState(() => _isLoadingMeal = false);
+      
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ Novo menu selecionado!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      setState(() => _isLoadingMeal = false);
+      
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ Erro ao trocar menu: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -920,7 +1170,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
               final categorizedIngredients = snapshot.data ?? {};
               
               return IngredientsChecklistWidget(
-                ingredients: widget.combo.ingredients,
+                ingredients: _currentCombo.ingredients,
                 mainCourseIngredients: categorizedIngredients['mainCourse'],
                 dessertIngredients: categorizedIngredients['dessert'],
                 appetizerIngredients: categorizedIngredients['appetizer'],
@@ -930,44 +1180,6 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
           ),
 
           const SizedBox(height: 24),
-          // Custo estimado
-          AppCard(
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: _secondaryGold.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.attach_money,
-                    color: _secondaryGold,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SafeText(
-                      'Custo Estimado Total',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    SafeText(
-                      widget.combo.estimatedCost,
-                      style: AppTextStyles.headlineSmall.copyWith(
-                        color: _secondaryGold,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
           
           const SizedBox(height: 16),
           
@@ -1038,13 +1250,13 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
   }
 
   Widget _buildWatchProvidersSection() {
-    final streamingProviders = widget.combo.movieWatchProviders
+    final streamingProviders = _currentCombo.movieWatchProviders
         .where((p) => p['type'] == 'streaming')
         .toList();
-    final rentProviders = widget.combo.movieWatchProviders
+    final rentProviders = _currentCombo.movieWatchProviders
         .where((p) => p['type'] == 'rent')
         .toList();
-    final buyProviders = widget.combo.movieWatchProviders
+    final buyProviders = _currentCombo.movieWatchProviders
         .where((p) => p['type'] == 'buy')
         .toList();
 
@@ -1176,7 +1388,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: SafeText(
-          'Abrindo ${provider['name']} para assistir ${widget.combo.movieTitle}',
+          'Abrindo ${provider['name']} para assistir ${_currentCombo.movieTitle}',
           style: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white,
           ),
@@ -1192,32 +1404,32 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
 
     try {
       // Buscar ingredientes do prato principal
-      if (widget.combo.mainCourseRecipeId != null) {
-        final recipe = await RecipeService.getRecipeDetails(widget.combo.mainCourseRecipeId!);
+      if (_currentCombo.mainCourseRecipeId != null) {
+        final recipe = await RecipeServiceFirebase.getRecipeDetails(_currentCombo.mainCourseRecipeId!);
         if (recipe.extendedIngredients != null && recipe.extendedIngredients!.isNotEmpty) {
           categorized['mainCourse'] = recipe.extendedIngredients!.map((i) => i.original).toList();
         }
       }
 
       // Buscar ingredientes da sobremesa
-      if (widget.combo.dessertRecipeId != null) {
-        final recipe = await RecipeService.getRecipeDetails(widget.combo.dessertRecipeId!);
+      if (_currentCombo.dessertRecipeId != null) {
+        final recipe = await RecipeServiceFirebase.getRecipeDetails(_currentCombo.dessertRecipeId!);
         if (recipe.extendedIngredients != null && recipe.extendedIngredients!.isNotEmpty) {
           categorized['dessert'] = recipe.extendedIngredients!.map((i) => i.original).toList();
         }
       }
 
       // Buscar ingredientes do petisco
-      if (widget.combo.appetizerRecipeId != null) {
-        final recipe = await RecipeService.getRecipeDetails(widget.combo.appetizerRecipeId!);
+      if (_currentCombo.appetizerRecipeId != null) {
+        final recipe = await RecipeServiceFirebase.getRecipeDetails(_currentCombo.appetizerRecipeId!);
         if (recipe.extendedIngredients != null && recipe.extendedIngredients!.isNotEmpty) {
           categorized['appetizer'] = recipe.extendedIngredients!.map((i) => i.original).toList();
         }
       }
 
       // Buscar ingredientes do acompanhamento
-      if (widget.combo.sideDishRecipeId != null) {
-        final recipe = await RecipeService.getRecipeDetails(widget.combo.sideDishRecipeId!);
+      if (_currentCombo.sideDishRecipeId != null) {
+        final recipe = await RecipeServiceFirebase.getRecipeDetails(_currentCombo.sideDishRecipeId!);
         if (recipe.extendedIngredients != null && recipe.extendedIngredients!.isNotEmpty) {
           categorized['sideDish'] = recipe.extendedIngredients!.map((i) => i.original).toList();
         }

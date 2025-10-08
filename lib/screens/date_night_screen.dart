@@ -6,7 +6,7 @@ import '../models/date_night_preferences.dart';
 import '../models/watch_providers.dart';
 import '../models/recipe.dart';
 import '../services/movie_service.dart';
-import '../services/recipe_service.dart';
+import '../services/recipe_service_firebase.dart';
 import '../services/preferences_service.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
@@ -123,13 +123,18 @@ class _DateNightScreenState extends State<DateNightScreen> {
         Map<String, Recipe>? recipeMenu;
         
         try {
-          final cuisine = RecipeService.getDateTypeCuisine(_selectedDateType!);
-          final diet = RecipeService.getDietFromRestriction(_preferences.dietaryRestriction.toString());
+          final cuisine = RecipeServiceFirebase.getDateTypeCuisine(_selectedDateType!);
+          final diet = RecipeServiceFirebase.getDietFromRestriction(_preferences.dietaryRestriction.toString());
+          
+          print('🍽️ Preferências aplicadas:');
+          print('  - Restrição Dietética: ${_preferences.dietaryRestriction}');
+          print('  - Diet para API: $diet');
+          print('  - Culinária: $cuisine');
           
           final results = await Future.wait([
             MovieService.getMovieDetails(randomMovie.id),
             MovieService.getWatchProviders(randomMovie.id),
-            RecipeService.generateDateNightMenu(
+            RecipeServiceFirebase.generateDateNightMenu(
               cuisine: cuisine,
               diet: diet,
               dateType: _selectedDateType, // Passa o tipo para fallback apropriado
@@ -194,6 +199,13 @@ class _DateNightScreenState extends State<DateNightScreen> {
           final dessert = recipeMenu['dessert'];
           final appetizer = recipeMenu['appetizer'];
           final sideDish = recipeMenu['sideDish'];
+          
+          // Log para verificar se os IDs estão corretos
+          print('📋 Verificando receitas do combo:');
+          print('  - Main Course: ${mainCourse?.title} (ID: ${mainCourse?.id})');
+          print('  - Dessert: ${dessert?.title} (ID: ${dessert?.id})');
+          print('  - Appetizer: ${appetizer?.title} (ID: ${appetizer?.id})');
+          print('  - Side Dish: ${sideDish?.title} (ID: ${sideDish?.id})');
           
           // Criar novo combo com IDs das receitas
           final updatedCombo = DateNightCombo(

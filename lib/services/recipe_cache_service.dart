@@ -8,23 +8,79 @@ class RecipeCacheService {
   static final Map<String, List<Recipe>> _searchCache = {};
   static final Map<String, Map<String, Recipe>> _menuCache = {};
   
+  // Rastreamento de uso para LRU (Least Recently Used)
+  static final Map<String, DateTime> _lastAccessTime = {};
+  static final Set<int> _invalidRecipeIds = {}; // IDs que retornaram 404
+  static bool _isInitialized = false;
+  
   // Tempo de expiração do cache (24 horas)
   static const Duration _cacheExpiration = Duration(hours: 24);
+  
+  // Limites de cache
+  static const int _maxMemoryCacheSize = 100; // Máximo de receitas em memória
+  static const int _maxSearchCacheSize = 20; // Máximo de buscas em cache
   
   // Chaves para SharedPreferences
   static const String _recipeCacheKey = 'recipe_cache_';
   static const String _searchCacheKey = 'search_cache_';
   static const String _menuCacheKey = 'menu_cache_';
   static const String _timestampSuffix = '_timestamp';
+  static const String _accessTimeSuffix = '_access';
+  static const String _invalidIdsKey = 'invalid_recipe_ids';
+
+  // ========== INICIALIZAÇÃO ==========
+
+  /// Inicializar o serviço de cache (chamar no início do app)
+  static Future<void> initialize() async {
+    if (_isInitialized) return;
+    
+    try {
+      print('🔧 Inicializando RecipeCacheService...');
+      
+      // Carregar IDs inválidos de forma assíncrona
+      _loadInvalidIds().then((_) {
+        print('  ✓ IDs inválidos carregados: ${_invalidRecipeIds.length}');
+      });
+      
+      // Executar limpeza em background
+      Future.delayed(Duration(seconds: 2), () {
+        smartCleanup();
+      });
+      
+      _isInitialized = true;
+      print('✅ RecipeCacheService inicializado');
+    } catch (e) {
+      print('❌ Erro ao inicializar RecipeCacheService: $e');
+    }
+  }
 
   // ========== CACHE DE RECEITA INDIVIDUAL ==========
 
   /// Salvar receita no cache (memória + persistente)
   static Future<void> cacheRecipe(Recipe recipe) async {
-    // Cache em memória
-    _memoryCache[recipe.id.toString()] = recipe;
-    
-    // Cache persistente
+    try {
+      final key = recipe.id.toString();
+      
+      // Cache em memória
+      _memoryCache[key] = recipe;
+      
+      // Atualizar tempo de acesso (apenas em memória para performance)
+      _lastAccessTime[key] = DateTime.now();
+      
+      // Limpar cache se exceder limite SIGNIFICATIVAMENTE (evita chamadas frequentes)
+      if (_memoryCache.length > _maxMemoryCacheSize + 20) {
+        _cleanupMemoryCacheSync(); // Limpeza síncrona rápida
+      }
+      
+      // Cache persistente (assíncrono, não bloqueia)
+      _saveToPersistentCache(recipe);
+    } catch (e) {
+      print('❌ Erro ao salvar receita no cache: $e');
+    }
+  }
+
+  /// Salvar no cache persistente (método privado async)
+  static Future<void> _saveToPersistentCache(Recipe recipe) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final key = '$_recipeCacheKey${recipe.id}';
@@ -33,21 +89,51 @@ class RecipeCacheService {
       await prefs.setString(key, jsonEncode(recipe.toJson()));
       await prefs.setInt(timestampKey, DateTime.now().millisecondsSinceEpoch);
     } catch (e) {
-      print('Erro ao salvar receita no cache: $e');
+      print('⚠ Erro ao salvar no cache persistente: $e');
+    }
+  }
+
+  /// Limpeza síncrona rápida do cache em memória
+  static void _cleanupMemoryCacheSync() {
+    if (_memoryCache.length <= _maxMemoryCacheSize) return;
+    
+    try {
+      // Ordenar por tempo de acesso
+      final sortedEntries = _lastAccessTime.entries.toList()
+        ..sort((a, b) => a.value.compareTo(b.value));
+      
+      // Remover 30% das mais antigas
+      final toRemove = (_memoryCache.length * 0.3).toInt();
+      
+      for (var i = 0; i < toRemove && i < sortedEntries.length; i++) {
+        final key = sortedEntries[i].key;
+        _memoryCache.remove(key);
+        _lastAccessTime.remove(key);
+      }
+      
+      print('🧹 Limpeza rápida: $toRemove receitas removidas');
+    } catch (e) {
+      print('⚠ Erro na limpeza rápida: $e');
     }
   }
 
   /// Buscar receita no cache
   static Future<Recipe?> getCachedRecipe(int recipeId) async {
-    final key = recipeId.toString();
-    
-    // 1. Verificar cache em memória
-    if (_memoryCache.containsKey(key)) {
-      return _memoryCache[key];
-    }
-    
-    // 2. Verificar cache persistente
     try {
+      final key = recipeId.toString();
+      
+      // 0. Verificação síncrona de IDs inválidos (muito mais rápido)
+      if (_invalidRecipeIds.contains(recipeId)) {
+        return null; // Não precisa logar toda vez
+      }
+      
+      // 1. Verificar cache em memória
+      if (_memoryCache.containsKey(key)) {
+        _lastAccessTime[key] = DateTime.now(); // Atualização síncrona
+        return _memoryCache[key];
+      }
+      
+      // 2. Verificar cache persistente
       final prefs = await SharedPreferences.getInstance();
       final cacheKey = '$_recipeCacheKey$recipeId';
       final timestampKey = '$cacheKey$_timestampSuffix';
@@ -58,9 +144,8 @@ class RecipeCacheService {
       // Verificar se o cache expirou
       final cacheTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
       if (DateTime.now().difference(cacheTime) > _cacheExpiration) {
-        // Cache expirado, remover
-        await prefs.remove(cacheKey);
-        await prefs.remove(timestampKey);
+        // Remover em background
+        _removeExpiredFromPersistent(recipeId);
         return null;
       }
       
@@ -69,13 +154,89 @@ class RecipeCacheService {
       
       final recipe = Recipe.fromJson(jsonDecode(jsonString));
       
-      // Adicionar ao cache em memória para próximas consultas
+      // Adicionar ao cache em memória
       _memoryCache[key] = recipe;
+      _lastAccessTime[key] = DateTime.now();
       
       return recipe;
     } catch (e) {
-      print('Erro ao buscar receita no cache: $e');
+      print('⚠ Erro ao buscar receita #$recipeId no cache: $e');
       return null;
+    }
+  }
+
+  /// Remover item expirado do cache persistente (background)
+  static Future<void> _removeExpiredFromPersistent(int recipeId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cacheKey = '$_recipeCacheKey$recipeId';
+      final timestampKey = '$cacheKey$_timestampSuffix';
+      final accessKey = '$cacheKey$_accessTimeSuffix';
+      
+      await prefs.remove(cacheKey);
+      await prefs.remove(timestampKey);
+      await prefs.remove(accessKey);
+    } catch (e) {
+      // Silencioso - não é crítico
+    }
+  }
+
+  /// Remover receita específica do cache
+  static Future<void> removeRecipe(int recipeId) async {
+    final key = recipeId.toString();
+    
+    // Marcar como inválida
+    _invalidRecipeIds.add(recipeId);
+    await _saveInvalidIds();
+    
+    // Remover do cache em memória
+    _memoryCache.remove(key);
+    _lastAccessTime.remove(key);
+    
+    // Remover do cache persistente
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cacheKey = '$_recipeCacheKey$recipeId';
+      final timestampKey = '$cacheKey$_timestampSuffix';
+      final accessKey = '$cacheKey$_accessTimeSuffix';
+      
+      await prefs.remove(cacheKey);
+      await prefs.remove(timestampKey);
+      await prefs.remove(accessKey);
+      
+      print('✓ Receita #$recipeId removida do cache');
+    } catch (e) {
+      print('⚠ Erro ao remover receita do cache: $e');
+    }
+  }
+
+  /// Verificar se receita é conhecida como inválida (síncrono para performance)
+  static bool isInvalidRecipe(int recipeId) {
+    return _invalidRecipeIds.contains(recipeId);
+  }
+
+  /// Salvar lista de IDs inválidos
+  static Future<void> _saveInvalidIds() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final ids = _invalidRecipeIds.toList();
+      await prefs.setString(_invalidIdsKey, jsonEncode(ids));
+    } catch (e) {
+      print('⚠ Erro ao salvar IDs inválidos: $e');
+    }
+  }
+
+  /// Carregar lista de IDs inválidos
+  static Future<void> _loadInvalidIds() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final idsJson = prefs.getString(_invalidIdsKey);
+      if (idsJson != null) {
+        final ids = List<int>.from(jsonDecode(idsJson));
+        _invalidRecipeIds.addAll(ids);
+      }
+    } catch (e) {
+      print('Erro ao carregar IDs inválidos: $e');
     }
   }
 
@@ -285,10 +446,14 @@ class RecipeCacheService {
     _memoryCache.clear();
     _searchCache.clear();
     _menuCache.clear();
+    _lastAccessTime.clear();
+    _invalidRecipeIds.clear();
   }
 
   /// Limpar todo o cache (memória + persistente)
   static Future<void> clearAllCache() async {
+    print('🧹 Limpando todo o cache...');
+    
     // Limpar memória
     clearMemoryCache();
     
@@ -296,14 +461,19 @@ class RecipeCacheService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
+      int removedCount = 0;
       
       for (var key in keys) {
         if (key.startsWith(_recipeCacheKey) ||
             key.startsWith(_searchCacheKey) ||
-            key.startsWith(_menuCacheKey)) {
+            key.startsWith(_menuCacheKey) ||
+            key == _invalidIdsKey) {
           await prefs.remove(key);
+          removedCount++;
         }
       }
+      
+      print('✅ Cache limpo: $removedCount itens removidos');
     } catch (e) {
       print('Erro ao limpar cache: $e');
     }
@@ -314,6 +484,7 @@ class RecipeCacheService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
+      int removedCount = 0;
       
       for (var key in keys) {
         if (key.endsWith(_timestampSuffix)) {
@@ -323,15 +494,126 @@ class RecipeCacheService {
             if (DateTime.now().difference(cacheTime) > _cacheExpiration) {
               // Remover cache expirado
               final baseKey = key.replaceAll(_timestampSuffix, '');
+              final accessKey = '$baseKey$_accessTimeSuffix';
               await prefs.remove(baseKey);
               await prefs.remove(key);
+              await prefs.remove(accessKey);
+              removedCount++;
             }
           }
         }
       }
+      
+      if (removedCount > 0) {
+        print('🧹 Limpeza automática: $removedCount itens expirados removidos');
+      }
     } catch (e) {
       print('Erro ao limpar cache expirado: $e');
     }
+  }
+
+  /// Limpar receitas menos usadas (LRU - Least Recently Used)
+  static Future<void> cleanLeastRecentlyUsed() async {
+    if (_memoryCache.length <= _maxMemoryCacheSize) {
+      return; // Cache dentro do limite
+    }
+    
+    try {
+      // Ordenar receitas por tempo de acesso (mais antigas primeiro)
+      final sortedEntries = _lastAccessTime.entries.toList()
+        ..sort((a, b) => a.value.compareTo(b.value));
+      
+      // Calcular quantas remover (manter apenas maxMemoryCacheSize)
+      final toRemove = _memoryCache.length - _maxMemoryCacheSize;
+      int removedCount = 0;
+      
+      for (var i = 0; i < toRemove && i < sortedEntries.length; i++) {
+        final recipeId = sortedEntries[i].key;
+        _memoryCache.remove(recipeId);
+        _lastAccessTime.remove(recipeId);
+        removedCount++;
+      }
+      
+      print('🧹 Limpeza LRU: $removedCount receitas menos usadas removidas da memória');
+    } catch (e) {
+      print('Erro ao limpar receitas menos usadas: $e');
+    }
+  }
+
+  /// Limpar cache de buscas antigas
+  static Future<void> cleanOldSearchCache() async {
+    if (_searchCache.length <= _maxSearchCacheSize) {
+      return; // Cache dentro do limite
+    }
+    
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs.getKeys();
+      final searchCaches = <String, int>{}; // key -> timestamp
+      
+      // Coletar timestamps de buscas
+      for (var key in keys) {
+        if (key.startsWith(_searchCacheKey) && key.endsWith(_timestampSuffix)) {
+          final timestamp = prefs.getInt(key);
+          if (timestamp != null) {
+            searchCaches[key] = timestamp;
+          }
+        }
+      }
+      
+      // Ordenar por timestamp (mais antigas primeiro)
+      final sortedCaches = searchCaches.entries.toList()
+        ..sort((a, b) => a.value.compareTo(b.value));
+      
+      // Remover as mais antigas até atingir o limite
+      final toRemove = searchCaches.length - _maxSearchCacheSize;
+      int removedCount = 0;
+      
+      for (var i = 0; i < toRemove && i < sortedCaches.length; i++) {
+        final timestampKey = sortedCaches[i].key;
+        final baseKey = timestampKey.replaceAll(_timestampSuffix, '');
+        await prefs.remove(baseKey);
+        await prefs.remove(timestampKey);
+        removedCount++;
+      }
+      
+      if (removedCount > 0) {
+        print('🧹 Limpeza de buscas: $removedCount buscas antigas removidas');
+      }
+    } catch (e) {
+      print('Erro ao limpar cache de buscas antigas: $e');
+    }
+  }
+
+  /// Limpeza inteligente completa
+  static Future<void> smartCleanup() async {
+    print('🧹 Iniciando limpeza inteligente do cache...');
+    
+    final startTime = DateTime.now();
+    
+    // 1. Limpar cache expirado
+    await clearExpiredCache();
+    
+    // 2. Limpar receitas menos usadas se exceder limite
+    await cleanLeastRecentlyUsed();
+    
+    // 3. Limpar buscas antigas se exceder limite
+    await cleanOldSearchCache();
+    
+    // 4. Limpar cache de memória de buscas se exceder limite
+    if (_searchCache.length > _maxSearchCacheSize) {
+      final toRemove = _searchCache.length - _maxSearchCacheSize;
+      final keys = _searchCache.keys.take(toRemove).toList();
+      for (var key in keys) {
+        _searchCache.remove(key);
+      }
+      print('🧹 Removidas $toRemove buscas da memória');
+    }
+    
+    final duration = DateTime.now().difference(startTime);
+    final stats = getCacheStats();
+    print('✅ Limpeza concluída em ${duration.inMilliseconds}ms');
+    print('📊 Cache atual: ${stats['recipes']} receitas, ${stats['searches']} buscas, ${stats['menus']} menus');
   }
 
   // ========== ESTATÍSTICAS ==========
@@ -342,7 +624,65 @@ class RecipeCacheService {
       'recipes': _memoryCache.length,
       'searches': _searchCache.length,
       'menus': _menuCache.length,
+      'invalidIds': _invalidRecipeIds.length,
     };
+  }
+
+  /// Obter estatísticas detalhadas
+  static Future<Map<String, dynamic>> getDetailedStats() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs.getKeys();
+      
+      int persistentRecipes = 0;
+      int persistentSearches = 0;
+      int persistentMenus = 0;
+      int expiredItems = 0;
+      
+      for (var key in keys) {
+        if (key.startsWith(_recipeCacheKey) && !key.endsWith(_timestampSuffix) && !key.endsWith(_accessTimeSuffix)) {
+          persistentRecipes++;
+        } else if (key.startsWith(_searchCacheKey) && !key.endsWith(_timestampSuffix)) {
+          persistentSearches++;
+        } else if (key.startsWith(_menuCacheKey) && !key.endsWith(_timestampSuffix)) {
+          persistentMenus++;
+        }
+        
+        // Verificar expiração
+        if (key.endsWith(_timestampSuffix)) {
+          final timestamp = prefs.getInt(key);
+          if (timestamp != null) {
+            final cacheTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+            if (DateTime.now().difference(cacheTime) > _cacheExpiration) {
+              expiredItems++;
+            }
+          }
+        }
+      }
+      
+      return {
+        'memory': {
+          'recipes': _memoryCache.length,
+          'searches': _searchCache.length,
+          'menus': _menuCache.length,
+          'lastAccessTimes': _lastAccessTime.length,
+        },
+        'persistent': {
+          'recipes': persistentRecipes,
+          'searches': persistentSearches,
+          'menus': persistentMenus,
+        },
+        'invalidRecipeIds': _invalidRecipeIds.length,
+        'expiredItems': expiredItems,
+        'limits': {
+          'maxMemoryCache': _maxMemoryCacheSize,
+          'maxSearchCache': _maxSearchCacheSize,
+        },
+      };
+    } catch (e) {
+      print('Erro ao obter estatísticas detalhadas: $e');
+      return {};
+    }
   }
 
   /// Verificar se há receitas em cache

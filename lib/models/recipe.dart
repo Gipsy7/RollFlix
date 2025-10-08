@@ -103,6 +103,70 @@ class Recipe {
     };
   }
 
+  // Converter para Firestore (formato simplificado)
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'title': title,
+      'image': image,
+      'readyInMinutes': readyInMinutes,
+      'servings': servings,
+      'sourceUrl': sourceUrl,
+      'summary': summary,
+      'category': _getCategoryFromId(id), // Determina categoria pelo ID
+      'ingredients': extendedIngredients?.map((i) => i.name).toList() ?? [],
+      'instructions': analyzedInstructions?.map((s) => s.step).toList() ?? [],
+      'createdAt': DateTime.now().toIso8601String(),
+    };
+  }
+
+  // Factory para criar Recipe do Firestore
+  factory Recipe.fromFirestore(Map<String, dynamic> data, String docId) {
+    // Converter ingredientes de String para Ingredient
+    final ingredientsList = data['ingredients'] as List<dynamic>?;
+    final ingredients = ingredientsList?.map((name) {
+      return Ingredient(
+        id: name.hashCode,
+        name: name as String,
+        original: name,
+        amount: 1,
+        unit: 'unidade',
+      );
+    }).toList();
+
+    // Converter instruções de String para RecipeStep
+    final instructionsList = data['instructions'] as List<dynamic>?;
+    final instructions = instructionsList?.asMap().entries.map((entry) {
+      return RecipeStep(
+        number: entry.key + 1,
+        step: entry.value as String,
+        ingredients: [],
+        equipment: [],
+      );
+    }).toList();
+
+    return Recipe(
+      id: data['id'] ?? 0,
+      title: data['title'] ?? '',
+      image: data['image'] ?? '',
+      sourceUrl: data['sourceUrl'] ?? '',
+      readyInMinutes: data['readyInMinutes'] ?? 30,
+      servings: data['servings'] ?? 2,
+      summary: data['summary'],
+      extendedIngredients: ingredients,
+      analyzedInstructions: instructions,
+    );
+  }
+
+  // Helper para determinar categoria pelo ID
+  String _getCategoryFromId(int id) {
+    if (id >= 1 && id < 100) return 'main course';
+    if (id >= 101 && id < 200) return 'dessert';
+    if (id >= 201 && id < 300) return 'appetizer';
+    if (id >= 301 && id < 400) return 'side dish';
+    return 'other';
+  }
+
   String get formattedPrice {
     if (pricePerServing == null) return 'R\$ -';
     final priceInReais = (pricePerServing! / 100) * 5; // Conversão aproximada
