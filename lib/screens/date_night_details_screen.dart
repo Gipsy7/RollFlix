@@ -1054,9 +1054,19 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
     
     try {
       // Buscar filmes do gênero Romance
-      final movies = await MovieService.getMoviesByGenre('Romance');
+      final allMovies = await MovieService.getMoviesByGenre('Romance');
       
-      if (movies.isEmpty) {
+      if (allMovies.isEmpty) {
+        throw Exception('Nenhum filme encontrado');
+      }
+      
+      // Filtrar apenas filmes bem avaliados (>= 7.0) para Date Night
+      final movies = allMovies.where((movie) => movie.voteAverage >= 7.0).toList();
+      
+      // Se não houver filmes bem avaliados, usar todos
+      final selectedMovies = movies.isNotEmpty ? movies : allMovies;
+      
+      if (selectedMovies.isEmpty) {
         throw Exception('Nenhum filme encontrado');
       }
       
@@ -1066,14 +1076,14 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       
       // Tentar encontrar um filme diferente do atual
       for (int i = 0; i < 10 && newMovie == null; i++) {
-        final candidate = movies[random.nextInt(movies.length)];
+        final candidate = selectedMovies[random.nextInt(selectedMovies.length)];
         if (candidate.id != _currentCombo.movieId) {
           newMovie = candidate;
         }
       }
       
       // Se não encontrou um diferente, usar qualquer um
-      newMovie ??= movies[random.nextInt(movies.length)];
+      newMovie ??= selectedMovies[random.nextInt(selectedMovies.length)];
       
       // Buscar detalhes completos do filme
       final movieDetails = await MovieService.getMovieDetails(newMovie.id);

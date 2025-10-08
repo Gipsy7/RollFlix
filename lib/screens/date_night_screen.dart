@@ -110,8 +110,8 @@ class _DateNightScreenState extends State<DateNightScreen> {
       }
 
       if (movies.isNotEmpty) {
-        // Filtrar filmes com boa avaliação para encontros românticos
-        final goodMovies = movies.where((movie) => movie.voteAverage >= 6.0).toList();
+        // Filtrar apenas filmes bem avaliados para encontros românticos (>= 7.0)
+        final goodMovies = movies.where((movie) => movie.voteAverage >= 7.0).toList();
         final selectedMovies = goodMovies.isNotEmpty ? goodMovies : movies;
         
         // Sortear um filme
