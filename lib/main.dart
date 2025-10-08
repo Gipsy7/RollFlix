@@ -493,7 +493,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildContent(bool isMobile) {
-    final horizontalPadding = isMobile ? 20.0 : 32.0;
+    final horizontalPadding = isMobile ? 16.0 : 24.0;
     
     return SliverToBoxAdapter(
       child: Column(
@@ -508,14 +508,16 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 _buildActionButtons(isMobile),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 if (_selectedMovie != null || _selectedTVShow != null) 
-                  _buildContentCard(context, isMobile),
+                  Builder(
+                    builder: (context) => _buildContentCard(context, isMobile),
+                  ),
                 if (_errorMessage != null) _buildErrorMessage(),
                 // Espaçamento final para garantir scroll completo
-                SizedBox(height: isMobile ? 60 : 80),
+                SizedBox(height: isMobile ? 40 : 60),
               ],
             ),
           ),
@@ -528,20 +530,20 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Espaçamento superior
-        SizedBox(height: isMobile ? 24 : 32),
+        // Espaçamento superior reduzido
+        SizedBox(height: isMobile ? 16 : 20),
         
         // Header com padding apenas nas laterais
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 32),
+          padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
           child: _buildGenreHeader(isMobile),
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: 20),
         
-        // GenreWheel SEM qualquer padding - ocupa 100% da largura
+        // GenreWheel otimizado - altura reduzida
         SizedBox(
-          height: isMobile ? 400 : 450,
+          height: isMobile ? 350 : 400,
           width: double.infinity,
           child: GenreWheel(
             genres: currentGenres,
@@ -555,8 +557,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           ),
         ),
         
-        // Espaçamento inferior
-        SizedBox(height: isMobile ? 24 : 32),
+        // Espaçamento inferior reduzido
+        SizedBox(height: isMobile ? 16 : 20),
       ],
     );
   }
