@@ -4,6 +4,10 @@
 
 > 🚀 **Versão 3.0** - Completamente refatorado com **56% menos código**, sistema de favoritos, pesquisa avançada e interface totalmente redesenhada!
 
+## 🆕 Atualizações Recentes (Outubro 2025)
+- Preferências de rolagem agora assumem automaticamente a paleta roxa quando o modo série está ativo, garantindo consistência visual em todo o fluxo.
+- A tela **Meu Perfil** exibe estatísticas em tempo real vindas dos controladores de favoritos, assistidos e rolagens, com o terceiro indicador renomeado para **"Assistidos"**.
+
 ## ✨ Funcionalidades Principais
 
 ### 🔄 **Sistema de Toggle Filme/Série**
@@ -53,6 +57,12 @@
 - **Contador Inteligente**: Acompanhe quantos filmes/séries já foram sorteados
 - **Controle de Animação**: Animação do card apenas ao clicar em "Rolar" (não ao trocar gênero)
 - **Scroll Otimizado**: AlwaysScrollableScrollPhysics com padding adequado
+- **Preferências com Tema Dinâmico**: o diálogo de filtros herda automaticamente as cores douradas ou roxas de acordo com o modo selecionado
+
+### 👤 **Meu Perfil Dinâmico** (NOVO!)
+- **Estatísticas em Tempo Real**: Contadores de favoritos, assistidos e rolagens sincronizados com os controladores principais
+- **Indicador "Assistidos"**: Terceira métrica atualizada para refletir quantos títulos já foram concluídos
+- **Atualização Contínua**: Listeners garantem que qualquer alteração em favoritos ou assistidos apareça imediatamente no painel
 
 ### 🎬 **Experiência Cinematográfica Completa**
 - **Telas de Detalhes Unificadas**: Padrão visual consistente para filmes e séries
