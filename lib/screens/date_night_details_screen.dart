@@ -150,14 +150,32 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
               labelColor: _primaryRose,
               unselectedLabelColor: AppColors.textSecondary,
               indicatorColor: _primaryRose,
-              isScrollable: isMobile,
+              indicatorWeight: 3,
+              indicatorSize: TabBarIndicatorSize.tab,
+              isScrollable: false,
+              labelPadding: EdgeInsets.symmetric(horizontal: isMobile ? 8 : 16),
               labelStyle: AppTextStyles.bodyMedium.copyWith(
                 fontWeight: FontWeight.w600,
               ),
-              tabs: const [
-                Tab(text: 'Filme', icon: Icon(Icons.movie, size: 20)),
-                Tab(text: 'Refeição', icon: Icon(Icons.restaurant, size: 20)),
-                Tab(text: 'Checklist', icon: Icon(Icons.checklist, size: 20)),
+              unselectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w400,
+              ),
+              tabs: [
+                Tab(
+                  text: 'Filme',
+                  icon: Icon(Icons.movie, size: isMobile ? 18 : 20),
+                  iconMargin: const EdgeInsets.only(bottom: 4),
+                ),
+                Tab(
+                  text: 'Refeição',
+                  icon: Icon(Icons.restaurant, size: isMobile ? 18 : 20),
+                  iconMargin: const EdgeInsets.only(bottom: 4),
+                ),
+                Tab(
+                  text: 'Checklist',
+                  icon: Icon(Icons.checklist, size: isMobile ? 18 : 20),
+                  iconMargin: const EdgeInsets.only(bottom: 4),
+                ),
               ],
             ),
           ),
