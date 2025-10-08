@@ -19,7 +19,7 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
   final QuizService _quizService = QuizService();
   
   List<QuizQuestion> _questions = [];
-  List<QuestionResult> _results = [];
+  final List<QuestionResult> _results = [];
   int _currentQuestionIndex = 0;
   String? _selectedAnswer;
   bool _isAnswered = false;
@@ -416,7 +416,7 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
                         ),
                       ),
                     );
-                  }).toList(),
+                  }),
                   
                   // Explicação (após responder)
                   if (_isAnswered && currentQuestion.explanation != null)

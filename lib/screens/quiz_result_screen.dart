@@ -154,7 +154,7 @@ class QuizResultScreen extends StatelessWidget {
                   result: questionResult,
                 ),
               );
-            }).toList(),
+            }),
             
             const SizedBox(height: 24),
             

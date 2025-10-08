@@ -355,7 +355,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
             // Lista simples (fallback para dados legados)
             ...widget.ingredients.asMap().entries.map((entry) {
               return _buildIngredientItem(entry.key, entry.value);
-            }).toList(),
+            }),
           ],
 
           if (_completionPercentage == 100) ...[
@@ -431,7 +431,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
         ...ingredients.asMap().entries.map((entry) {
           final index = indexOffset + entry.key;
           return _buildIngredientItem(index, entry.value);
-        }).toList(),
+        }),
       ],
     );
   }
@@ -611,7 +611,7 @@ class DateNightScheduleWidget extends StatelessWidget {
                 ),
               ],
             );
-          }).toList(),
+          }),
         ],
       ),
     );

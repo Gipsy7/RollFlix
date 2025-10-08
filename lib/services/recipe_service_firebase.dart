@@ -8,7 +8,7 @@ class RecipeServiceFirebase {
   static final Random _random = Random();
   
   // Cache local das receitas para evitar múltiplas consultas
-  static Map<String, List<Recipe>> _cachedRecipes = {};
+  static final Map<String, List<Recipe>> _cachedRecipes = {};
   static DateTime? _lastFetchTime;
   static const _cacheExpiration = Duration(hours: 1);
 
