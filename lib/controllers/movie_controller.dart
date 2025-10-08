@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../models/movie.dart';
+import '../models/roll_preferences.dart';
 import '../repositories/movie_repository.dart';
 
 /// Controller responsável pelo gerenciamento de estado dos filmes
@@ -22,6 +23,7 @@ class MovieController extends ChangeNotifier {
   int _movieCount = 0; // Contador de filmes sorteados
 
   // Getters
+  MovieRepository get repository => _repository; // Expõe o repository
   String? get selectedGenre => _selectedGenre;
   Movie? get selectedMovie => _selectedMovie;
   bool get isLoading => _isLoading;
@@ -45,10 +47,11 @@ class MovieController extends ChangeNotifier {
   }
 
   /// Busca um filme aleatório do gênero selecionado
-  Future<void> rollMovie() async {
+  Future<void> rollMovie({RollPreferences? preferences}) async {
     if (_selectedGenre == null || _isLoading) return;
 
     debugPrint('Rolando filme do gênero: $_selectedGenre (Filme atual: ${_selectedMovie?.title ?? "nenhum"})');
+    debugPrint('Preferências NO CONTROLLER: ${preferences?.toJson()}');
     _setLoading(true);
     _errorMessage = null;
 
@@ -57,7 +60,8 @@ class MovieController extends ChangeNotifier {
       final currentMovieId = _selectedMovie?.id;
       final newMovie = await _repository.getRandomMovieByGenre(
         _selectedGenre!, 
-        excludeMovieId: currentMovieId
+        excludeMovieId: currentMovieId,
+        preferences: preferences,
       );
       
       _selectedMovie = newMovie;

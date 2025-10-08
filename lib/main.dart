@@ -5,12 +5,14 @@ import 'theme/app_theme.dart';
 import 'constants/app_constants.dart';
 import 'models/movie.dart';
 import 'models/tv_show.dart';
+import 'models/roll_preferences.dart';
 import 'services/movie_service.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/error_widgets.dart';
 import 'widgets/responsive_widgets.dart';
 import 'widgets/app_drawer.dart';
 import 'widgets/content_widgets.dart';
+import 'widgets/roll_preferences_dialog.dart';
 import 'controllers/movie_controller.dart';
 import 'controllers/tv_show_controller.dart';
 import 'controllers/app_mode_controller.dart';
@@ -52,6 +54,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   late final TVShowRepository _tvShowRepository;
   late final AppModeController _appModeController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  
+  // Preferências de rolagem
+  RollPreferences _rollPreferences = const RollPreferences();
   
   // Flag para controlar quando a animação deve disparar
   bool _shouldAnimateCard = false;
@@ -144,6 +149,55 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     }
   }
 
+  /// Abre o diálogo de preferências de rolagem
+  Future<void> _openRollPreferences() async {
+    final result = await showDialog<RollPreferences>(
+      context: context,
+      builder: (context) => RollPreferencesDialog(
+        initialPreferences: _rollPreferences,
+        isSeriesMode: _appModeController.isSeriesMode,
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        _rollPreferences = result;
+      });
+      
+      // Limpa o cache para forçar nova busca com os filtros aplicados
+      if (result.hasFilters) {
+        debugPrint('🔄 Preferências com filtros aplicadas - limpando cache');
+        _movieController.repository.clearCache();
+        _tvShowController.repository.clearCache();
+      }
+      
+      // Mostra feedback ao usuário
+      if (result.hasFilters) {
+        final filterParts = <String>[];
+        if (result.ageRating != null) {
+          final ageLabels = {
+            'G': 'Livre',
+            'PG': '10+',
+            'PG-13': '13+',
+            'R': '16+',
+            'NC-17': '18+',
+          };
+          filterParts.add('🔞 ${ageLabels[result.ageRating] ?? result.ageRating}');
+        }
+        if (result.minYear != null || result.maxYear != null) {
+          filterParts.add('📅 ${result.minYear ?? "..."}-${result.maxYear ?? "..."}');
+        }
+        
+        AppSnackBar.showSuccess(
+          context, 
+          'Preferências aplicadas! ${filterParts.isNotEmpty ? filterParts.join(" • ") : ""}',
+        );
+      } else {
+        AppSnackBar.showInfo(context, 'Preferências limpas');
+      }
+    }
+  }
+
   /// Método unificado para sortear filmes ou séries
   Future<void> _handleRollContent() async {
     debugPrint('=== HANDLE ROLL CONTENT ===');
@@ -167,15 +221,16 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         // Usa o controller para séries
         if (_tvShowController.canRollShow || selectedGenre != _tvShowController.selectedGenre) {
           _tvShowController.selectGenre(selectedGenre);
-          await _tvShowController.rollShow();
+          await _tvShowController.rollShow(preferences: _rollPreferences);
           debugPrint('rollShow concluído. selectedShow: ${_tvShowController.selectedShow?.name}');
         }
       } else {
         debugPrint('Chamando rollMovie para filme...');
         // Usa o controller para filmes
         if (_movieController.canRollMovie || selectedGenre != _movieController.selectedGenre) {
+          debugPrint('Preferências ANTES de chamar rollMovie: ${_rollPreferences.toJson()}');
           _movieController.selectGenre(selectedGenre);
-          await _movieController.rollMovie();
+          await _movieController.rollMovie(preferences: _rollPreferences);
           debugPrint('rollMovie concluído. selectedMovie: ${_movieController.selectedMovie?.title}');
         }
       }
@@ -309,6 +364,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         ),
       ),
       actions: [
+        _buildPreferencesButton(isMobile),
+        SizedBox(width: isMobile ? 8 : 12),
         _buildSwapButton(isMobile),
         SizedBox(width: isMobile ? 8 : 16),
       ],
@@ -321,6 +378,70 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             child: Padding(
               padding: EdgeInsets.all(isMobile ? 20 : 32),
               child: _buildHeader(isMobile),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreferencesButton(bool isMobile) {
+    final hasFilters = _rollPreferences.hasFilters;
+    
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: hasFilters 
+            ? currentAccentColor.withValues(alpha: 0.9)
+            : AppColors.surfaceDark.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(12),
+        border: hasFilters 
+            ? Border.all(color: currentAccentColor, width: 2)
+            : null,
+        boxShadow: hasFilters 
+            ? [
+                BoxShadow(
+                  color: currentAccentColor.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: _openRollPreferences,
+          child: Padding(
+            padding: EdgeInsets.all(isMobile ? 10 : 12),
+            child: Stack(
+              children: [
+                Icon(
+                  Icons.tune,
+                  color: hasFilters 
+                      ? AppColors.backgroundDark
+                      : AppColors.textPrimary,
+                  size: isMobile ? 20 : 22,
+                ),
+                if (hasFilters)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: AppColors.secondary,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.backgroundDark,
+                          width: 1.5,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

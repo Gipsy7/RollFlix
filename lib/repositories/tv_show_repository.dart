@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/tv_show.dart';
+import '../models/roll_preferences.dart';
 import '../services/movie_service.dart';
 
 /// Repository pattern para gerenciamento de dados de séries TV
@@ -21,8 +22,14 @@ class TVShowRepository extends ChangeNotifier {
   static const int _maxHistorySize = 10; // Mantém as últimas 10 séries sorteadas por gênero
 
   /// Obtém séries por gênero com cache
-  Future<List<TVShow>> getTVShowsByGenre(String genre) async {
+  Future<List<TVShow>> getTVShowsByGenre(String genre, {RollPreferences? preferences}) async {
     final cacheKey = genre.toLowerCase();
+    
+    // Se há preferências com filtros, não usa cache (busca direto da API)
+    if (preferences != null && preferences.hasFilters) {
+      debugPrint('Buscando séries com filtros - ignorando cache');
+      return await _fetchTVShowsFromAPI(genre, preferences);
+    }
     
     // Verifica se existe cache válido
     if (_tvShowCache.containsKey(cacheKey)) {
@@ -34,22 +41,31 @@ class TVShowRepository extends ChangeNotifier {
       }
     }
 
-    // Busca dados da API
+    // Busca dados da API sem filtros e atualiza cache
     debugPrint('Cache miss for TV genre: $genre - fetching from API');
+    final tvShows = await _fetchTVShowsFromAPI(genre, null);
+    
+    // Atualiza o cache apenas para buscas sem filtro
+    _tvShowCache[cacheKey] = tvShows;
+    _cacheTimestamps[cacheKey] = DateTime.now();
+    
+    return tvShows;
+  }
+  
+  /// Busca séries da API com filtros opcionais
+  Future<List<TVShow>> _fetchTVShowsFromAPI(String genre, RollPreferences? preferences) async {
     try {
-      // Busca uma lista completa de séries do gênero
-      final tvShows = await MovieService.getTVShowsByGenre(genre);
+      final tvShows = await MovieService.getTVShowsByGenre(
+        genre,
+        minYear: preferences?.minYear,
+        maxYear: preferences?.maxYear,
+      );
       
       if (tvShows.isEmpty) {
         throw Exception('Nenhuma série encontrada para o gênero $genre');
       }
       
       debugPrint('Fetched ${tvShows.length} TV shows for genre: $genre');
-      
-      // Atualiza o cache
-      _tvShowCache[cacheKey] = tvShows;
-      _cacheTimestamps[cacheKey] = DateTime.now();
-      
       return tvShows;
     } catch (e) {
       debugPrint('Error fetching TV shows for genre $genre: $e');
@@ -58,9 +74,15 @@ class TVShowRepository extends ChangeNotifier {
   }
 
   /// Obtém uma série aleatória do cache ou API, evitando repetições recentes
-  Future<TVShow> getRandomTVShowByGenre(String genre, {int? excludeShowId}) async {
+  Future<TVShow> getRandomTVShowByGenre(
+    String genre, {
+    int? excludeShowId,
+    RollPreferences? preferences,
+  }) async {
     debugPrint('Buscando série aleatória do gênero: $genre (Excluindo: $excludeShowId)');
-    final tvShows = await getTVShowsByGenre(genre);
+    debugPrint('Preferências: ${preferences?.toJson()}');
+    
+    final tvShows = await getTVShowsByGenre(genre, preferences: preferences);
     if (tvShows.isEmpty) {
       throw Exception('Nenhuma série encontrada para o gênero $genre');
     }
@@ -71,59 +93,106 @@ class TVShowRepository extends ChangeNotifier {
     final cacheKey = genre.toLowerCase();
     final recentShowIds = _recentlyDrawnShows[cacheKey] ?? [];
     
-    // Filtra séries que não estão no histórico recente
+    // Filtra séries que não estão no histórico recente e aplica preferências
     List<TVShow> availableShows = tvShows.where((show) {
-      // Exclui a série atual se especificado
-      if (excludeShowId != null && show.id == excludeShowId) {
-        return false;
-      }
-      // Exclui séries do histórico recente
-      return !recentShowIds.contains(show.id);
+      if (excludeShowId != null && show.id == excludeShowId) return false;
+      if (recentShowIds.contains(show.id)) return false;
+      
+      return _applyPreferenceFilters(show, preferences);
     }).toList();
     
-    debugPrint('Histórico recente tem ${recentShowIds.length} séries, ${availableShows.length} séries disponíveis após filtro');
+    debugPrint('${availableShows.length} séries disponíveis após filtros');
     
-    // Se não sobrou nenhuma série após exclusão, limpa o histórico e usa toda a lista
-    // (exceto a série atual se especificado)
+    // Se não sobrou nenhuma série, tenta sem histórico
     if (availableShows.isEmpty) {
-      debugPrint('Histórico resetado - todas as séries já foram sorteadas');
+      debugPrint('Histórico resetado');
       _recentlyDrawnShows[cacheKey] = [];
-      availableShows = tvShows.where((show) => 
-        excludeShowId == null || show.id != excludeShowId
-      ).toList();
+      availableShows = tvShows.where((show) {
+        if (excludeShowId != null && show.id == excludeShowId) return false;
+        return _applyPreferenceFilters(show, preferences);
+      }).toList();
     }
     
-    // Se ainda não há séries disponíveis, usa a lista completa
+    // Se ainda vazio após aplicar filtros, lança erro
     if (availableShows.isEmpty) {
-      availableShows = tvShows;
-      debugPrint('Usando lista completa pois não há séries disponíveis');
+      debugPrint('❌ Nenhuma série do gênero "$genre" atende aos filtros de preferência');
+      throw Exception(
+        'Nenhuma série encontrada com os filtros aplicados.\n'
+        'Tente reduzir a nota mínima ou escolher outro gênero.'
+      );
     }
     
-    // Seleciona uma série aleatória
+    debugPrint('✅ ${availableShows.length} séries atendem aos filtros de preferência');
+    
+    // Aplica ordenação
+    if (preferences?.sortBy != null && preferences!.sortBy != 'random') {
+      if (preferences.sortBy == 'rating') {
+        availableShows.sort((a, b) => b.voteAverage.compareTo(a.voteAverage));
+        if (availableShows.length > 10) availableShows = availableShows.take(10).toList();
+      } else if (preferences.sortBy == 'popularity') {
+        availableShows.sort((a, b) => b.popularity.compareTo(a.popularity));
+        if (availableShows.length > 10) availableShows = availableShows.take(10).toList();
+      }
+    }
+    
+    // Seleciona aleatoriamente
     final random = Random();
     final selectedShow = availableShows[random.nextInt(availableShows.length)];
     
-    // Adiciona ao histórico
+    debugPrint('📺 Série sorteada: ${selectedShow.name}');
+    debugPrint('   📊 Nota: ${selectedShow.voteAverage} / Ano: ${selectedShow.firstAirDate.split('-').first} / Adult: ${selectedShow.adult}');
+    
+    // Atualiza histórico
     _recentlyDrawnShows[cacheKey] = _recentlyDrawnShows[cacheKey] ?? [];
     _recentlyDrawnShows[cacheKey]!.add(selectedShow.id);
-    
-    // Mantém apenas as últimas N séries no histórico
     if (_recentlyDrawnShows[cacheKey]!.length > _maxHistorySize) {
       _recentlyDrawnShows[cacheKey] = 
         _recentlyDrawnShows[cacheKey]!.skip(_recentlyDrawnShows[cacheKey]!.length - _maxHistorySize).toList();
     }
     
-    debugPrint('Série sorteada: ${selectedShow.name} (ID: ${selectedShow.id})');
-    debugPrint('Histórico atualizado: ${_recentlyDrawnShows[cacheKey]!.length} séries');
+    debugPrint('Série sorteada: ${selectedShow.name} (Rating: ${selectedShow.voteAverage})');
     return selectedShow;
+  }
+  
+  /// Aplica filtros de preferências a uma série
+  bool _applyPreferenceFilters(TVShow show, RollPreferences? preferences) {
+    if (preferences == null) return true;
+    
+    // Filtro de ano (extrai do firstAirDate)
+    if ((preferences.minYear != null || preferences.maxYear != null) && show.firstAirDate.isNotEmpty) {
+      try {
+        final year = int.parse(show.firstAirDate.split('-')[0]);
+        if (preferences.minYear != null && year < preferences.minYear!) return false;
+        if (preferences.maxYear != null && year > preferences.maxYear!) return false;
+      } catch (e) {
+        debugPrint('Erro ao parsear ano: ${show.firstAirDate}');
+      }
+    }
+    
+    // Classificação indicativa
+    if (preferences.ageRating != null) {
+      if (preferences.ageRating == 'G' || preferences.ageRating == 'PG' || preferences.ageRating == 'PG-13') {
+        if (show.adult) return false;
+      }
+    }
+    
+    return true;
   }
 
   /// Limpa o cache e histórico
   void clearCache() {
+    debugPrint('🗑️ Limpando cache de séries e histórico');
     _tvShowCache.clear();
     _cacheTimestamps.clear();
     _recentlyDrawnShows.clear();
-    debugPrint('TV show cache and history cleared');
+  }
+  
+  /// Limpa o cache de um gênero específico
+  void clearGenreCache(String genre) {
+    final cacheKey = genre.toLowerCase();
+    debugPrint('🗑️ Limpando cache do gênero (séries): $genre');
+    _tvShowCache.remove(cacheKey);
+    _cacheTimestamps.remove(cacheKey);
   }
 
   /// Limpa cache expirado

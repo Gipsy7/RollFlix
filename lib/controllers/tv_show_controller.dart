@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../models/tv_show.dart';
+import '../models/roll_preferences.dart';
 import '../repositories/tv_show_repository.dart';
 
 /// Controller responsável pelo gerenciamento de estado das séries TV
@@ -22,6 +23,7 @@ class TVShowController extends ChangeNotifier {
   int _showCount = 0; // Contador de séries sorteadas
 
   // Getters
+  TVShowRepository get repository => _repository; // Expõe o repository
   String? get selectedGenre => _selectedGenre;
   TVShow? get selectedShow => _selectedShow;
   bool get isLoading => _isLoading;
@@ -45,7 +47,7 @@ class TVShowController extends ChangeNotifier {
   }
 
   /// Busca uma série aleatória do gênero selecionado
-  Future<void> rollShow() async {
+  Future<void> rollShow({RollPreferences? preferences}) async {
     if (_selectedGenre == null || _isLoading) return;
 
     debugPrint('Rolando série do gênero: $_selectedGenre (Série atual: ${_selectedShow?.name ?? "nenhuma"})');
@@ -57,7 +59,8 @@ class TVShowController extends ChangeNotifier {
       final currentShowId = _selectedShow?.id;
       final newShow = await _repository.getRandomTVShowByGenre(
         _selectedGenre!, 
-        excludeShowId: currentShowId
+        excludeShowId: currentShowId,
+        preferences: preferences,
       );
       
       _selectedShow = newShow;
