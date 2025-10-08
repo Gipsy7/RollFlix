@@ -127,7 +127,8 @@ class RecipeCacheService {
     
     // 1. Verificar cache em memória
     if (_searchCache.containsKey(cacheKey)) {
-      return _searchCache[cacheKey];
+      // Retornar uma CÓPIA da lista para não modificar o cache original
+      return List<Recipe>.from(_searchCache[cacheKey]!);
     }
     
     // 2. Verificar cache persistente
@@ -161,10 +162,11 @@ class RecipeCacheService {
         }
       }
       
-      // Se conseguiu todas as receitas, retornar
+      // Se conseguiu todas as receitas, salvar no cache de memória e retornar cópia
       if (recipes.length == recipeIds.length) {
         _searchCache[cacheKey] = recipes;
-        return recipes;
+        // Retornar uma CÓPIA para não modificar o cache original
+        return List<Recipe>.from(recipes);
       }
       
       return null;

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import '../models/recipe.dart';
 import '../data/static_recipes_data.dart';
@@ -20,8 +21,11 @@ class RecipeService {
     // 1. Verificar cache primeiro
     final cachedResults = await RecipeCacheService.getCachedSearchResults(type, cuisine, diet);
     if (cachedResults != null && cachedResults.isNotEmpty) {
-      print('✓ Receitas carregadas do cache para $type');
-      return cachedResults.take(number).toList();
+      print('✓ Receitas carregadas do cache para $type: ${cachedResults.length} receitas');
+      // Embaralhar as receitas do cache para variar a seleção
+      final shuffled = List<Recipe>.from(cachedResults)..shuffle(Random());
+      print('  Embaralhadas: ${shuffled.take(3).map((r) => r.title).join(", ")}...');
+      return shuffled.take(number).toList();
     }
 
     // 2. Buscar da API se não estiver em cache
@@ -46,6 +50,8 @@ class RecipeService {
         final data = json.decode(response.body);
         final results = data['results'] as List;
         final recipes = results.map((recipe) => Recipe.fromJson(recipe)).toList();
+        
+        print('✓ Receitas recebidas da API para $type: ${recipes.length} receitas');
         
         // 3. Salvar no cache para uso futuro
         await RecipeCacheService.cacheSearchResults(type, cuisine, diet, recipes);
@@ -136,23 +142,21 @@ class RecipeService {
     String? diet,
     String? dateType, // Tipo de Date Night para fallback apropriado
   }) async {
-    // 1. Verificar se há menu completo em cache
-    final cachedMenu = await RecipeCacheService.getCachedMenu(cuisine, diet);
-    if (cachedMenu != null && cachedMenu.length == 4) {
-      print('✓ Menu completo carregado do cache');
-      return cachedMenu;
-    }
-
-    // 2. Buscar da API se não estiver em cache
+    // NÃO usar cache de menu completo - sempre gerar novo menu
+    // para garantir variedade nas receitas
+    
+    // 2. Buscar da API (searchRecipes já usa cache internamente e randomiza)
     try {
-      // Buscar em paralelo (searchRecipes já usa cache internamente)
+      // Buscar MÚLTIPLAS receitas (10 de cada tipo) para popular o cache
+      // Depois retornar apenas 1 aleatória de cada
       final results = await Future.wait([
-        searchRecipes(type: 'main course', number: 1, cuisine: cuisine, diet: diet),
-        searchRecipes(type: 'dessert', number: 1, cuisine: cuisine),
-        searchRecipes(type: 'appetizer', number: 1, cuisine: cuisine, diet: diet),
-        searchRecipes(type: 'side dish', number: 1, cuisine: cuisine, diet: diet),
+        searchRecipes(type: 'main course', number: 10, cuisine: cuisine, diet: diet),
+        searchRecipes(type: 'dessert', number: 10, cuisine: cuisine),
+        searchRecipes(type: 'appetizer', number: 10, cuisine: cuisine, diet: diet),
+        searchRecipes(type: 'side dish', number: 10, cuisine: cuisine, diet: diet),
       ]);
 
+      // Pegar a primeira receita de cada lista JÁ randomizada
       final menu = {
         'mainCourse': results[0].isNotEmpty ? results[0][0] : _getFallbackRecipes('main course', dateType: dateType)[0],
         'dessert': results[1].isNotEmpty ? results[1][0] : _getFallbackRecipes('dessert', dateType: dateType)[0],
@@ -160,9 +164,12 @@ class RecipeService {
         'sideDish': results[3].isNotEmpty ? results[3][0] : _getFallbackRecipes('side dish', dateType: dateType)[0],
       };
 
-      // 3. Salvar menu completo no cache
-      await RecipeCacheService.cacheMenu(cuisine, diet, menu);
-      print('✓ Menu completo salvo no cache');
+      // Log para debug
+      print('✓ Menu gerado com receitas aleatórias:');
+      print('  - Main Course: ${(menu['mainCourse'] as Recipe).title}');
+      print('  - Dessert: ${(menu['dessert'] as Recipe).title}');
+      print('  - Appetizer: ${(menu['appetizer'] as Recipe).title}');
+      print('  - Side Dish: ${(menu['sideDish'] as Recipe).title}');
 
       return menu;
     } catch (e) {
@@ -187,27 +194,29 @@ class RecipeService {
   // Receitas de fallback (quando a API falha ou não está configurada)
   // Usa banco de dados estático com receitas reais por tipo de Date Night
   static List<Recipe> _getFallbackRecipes(String type, {String? dateType}) {
+    final random = Random();
+    
     // Se temos o tipo de Date Night, usar receitas específicas
     if (dateType != null) {
       switch (type.toLowerCase()) {
         case 'main course':
           final recipes = StaticRecipesData.getMainCoursesForDateType(dateType);
           // Retornar uma receita aleatória da lista
-          final index = DateTime.now().millisecondsSinceEpoch % recipes.length;
+          final index = random.nextInt(recipes.length);
           return [recipes[index]];
         case 'dessert':
           final recipes = StaticRecipesData.getDessertsForDateType(dateType);
-          final index = DateTime.now().millisecondsSinceEpoch % recipes.length;
+          final index = random.nextInt(recipes.length);
           return [recipes[index]];
         case 'appetizer':
           // Para petiscos, usar pratos principais como alternativa
           final recipes = StaticRecipesData.getMainCoursesForDateType(dateType);
-          final index = (DateTime.now().millisecondsSinceEpoch ~/ 2) % recipes.length;
+          final index = random.nextInt(recipes.length);
           return [recipes[index]];
         case 'side dish':
           // Para acompanhamentos, usar pratos principais como alternativa
           final recipes = StaticRecipesData.getMainCoursesForDateType(dateType);
-          final index = (DateTime.now().millisecondsSinceEpoch ~/ 3) % recipes.length;
+          final index = random.nextInt(recipes.length);
           return [recipes[index]];
         default:
           return [];

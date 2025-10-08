@@ -1,3 +1,4 @@
+import 'dart:math';
 import '../models/recipe.dart';
 
 /// Receitas estáticas por tipo de Date Night
@@ -1056,27 +1057,28 @@ class StaticRecipesData {
   /// Obter uma receita aleatória de prato principal para um tipo de Date Night
   static Recipe getRandomMainCourse(String dateType) {
     final recipes = getMainCoursesForDateType(dateType);
-    return recipes[DateTime.now().millisecondsSinceEpoch % recipes.length];
+    final random = Random();
+    return recipes[random.nextInt(recipes.length)];
   }
 
   /// Obter uma sobremesa aleatória para um tipo de Date Night
   static Recipe getRandomDessert(String dateType) {
     final recipes = getDessertsForDateType(dateType);
-    return recipes[DateTime.now().millisecondsSinceEpoch % recipes.length];
+    final random = Random();
+    return recipes[random.nextInt(recipes.length)];
   }
 
   /// Obter menu completo aleatório para um tipo de Date Night
   static Map<String, Recipe> getRandomMenuForDateType(String dateType) {
     final mainCourses = getMainCoursesForDateType(dateType);
     final desserts = getDessertsForDateType(dateType);
-    
-    final seed = DateTime.now().millisecondsSinceEpoch;
+    final random = Random();
     
     return {
-      'mainCourse': mainCourses[seed % mainCourses.length],
-      'dessert': desserts[(seed ~/ 2) % desserts.length],
-      'appetizer': mainCourses[(seed ~/ 3) % mainCourses.length],
-      'sideDish': mainCourses[(seed ~/ 5) % mainCourses.length],
+      'mainCourse': mainCourses[random.nextInt(mainCourses.length)],
+      'dessert': desserts[random.nextInt(desserts.length)],
+      'appetizer': mainCourses[random.nextInt(mainCourses.length)],
+      'sideDish': mainCourses[random.nextInt(mainCourses.length)],
     };
   }
 }

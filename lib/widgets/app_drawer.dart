@@ -13,6 +13,7 @@ import '../screens/profile_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/quiz_menu_screen.dart';
 import '../services/auth_service.dart';
+import '../services/recipe_cache_service.dart';
 
 /// Widget do menu lateral (drawer) da aplicação
 /// Gerencia navegação e opções do app
@@ -215,10 +216,11 @@ class AppDrawer extends StatelessWidget {
           context: context,
           icon: Icons.refresh,
           title: 'Limpar Cache',
-          onTap: () {
+          onTap: () async {
             movieController.clearCache();
+            await RecipeCacheService.clearAllCache();
             Navigator.pop(context);
-            AppSnackBar.showSuccess(context, 'Cache limpo com sucesso!');
+            AppSnackBar.showSuccess(context, 'Cache de filmes e receitas limpo!');
           },
         ),
         
