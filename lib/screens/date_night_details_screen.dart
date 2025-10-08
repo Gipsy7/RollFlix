@@ -915,12 +915,29 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       child: Column(
         children: [
           // Checklist interativa de ingredientes
-          IngredientsChecklistWidget(
-            ingredients: widget.combo.ingredients,
+          FutureBuilder<Map<String, List<String>>>(
+            future: _getCategorizedIngredients(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Padding(
+                  padding: EdgeInsets.all(40),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              final categorizedIngredients = snapshot.data ?? {};
+              
+              return IngredientsChecklistWidget(
+                ingredients: widget.combo.ingredients,
+                mainCourseIngredients: categorizedIngredients['mainCourse'],
+                dessertIngredients: categorizedIngredients['dessert'],
+                appetizerIngredients: categorizedIngredients['appetizer'],
+                sideDishIngredients: categorizedIngredients['sideDish'],
+              );
+            },
           ),
-          
+
           const SizedBox(height: 24),
-          
           // Custo estimado
           AppCard(
             child: Row(
@@ -1176,5 +1193,47 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
         duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  Future<Map<String, List<String>>> _getCategorizedIngredients() async {
+    final Map<String, List<String>> categorized = {};
+
+    try {
+      // Buscar ingredientes do prato principal
+      if (widget.combo.mainCourseRecipeId != null) {
+        final recipe = await RecipeService.getRecipeDetails(widget.combo.mainCourseRecipeId!);
+        if (recipe.extendedIngredients != null && recipe.extendedIngredients!.isNotEmpty) {
+          categorized['mainCourse'] = recipe.extendedIngredients!.map((i) => i.original).toList();
+        }
+      }
+
+      // Buscar ingredientes da sobremesa
+      if (widget.combo.dessertRecipeId != null) {
+        final recipe = await RecipeService.getRecipeDetails(widget.combo.dessertRecipeId!);
+        if (recipe.extendedIngredients != null && recipe.extendedIngredients!.isNotEmpty) {
+          categorized['dessert'] = recipe.extendedIngredients!.map((i) => i.original).toList();
+        }
+      }
+
+      // Buscar ingredientes do petisco
+      if (widget.combo.appetizerRecipeId != null) {
+        final recipe = await RecipeService.getRecipeDetails(widget.combo.appetizerRecipeId!);
+        if (recipe.extendedIngredients != null && recipe.extendedIngredients!.isNotEmpty) {
+          categorized['appetizer'] = recipe.extendedIngredients!.map((i) => i.original).toList();
+        }
+      }
+
+      // Buscar ingredientes do acompanhamento
+      if (widget.combo.sideDishRecipeId != null) {
+        final recipe = await RecipeService.getRecipeDetails(widget.combo.sideDishRecipeId!);
+        if (recipe.extendedIngredients != null && recipe.extendedIngredients!.isNotEmpty) {
+          categorized['sideDish'] = recipe.extendedIngredients!.map((i) => i.original).toList();
+        }
+      }
+    } catch (e) {
+      print('Erro ao buscar ingredientes categorizados: $e');
+    }
+
+    return categorized;
   }
 }

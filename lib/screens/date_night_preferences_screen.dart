@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../models/date_night_preferences.dart';
 import '../widgets/responsive_widgets.dart';
+import '../services/preferences_service.dart';
 
 class DateNightPreferencesScreen extends StatefulWidget {
   final DateNightPreferences? initialPreferences;
@@ -543,8 +544,12 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
     );
   }
 
-  void _savePreferences() {
-    // Aqui você salvaria as preferências (SharedPreferences, Firebase, etc.)
+  void _savePreferences() async {
+    // Salvar preferências no SharedPreferences
+    await PreferencesService.savePreferences(_preferences);
+    
+    if (!mounted) return;
+    
     Navigator.pop(context, _preferences);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

@@ -201,10 +201,18 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
 
 class IngredientsChecklistWidget extends StatefulWidget {
   final List<String> ingredients;
+  final List<String>? mainCourseIngredients;
+  final List<String>? dessertIngredients;
+  final List<String>? appetizerIngredients;
+  final List<String>? sideDishIngredients;
 
   const IngredientsChecklistWidget({
     super.key,
     required this.ingredients,
+    this.mainCourseIngredients,
+    this.dessertIngredients,
+    this.appetizerIngredients,
+    this.sideDishIngredients,
   });
 
   @override
@@ -217,9 +225,23 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
   static const Color _primaryRose = Color(0xFFE91E63);
   static const Color _secondaryGold = Color(0xFFFFD700);
 
+  int get _totalIngredients {
+    int total = widget.ingredients.length;
+    if (widget.mainCourseIngredients != null) total += widget.mainCourseIngredients!.length;
+    if (widget.dessertIngredients != null) total += widget.dessertIngredients!.length;
+    if (widget.appetizerIngredients != null) total += widget.appetizerIngredients!.length;
+    if (widget.sideDishIngredients != null) total += widget.sideDishIngredients!.length;
+    // Subtrair a lista geral se temos categorias (para não duplicar)
+    if (widget.mainCourseIngredients != null || widget.dessertIngredients != null) {
+      total -= widget.ingredients.length;
+    }
+    return total;
+  }
+
   double get _completionPercentage {
-    if (widget.ingredients.isEmpty) return 0;
-    return (_checkedItems.length / widget.ingredients.length) * 100;
+    final total = _totalIngredients;
+    if (total == 0) return 0;
+    return (_checkedItems.length / total) * 100;
   }
 
   @override
@@ -253,7 +275,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${_checkedItems.length}/${widget.ingredients.length} itens (${_completionPercentage.toStringAsFixed(0)}%)',
+                      '${_checkedItems.length}/${_totalIngredients} itens (${_completionPercentage.toStringAsFixed(0)}%)',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
@@ -282,64 +304,56 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
 
           const SizedBox(height: 16),
 
-          // Lista de ingredientes
-          ...widget.ingredients.asMap().entries.map((entry) {
-            final index = entry.key;
-            final ingredient = entry.value;
-            final isChecked = _checkedItems.contains(index);
-
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    if (isChecked) {
-                      _checkedItems.remove(index);
-                    } else {
-                      _checkedItems.add(index);
-                    }
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: isChecked 
-                        ? Colors.green.withOpacity(0.1) 
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: isChecked 
-                          ? Colors.green 
-                          : Colors.grey.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        isChecked 
-                            ? Icons.check_box 
-                            : Icons.check_box_outline_blank,
-                        color: isChecked ? Colors.green : Colors.white70,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          ingredient,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            decoration: isChecked 
-                                ? TextDecoration.lineThrough 
-                                : null,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+          // Lista de ingredientes (categorizada ou simples)
+          if (widget.mainCourseIngredients != null || widget.dessertIngredients != null ||
+              widget.appetizerIngredients != null || widget.sideDishIngredients != null) ...[
+            // Layout categorizado
+            if (widget.mainCourseIngredients != null && widget.mainCourseIngredients!.isNotEmpty)
+              _buildCategorySection(
+                'Prato Principal',
+                Icons.restaurant,
+                widget.mainCourseIngredients!,
+                0,
               ),
-            );
-          }).toList(),
+            
+            if (widget.dessertIngredients != null && widget.dessertIngredients!.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildCategorySection(
+                'Sobremesa',
+                Icons.cake,
+                widget.dessertIngredients!,
+                (widget.mainCourseIngredients?.length ?? 0),
+              ),
+            ],
+
+            if (widget.appetizerIngredients != null && widget.appetizerIngredients!.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildCategorySection(
+                'Petiscos',
+                Icons.tapas,
+                widget.appetizerIngredients!,
+                (widget.mainCourseIngredients?.length ?? 0) + 
+                (widget.dessertIngredients?.length ?? 0),
+              ),
+            ],
+
+            if (widget.sideDishIngredients != null && widget.sideDishIngredients!.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _buildCategorySection(
+                'Acompanhamentos',
+                Icons.rice_bowl,
+                widget.sideDishIngredients!,
+                (widget.mainCourseIngredients?.length ?? 0) + 
+                (widget.dessertIngredients?.length ?? 0) +
+                (widget.appetizerIngredients?.length ?? 0),
+              ),
+            ],
+          ] else ...[
+            // Lista simples (fallback para dados legados)
+            ...widget.ingredients.asMap().entries.map((entry) {
+              return _buildIngredientItem(entry.key, entry.value);
+            }).toList(),
+          ],
 
           if (_completionPercentage == 100) ...[
             const SizedBox(height: 16),
@@ -367,6 +381,110 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategorySection(
+    String title,
+    IconData icon,
+    List<String> ingredients,
+    int indexOffset,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: _primaryRose, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                color: _primaryRose,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: _primaryRose.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${ingredients.length} ${ingredients.length == 1 ? 'item' : 'itens'}',
+                style: const TextStyle(
+                  color: _primaryRose,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ...ingredients.asMap().entries.map((entry) {
+          final index = indexOffset + entry.key;
+          return _buildIngredientItem(index, entry.value);
+        }).toList(),
+      ],
+    );
+  }
+
+  Widget _buildIngredientItem(int index, String ingredient) {
+    final isChecked = _checkedItems.contains(index);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            if (isChecked) {
+              _checkedItems.remove(index);
+            } else {
+              _checkedItems.add(index);
+            }
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isChecked 
+                ? Colors.green.withOpacity(0.1) 
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isChecked 
+                  ? Colors.green 
+                  : Colors.grey.withOpacity(0.3),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                isChecked 
+                    ? Icons.check_box 
+                    : Icons.check_box_outline_blank,
+                color: isChecked ? Colors.green : Colors.white70,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  ingredient,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    decoration: isChecked 
+                        ? TextDecoration.lineThrough 
+                        : null,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -246,4 +246,30 @@ class RecipeService {
         return null;
     }
   }
+
+  // Converter restrição dietética para formato da API Spoonacular
+  static String? getDietFromRestriction(String dietaryRestriction) {
+    // O valor vem no formato "DietaryRestriction.vegetarian"
+    final restriction = dietaryRestriction.split('.').last;
+    
+    switch (restriction) {
+      case 'vegetarian':
+        return 'vegetarian';
+      case 'vegan':
+        return 'vegan';
+      case 'glutenFree':
+        return 'gluten free';
+      case 'lactoseFree':
+        return 'dairy free';
+      case 'lowCarb':
+        return 'paleo'; // Spoonacular não tem "low carb", paleo é o mais próximo
+      case 'keto':
+        return 'ketogenic';
+      case 'pescatarian':
+        return 'pescetarian';
+      case 'none':
+      default:
+        return null;
+    }
+  }
 }

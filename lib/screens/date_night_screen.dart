@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../models/movie.dart';
 import '../models/date_night_combo.dart';
+import '../models/date_night_preferences.dart';
 import '../models/watch_providers.dart';
 import '../models/recipe.dart';
 import '../services/movie_service.dart';
 import '../services/recipe_service.dart';
+import '../services/preferences_service.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import 'date_night_details_screen.dart';
@@ -22,6 +24,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
   String? _selectedDateType;
   DateNightCombo? _currentCombo;
   bool _isLoading = false;
+  DateNightPreferences _preferences = const DateNightPreferences();
 
   @override
   void initState() {
@@ -32,6 +35,16 @@ class _DateNightScreenState extends State<DateNightScreen> {
     if (dateTypes.isNotEmpty) {
       _selectedDateType = dateTypes.first;
     }
+
+    // Carregar preferências salvas
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await PreferencesService.loadPreferences();
+    setState(() {
+      _preferences = prefs;
+    });
   }
 
   @override
@@ -111,12 +124,14 @@ class _DateNightScreenState extends State<DateNightScreen> {
         
         try {
           final cuisine = RecipeService.getDateTypeCuisine(_selectedDateType!);
+          final diet = RecipeService.getDietFromRestriction(_preferences.dietaryRestriction.toString());
           
           final results = await Future.wait([
             MovieService.getMovieDetails(randomMovie.id),
             MovieService.getWatchProviders(randomMovie.id),
             RecipeService.generateDateNightMenu(
               cuisine: cuisine,
+              diet: diet,
               dateType: _selectedDateType, // Passa o tipo para fallback apropriado
             ),
           ]);
@@ -269,13 +284,23 @@ class _DateNightScreenState extends State<DateNightScreen> {
     }
   }
 
-  void _openPreferences() {
-    Navigator.push(
+  void _openPreferences() async {
+    final result = await Navigator.push<DateNightPreferences>(
       context,
       MaterialPageRoute(
-        builder: (context) => const DateNightPreferencesScreen(),
+        builder: (context) => DateNightPreferencesScreen(
+          initialPreferences: _preferences,
+        ),
       ),
     );
+
+    // Se o usuário salvou as preferências, atualizar
+    if (result != null) {
+      setState(() {
+        _preferences = result;
+      });
+      print('✓ Preferências atualizadas: ${_preferences.dietaryRestriction.label}');
+    }
   }
 
   @override
