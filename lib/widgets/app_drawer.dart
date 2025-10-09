@@ -15,6 +15,7 @@ import '../screens/login_screen.dart';
 import '../screens/quiz_menu_screen.dart';
 import '../services/auth_service.dart';
 import '../services/recipe_cache_service.dart';
+import '../widgets/notification_settings_dialog.dart';
 
 /// Widget do menu lateral (drawer) da aplicação
 /// Gerencia navegação e opções do app
@@ -259,11 +260,24 @@ class AppDrawer extends StatelessWidget {
         
         _buildDrawerItem(
           context: context,
+          icon: Icons.notifications,
+          title: 'Notificações',
+          onTap: () {
+            Navigator.pop(context);
+            showDialog(
+              context: context,
+              builder: (context) => const NotificationSettingsDialog(),
+            );
+          },
+        ),
+        
+        _buildDrawerItem(
+          context: context,
           icon: Icons.settings,
           title: 'Configurações',
           onTap: () {
             Navigator.pop(context);
-            AppSnackBar.showInfo(context, 'Em breve: Configurações');
+            AppSnackBar.showInfo(context, 'Em breve: Mais configurações');
           },
         ),
       ],

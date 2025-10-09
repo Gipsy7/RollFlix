@@ -17,6 +17,7 @@ import 'controllers/movie_controller.dart';
 import 'controllers/tv_show_controller.dart';
 import 'controllers/app_mode_controller.dart';
 import 'controllers/user_preferences_controller.dart';
+import 'controllers/notification_controller.dart';
 import 'repositories/tv_show_repository.dart';
 import 'mixins/animation_mixin.dart';
 import 'screens/movie_details_screen.dart';
@@ -27,6 +28,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Inicializar sistema de notificações
+  NotificationController.instance;
+
   runApp(const MyApp());
 }
 
