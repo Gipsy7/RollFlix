@@ -486,41 +486,27 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         gradient: hasFilters
-            ? AppColors.buttonGradient
+            ? (_appModeController.isSeriesMode
+                ? AppColors.secondaryGradient
+                : AppColors.primaryGradient)
             : AppColors.cardGradient,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: hasFilters
-              ? AppColors.primary.withOpacity(0.4)
+              ? (_appModeController.isSeriesMode
+                  ? AppColors.secondary.withOpacity(0.4)
+                  : AppColors.primary.withOpacity(0.4))
               : AppColors.borderLight,
           width: 1.5,
         ),
-        boxShadow: hasFilters ? [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ] : [
-          BoxShadow(
-            color: AppColors.shadowDark,
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: _openRollPreferences,
-          splashColor: AppColors.primary.withOpacity(0.15),
-          highlightColor: AppColors.primary.withOpacity(0.08),
+          splashColor: currentAccentColor.withOpacity(0.15),
+          highlightColor: currentAccentColor.withOpacity(0.08),
           child: AnimatedPadding(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
