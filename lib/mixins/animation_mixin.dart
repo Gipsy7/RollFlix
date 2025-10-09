@@ -18,16 +18,16 @@ mixin AnimationMixin<T extends StatefulWidget> on State<T>, TickerProviderStateM
 
   void _initializeAnimations() {
     _movieCardController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1000), // Mais tempo para suavidade
       vsync: this,
     );
 
     _movieCardAnimation = Tween<double>(
-      begin: 0.0, 
+      begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _movieCardController,
-      curve: Curves.elasticOut,
+      curve: Curves.easeOutBack, // Curva mais natural e elegante
     ));
   }
 

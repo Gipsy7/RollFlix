@@ -136,15 +136,15 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 200), // Mais suave
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
       begin: 1.0,
-      end: 0.98,
+      end: 0.96, // Menos compressão para suavidade
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Curves.easeInOut,
+      curve: Curves.easeInOutCubic, // Curva mais sofisticada
     ));
   }
 
@@ -156,12 +156,19 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // Visual limpo sem efeitos excessivos
+    // Sombras mais elegantes e suaves
     final defaultShadow = widget.boxShadow ?? (widget.elevation > 0 ? [
       BoxShadow(
-        color: Colors.black.withValues(alpha: 0.08),
-        blurRadius: widget.elevation * 3,
-        offset: Offset(0, widget.elevation * 2),
+        color: AppColors.shadowDark,
+        blurRadius: widget.elevation * 4,
+        offset: Offset(0, widget.elevation * 1.5),
+        spreadRadius: 0,
+      ),
+      BoxShadow(
+        color: AppColors.shadowLight,
+        blurRadius: widget.elevation * 2,
+        offset: Offset(0, widget.elevation * 0.5),
+        spreadRadius: 0,
       ),
     ] : null);
 
@@ -174,14 +181,14 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
             padding: widget.padding ?? const EdgeInsets.all(20),
             margin: widget.margin,
             decoration: BoxDecoration(
-              color: widget.backgroundColor ?? AppColors.surface.withValues(alpha: 0.95),
+              color: widget.backgroundColor ?? AppColors.surfaceElevated,
               borderRadius: BorderRadius.circular(widget.borderRadius),
               border: widget.border ?? Border.all(
-                color: AppColors.primary.withValues(alpha: 0.08),
+                color: AppColors.borderLight,
                 width: 1,
               ),
               boxShadow: defaultShadow,
-              // Gradiente removido para visual mais limpo
+              gradient: widget.enableGlassEffect ? AppColors.cardGradient : null,
             ),
             child: widget.child,
           ),

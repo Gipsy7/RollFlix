@@ -28,29 +28,29 @@ class _ProjectorAnimationState extends State<ProjectorAnimation>
     super.initState();
     
     _rotationController = AnimationController(
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 4), // Mais lento para suavidade
       vsync: this,
     );
-    
+
     _lightController = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3), // Mais lento
       vsync: this,
     );
-    
+
     _rotationAnimation = Tween<double>(
       begin: 0,
       end: 2 * math.pi,
     ).animate(CurvedAnimation(
       parent: _rotationController,
-      curve: Curves.linear,
+      curve: Curves.easeInOut, // Curva mais suave
     ));
-    
+
     _lightAnimation = Tween<double>(
-      begin: 0.3,
+      begin: 0.2, // Menos escuro
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _lightController,
-      curve: Curves.easeInOut,
+      curve: Curves.easeInOutCubic, // Curva mais sofisticada
     ));
     
     if (widget.isAnimating) {

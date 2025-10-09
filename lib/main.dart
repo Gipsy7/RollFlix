@@ -375,11 +375,14 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
+                  // Transição suave do gradiente da AppBar para o fundo escuro
+                  currentGradient.colors.first.withValues(alpha: 0.3),
+                  currentGradient.colors.last.withValues(alpha: 0.2),
                   const Color.fromARGB(255, 32, 31, 31).withValues(alpha: 0.95),
                   const Color.fromARGB(255, 29, 26, 26).withValues(alpha: 0.98),
                   const Color.fromARGB(211, 30, 31, 29),
                 ],
-                stops: const [0.0, 0.5, 1.0],
+                stops: const [0.0, 0.1, 0.3, 0.7, 1.0],
               ),
             ),
             child: CustomScrollView(
@@ -441,57 +444,100 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   Widget _buildPreferencesButton(bool isMobile) {
     final hasFilters = _userPreferencesController.rollPreferences.hasFilters;
-    
-    return Container(
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOutCubic,
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: hasFilters 
-            ? currentAccentColor.withValues(alpha: 0.9)
-            : AppColors.surfaceDark.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(12),
-        border: hasFilters 
-            ? Border.all(color: currentAccentColor, width: 2)
-            : null,
-        boxShadow: hasFilters 
-            ? [
-                BoxShadow(
-                  color: currentAccentColor.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : null,
+        gradient: hasFilters
+            ? AppColors.buttonGradient
+            : AppColors.cardGradient,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: hasFilters
+              ? AppColors.primary.withOpacity(0.4)
+              : AppColors.borderLight,
+          width: 1.5,
+        ),
+        boxShadow: hasFilters ? [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ] : [
+          BoxShadow(
+            color: AppColors.shadowDark,
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           onTap: _openRollPreferences,
-          child: Padding(
-            padding: EdgeInsets.all(isMobile ? 10 : 12),
+          splashColor: AppColors.primary.withOpacity(0.15),
+          highlightColor: AppColors.primary.withOpacity(0.08),
+          child: AnimatedPadding(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            padding: EdgeInsets.all(isMobile ? 12 : 14),
             child: Stack(
               children: [
-                Icon(
-                  Icons.tune,
-                  color: hasFilters 
-                      ? AppColors.backgroundDark
-                      : AppColors.textPrimary,
-                  size: isMobile ? 20 : 22,
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 400),
+                  transitionBuilder: (child, animation) => ScaleTransition(
+                    scale: animation,
+                    child: FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.tune,
+                    key: ValueKey(hasFilters),
+                    color: hasFilters
+                        ? AppColors.backgroundDark
+                        : AppColors.textPrimary,
+                    size: isMobile ? 22 : 24,
+                  ),
                 ),
                 if (hasFilters)
                   Positioned(
                     top: 0,
                     right: 0,
-                    child: Container(
-                      width: 8,
-                      height: 8,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.elasticOut,
+                      width: 12,
+                      height: 12,
                       decoration: BoxDecoration(
-                        color: AppColors.secondary,
+                        gradient: AppColors.secondaryGradient,
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: AppColors.backgroundDark,
-                          width: 1.5,
+                          width: 2,
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.secondary.withOpacity(0.4),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.filter_list,
+                        color: AppColors.backgroundDark,
+                        size: 6,
                       ),
                     ),
                   ),
@@ -504,65 +550,119 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildSwapButton(bool isMobile) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOutCubic,
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        gradient: _appModeController.isSeriesMode 
-            ? LinearGradient(
-                colors: [
-                  const Color.fromARGB(255, 147, 51, 234).withValues(alpha: 0.8),
-                  const Color.fromARGB(255, 219, 39, 119).withValues(alpha: 0.8),
-                ],
-              )
-            : LinearGradient(
-                colors: [
-                  AppColors.primary.withValues(alpha: 0.8),
-                  AppColors.primaryLight.withValues(alpha: 0.8),
-                ],
-              ),
+        gradient: _appModeController.isSeriesMode
+            ? AppColors.secondaryGradient
+            : AppColors.primaryGradient,
         borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: currentAccentColor.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(
+          color: _appModeController.isSeriesMode
+              ? AppColors.secondary.withOpacity(0.4)
+              : AppColors.primary.withOpacity(0.4),
+          width: 1.5,
+        ),
+        // Removido boxShadow para eliminar a borda iluminada retangular
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(30),
           onTap: _toggleContentMode,
-          child: Padding(
+          splashColor: currentAccentColor.withOpacity(0.2),
+          highlightColor: currentAccentColor.withOpacity(0.1),
+          child: AnimatedPadding(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut,
             padding: EdgeInsets.symmetric(
-              horizontal: isMobile ? 12 : 16,
-              vertical: 8,
+              horizontal: isMobile ? 14 : 18,
+              vertical: 10,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
-                  color: AppColors.textPrimary,
-                  size: isMobile ? 18 : 20,
-                ),
-                const SizedBox(width: 8),
-                SafeText(
-                  _appModeController.isSeriesMode ? 'SÉRIES' : 'FILMES',
-                  style: (isMobile 
-                      ? AppTextStyles.labelMedium
-                      : AppTextStyles.labelLarge).copyWith(
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 400),
+                  transitionBuilder: (child, animation) => RotationTransition(
+                    turns: animation,
+                    child: ScaleTransition(
+                      scale: animation,
+                      child: FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                    ),
+                  ),
+                  child: Icon(
+                    _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
+                    key: ValueKey(_appModeController.isSeriesMode),
                     color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
+                    size: isMobile ? 20 : 22,
                   ),
                 ),
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.swap_horiz,
-                  color: AppColors.textPrimary,
-                  size: isMobile ? 18 : 20,
+                const SizedBox(width: 10),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 400),
+                  transitionBuilder: (child, animation) => SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0.2, 0),
+                      end: Offset.zero,
+                    ).animate(CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                    )),
+                    child: FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    ),
+                  ),
+                  child: SafeText(
+                    _appModeController.isSeriesMode ? 'SÉRIES' : 'FILMES',
+                    key: ValueKey(_appModeController.isSeriesMode),
+                    style: (isMobile
+                        ? AppTextStyles.labelMedium
+                        : AppTextStyles.labelLarge).copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.5,
+                      shadows: [
+                        Shadow(
+                          color: AppColors.backgroundDark.withOpacity(0.3),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 400),
+                  transitionBuilder: (child, animation) => RotationTransition(
+                    turns: Tween<double>(
+                      begin: 0.25,
+                      end: 0,
+                    ).animate(CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.elasticOut,
+                    )),
+                    child: ScaleTransition(
+                      scale: animation,
+                      child: FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.swap_horiz,
+                    key: ValueKey('swap_${_appModeController.isSeriesMode}'),
+                    color: AppColors.textPrimary,
+                    size: isMobile ? 20 : 22,
+                  ),
                 ),
               ],
             ),

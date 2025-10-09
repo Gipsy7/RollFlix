@@ -1,107 +1,142 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Cinema Classic Theme - Yellow, Black & White
-  
-  // Primary Colors - Classic Cinema Gold
-  static const Color primary = Color(0xFFFFD700); // Gold
-  static const Color primaryLight = Color(0xFFFFF176); // Light Gold
-  static const Color primaryDark = Color(0xFFFFC107); // Dark Gold
-  
-  // Secondary Colors - Classic Red
-  static const Color secondary = Color(0xFFDC143C); // Crimson Red
-  static const Color secondaryLight = Color(0xFFFF5722); // Light Red
-  static const Color secondaryDark = Color(0xFFB71C1C); // Dark Red
-  
-  // Accent Colors - Classic White/Silver
-  static const Color accent = Color(0xFFF5F5F5); // Off White
+  // Cinema Classic Theme - Refined Yellow, Black & White
+
+  // Primary Colors - Premium Cinema Gold
+  static const Color primary = Color(0xFFFFD700); // Rich Gold
+  static const Color primaryLight = Color(0xFFFFE55C); // Soft Gold
+  static const Color primaryDark = Color(0xFFFFC107); // Deep Gold
+
+  // Secondary Colors - Elegant Crimson
+  static const Color secondary = Color(0xFFE91E63); // Modern Pink
+  static const Color secondaryLight = Color(0xFFFF4081); // Light Pink
+  static const Color secondaryDark = Color(0xFFC2185B); // Deep Pink
+
+  // Accent Colors - Pure Whites
+  static const Color accent = Color(0xFFF8F8F8); // Warm White
   static const Color accentLight = Color(0xFFFFFFFF); // Pure White
-  static const Color accentDark = Color(0xFFE0E0E0); // Light Gray
-  
-  // Background Colors - Classic Dark Cinema
-  static const Color backgroundDark = Color(0xFF0D0D0D); // Near Black
-  static const Color surfaceDark = Color(0xFF1A1A1A); // Dark Gray
-  static const Color surfaceVariantDark = Color(0xFF2D2D2D); // Medium Gray
-  
-  // Text Colors - High Contrast Cinema
-  static const Color textPrimary = Color(0xFFFFFFF8); // Cream White
+  static const Color accentDark = Color(0xFFE8E8E8); // Soft Gray
+
+  // Background Colors - Sophisticated Dark
+  static const Color backgroundDark = Color(0xFF0A0A0A); // Deep Black
+  static const Color surfaceDark = Color(0xFF121212); // Rich Dark
+  static const Color surfaceVariantDark = Color(0xFF1E1E1E); // Medium Dark
+  static const Color surfaceElevated = Color(0xFF2A2A2A); // Elevated Surface
+
+  // Text Colors - Enhanced Contrast
+  static const Color textPrimary = Color(0xFFFFFFFF); // Pure White
   static const Color textSecondary = Color(0xFFFFD700); // Gold
-  static const Color textTertiary = Color(0xFFB8B8B8); // Light Gray
-  static const Color textMuted = Color(0xFF757575); // Medium Gray
-  
-  // Interactive Colors - Cinema Gold
+  static const Color textTertiary = Color(0xFFB3B3B3); // Light Gray
+  static const Color textMuted = Color(0xFF808080); // Medium Gray
+  static const Color textHint = Color(0xFF606060); // Hint Gray
+
+  // Interactive Colors - Smooth Interactions
   static const Color interactive = Color(0xFFFFD700); // Gold
-  static const Color interactiveLight = Color(0xFFFFF176); // Light Gold
+  static const Color interactiveLight = Color(0xFFFFE55C); // Light Gold
   static const Color interactiveDark = Color(0xFFFFC107); // Dark Gold
+  static const Color interactiveHover = Color(0xFFFFEB3B); // Hover Gold
+
   // Legacy compatibility
   static const Color background = backgroundDark;
   static const Color surface = surfaceDark;
   static const Color surfaceVariant = surfaceVariantDark;
-  
-  // Cinema Specific Colors - Classic Theme
-  static const Color filmStrip = Color(0xFF2D2D2D); // Dark Gray
-  static const Color projectorLight = Color(0xFFFFF9C4); // Warm light
-  static const Color curtainRed = secondary; // Classic red curtain
-  
-  // Status Colors - Cinema Theme
+
+  // Cinema Specific Colors - Enhanced
+  static const Color filmStrip = Color(0xFF1A1A1A); // Dark Film
+  static const Color projectorLight = Color(0xFFFFF8E1); // Warm Light
+  static const Color curtainRed = secondary; // Elegant Red
+
+  // Status Colors - Modern Palette
   static const Color success = Color(0xFF4CAF50); // Green
   static const Color warning = Color(0xFFFF9800); // Orange
-  static const Color error = secondary; // Red
+  static const Color error = Color(0xFFF44336); // Red
   static const Color info = primary; // Gold
+
+  // Subtle Colors - For Depth
+  static const Color shadowLight = Color(0x1FFFFFFF); // White Shadow
+  static const Color shadowDark = Color(0x4D000000); // Black Shadow
+  static const Color borderLight = Color(0x33FFFFFF); // Light Border
+  static const Color borderDark = Color(0x1FFFFFFF); // Dark Border
   
-  // Classic Cinema Gradients
+  // Enhanced Cinema Gradients - Smoother & More Elegant
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [primaryDark, primary, primaryLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
+    stops: [0.0, 0.5, 1.0],
   );
-  
+
   static const LinearGradient secondaryGradient = LinearGradient(
     colors: [secondaryDark, secondary, secondaryLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
+    stops: [0.0, 0.5, 1.0],
   );
-  
+
   static const LinearGradient accentGradient = LinearGradient(
     colors: [accentDark, accent, accentLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
+    stops: [0.0, 0.5, 1.0],
   );
-  
+
   static const LinearGradient backgroundGradient = LinearGradient(
-    colors: [backgroundDark, surfaceDark],
+    colors: [backgroundDark, surfaceDark, surfaceVariantDark],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-  );
-  
-  static const LinearGradient cinemaGradient = LinearGradient(
-    colors: [backgroundDark, surfaceDark, primary],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
     stops: [0.0, 0.7, 1.0],
   );
-  
+
+  static const LinearGradient cinemaGradient = LinearGradient(
+    colors: [backgroundDark, surfaceDark, surfaceElevated, Color(0x1AFFD700)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    stops: [0.0, 0.4, 0.8, 1.0],
+  );
+
   static const LinearGradient goldGradient = LinearGradient(
     colors: [primaryDark, primary, primaryLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
+    stops: [0.0, 0.5, 1.0],
   );
-  
-  // Classic film effect gradient
+
+  // Enhanced film effect gradient
   static const LinearGradient glassGradient = LinearGradient(
     colors: [
-      Color(0x15FFD700), // Gold tint
+      Color(0x14FFD700), // Subtle gold tint
       Color(0x05FFD700),
     ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
+  );  // New gradients for enhanced UI
+  static const LinearGradient cardGradient = LinearGradient(
+    colors: [surfaceDark, surfaceElevated],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    stops: [0.0, 1.0],
+  );
+
+  static const LinearGradient buttonGradient = LinearGradient(
+    colors: [primaryDark, primary],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    stops: [0.0, 1.0],
+  );
+
+  static const LinearGradient hoverGradient = LinearGradient(
+    colors: [interactiveDark, interactive],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    stops: [0.0, 1.0],
   );
 }
 
 class AppTextStyles {
-  // Modern Typography - Clean & Elegant
-  
-  // Display Styles - Modern Headers
+  // Enhanced Typography - Premium & Refined
+
+  // Display Styles - Bold & Impactful
   static const TextStyle displayLarge = TextStyle(
     fontSize: 36,
     fontWeight: FontWeight.w700,
@@ -109,32 +144,32 @@ class AppTextStyles {
     height: 1.1,
     letterSpacing: -1.0,
   );
-  
+
   static const TextStyle displayMedium = TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
-    height: 1.2,
-    letterSpacing: -0.5,
+    height: 1.15,
+    letterSpacing: -0.75,
   );
-  
+
   static const TextStyle displaySmall = TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.2,
-    letterSpacing: -0.25,
+    letterSpacing: -0.5,
   );
-  
-  // Headline Styles - Modern & Clean
+
+  // Headline Styles - Elegant & Clear
   static const TextStyle headlineLarge = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
-    height: 1.3,
-    letterSpacing: 0.5,
+    height: 1.25,
+    letterSpacing: -0.25,
   );
-  
+
   static const TextStyle headlineMedium = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w500,
@@ -142,58 +177,90 @@ class AppTextStyles {
     height: 1.3,
     letterSpacing: -0.15,
   );
-  
+
   static const TextStyle headlineSmall = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
-    height: 1.3,
+    height: 1.35,
+    letterSpacing: -0.1,
   );
-  
-  // Body Styles - Clean & Readable
+
+  // Body Styles - Highly Readable
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w400,
     color: AppColors.textPrimary,
-    height: 1.6,
+    height: 1.5,
+    letterSpacing: 0.1,
   );
-  
+
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: AppColors.textSecondary,
-    height: 1.5,
+    color: AppColors.textTertiary,
+    height: 1.45,
+    letterSpacing: 0.05,
   );
-  
+
   static const TextStyle bodySmall = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    color: AppColors.textTertiary,
+    color: AppColors.textMuted,
     height: 1.4,
+    letterSpacing: 0.05,
   );
-  
-  // Label Styles - Modern & Clean
+
+  // Label Styles - Interactive & Clear
   static const TextStyle labelLarge = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
-    letterSpacing: 0.1,
+    height: 1.2,
+    letterSpacing: 0.5,
   );
-  
+
   static const TextStyle labelMedium = TextStyle(
     fontSize: 12,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     color: AppColors.textSecondary,
-    letterSpacing: 0.2,
+    height: 1.2,
+    letterSpacing: 0.5,
   );
-  
+
   static const TextStyle labelSmall = TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textTertiary,
-    letterSpacing: 0.3,
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textMuted,
+    height: 1.2,
+    letterSpacing: 0.5,
   );
-  
+
+  // Special Styles - For Emphasis
+  static const TextStyle titleLarge = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+    color: AppColors.primary,
+    height: 1.2,
+    letterSpacing: -0.25,
+  );
+
+  static const TextStyle titleMedium = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    color: AppColors.secondary,
+    height: 1.25,
+    letterSpacing: -0.15,
+  );
+
+  static const TextStyle titleSmall = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textSecondary,
+    height: 1.3,
+    letterSpacing: -0.1,
+  );
+
   // Special Cinema Styles - Modern Cinema
   static const TextStyle cinemaTitle = TextStyle(
     fontSize: 32,
@@ -202,7 +269,7 @@ class AppTextStyles {
     letterSpacing: -0.5,
     height: 1.1,
   );
-  
+
   static const TextStyle genreLabel = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w500,
