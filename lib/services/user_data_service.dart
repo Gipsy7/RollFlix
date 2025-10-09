@@ -372,6 +372,48 @@ class UserDataService {
     }
   }
 
+  // ==================== USER RESOURCES ====================
+
+  /// Salva recursos do usuário no Firestore
+  static Future<void> saveUserResources(UserResources resources) async {
+    try {
+      final userDoc = _currentUserDoc;
+      if (userDoc == null) {
+        debugPrint('⚠️ Usuário não logado - user resources não serão salvos no Firebase');
+        return;
+      }
+
+      await userDoc.set({
+        'userResources': resources.toJson(),
+        'lastUpdated': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      debugPrint('✅ User resources salvos no Firebase');
+    } catch (e) {
+      debugPrint('❌ Erro ao salvar user resources no Firebase: $e');
+      rethrow;
+    }
+  }
+
+  /// Carrega recursos do usuário do Firestore
+  static Future<UserResources?> loadUserResources() async {
+    try {
+      final userDoc = _currentUserDoc;
+      if (userDoc == null) return null;
+
+      final doc = await userDoc.get();
+      if (!doc.exists) return null;
+
+      final data = doc.data() as Map<String, dynamic>?;
+      if (data == null || !data.containsKey('userResources')) return null;
+
+      return UserResources.fromJson(data['userResources']);
+    } catch (e) {
+      debugPrint('❌ Erro ao carregar user resources do Firebase: $e');
+      return null;
+    }
+  }
+
   /// Limpa dados do usuário no Firebase (usado ao fazer logout)
   static Future<void> clearUserData() async {
     try {

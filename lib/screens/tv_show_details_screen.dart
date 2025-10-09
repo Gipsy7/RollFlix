@@ -9,6 +9,7 @@ import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
+import '../controllers/user_preferences_controller.dart';
 import 'actor_details_screen.dart';
 
 class TVShowDetailsScreen extends StatefulWidget {
@@ -190,13 +191,55 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                 color: isWatched ? Colors.green : Colors.white,
               ),
               tooltip: isWatched ? 'Marcar como não assistido' : 'Marcar como assistido',
-              onPressed: () {
+              onPressed: () async {
+                // Verifica se há recursos disponíveis para assistidos
+                final userPrefsController = UserPreferencesController.instance;
+                if (!userPrefsController.canUseResource(ResourceType.watched)) {
+                  final cooldown = userPrefsController.getResourceCooldown(ResourceType.watched);
+                  if (cooldown != null) {
+                    final hours = cooldown.inHours;
+                    final minutes = cooldown.inMinutes.remainder(60);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Sem recursos para assistidos! Recarrega em ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}h'),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 3),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Sem recursos para assistidos disponíveis!'),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 3),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                  return;
+                }
+
+                // Consome recurso de assistido
+                final consumed = await userPrefsController.consumeResource(ResourceType.watched);
+                if (!consumed) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Erro ao consumir recurso de assistido'),
+                      backgroundColor: Colors.red,
+                      duration: const Duration(seconds: 2),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  return;
+                }
+
                 _watchedController.toggleTVShowWatched(widget.tvShow);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      isWatched 
-                          ? 'Removido de assistidos' 
+                      isWatched
+                          ? 'Removido de assistidos'
                           : 'Marcado como assistido',
                     ),
                     duration: const Duration(seconds: 2),
@@ -218,13 +261,55 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                 color: isFavorite ? Colors.red : Colors.white,
               ),
               tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
-              onPressed: () {
+              onPressed: () async {
+                // Verifica se há recursos disponíveis para favoritos
+                final userPrefsController = UserPreferencesController.instance;
+                if (!userPrefsController.canUseResource(ResourceType.favorite)) {
+                  final cooldown = userPrefsController.getResourceCooldown(ResourceType.favorite);
+                  if (cooldown != null) {
+                    final hours = cooldown.inHours;
+                    final minutes = cooldown.inMinutes.remainder(60);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Sem recursos para favoritos! Recarrega em ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}h'),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 3),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Sem recursos para favoritos disponíveis!'),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 3),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                  return;
+                }
+
+                // Consome recurso de favorito
+                final consumed = await userPrefsController.consumeResource(ResourceType.favorite);
+                if (!consumed) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Erro ao consumir recurso de favorito'),
+                      backgroundColor: Colors.red,
+                      duration: const Duration(seconds: 2),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  return;
+                }
+
                 _favoritesController.toggleTVShowFavorite(widget.tvShow);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      isFavorite 
-                          ? 'Removido dos favoritos' 
+                      isFavorite
+                          ? 'Removido dos favoritos'
                           : 'Adicionado aos favoritos',
                     ),
                     duration: const Duration(seconds: 2),

@@ -94,6 +94,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     
     _setupListeners();
     _initializeApp();
+    _tryReloadResources();
   }
   
   /// Configura listeners de forma segura
@@ -131,6 +132,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         }
       }
     });
+  }
+
+  /// Tenta recarregar recursos que expiraram
+  void _tryReloadResources() {
+    _userPreferencesController.tryReloadResources();
   }
 
   @override
@@ -204,12 +210,36 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   /// Método unificado para sortear filmes ou séries
   Future<void> _handleRollContent() async {
     debugPrint('=== HANDLE ROLL CONTENT ===');
+
+    // Verifica se há recursos disponíveis para rolagem
+    if (!_userPreferencesController.canUseResource(ResourceType.roll)) {
+      final cooldown = _userPreferencesController.getResourceCooldown(ResourceType.roll);
+      if (cooldown != null) {
+        final hours = cooldown.inHours;
+        final minutes = cooldown.inMinutes.remainder(60);
+        AppSnackBar.showError(
+          context,
+          'Sem recursos para rolagem! Recarrega em ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}h'
+        );
+      } else {
+        AppSnackBar.showError(context, 'Sem recursos para rolagem disponíveis!');
+      }
+      return;
+    }
+
     final selectedGenre = _appModeController.selectedGenre;
     debugPrint('selectedGenre: $selectedGenre');
     debugPrint('isSeriesMode: ${_appModeController.isSeriesMode}');
-    
+
     if (selectedGenre == null) {
       AppSnackBar.showInfo(context, 'Selecione um gênero primeiro');
+      return;
+    }
+
+    // Consome recurso de rolagem
+    final consumed = await _userPreferencesController.consumeResource(ResourceType.roll);
+    if (!consumed) {
+      AppSnackBar.showError(context, 'Erro ao consumir recurso de rolagem');
       return;
     }
 
@@ -773,14 +803,20 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   Widget _buildContent(bool isMobile) {
     final horizontalPadding = isMobile ? 16.0 : 24.0;
-    
+
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Seção de estatísticas rápidas
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 10),
+            child: _buildQuickStats(isMobile),
+          ),
+
           // GenreSelection SEM padding para ocupar 100% da largura
           _buildGenreSelection(isMobile),
-          
+
           // Outros elementos COM padding
           Padding(
             padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
@@ -789,7 +825,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               children: [
                 // Removido o botão _buildActionButtons - agora está no GenreWheel
                 const SizedBox(height: 16),
-                if (_showResultCard && (_selectedMovie != null || _selectedTVShow != null)) 
+                if (_showResultCard && (_selectedMovie != null || _selectedTVShow != null))
                   Builder(
                     builder: (context) => _buildContentCard(context, isMobile),
                   ),
@@ -943,6 +979,99 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           )
         else
           const SizedBox.shrink(),
+      ],
+    );
+  }
+
+  Widget _buildQuickStats(bool isMobile) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildResourceItem(
+            icon: Icons.play_circle_filled,
+            label: 'Rolagens',
+            resourceType: ResourceType.roll,
+            color: Colors.blue,
+            isMobile: isMobile,
+          ),
+          _buildResourceItem(
+            icon: Icons.favorite,
+            label: 'Favoritos',
+            resourceType: ResourceType.favorite,
+            color: Colors.red,
+            isMobile: isMobile,
+          ),
+          _buildResourceItem(
+            icon: Icons.check_circle,
+            label: 'Assistidos',
+            resourceType: ResourceType.watched,
+            color: Colors.green,
+            isMobile: isMobile,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResourceItem({
+    required IconData icon,
+    required String label,
+    required ResourceType resourceType,
+    required Color color,
+    required bool isMobile,
+  }) {
+    final uses = _userPreferencesController.userResources.getUses(resourceType);
+    final canUse = _userPreferencesController.canUseResource(resourceType);
+    final cooldown = _userPreferencesController.getResourceCooldown(resourceType);
+
+    String displayValue;
+    Color displayColor = color;
+    String? subtitle;
+
+    if (canUse) {
+      displayValue = uses.toString();
+      subtitle = 'Disponível';
+    } else if (cooldown != null) {
+      // Formatar tempo restante
+      final hours = cooldown.inHours;
+      final minutes = cooldown.inMinutes.remainder(60);
+      displayValue = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+      displayColor = Colors.grey;
+      subtitle = 'Recarregando';
+    } else {
+      displayValue = '0';
+      displayColor = Colors.grey;
+      subtitle = 'Indisponível';
+    }
+
+    return Column(
+      children: [
+        Icon(icon, color: displayColor, size: isMobile ? 20 : 24),
+        const SizedBox(height: 4),
+        Text(
+          displayValue,
+          style: (isMobile ? AppTextStyles.labelLarge : AppTextStyles.headlineSmall).copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          subtitle,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: canUse ? Colors.white.withOpacity(0.7) : Colors.red.withOpacity(0.7),
+            fontSize: isMobile ? 10 : 12,
+          ),
+        ),
       ],
     );
   }
