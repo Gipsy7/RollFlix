@@ -6,6 +6,7 @@ import '../models/quiz_question.dart';
 import '../services/quiz_service.dart';
 import '../utils/color_extensions.dart';
 import '../widgets/app_card.dart';
+import '../widgets/ux_components.dart';
 import 'quiz_result_screen.dart';
 
 class MovieQuizScreen extends StatefulWidget {
@@ -42,6 +43,10 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
     super.dispose();
   }
 
+  Future<void> _refreshQuiz() async {
+    await _loadQuiz();
+  }
+
   Future<void> _loadQuiz() async {
     setState(() => _isLoading = true);
     
@@ -61,7 +66,7 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao carregar quiz: $e')),
+          SnackBar(content: Text('Erro ao carregar quiz: ')),
         );
       }
     }
@@ -150,15 +155,8 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
         appBar: AppBar(
           title: const Text('Quiz de Filmes'),
         ),
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Preparando seu quiz...'),
-            ],
-          ),
+        body: UXComponents.loadingWithText(
+          text: 'Preparando seu quiz...',
         ),
       );
     }
@@ -168,20 +166,10 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
         appBar: AppBar(
           title: const Text('Quiz de Filmes'),
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              const Text('Não foi possível carregar o quiz'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _loadQuiz,
-                child: const Text('Tentar Novamente'),
-              ),
-            ],
-          ),
+        body: UXComponents.errorState(
+          title: 'N�o foi poss�vel carregar o quiz',
+          message: 'Verifique sua conex�o com a internet e tente novamente.',
+          onRetryPressed: _loadQuiz,
         ),
       );
     }
@@ -196,297 +184,300 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                '${_currentQuestionIndex + 1}/${_questions.length}',
+                '/',
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Barra de progresso
-          LinearProgressIndicator(
-            value: (_currentQuestionIndex + 1) / _questions.length,
-            backgroundColor: Colors.grey[300],
-            valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
-          ),
-          
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Pontuação e tempo
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppCard(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.stars, color: Colors.amber),
-                              const SizedBox(width: 8),
-                              Text(
-                                '$_totalPoints pts',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      AppCard(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.timer, color: Colors.blue),
-                              const SizedBox(width: 8),
-                              Text(
-                                _formatTime(_questionTimeSpent),
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Imagem (se disponível)
-                  if (currentQuestion.type == QuestionType.image && 
-                      currentQuestion.imageUrl != null)
-                    AppCard(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          currentQuestion.imageUrl!,
-                          height: 300,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 300,
-                              color: Colors.grey[300],
-                              child: const Icon(Icons.movie, size: 64),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  
-                  if (currentQuestion.type == QuestionType.image)
-                    const SizedBox(height: 24),
-                  
-                  // Pergunta
-                  AppCard(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                _getQuestionTypeIcon(currentQuestion.type),
-                                color: Colors.blue,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                _getQuestionTypeLabel(currentQuestion.type),
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const Spacer(),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: _getDifficultyColor(currentQuestion.difficulty)
-                                      .withOpacitySafe(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  '${currentQuestion.points} pts',
-                                  style: TextStyle(
-                                    color: _getDifficultyColor(currentQuestion.difficulty),
-                                    fontSize: 12,
+      body: RefreshIndicator(
+        onRefresh: _refreshQuiz,
+        child: Column(
+          children: [
+            // Barra de progresso
+            LinearProgressIndicator(
+              value: (_currentQuestionIndex + 1) / _questions.length,
+              backgroundColor: Colors.grey[300],
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+            ),
+            
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Pontua��o e tempo
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AppCard(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.stars, color: Colors.amber),
+                                const SizedBox(width: 8),
+                                Text(
+                                  ' pts',
+                                  style: const TextStyle(
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            currentQuestion.question,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Opções
-                  ...currentQuestion.options.map((option) {
-                    final isSelected = _selectedAnswer == option;
-                    final isCorrect = option == currentQuestion.correctAnswer;
-                    
-                    Color? backgroundColor;
-                    Color? borderColor;
-                    
-                    if (_isAnswered) {
-                      if (isCorrect) {
-                        backgroundColor = Colors.green.withOpacitySafe(0.1);
-                        borderColor = Colors.green;
-                      } else if (isSelected) {
-                        backgroundColor = Colors.red.withOpacitySafe(0.1);
-                        borderColor = Colors.red;
-                      }
-                    } else if (isSelected) {
-                      backgroundColor = Colors.blue.withOpacitySafe(0.1);
-                      borderColor = Colors.blue;
-                    }
-                    
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: InkWell(
-                        onTap: () => _selectAnswer(option),
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: backgroundColor ?? Colors.white,
-                            border: Border.all(
-                              color: borderColor ?? Colors.grey[300]!,
-                              width: 2,
+                        ),
+                        AppCard(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
                             ),
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacitySafe(0.05),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  option,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: isSelected 
-                                        ? FontWeight.w600 
-                                        : FontWeight.normal,
+                            child: Row(
+                              children: [
+                                const Icon(Icons.timer, color: Colors.blue),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _formatTime(_questionTimeSpent),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
-                              if (_isAnswered && isCorrect)
-                                const Icon(Icons.check_circle, color: Colors.green),
-                              if (_isAnswered && isSelected && !isCorrect)
-                                const Icon(Icons.cancel, color: Colors.red),
-                            ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Imagem (se dispon�vel)
+                    if (currentQuestion.type == QuestionType.image && 
+                        currentQuestion.imageUrl != null)
+                      AppCard(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            currentQuestion.imageUrl!,
+                            height: 300,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                height: 300,
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.movie, size: 64),
+                              );
+                            },
                           ),
                         ),
                       ),
-                    );
-                  }),
-                  
-                  // Explicação (após responder)
-                  if (_isAnswered && currentQuestion.explanation != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: AppCard(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Icon(
-                                Icons.info_outline,
-                                color: Colors.blue,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  currentQuestion.explanation!,
-                                  style: const TextStyle(fontSize: 14),
+                    
+                    if (currentQuestion.type == QuestionType.image)
+                      const SizedBox(height: 24),
+                    
+                    // Pergunta
+                    AppCard(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  _getQuestionTypeIcon(currentQuestion.type),
+                                  color: Colors.blue,
                                 ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _getQuestionTypeLabel(currentQuestion.type),
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const Spacer(),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _getDifficultyColor(currentQuestion.difficulty)
+                                        .withOpacitySafe(0.2),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    ' pts',
+                                    style: TextStyle(
+                                      color: _getDifficultyColor(currentQuestion.difficulty),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              currentQuestion.question,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Op��es
+                    ...currentQuestion.options.map((option) {
+                      final isSelected = _selectedAnswer == option;
+                      final isCorrect = option == currentQuestion.correctAnswer;
+                      
+                      Color? backgroundColor;
+                      Color? borderColor;
+                      
+                      if (_isAnswered) {
+                        if (isCorrect) {
+                          backgroundColor = Colors.green.withOpacitySafe(0.1);
+                          borderColor = Colors.green;
+                        } else if (isSelected) {
+                          backgroundColor = Colors.red.withOpacitySafe(0.1);
+                          borderColor = Colors.red;
+                        }
+                      } else if (isSelected) {
+                        backgroundColor = Colors.blue.withOpacitySafe(0.1);
+                        borderColor = Colors.blue;
+                      }
+                      
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: InkWell(
+                          onTap: () => _selectAnswer(option),
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: backgroundColor ?? Colors.white,
+                              border: Border.all(
+                                color: borderColor ?? Colors.grey[300]!,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacitySafe(0.05),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    option,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: isSelected 
+                                          ? FontWeight.w600 
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                                if (_isAnswered && isCorrect)
+                                  const Icon(Icons.check_circle, color: Colors.green),
+                                if (_isAnswered && isSelected && !isCorrect)
+                                  const Icon(Icons.cancel, color: Colors.red),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                    
+                    // Explica��o (ap�s responder)
+                    if (_isAnswered && currentQuestion.explanation != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: AppCard(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.info_outline,
+                                  color: Colors.blue,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    currentQuestion.explanation!,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Botões de ação
-                  if (!_isAnswered)
-                    ElevatedButton(
-                      onPressed: _selectedAnswer != null ? _confirmAnswer : null,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Bot�es de a��o
+                    if (!_isAnswered)
+                      ElevatedButton(
+                        onPressed: _selectedAnswer != null ? _confirmAnswer : null,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Confirmar Resposta',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      )
+                    else
+                      ElevatedButton(
+                        onPressed: _nextQuestion,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          _currentQuestionIndex < _questions.length - 1
+                              ? 'Pr�xima Pergunta'
+                              : 'Ver Resultado',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      child: const Text(
-                        'Confirmar Resposta',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    )
-                  else
-                    ElevatedButton(
-                      onPressed: _nextQuestion,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        _currentQuestionIndex < _questions.length - 1
-                            ? 'Próxima Pergunta'
-                            : 'Ver Resultado',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -494,7 +485,7 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
   String _formatTime(int seconds) {
     final minutes = seconds ~/ 60;
     final secs = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
+    return ':';
   }
 
   IconData _getQuestionTypeIcon(QuestionType type) {
@@ -523,13 +514,13 @@ class _MovieQuizScreenState extends State<MovieQuizScreen> {
       case QuestionType.image:
         return 'IMAGEM';
       case QuestionType.year:
-        return 'ANO DE LANÇAMENTO';
+        return 'ANO DE LAN�AMENTO';
       case QuestionType.cast:
         return 'ELENCO';
       case QuestionType.director:
         return 'DIRETOR';
       case QuestionType.quote:
-        return 'CITAÇÃO';
+        return 'CITA��O';
       case QuestionType.trivia:
         return 'CURIOSIDADE';
     }
