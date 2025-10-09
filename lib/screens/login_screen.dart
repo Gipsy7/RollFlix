@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
+import '../widgets/ux_components.dart';
 import '../main.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
@@ -142,8 +143,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 32),
                         
                         if (_isLoading)
-                          const CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                          UXComponents.loadingWithText(
+                            text: 'Conectando com Google...',
                           )
                         else ...[
                           // Botão Google

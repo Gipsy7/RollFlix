@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../constants/app_constants.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/error_widgets.dart';
+import '../widgets/ux_components.dart';
 import 'movie_details_screen.dart';
 import 'tv_show_details_screen.dart';
 
@@ -168,15 +169,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   Widget _buildBody(List<FavoriteItem> favorites, bool isMobile, Color accentColor) {
     if (_favoritesController.isLoading) {
-      return Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(accentColor),
-        ),
+      return UXComponents.loadingWithText(
+        text: 'Carregando favoritos...',
       );
     }
 
     if (favorites.isEmpty) {
-      return _buildEmptyState(accentColor);
+      final contentType = _appModeController.isSeriesMode ? 'séries' : 'filmes';
+      return UXComponents.emptyState(
+        title: 'Nenhum favorito ainda',
+        message: 'Adicione $contentType aos favoritos\npara vê-los aqui!',
+        icon: _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
+      );
     }
 
     return ListView.builder(
@@ -186,38 +190,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         final favorite = favorites[index];
         return _buildFavoriteCard(favorite, isMobile, accentColor);
       },
-    );
-  }
-
-  Widget _buildEmptyState(Color accentColor) {
-    final contentType = _appModeController.isSeriesMode ? 'séries' : 'filmes';
-    
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
-            size: 80,
-            color: accentColor.withValues(alpha: 0.5),
-          ),
-          const SizedBox(height: 16),
-          SafeText(
-            'Nenhum favorito ainda',
-            style: AppTextStyles.headlineSmall.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          SafeText(
-            'Adicione $contentType aos favoritos\npara vê-los aqui!',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textTertiary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
     );
   }
 

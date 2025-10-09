@@ -6,6 +6,7 @@ import '../services/movie_service.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/movie_widgets.dart';
 import '../widgets/optimized_widgets.dart';
+import '../widgets/ux_components.dart';
 import '../controllers/app_mode_controller.dart';
 import 'movie_details_screen.dart';
 import 'tv_series_search_screen.dart';
@@ -753,22 +754,9 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         if (_isLoadingMore && movies.isNotEmpty)
           Container(
             padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                const SizedBox(width: 12),
-                SafeText(
-                  'Carregando mais filmes...',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
+            child: UXComponents.loadingWithText(
+              text: 'Carregando mais resultados...',
+              spinnerSize: 20,
             ),
           ),
       ],

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
+import '../widgets/ux_components.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
 import '../controllers/movie_controller.dart';
@@ -142,10 +143,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         elevation: 0,
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
+          ? UXComponents.loadingWithText(
+              text: 'Carregando perfil...',
             )
           : SingleChildScrollView(
               padding: EdgeInsets.all(isMobile ? 16 : 24),
