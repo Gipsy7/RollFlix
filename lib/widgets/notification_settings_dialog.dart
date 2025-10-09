@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../controllers/notification_controller.dart';
+import '../../controllers/app_mode_controller.dart';
 import '../../theme/app_theme.dart';
 
 /// Diálogo para configurar notificações
@@ -12,11 +13,17 @@ class NotificationSettingsDialog extends StatefulWidget {
 
 class _NotificationSettingsDialogState extends State<NotificationSettingsDialog> {
   late final NotificationController _notificationController;
+  late final AppModeController _appModeController;
+
+  // Getters para cores dinâmicas baseadas no modo série
+  Color get primaryColor => _appModeController.isSeriesMode ? AppColors.secondary : AppColors.primary;
+  Color get accentColor => _appModeController.isSeriesMode ? AppColors.secondary : AppColors.primary;
 
   @override
   void initState() {
     super.initState();
     _notificationController = NotificationController.instance;
+    _appModeController = AppModeController.instance;
   }
 
   @override
@@ -34,7 +41,7 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
         children: [
           Icon(
             Icons.notifications,
-            color: AppColors.primary,
+            color: primaryColor,
             size: 28,
           ),
           const SizedBox(width: 12),
@@ -128,7 +135,7 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
                 icon: const Icon(Icons.play_arrow),
                 label: const Text('Testar Notificação'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: primaryColor,
                   foregroundColor: AppColors.backgroundDark,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -156,7 +163,7 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
           child: Text(
             'Fechar',
             style: AppTextStyles.labelLarge.copyWith(
-              color: AppColors.primary,
+              color: primaryColor,
             ),
           ),
         ),
@@ -206,8 +213,8 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: AppColors.primary,
-            activeTrackColor: AppColors.primary.withOpacity(0.3),
+            activeColor: primaryColor,
+            activeTrackColor: primaryColor.withOpacity(0.3),
             inactiveThumbColor: AppColors.textSecondary,
             inactiveTrackColor: AppColors.borderLight,
           ),
