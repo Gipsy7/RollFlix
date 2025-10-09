@@ -526,8 +526,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                     Icons.tune,
                     key: ValueKey(hasFilters),
                     color: hasFilters
-                        ? AppColors.backgroundDark
-                        : AppColors.textPrimary,
+                        ? (!_appModeController.isSeriesMode ? AppColors.backgroundDark : Colors.white )
+                        : (!_appModeController.isSeriesMode ? AppColors.textPrimary :Colors.black ),
                     size: isMobile ? 22 : 24,
                   ),
                 ),
@@ -620,7 +620,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                   child: Icon(
                     _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
                     key: ValueKey(_appModeController.isSeriesMode),
-                    color: AppColors.textPrimary,
+                    color: !_appModeController.isSeriesMode 
+                        ? Colors.black 
+                        : AppColors.textPrimary,
                     size: isMobile ? 20 : 22,
                   ),
                 ),
@@ -646,7 +648,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                     style: (isMobile
                         ? AppTextStyles.labelMedium
                         : AppTextStyles.labelLarge).copyWith(
-                      color: AppColors.textPrimary,
+                      color: !_appModeController.isSeriesMode 
+                          ? Colors.black 
+                          : AppColors.textPrimary,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1.5,
                       shadows: [
@@ -681,7 +685,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                   child: Icon(
                     Icons.swap_horiz,
                     key: ValueKey('swap_${_appModeController.isSeriesMode}'),
-                    color: AppColors.textPrimary,
+                    color: !_appModeController.isSeriesMode 
+                          ? Colors.black 
+                          : AppColors.textPrimary,
                     size: isMobile ? 20 : 22,
                   ),
                 ),
