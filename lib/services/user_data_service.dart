@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../models/favorite_item.dart';
 import '../models/watched_item.dart';
+import '../models/roll_preferences.dart';
+import '../models/date_night_preferences.dart';
+import '../controllers/user_preferences_controller.dart';
 import 'auth_service.dart';
 
 /// Serviço para gerenciar dados do usuário no Firestore
@@ -247,6 +250,128 @@ class UserDataService {
       ..sort((a, b) => b.watchedAt.compareTo(a.watchedAt)); // Mais recentes primeiro
   }
   
+  // ==================== PREFERÊNCIAS ====================
+
+  /// Salva preferências de sorteio no Firestore
+  static Future<void> saveRollPreferences(RollPreferences preferences) async {
+    try {
+      final userDoc = _currentUserDoc;
+      if (userDoc == null) {
+        debugPrint('⚠️ Usuário não logado - roll preferences não serão salvas no Firebase');
+        return;
+      }
+
+      await userDoc.set({
+        'rollPreferences': preferences.toJson(),
+        'lastUpdated': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      debugPrint('✅ Roll preferences salvas no Firebase');
+    } catch (e) {
+      debugPrint('❌ Erro ao salvar roll preferences no Firebase: $e');
+      rethrow;
+    }
+  }
+
+  /// Carrega preferências de sorteio do Firestore
+  static Future<RollPreferences?> loadRollPreferences() async {
+    try {
+      final userDoc = _currentUserDoc;
+      if (userDoc == null) return null;
+
+      final doc = await userDoc.get();
+      if (!doc.exists) return null;
+
+      final data = doc.data() as Map<String, dynamic>?;
+      if (data == null || !data.containsKey('rollPreferences')) return null;
+
+      return RollPreferences.fromJson(data['rollPreferences']);
+    } catch (e) {
+      debugPrint('❌ Erro ao carregar roll preferences do Firebase: $e');
+      return null;
+    }
+  }
+
+  /// Salva preferências do date night no Firestore
+  static Future<void> saveDateNightPreferences(DateNightPreferences preferences) async {
+    try {
+      final userDoc = _currentUserDoc;
+      if (userDoc == null) {
+        debugPrint('⚠️ Usuário não logado - date night preferences não serão salvas no Firebase');
+        return;
+      }
+
+      await userDoc.set({
+        'dateNightPreferences': preferences.toJson(),
+        'lastUpdated': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      debugPrint('✅ Date night preferences salvas no Firebase');
+    } catch (e) {
+      debugPrint('❌ Erro ao salvar date night preferences no Firebase: $e');
+      rethrow;
+    }
+  }
+
+  /// Carrega preferências do date night do Firestore
+  static Future<DateNightPreferences?> loadDateNightPreferences() async {
+    try {
+      final userDoc = _currentUserDoc;
+      if (userDoc == null) return null;
+
+      final doc = await userDoc.get();
+      if (!doc.exists) return null;
+
+      final data = doc.data() as Map<String, dynamic>?;
+      if (data == null || !data.containsKey('dateNightPreferences')) return null;
+
+      return DateNightPreferences.fromJson(data['dateNightPreferences']);
+    } catch (e) {
+      debugPrint('❌ Erro ao carregar date night preferences do Firebase: $e');
+      return null;
+    }
+  }
+
+  /// Salva estatísticas de sorteios no Firestore
+  static Future<void> saveRollStats(RollStats stats) async {
+    try {
+      final userDoc = _currentUserDoc;
+      if (userDoc == null) {
+        debugPrint('⚠️ Usuário não logado - roll stats não serão salvas no Firebase');
+        return;
+      }
+
+      await userDoc.set({
+        'rollStats': stats.toJson(),
+        'lastUpdated': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      debugPrint('✅ Roll stats salvas no Firebase');
+    } catch (e) {
+      debugPrint('❌ Erro ao salvar roll stats no Firebase: $e');
+      rethrow;
+    }
+  }
+
+  /// Carrega estatísticas de sorteios do Firestore
+  static Future<RollStats?> loadRollStats() async {
+    try {
+      final userDoc = _currentUserDoc;
+      if (userDoc == null) return null;
+
+      final doc = await userDoc.get();
+      if (!doc.exists) return null;
+
+      final data = doc.data() as Map<String, dynamic>?;
+      if (data == null || !data.containsKey('rollStats')) return null;
+
+      return RollStats.fromJson(data['rollStats']);
+    } catch (e) {
+      debugPrint('❌ Erro ao carregar roll stats do Firebase: $e');
+      return null;
+    }
+  }
+
   /// Limpa dados do usuário no Firebase (usado ao fazer logout)
   static Future<void> clearUserData() async {
     try {

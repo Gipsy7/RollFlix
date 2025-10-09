@@ -16,6 +16,7 @@ import 'widgets/roll_preferences_dialog.dart';
 import 'controllers/movie_controller.dart';
 import 'controllers/tv_show_controller.dart';
 import 'controllers/app_mode_controller.dart';
+import 'controllers/user_preferences_controller.dart';
 import 'repositories/tv_show_repository.dart';
 import 'mixins/animation_mixin.dart';
 import 'screens/movie_details_screen.dart';
@@ -55,10 +56,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   late final TVShowController _tvShowController;
   late final TVShowRepository _tvShowRepository;
   late final AppModeController _appModeController;
+  late final UserPreferencesController _userPreferencesController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  
-  // Preferências de rolagem
-  RollPreferences _rollPreferences = const RollPreferences();
   
   // Flag para controlar quando a animação deve disparar
   bool _shouldAnimateCard = false;
@@ -86,6 +85,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     _tvShowController = TVShowController.instance;
     _tvShowRepository = TVShowRepository();
     _appModeController = AppModeController.instance;
+    _userPreferencesController = UserPreferencesController.instance;
     
     _setupListeners();
     _initializeApp();
@@ -158,7 +158,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     final result = await showDialog<RollPreferences>(
       context: context,
       builder: (context) => RollPreferencesDialog(
-        initialPreferences: _rollPreferences,
+        initialPreferences: _userPreferencesController.rollPreferences,
         isSeriesMode: _appModeController.isSeriesMode,
       ),
     );
@@ -166,9 +166,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     if (!mounted) return;
 
     if (result != null) {
-      setState(() {
-        _rollPreferences = result;
-      });
+      // As preferências já foram salvas pelo dialog, apenas notificamos a mudança
+      setState(() {});
       
       // Limpa o cache para forçar nova busca com os filtros aplicados
       if (result.hasFilters) {
@@ -222,7 +221,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         // Usa o controller para séries
         if (_tvShowController.canRollShow || selectedGenre != _tvShowController.selectedGenre) {
           _tvShowController.selectGenre(selectedGenre);
-          await _tvShowController.rollShow(preferences: _rollPreferences);
+          await _tvShowController.rollShow(preferences: _userPreferencesController.rollPreferences);
           if (!mounted) return;
           debugPrint('rollShow concluído. selectedShow: ${_tvShowController.selectedShow?.name}');
           rollExecuted = true;
@@ -231,9 +230,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         debugPrint('Chamando rollMovie para filme...');
         // Usa o controller para filmes
         if (_movieController.canRollMovie || selectedGenre != _movieController.selectedGenre) {
-          debugPrint('Preferências ANTES de chamar rollMovie: ${_rollPreferences.toJson()}');
+          debugPrint('Preferências ANTES de chamar rollMovie: ${_userPreferencesController.rollPreferences.toJson()}');
           _movieController.selectGenre(selectedGenre);
-          await _movieController.rollMovie(preferences: _rollPreferences);
+          await _movieController.rollMovie(preferences: _userPreferencesController.rollPreferences);
           if (!mounted) return;
           debugPrint('rollMovie concluído. selectedMovie: ${_movieController.selectedMovie?.title}');
           rollExecuted = true;
@@ -241,6 +240,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       }
 
       if (rollExecuted) {
+        // Incrementa estatísticas de sorteio
+        await _userPreferencesController.incrementRollCount(_appModeController.isSeriesMode);
         await _openRolledContentDetails();
       }
     } catch (e) {
@@ -439,7 +440,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildPreferencesButton(bool isMobile) {
-    final hasFilters = _rollPreferences.hasFilters;
+    final hasFilters = _userPreferencesController.rollPreferences.hasFilters;
     
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),

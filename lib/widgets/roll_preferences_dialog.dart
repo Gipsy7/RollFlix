@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/roll_preferences.dart';
 import '../theme/app_theme.dart';
+import '../controllers/user_preferences_controller.dart';
 
 class RollPreferencesDialog extends StatefulWidget {
   final RollPreferences initialPreferences;
@@ -608,7 +609,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
     });
   }
 
-  void _applyPreferences() {
+  void _applyPreferences() async {
     final preferences = RollPreferences(
       minYear: _minYear,
       maxYear: _maxYear,
@@ -616,6 +617,17 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
       sortBy: _sortBy,
       allowAdult: _allowAdult,
     );
-    Navigator.pop(context, preferences);
+
+    try {
+      await UserPreferencesController.instance.updateRollPreferences(preferences);
+      if (mounted) {
+        Navigator.pop(context, preferences);
+      }
+    } catch (e) {
+      // Em caso de erro, ainda retorna as preferências para manter compatibilidade
+      if (mounted) {
+        Navigator.pop(context, preferences);
+      }
+    }
   }
 }
