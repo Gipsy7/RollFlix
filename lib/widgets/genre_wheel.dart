@@ -62,7 +62,7 @@ class _GenreWheelState extends State<GenreWheel>
     );
     
     _pendulumController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 600),
       vsync: this,
     );
     
@@ -245,7 +245,7 @@ class _GenreWheelState extends State<GenreWheel>
     final nearestPosition = currentPosition.round().toDouble();
     
     // Considera a velocidade para o momentum
-    final momentumDistance = _velocity * 50; // Multiplica a velocidade para dar mais momentum
+    final momentumDistance = _velocity * 30; // Multiplica a velocidade para dar mais momentum
     final targetWithMomentum = currentPosition + momentumDistance;
     final finalTarget = targetWithMomentum.round().toDouble();
     
