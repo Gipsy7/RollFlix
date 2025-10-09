@@ -1,12 +1,28 @@
 # 🎬 RollFlix - Movie & TV Series Discovery App
 
-**"Roll and Chill"** - Um app Flutter moderno, otimizado e responsivo que ajuda você a descobrir filmes e séries incríveis! Escolha um gênero na nossa roda interativa e deixe o app sortear conteúdo aleatório para você usando dados reais da **API do The Movie Database (TMDb)**.
+**"Roll and Chill"** - Um app Flutter moderno, otimizado e responsivo que ajuda você a descobrir filmes e séries incríveis! Escolha um gênero na nossa roda i#### **Novas Funcionalidades (v4.0)**
+- ✅ **Sistema de Autenticação**: Login com Google e sincronização na nuvem
+- ✅ **Recursos Limitados**: Controle de uso diário para rolagens, favoritos e assistidos
+- ✅ **Sistema de Notificações**: Alertas inteligentes de lançamentos e episódios
+- ✅ **Compartilhamento Social**: Compartilhe descobertas diretamente do app
+- ✅ **Perfil do Usuário**: Estatísticas detalhadas e gerenciamento de conta
+- ✅ **Sincronização na Nuvem**: Dados persistidos no Firebase quando logado
+- ✅ **Modo Offline**: Funcionalidades básicas sem conexão
+- ✅ **Sistema de Favoritos**: Persistência local com SharedPreferences
+- ✅ **Pesquisa Avançada**: Telas dedicadas para filmes e séries
+- ✅ **Drawer Adaptativo**: Cores dinâmicas baseadas no modo
+- ✅ **Scroll Otimizado**: Melhor experiência de rolagem
+- ✅ **Controle de Animação**: Animações apenas quando necessáriova e deixe o app sortear conteúdo aleatório para você usando dados reais da **API do The Movie Database (TMDb)**.
 
-> 🚀 **Versão 3.0** - Completamente refatorado com **56% menos código**, sistema de favoritos, pesquisa avançada e interface totalmente redesenhada!
+> 🚀 **Versão 4.0** - Sistema completo de autenticação, recursos limitados, notificações inteligentes e compartilhamento social! Completamente refatorado com **56% menos código**, sistema de favoritos, pesquisa avançada e interface totalmente redesenhada!
 
 ## 🆕 Atualizações Recentes (Outubro 2025)
-- Preferências de rolagem agora assumem automaticamente a paleta roxa quando o modo série está ativo, garantindo consistência visual em todo o fluxo.
+- Sistema de autenticação com Google integrado ao Firebase
+- **Sistema de Recursos Limitados**: Controle de uso para rolagens (5/dia), favoritos (5/dia) e assistidos (5/dia) com recarga automática
+- **Notificações Inteligentes**: Alertas de lançamentos de filmes e episódios de séries favoritas
+- **Compartilhamento Social**: Compartilhe descobertas diretamente das telas de detalhes
 - A tela **Meu Perfil** exibe estatísticas em tempo real vindas dos controladores de favoritos, assistidos e rolagens, com o terceiro indicador renomeado para **"Assistidos"**.
+- Preferências de rolagem agora assumem automaticamente a paleta roxa quando o modo série está ativo, garantindo consistência visual em todo o fluxo.
 
 ## ✨ Funcionalidades Principais
 
@@ -59,10 +75,34 @@
 - **Scroll Otimizado**: AlwaysScrollableScrollPhysics com padding adequado
 - **Preferências com Tema Dinâmico**: o diálogo de filtros herda automaticamente as cores douradas ou roxas de acordo com o modo selecionado
 
-### 👤 **Meu Perfil Dinâmico** (NOVO!)
-- **Estatísticas em Tempo Real**: Contadores de favoritos, assistidos e rolagens sincronizados com os controladores principais
-- **Indicador "Assistidos"**: Terceira métrica atualizada para refletir quantos títulos já foram concluídos
-- **Atualização Contínua**: Listeners garantem que qualquer alteração em favoritos ou assistidos apareça imediatamente no painel
+### 👤 **Sistema de Autenticação com Google** (NOVO!)
+- **Login com Google**: Integração completa com Firebase Authentication
+- **Sincronização na Nuvem**: Dados sincronizados automaticamente entre dispositivos
+- **Backup Automático**: Favoritos, assistidos e preferências salvos na nuvem
+- **Modo Offline**: Funcionalidades básicas disponíveis sem login
+- **Perfil do Usuário**: Informações pessoais e estatísticas detalhadas
+
+### ⚡ **Sistema de Recursos Limitados** (NOVO!)
+- **Rolagens Diárias**: 5 sorteios por dia com recarga automática a cada 24h
+- **Favoritos Limitados**: 5 adições aos favoritos por dia
+- **Assistidos Controlados**: 5 marcações de assistido por dia
+- **Cooldown Inteligente**: Sistema de tempo com contadores visuais
+- **Recarga Automática**: Recursos se renovam automaticamente após 24 horas
+- **Persistência Completa**: Dados salvos localmente e na nuvem (se logado)
+- **Feedback Visual**: Indicadores claros de disponibilidade e tempo restante
+
+### 🔔 **Sistema de Notificações Inteligentes** (NOVO!)
+- **Lançamentos de Filmes**: Notificações sobre novos filmes dos gêneros favoritos
+- **Episódios de Séries**: Alertas sobre novos episódios das séries assistidas
+- **Controle Granular**: Ative/desative tipos específicos de notificações
+- **Agendamento Inteligente**: Notificações programadas para horários ideais
+- **Configurações Avançadas**: Personalize frequência e tipos de alertas
+
+### 📤 **Compartilhamento Social** (NOVO!)
+- **Compartilhar Descobertas**: Botão direto nas telas de detalhes
+- **Links Diretos**: Compartilhe filmes e séries com amigos
+- **Texto Personalizado**: Mensagens pré-formatadas para redes sociais
+- **Compatibilidade**: Funciona com WhatsApp, Instagram, Twitter, etc.
 
 ### 🎬 **Experiência Cinematográfica Completa**
 - **Telas de Detalhes Unificadas**: Padrão visual consistente para filmes e séries
@@ -137,17 +177,27 @@
 │   │   ├── app_mode_controller.dart (Estado global)
 │   │   ├── movie_controller.dart (Lógica de filmes)
 │   │   ├── tv_show_controller.dart (Lógica de séries)
-│   │   └── favorites_controller.dart (Gerenciamento de favoritos - NOVO)
+│   │   ├── favorites_controller.dart (Gerenciamento de favoritos)
+│   │   ├── watched_controller.dart (Controle de assistidos)
+│   │   ├── user_preferences_controller.dart (Preferências + Recursos)
+│   │   └── notification_controller.dart (Sistema de notificações)
 │   └── mixins/ (Reutilização de código)
 │       └── animation_mixin.dart
 │
 ├── 💾 Data Layer
 │   ├── repositories/ (Abstração de dados)
-│   ├── services/ (API TMDb)
+│   ├── services/ (API TMDb + Firebase)
+│   │   ├── movie_service.dart (API TMDb para filmes/séries)
+│   │   ├── auth_service.dart (Autenticação Google/Firebase)
+│   │   ├── user_data_service.dart (Dados do usuário no Firestore)
+│   │   ├── notification_service.dart (Notificações locais)
+│   │   └── release_check_service.dart (Verificação de lançamentos)
 │   └── models/ (Entidades)
 │       ├── movie.dart
 │       ├── tv_show.dart
-│       ├── favorite_item.dart (NOVO - Modelo unificado)
+│       ├── favorite_item.dart (Modelo unificado de favoritos)
+│       ├── watched_item.dart (Controle de assistidos)
+│       ├── user_resources.dart (Sistema de recursos limitados)
 │       ├── cast.dart
 │       ├── watch_providers.dart
 │       └── movie_videos.dart
@@ -168,7 +218,7 @@
 | **Métodos** | ~45 | ~15 | **-67%** |
 | **Estado local** | 5 variáveis | 0 (getters) | **-100%** |
 
-#### **Novas Funcionalidades (v3.0)**
+#### **Novas Funcionalidades (v4.0)**
 - ✅ **Sistema de Favoritos**: Persistência local com SharedPreferences
 - ✅ **Pesquisa Avançada**: Telas dedicadas para filmes e séries
 - ✅ **Drawer Adaptativo**: Cores dinâmicas baseadas no modo
@@ -246,6 +296,30 @@ class ResponsiveUtils {
 - **Trocar Modo**: Use o botão swap para alternar entre pesquisa de filme/série
 - **Ver Resultados**: Role para ver mais resultados (paginação automática)
 - **Abrir Detalhes**: Toque em qualquer resultado
+
+### **👤 Sistema de Autenticação**
+- **Fazer Login**: Menu hambúrguer → "Fazer Login com Google"
+- **Sincronização**: Dados são automaticamente sincronizados após login
+- **Backup na Nuvem**: Favoritos e preferências salvos no Firebase
+- **Perfil**: Menu hambúrguer → "Meu Perfil" para ver estatísticas
+
+### **⚡ Sistema de Recursos Limitados**
+- **Verificar Disponibilidade**: Contadores na tela principal mostram usos restantes
+- **Recarga Automática**: Recursos se renovam a cada 24 horas
+- **Cooldown Visual**: Barras de progresso mostram tempo para recarga
+- **Limites Diários**: 5 rolagens, 5 favoritos, 5 assistidos por dia
+
+### **🔔 Sistema de Notificações**
+- **Configurar**: Menu hambúrguer → "Configurações de Notificação"
+- **Tipos de Alerta**: Lançamentos de filmes e episódios de séries
+- **Controle Granular**: Ative/desative tipos específicos
+- **Agendamento**: Configure horários preferidos para notificações
+
+### **📤 Compartilhamento Social**
+- **Compartilhar**: Botão de compartilhamento nas telas de detalhes
+- **Links Diretos**: Compartilhe filmes e séries com amigos
+- **Texto Personalizado**: Mensagens formatadas para redes sociais
+- **Compatibilidade**: WhatsApp, Instagram, Twitter e outras plataformas
 
 ### **�🔄 Sistema de Toggle Filme/Série**
 - **Modo Filmes** (🎬): Interface dourada com 18 gêneros cinematográficos
@@ -362,12 +436,32 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # HTTP & Networking
   cupertino_icons: ^1.0.8        # Ícones iOS
   http: ^1.1.0                   # Requisições HTTP
   url_launcher: ^6.2.2           # Abrir URLs externas
+  
+  # UI & Visual
   palette_generator: ^0.3.3+3    # Cores dinâmicas
   flutter_svg: ^2.0.9            # Suporte a SVG
-  shared_preferences: ^2.2.2     # Persistência de favoritos (NOVO)
+  flutter_spinkit: ^5.2.2        # Loading indicators
+  shimmer: ^3.0.0                # Efeitos de shimmer
+  
+  # Storage & Persistence
+  shared_preferences: ^2.2.2     # Persistência local
+  share_plus: ^12.0.0            # Compartilhamento social
+  
+  # Firebase & Auth
+  firebase_core: ^3.15.2         # Core Firebase
+  firebase_auth: ^5.1.2          # Autenticação
+  firebase_messaging: ^15.2.10   # Push notifications
+  google_sign_in: ^6.2.1         # Login Google
+  cloud_firestore: ^5.0.2        # Database na nuvem
+  
+  # Notifications
+  flutter_local_notifications: ^18.0.1  # Notificações locais
+  timezone: ^0.10.1             # Timezone handling
 ```
 
 ### **🏗️ Estrutura do Projeto**
@@ -379,26 +473,38 @@ lib/
 │   ├── app_mode_controller.dart      # Estado global do app
 │   ├── movie_controller.dart         # Controle de filmes
 │   ├── tv_show_controller.dart       # Controle de séries
-│   └── favorites_controller.dart     # Gerenciamento de favoritos (NOVO)
+│   ├── favorites_controller.dart     # Gerenciamento de favoritos
+│   ├── watched_controller.dart       # Controle de assistidos
+│   ├── user_preferences_controller.dart # Preferências + Recursos
+│   └── notification_controller.dart  # Sistema de notificações
 ├── models/            # Modelos de dados
 │   ├── movie.dart                    # Modelo de filme com gêneros
 │   ├── tv_show.dart                  # Modelo de série de TV
-│   ├── favorite_item.dart            # Modelo unificado de favoritos (NOVO)
+│   ├── favorite_item.dart            # Modelo unificado de favoritos
+│   ├── watched_item.dart             # Controle de assistidos
+│   ├── user_resources.dart           # Sistema de recursos limitados
 │   ├── cast.dart                     # Elenco e equipe técnica
 │   ├── watch_providers.dart          # Provedores de streaming
-│   ├── movie_videos.dart             # Vídeos e trailers
-│   └── soundtrack.dart               # Trilhas sonoras
+│   └── movie_videos.dart             # Vídeos e trailers
 ├── repositories/      # Camada de dados
 │   └── movie_repository.dart
 ├── services/          # Serviços externos
-│   └── movie_service.dart            # API TMDb para filmes e séries
+│   ├── movie_service.dart            # API TMDb para filmes e séries
+│   ├── auth_service.dart             # Autenticação Google/Firebase
+│   ├── user_data_service.dart        # Dados do usuário no Firestore
+│   ├── notification_service.dart     # Notificações locais
+│   └── release_check_service.dart    # Verificação de lançamentos
 ├── screens/           # Telas da aplicação
 │   ├── movie_details_screen.dart     # Detalhes de filmes
 │   ├── tv_show_details_screen.dart   # Detalhes de séries
 │   ├── actor_details_screen.dart     # Detalhes de atores
-│   ├── search_screen.dart            # Pesquisa de filmes (NOVO)
-│   ├── tv_series_search_screen.dart  # Pesquisa de séries (NOVO)
-│   └── favorites_screen.dart         # Gerenciamento de favoritos (NOVO)
+│   ├── login_screen.dart             # Autenticação com Google
+│   ├── profile_screen.dart           # Perfil do usuário
+│   ├── search_screen.dart            # Pesquisa de filmes
+│   ├── tv_series_search_screen.dart  # Pesquisa de séries
+│   ├── favorites_screen.dart         # Gerenciamento de favoritos
+│   ├── watched_screen.dart           # Controle de assistidos
+│   └── date_night_*.dart             # Funcionalidades de encontro
 ├── widgets/           # Componentes reutilizáveis
 │   ├── genre_wheel.dart              # Roda de filme interativa
 │   ├── app_drawer.dart               # Menu lateral adaptativo
@@ -408,6 +514,7 @@ lib/
 │   ├── responsive_widgets.dart       # Widgets responsivos
 │   ├── error_widgets.dart            # SafeText, ErrorScreen
 │   ├── common_widgets.dart           # Componentes compartilhados
+│   ├── notification_settings_dialog.dart # Configurações de notificação
 │   └── optimized_widgets.dart        # Imagens e loading otimizados
 ├── theme/             # Sistema de design
 │   └── app_theme.dart                # Temas adaptativos (dourado/roxo)
@@ -565,14 +672,15 @@ flutter analyze
 
 ### **📈 Roadmap**
 
-**✅ Funcionalidades Implementadas (v3.0):**
-- **✅ Sistema de Toggle**: Filme/Série com temas dinâmicos
-- **✅ Séries de TV**: Suporte completo com 15 gêneros específicos
-- **✅ Detalhes de Séries**: Tela completa com todas as informações
-- **✅ Trilhas Sonoras**: Para filmes e séries selecionados
-- **✅ Onde Assistir**: Provedores de streaming para séries
-- **✅ Web Support**: Execução completa no navegador
-- **✅ Sistema de Favoritos**: Persistência local completa
+**✅ Funcionalidades Implementadas (v4.0):**
+- **✅ Sistema de Autenticação**: Login com Google e sincronização na nuvem
+- **✅ Recursos Limitados**: Controle de uso diário para rolagens, favoritos e assistidos
+- **✅ Sistema de Notificações**: Alertas inteligentes de lançamentos e episódios
+- **✅ Compartilhamento Social**: Compartilhe descobertas diretamente do app
+- **✅ Perfil do Usuário**: Estatísticas detalhadas e gerenciamento de conta
+- **✅ Sincronização na Nuvem**: Dados persistidos no Firebase quando logado
+- **✅ Modo Offline**: Funcionalidades básicas sem conexão
+- **✅ Sistema de Favoritos**: Persistência local com SharedPreferences
 - **✅ Pesquisa Avançada**: Telas dedicadas para filmes e séries
 - **✅ Drawer Adaptativo**: Cores dinâmicas baseadas no modo
 - **✅ Scroll Otimizado**: Melhor experiência de rolagem
@@ -630,7 +738,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 **Desenvolvido com ❤️ em Flutter**
 
-`RollFlix v3.0.0` | **"Roll and Chill"**
+`RollFlix v4.0.0` | **"Roll and Chill"**
 
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
@@ -638,7 +746,13 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 **Transforme sua escolha de filmes e séries em uma experiência divertida!** 🍿📺
 
-**Novidades v3.0:**
+**Novidades v4.0:**
+- 🔐 Sistema de autenticação com Google e Firebase
+- ⚡ Controle de recursos limitados (5/dia) com recarga automática
+- 🔔 Notificações inteligentes de lançamentos e episódios
+- 📤 Compartilhamento social direto das telas de detalhes
+- 👤 Perfil do usuário com estatísticas detalhadas
+- ☁️ Sincronização na nuvem para dados persistentes
 - ⭐ Sistema de Favoritos com persistência local
 - 🔍 Pesquisa avançada de filmes e séries
 - 🎨 Interface totalmente adaptativa (dourado/roxo)
