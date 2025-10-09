@@ -348,20 +348,22 @@ class _GenreWheelState extends State<GenreWheel>
           // Botões de ação
           Positioned(
             bottom: 20,
-            right: 20,
+            left: 0,
+            right: 0,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Botão de rolar filme/série
                 if (widget.onRollContent != null && widget.selectedGenre != null)
                   Padding(
-                    padding: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.only(right: 16),
                     child: GestureDetector(
                       onTap: widget.isLoadingContent ? null : widget.onRollContent,
                       child: Container(
-                        height: 48,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        height: 60,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
@@ -389,7 +391,7 @@ class _GenreWheelState extends State<GenreWheel>
                                   ? Icons.refresh 
                                   : (widget.isSeriesMode ? Icons.tv : Icons.local_movies),
                               color: AppColors.backgroundDark,
-                              size: 20,
+                              size: 24,
                             ),
                             const SizedBox(width: 8),
                             Text(
@@ -398,7 +400,7 @@ class _GenreWheelState extends State<GenreWheel>
                                   : 'Rolar ${widget.isSeriesMode ? 'Série' : 'Filme'}',
                               style: TextStyle(
                                 color: AppColors.backgroundDark,
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -412,11 +414,18 @@ class _GenreWheelState extends State<GenreWheel>
                 GestureDetector(
                   onTap: _spinFilmReel,
                   child: Container(
-                    width: 48,
-                    height: 48,
+                    height: 60,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                     decoration: BoxDecoration(
-                      color: primaryColor,
-                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          primaryColor,
+                          primaryColor.withValues(alpha: 0.8),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
                           color: primaryColor.withValues(alpha:0.3),
@@ -426,22 +435,45 @@ class _GenreWheelState extends State<GenreWheel>
                       ],
                     ),
                     child: _isSpinning
-                        ? Center(
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.backgroundDark,
-                                ),
-                                strokeWidth: 2.5,
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.refresh,
+                                color: AppColors.backgroundDark,
+                                size: 24,
                               ),
-                            ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Rolando...',
+                                style: TextStyle(
+                                  color: AppColors.backgroundDark,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           )
-                        : Icon(
-                            Icons.shuffle,
-                            color: AppColors.backgroundDark,
-                            size: 24,
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.shuffle,
+                                color: AppColors.backgroundDark,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Rolar Gênero',
+                                style: TextStyle(
+                                  color: AppColors.backgroundDark,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                   ),
                 ),
