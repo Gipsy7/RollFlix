@@ -292,9 +292,21 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ),
                     tooltip: isWatched ? 'Marcar como não assistido' : 'Marcar como assistido',
                     onPressed: () async {
-                      final userPrefsController = UserPreferencesController.instance;
+                      // Se está desmarcando, não consome recurso
+                      if (isWatched) {
+                        _watchedController.toggleMovieWatched(widget.movie);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Removido de assistidos'),
+                            duration: Duration(seconds: 2),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                        return;
+                      }
                       
-                      // Tenta usar recurso de assistido (com opção de assistir anúncio se necessário)
+                      // Se está marcando, tenta usar recurso
+                      final userPrefsController = UserPreferencesController.instance;
                       final consumed = await userPrefsController.tryUseResourceWithAd(
                         ResourceType.watched,
                         context,
@@ -307,13 +319,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                       _watchedController.toggleMovieWatched(widget.movie);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            isWatched
-                                ? 'Removido de assistidos'
-                                : 'Marcado como assistido',
-                          ),
-                          duration: const Duration(seconds: 2),
+                        const SnackBar(
+                          content: Text('Marcado como assistido'),
+                          duration: Duration(seconds: 2),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -333,9 +341,21 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ),
                     tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
                     onPressed: () async {
-                      final userPrefsController = UserPreferencesController.instance;
+                      // Se está desmarcando, não consome recurso
+                      if (isFavorite) {
+                        _favoritesController.toggleMovieFavorite(widget.movie);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Removido dos favoritos'),
+                            duration: Duration(seconds: 2),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                        return;
+                      }
                       
-                      // Tenta usar recurso de favorito (com opção de assistir anúncio se necessário)
+                      // Se está marcando, tenta usar recurso
+                      final userPrefsController = UserPreferencesController.instance;
                       final consumed = await userPrefsController.tryUseResourceWithAd(
                         ResourceType.favorite,
                         context,
@@ -348,13 +368,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                       _favoritesController.toggleMovieFavorite(widget.movie);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            isFavorite
-                                ? 'Removido dos favoritos'
-                                : 'Adicionado aos favoritos',
-                          ),
-                          duration: const Duration(seconds: 2),
+                        const SnackBar(
+                          content: Text('Adicionado aos favoritos'),
+                          duration: Duration(seconds: 2),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
