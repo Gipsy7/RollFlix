@@ -63,12 +63,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         return Scaffold(
           backgroundColor: AppColors.backgroundDark,
           appBar: AppBar(
-            title: SafeText(
-              'Meus Favoritos',
-              style: AppTextStyles.headlineSmall.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.bold,
-              ),
+            title: LayoutBuilder(
+              builder: (context, constraints) {
+                // Se a largura disponível for menor que 300, mostra apenas "Favoritos"
+                final showFullTitle = constraints.maxWidth > 300;
+                return SafeText(
+                  showFullTitle ? 'Meus Favoritos' : 'Favoritos',
+                  style: AppTextStyles.headlineSmall.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              },
             ),
             backgroundColor: Colors.transparent,
             flexibleSpace: Container(

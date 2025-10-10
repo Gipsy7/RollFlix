@@ -288,33 +288,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 24),
               ],
               
-              // Informações sobre o app
-              _buildSectionHeader('Sobre', Icons.info),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Rollflix',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Versão 4.0.0',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
               const SizedBox(height: 80), // Espaço para o botão flutuante
             ],
           ),

@@ -13,6 +13,7 @@ import '../screens/profile_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/notification_history_screen.dart';
+import '../screens/about_screen.dart';
 import '../services/auth_service.dart';
 import '../services/recipe_cache_service.dart';
 
@@ -255,7 +256,12 @@ class AppDrawer extends StatelessWidget {
           title: 'Sobre o App',
           onTap: () {
             Navigator.pop(context);
-            _showAboutDialog(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AboutScreen(),
+              ),
+            );
           },
         ),
         
@@ -335,67 +341,6 @@ class AppDrawer extends StatelessWidget {
           color: footerColor,
         ),
         textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  void _showAboutDialog(BuildContext context) {
-    // Cor adaptativa para textos e botão
-    final accentColor = appModeController.isSeriesMode 
-        ? const Color(0xFFBB86FC) // Roxo claro para séries
-        : AppColors.primary; // Dourado para filmes
-    
-    final secondaryTextColor = appModeController.isSeriesMode 
-        ? const Color(0xFFBB86FC).withAlpha(180) // Roxo mais transparente
-        : AppColors.textSecondary; // Dourado
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.backgroundDark,
-        title: SafeText(
-          'Sobre o RollFlix',
-          style: AppTextStyles.headlineSmall.copyWith(
-            color: AppColors.textPrimary,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SafeText(
-              'Aplicativo para descobrir filmes e séries aleatórios por gênero.',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: secondaryTextColor,
-              ),
-            ),
-            const SizedBox(height: 16),
-            SafeText(
-              'Desenvolvido com Flutter',
-              style: AppTextStyles.bodySmall.copyWith(
-                color: secondaryTextColor,
-              ),
-            ),
-            const SizedBox(height: 8),
-            SafeText(
-              'Dados fornecidos por The Movie Database (TMDb)',
-              style: AppTextStyles.bodySmall.copyWith(
-                color: secondaryTextColor,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: SafeText(
-              'Fechar',
-              style: AppTextStyles.labelLarge.copyWith(
-                color: accentColor,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
