@@ -28,7 +28,7 @@ class _AboutScreenState extends State<AboutScreen> {
         // Cores adaptativas baseadas no modo
         final primaryColor = _appModeController.isSeriesMode
             ? const Color(0xFFBB86FC) // Roxo para séries
-            : const Color(0xFFE50914); // Vermelho para filmes
+            : AppColors.primary; // Dourado para filmes
 
         final gradientColors = _appModeController.isSeriesMode
             ? const LinearGradient(
@@ -85,8 +85,8 @@ class _AboutScreenState extends State<AboutScreen> {
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                   colors: [
-                                    Color(0xFFE50914),
-                                    Color(0xFFB20710),
+                                    Color(0xFFFFD700), // Rich Gold
+                                    Color(0xFFFFC107), // Deep Gold
                                   ],
                                 ),
                           borderRadius: BorderRadius.circular(20),

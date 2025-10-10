@@ -1,7 +1,7 @@
 class AppConstants {
   // App Information
   static const String appName = 'RollFlix';
-  static const String appVersion = '1.0.0';
+  static const String appVersion = '4.0.0';
   
   // API Constants
   static const String tmdbApiKey = '4e44d9029b1270a757cddc766a1bcb63';
