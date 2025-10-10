@@ -87,6 +87,20 @@ Este índice organiza toda a documentação relacionada às melhorias implementa
 
 ---
 
+### 7. **BACKGROUND_IMPLEMENTATION.md** 🚀
+**Para:** Desenvolvedores  
+**Propósito:** Implementação de execução em background  
+**Conteúdo:**
+- Configuração do WorkManager
+- Arquivos criados e modificados
+- Fluxo de execução
+- Como testar background tasks
+- Configuração Android/iOS
+
+**Leia se:** Você quer entender a execução em background
+
+---
+
 ## 🗺️ Fluxo de Leitura Recomendado
 
 ### Para Gestores / Product Owners
@@ -109,7 +123,10 @@ Este índice organiza toda a documentação relacionada às melhorias implementa
 3. NOTIFICATION_IMPLEMENTATION.md (10 min)
    └─> Detalhes de código
    
-4. NOTIFICATION_CHECKLIST.md (5 min)
+4. BACKGROUND_IMPLEMENTATION.md (10 min)
+   └─> Execução em background (WorkManager)
+   
+5. NOTIFICATION_CHECKLIST.md (5 min)
    └─> Validação final
 ```
 

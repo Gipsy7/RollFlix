@@ -10,6 +10,7 @@ import 'models/roll_preferences.dart';
 import 'services/movie_service.dart';
 import 'services/ad_service.dart';
 import 'services/auth_service.dart';
+import 'services/background_service.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/error_widgets.dart';
 import 'widgets/responsive_widgets.dart';
@@ -40,6 +41,10 @@ void main() async {
 
   // Inicializar sistema de notificações
   NotificationController.instance;
+  
+  // Inicializar serviço de background
+  await BackgroundService.initialize();
+  await BackgroundService.registerPeriodicTask();
 
   runApp(const MyApp());
 }

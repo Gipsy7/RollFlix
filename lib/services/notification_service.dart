@@ -5,6 +5,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'background_service.dart';
 
 /// Serviço para gerenciar notificações locais e push
 class NotificationService {
@@ -274,6 +275,9 @@ class NotificationService {
     if (!_notificationsEnabled) {
       await cancelAllNotifications();
       await clearSentNotificationsHistory(); // Limpa histórico ao desabilitar
+      await BackgroundService.cancelReleaseCheckTask(); // Cancela verificações em background
+    } else {
+      await BackgroundService.registerPeriodicTask(); // Re-registra verificações
     }
 
     debugPrint('⚙️ Configurações de notificação atualizadas');
