@@ -8,6 +8,7 @@ import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
 import '../controllers/movie_controller.dart';
 import '../controllers/tv_show_controller.dart';
+import '../controllers/user_preferences_controller.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -23,6 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late final WatchedController _watchedController;
   late final MovieController _movieController;
   late final TVShowController _tvShowController;
+  late final UserPreferencesController _userPreferencesController;
 
   @override
   void initState() {
@@ -32,11 +34,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _watchedController = WatchedController.instance;
     _movieController = MovieController.instance;
     _tvShowController = TVShowController.instance;
+    _userPreferencesController = UserPreferencesController.instance;
 
     _favoritesController.addListener(_onDataChanged);
     _watchedController.addListener(_onDataChanged);
     _movieController.addListener(_onDataChanged);
     _tvShowController.addListener(_onDataChanged);
+    _userPreferencesController.addListener(_onDataChanged);
   }
 
   void _onDataChanged() {
@@ -51,6 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _watchedController.removeListener(_onDataChanged);
     _movieController.removeListener(_onDataChanged);
     _tvShowController.removeListener(_onDataChanged);
+    _userPreferencesController.removeListener(_onDataChanged);
     super.dispose();
   }
 
@@ -314,7 +319,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildStatsSection(bool isMobile) {
     final favoritesCount = _favoritesController.count;
     final watchedCount = _watchedController.count;
-    final rollCount = _movieController.movieCount + _tvShowController.showCount;
+    final rollStats = _userPreferencesController.rollStats;
+    final totalRolls = rollStats.totalRolls;
 
     return Card(
       color: AppColors.surfaceDark,
@@ -340,19 +346,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildStatItem(Icons.favorite, 'Favoritos', favoritesCount.toString(), isMobile),
-                _buildStatItem(Icons.casino, 'Sorteios', rollCount.toString(), isMobile),
+                _buildStatItem(Icons.casino, 'Sorteios', totalRolls.toString(), isMobile),
                 _buildStatItem(Icons.visibility, 'Assistidos', watchedCount.toString(), isMobile),
               ],
             ),
             
-            const SizedBox(height: 12),
-            SafeText(
-              'Em breve você poderá ver suas estatísticas detalhadas!',
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textTertiary,
-                fontStyle: FontStyle.italic,
-              ),
-              textAlign: TextAlign.center,
+            const SizedBox(height: 16),
+            
+            // Estatísticas detalhadas
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildDetailedStatItem(Icons.movie, 'Filmes', rollStats.movieRolls.toString(), isMobile),
+                _buildDetailedStatItem(Icons.tv, 'Séries', rollStats.seriesRolls.toString(), isMobile),
+                _buildDetailedStatItem(Icons.favorite_border, 'Date Nights', rollStats.dateNightCount.toString(), isMobile),
+              ],
             ),
           ],
         ),
@@ -378,6 +386,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
           label,
           style: AppTextStyles.bodySmall.copyWith(
             color: AppColors.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailedStatItem(IconData icon, String label, String value, bool isMobile) {
+    return Column(
+      children: [
+        Icon(icon, color: AppColors.secondary, size: isMobile ? 24 : 28),
+        const SizedBox(height: 6),
+        SafeText(
+          value,
+          style: (isMobile 
+              ? AppTextStyles.titleMedium
+              : AppTextStyles.titleLarge).copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SafeText(
+          label,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.textTertiary,
+            fontSize: isMobile ? 11 : 12,
           ),
         ),
       ],
