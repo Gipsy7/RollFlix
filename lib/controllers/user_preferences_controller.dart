@@ -375,6 +375,15 @@ class UserPreferencesController extends ChangeNotifier {
     return await _showAdOfferDialog(context, type);
   }
 
+  /// Assiste anúncio para ganhar recurso (usado quando clica no contador)
+  Future<bool> watchAdForResource(
+    ResourceType type,
+    BuildContext context,
+  ) async {
+    // Mostra anúncio diretamente e concede recompensa
+    return await _showAdAndReward(context, type);
+  }
+
   /// Mostra diálogo oferecendo assistir anúncio para ganhar recurso
   Future<bool> _showAdOfferDialog(
     BuildContext context,

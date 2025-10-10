@@ -970,42 +970,47 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildQuickStats(bool isMobile) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.1),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildResourceItem(
-            icon: Icons.play_circle_filled,
-            label: 'Rolagens',
-            resourceType: ResourceType.roll,
-            color: Colors.blue,
-            isMobile: isMobile,
+    return ListenableBuilder(
+      listenable: _userPreferencesController,
+      builder: (context, _) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.1),
+              width: 1,
+            ),
           ),
-          _buildResourceItem(
-            icon: Icons.favorite,
-            label: 'Favoritos',
-            resourceType: ResourceType.favorite,
-            color: Colors.red,
-            isMobile: isMobile,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildResourceItem(
+                icon: Icons.play_circle_filled,
+                label: 'Rolagens',
+                resourceType: ResourceType.roll,
+                color: Colors.blue,
+                isMobile: isMobile,
+              ),
+              _buildResourceItem(
+                icon: Icons.favorite,
+                label: 'Favoritos',
+                resourceType: ResourceType.favorite,
+                color: Colors.red,
+                isMobile: isMobile,
+              ),
+              _buildResourceItem(
+                icon: Icons.check_circle,
+                label: 'Assistidos',
+                resourceType: ResourceType.watched,
+                color: Colors.green,
+                isMobile: isMobile,
+              ),
+            ],
           ),
-          _buildResourceItem(
-            icon: Icons.check_circle,
-            label: 'Assistidos',
-            resourceType: ResourceType.watched,
-            color: Colors.green,
-            isMobile: isMobile,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -1019,10 +1024,12 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     final uses = _userPreferencesController.userResources.getUses(resourceType);
     final canUse = _userPreferencesController.canUseResource(resourceType);
     final cooldown = _userPreferencesController.getResourceCooldown(resourceType);
+    final maxUses = UserResources.maxUses;
 
     String displayValue;
     Color displayColor = color;
     String? subtitle;
+    bool canWatchAd = uses < maxUses; // Pode assistir anúncio se tiver menos de 5
 
     if (canUse) {
       displayValue = uses.toString();
@@ -1040,7 +1047,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       subtitle = 'Indisponível';
     }
 
-    return Column(
+    // Widget base
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, color: displayColor, size: isMobile ? 20 : 24),
         const SizedBox(height: 4),
@@ -1058,7 +1067,142 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             fontSize: isMobile ? 10 : 12,
           ),
         ),
+        // Indicador visual de que pode assistir anúncio
+        if (canWatchAd)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.videocam,
+                  size: isMobile ? 10 : 12,
+                  color: AppColors.primary.withOpacity(0.8),
+                ),
+                const SizedBox(width: 2),
+                Text(
+                  'Toque +1',
+                  style: TextStyle(
+                    fontSize: isMobile ? 8 : 10,
+                    color: AppColors.primary.withOpacity(0.8),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
+
+    // Se pode assistir anúncio, torna clicável
+    if (canWatchAd) {
+      return InkWell(
+        onTap: () => _showAdToRechargeResource(resourceType, label),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: content,
+        ),
+      );
+    }
+
+    // Se não pode assistir anúncio (já tem 5), apenas exibe
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: content,
+    );
+  }
+
+  /// Mostra anúncio para recarregar recurso
+  Future<void> _showAdToRechargeResource(ResourceType resourceType, String resourceName) async {
+    final uses = _userPreferencesController.userResources.getUses(resourceType);
+    final maxUses = UserResources.maxUses;
+
+    // Confirmação amigável
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.backgroundDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.videocam, color: AppColors.primary, size: 28),
+            const SizedBox(width: 12),
+            const Text(
+              'Ganhar Recurso Extra',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Você tem $uses/$maxUses $resourceName disponíveis.',
+              style: const TextStyle(color: Colors.white70, fontSize: 16),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.primary, width: 1),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.card_giftcard, color: AppColors.primary, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Assista a um anúncio curto e ganhe +1 recurso extra!',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.white54)),
+          ),
+          ElevatedButton.icon(
+            onPressed: () => Navigator.of(context).pop(true),
+            icon: const Icon(Icons.play_circle_filled),
+            label: const Text('Assistir Anúncio'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    // Mostra anúncio e concede recompensa
+    final success = await _userPreferencesController.watchAdForResource(
+      resourceType,
+      context,
+    );
+
+    if (success && mounted) {
+      setState(() {}); // Atualiza o contador visual
+    }
   }
 }
