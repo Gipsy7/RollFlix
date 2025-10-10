@@ -48,8 +48,43 @@ class NotificationController extends ChangeNotifier {
 
   /// Handler para quando os favoritos mudam
   void _onFavoritesChanged() {
-    // Quando favoritos mudam, verificar se há novos lançamentos
-    checkReleases();
+    // Cancelar notificações dos itens removidos
+    _cancelRemovedNotifications();
+    
+    // Verificar lançamentos apenas dos itens adicionados recentemente
+    _checkNewFavoritesReleases();
+  }
+  
+  /// Cancela notificações de favoritos removidos
+  void _cancelRemovedNotifications() {
+    final removedItems = _favoritesController.getAndClearRecentlyRemoved();
+    
+    for (final item in removedItems) {
+      // Gera o mesmo ID usado ao agendar a notificação
+      final notificationId = 'movie_upcoming_${item.id}'.hashCode;
+      _notificationService.cancelNotification(notificationId);
+      debugPrint('🗑️ Notificação cancelada para: ${item.title}');
+    }
+  }
+  
+  /// Verifica lançamentos apenas dos favoritos adicionados recentemente
+  Future<void> _checkNewFavoritesReleases() async {
+    if (!_isInitialized) return;
+    
+    final newItems = _favoritesController.getAndClearRecentlyAdded();
+    
+    if (newItems.isEmpty) {
+      debugPrint('⏭️ Nenhum favorito novo para verificar');
+      return;
+    }
+    
+    try {
+      debugPrint('🔍 Verificando ${newItems.length} favoritos novos...');
+      await _releaseCheckService.checkAllReleases(newItems);
+      debugPrint('✅ Verificação concluída para favoritos novos');
+    } catch (e) {
+      debugPrint('❌ Erro ao verificar favoritos novos: $e');
+    }
   }
 
   /// Verifica lançamentos de todos os favoritos

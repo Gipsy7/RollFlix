@@ -21,12 +21,28 @@ class FavoritesController extends ChangeNotifier {
 
   static const String _favoritesKey = 'rollflix_favorites';
   final List<FavoriteItem> _favorites = [];
+  final List<FavoriteItem> _recentlyAdded = [];
+  final List<FavoriteItem> _recentlyRemoved = [];
   bool _isLoading = false;
 
   List<FavoriteItem> get favorites => List.unmodifiable(_favorites);
   bool get isLoading => _isLoading;
   int get count => _favorites.length;
   bool get hasFavorites => _favorites.isNotEmpty;
+
+  /// Obtém e limpa lista de itens recentemente adicionados
+  List<FavoriteItem> getAndClearRecentlyAdded() {
+    final items = List<FavoriteItem>.from(_recentlyAdded);
+    _recentlyAdded.clear();
+    return items;
+  }
+
+  /// Obtém e limpa lista de itens recentemente removidos
+  List<FavoriteItem> getAndClearRecentlyRemoved() {
+    final items = List<FavoriteItem>.from(_recentlyRemoved);
+    _recentlyRemoved.clear();
+    return items;
+  }
 
   /// Carrega favoritos do armazenamento (Firebase se logado, senão SharedPreferences)
   Future<void> _loadFavorites() async {
@@ -107,6 +123,7 @@ class FavoritesController extends ChangeNotifier {
 
     final favoriteItem = FavoriteItem.fromMovie(movie);
     _favorites.insert(0, favoriteItem); // Adiciona no início
+    _recentlyAdded.add(favoriteItem); // Rastreia item adicionado
     notifyListeners();
     await _saveFavorites();
     debugPrint('⭐ Filme adicionado aos favoritos: ${movie.title}');
@@ -121,6 +138,7 @@ class FavoritesController extends ChangeNotifier {
 
     final favoriteItem = FavoriteItem.fromTVShow(show);
     _favorites.insert(0, favoriteItem); // Adiciona no início
+    _recentlyAdded.add(favoriteItem); // Rastreia item adicionado
     notifyListeners();
     await _saveFavorites();
     debugPrint('⭐ Série adicionada aos favoritos: ${show.name}');
@@ -128,9 +146,15 @@ class FavoritesController extends ChangeNotifier {
 
   /// Remove um filme dos favoritos
   Future<void> removeMovie(Movie movie) async {
+    final removed = _favorites.where(
+      (fav) => fav.id == movie.id.toString() && !fav.isTVShow,
+    ).toList();
+    
     _favorites.removeWhere(
       (fav) => fav.id == movie.id.toString() && !fav.isTVShow,
     );
+    
+    _recentlyRemoved.addAll(removed); // Rastreia itens removidos
     notifyListeners();
     await _saveFavorites();
     debugPrint('🗑️ Filme removido dos favoritos: ${movie.title}');
@@ -138,9 +162,15 @@ class FavoritesController extends ChangeNotifier {
 
   /// Remove uma série dos favoritos
   Future<void> removeTVShow(TVShow show) async {
+    final removed = _favorites.where(
+      (fav) => fav.id == show.id.toString() && fav.isTVShow,
+    ).toList();
+    
     _favorites.removeWhere(
       (fav) => fav.id == show.id.toString() && fav.isTVShow,
     );
+    
+    _recentlyRemoved.addAll(removed); // Rastreia itens removidos
     notifyListeners();
     await _saveFavorites();
     debugPrint('🗑️ Série removida dos favoritos: ${show.name}');
@@ -148,7 +178,9 @@ class FavoritesController extends ChangeNotifier {
 
   /// Remove um favorito por ID
   Future<void> removeFavorite(String id) async {
+    final removed = _favorites.where((fav) => fav.id == id).toList();
     _favorites.removeWhere((fav) => fav.id == id);
+    _recentlyRemoved.addAll(removed); // Rastreia itens removidos
     notifyListeners();
     await _saveFavorites();
     debugPrint('🗑️ Favorito removido: $id');

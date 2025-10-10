@@ -18,6 +18,7 @@ class NotificationService {
 
   static const String _notificationSettingsKey = 'notification_settings';
   static const String _lastCheckKey = 'last_release_check';
+  static const String _sentNotificationsKey = 'sent_notifications';
 
   bool _notificationsEnabled = true;
   bool _movieReleasesEnabled = true;
@@ -317,9 +318,46 @@ class NotificationService {
     }
   }
 
+  /// Verifica se uma notificação já foi enviada
+  Future<bool> wasNotificationSent(String uniqueId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final sentList = prefs.getStringList(_sentNotificationsKey) ?? [];
+      return sentList.contains(uniqueId);
+    } catch (e) {
+      debugPrint('Erro ao verificar notificação enviada: $e');
+      return false;
+    }
+  }
+
+  /// Marca uma notificação como enviada
+  Future<void> markNotificationAsSent(String uniqueId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final sentList = prefs.getStringList(_sentNotificationsKey) ?? [];
+      if (!sentList.contains(uniqueId)) {
+        sentList.add(uniqueId);
+        // Manter apenas últimos 100 registros para não crescer infinitamente
+        if (sentList.length > 100) {
+          sentList.removeRange(0, sentList.length - 100);
+        }
+        await prefs.setStringList(_sentNotificationsKey, sentList);
+      }
+    } catch (e) {
+      debugPrint('Erro ao marcar notificação como enviada: $e');
+    }
+  }
+
   /// Notifica sobre lançamento de filme favorito
-  Future<void> notifyMovieRelease(String movieTitle, DateTime releaseDate) async {
+  Future<void> notifyMovieRelease(String movieId, String movieTitle, DateTime releaseDate) async {
     if (!_notificationsEnabled || !_movieReleasesEnabled) return;
+
+    final uniqueId = 'movie_${movieId}_${releaseDate.toUtc().toIso8601String().split('T')[0]}';
+    
+    if (await wasNotificationSent(uniqueId)) {
+      debugPrint('⏭️ Notificação já enviada para $movieTitle');
+      return;
+    }
 
     final title = '🎬 Filme Favorito Lançado!';
     final body = '$movieTitle foi lançado hoje!';
@@ -329,17 +367,26 @@ class NotificationService {
       body: body,
       payload: jsonEncode({
         'type': 'movie_release',
+        'movieId': movieId,
         'title': movieTitle,
         'releaseDate': releaseDate.toIso8601String(),
       }),
     );
-
+    
+    await markNotificationAsSent(uniqueId);
     debugPrint('🎬 Notificação de lançamento de filme enviada: $movieTitle');
   }
 
   /// Notifica sobre novo episódio de série favorita
-  Future<void> notifyTVShowEpisode(String showTitle, String episodeInfo) async {
+  Future<void> notifyTVShowEpisode(String showId, String showTitle, String episodeInfo, DateTime airDate) async {
     if (!_notificationsEnabled || !_tvShowEpisodesEnabled) return;
+
+    final uniqueId = 'tv_${showId}_${episodeInfo}_${airDate.toUtc().toIso8601String().split('T')[0]}';
+    
+    if (await wasNotificationSent(uniqueId)) {
+      debugPrint('⏭️ Notificação já enviada para $showTitle - $episodeInfo');
+      return;
+    }
 
     final title = '📺 Novo Episódio Disponível!';
     final body = 'Novo episódio de $showTitle: $episodeInfo';
@@ -349,35 +396,53 @@ class NotificationService {
       body: body,
       payload: jsonEncode({
         'type': 'tv_episode',
+        'showId': showId,
         'showTitle': showTitle,
         'episodeInfo': episodeInfo,
       }),
     );
-
+    
+    await markNotificationAsSent(uniqueId);
     debugPrint('📺 Notificação de novo episódio enviada: $showTitle - $episodeInfo');
   }
 
   /// Agenda notificação para lançamento futuro
-  Future<void> scheduleMovieReleaseNotification(String movieTitle, DateTime releaseDate) async {
+  Future<void> scheduleMovieReleaseNotification(String movieId, String movieTitle, DateTime releaseDate) async {
     if (!_notificationsEnabled || !_movieReleasesEnabled) return;
 
-    final notificationId = movieTitle.hashCode;
+    // Validar se a data é futura
+    final now = DateTime.now();
+    if (releaseDate.isBefore(now)) {
+      debugPrint('⏭️ Data de lançamento no passado, não agendando: $movieTitle');
+      return;
+    }
+
+    final notificationDate = releaseDate.subtract(const Duration(days: 1));
+    
+    // Verificar se a notificação já passou
+    if (notificationDate.isBefore(now)) {
+      debugPrint('⏭️ Data de notificação no passado, não agendando: $movieTitle');
+      return;
+    }
+
+    final notificationId = 'movie_upcoming_$movieId'.hashCode;
     final title = '🎬 Filme Favorito Lançando Amanhã!';
     final body = '$movieTitle será lançado amanhã!';
 
     await scheduleNotification(
       title: title,
       body: body,
-      scheduledDate: releaseDate.subtract(const Duration(days: 1)), // Um dia antes
+      scheduledDate: notificationDate,
       id: notificationId,
       payload: jsonEncode({
         'type': 'movie_release_upcoming',
+        'movieId': movieId,
         'title': movieTitle,
         'releaseDate': releaseDate.toIso8601String(),
       }),
     );
 
-    debugPrint('📅 Notificação agendada para lançamento de filme: $movieTitle');
+    debugPrint('📅 Notificação agendada para ${notificationDate.toLocal()}: $movieTitle');
   }
 }
 

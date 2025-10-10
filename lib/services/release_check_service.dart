@@ -15,6 +15,9 @@ class ReleaseCheckService {
   static const String _apiKey = AppConstants.tmdbApiKey;
   static const String _baseUrl = AppConstants.tmdbBaseUrl;
 
+  DateTime? _lastCheckTime;
+  static const Duration minCheckInterval = Duration(hours: 6);
+
   /// Verifica lançamentos de filmes favoritos
   Future<void> checkMovieReleases(List<FavoriteItem> favorites) async {
     try {
@@ -33,6 +36,7 @@ class ReleaseCheckService {
           // Se o filme foi lançado hoje
           if (_isToday(releaseDate)) {
             await notificationService.notifyMovieRelease(
+              favorite.id,
               favorite.title,
               releaseDate,
             );
@@ -42,6 +46,7 @@ class ReleaseCheckService {
           else if (_isTomorrow(releaseDate) &&
                    (lastCheck == null || releaseDate.isAfter(lastCheck))) {
             await notificationService.scheduleMovieReleaseNotification(
+              favorite.id,
               favorite.title,
               releaseDate,
             );
@@ -85,8 +90,10 @@ class ReleaseCheckService {
               // Se o episódio foi lançado hoje
               if (_isToday(episodeDate)) {
                 await notificationService.notifyTVShowEpisode(
+                  favorite.id,
                   favorite.title,
                   episodeInfo,
+                  episodeDate,
                 );
                 debugPrint('📺 Notificação enviada: Novo episódio de ${favorite.title} - $episodeInfo');
               }
@@ -194,23 +201,37 @@ class ReleaseCheckService {
 
   /// Verifica se uma data é hoje
   bool _isToday(DateTime date) {
-    final now = DateTime.now();
-    return date.year == now.year &&
-           date.month == now.month &&
-           date.day == now.day;
+    final now = DateTime.now().toUtc();
+    final dateUtc = date.toUtc();
+    
+    return dateUtc.year == now.year &&
+           dateUtc.month == now.month &&
+           dateUtc.day == now.day;
   }
 
   /// Verifica se uma data é amanhã
   bool _isTomorrow(DateTime date) {
-    final tomorrow = DateTime.now().add(const Duration(days: 1));
-    return date.year == tomorrow.year &&
-           date.month == tomorrow.month &&
-           date.day == tomorrow.day;
+    final tomorrow = DateTime.now().toUtc().add(const Duration(days: 1));
+    final dateUtc = date.toUtc();
+    
+    return dateUtc.year == tomorrow.year &&
+           dateUtc.month == tomorrow.month &&
+           dateUtc.day == tomorrow.day;
   }
 
   /// Executa verificação completa de lançamentos
   Future<void> checkAllReleases(List<FavoriteItem> favorites) async {
+    // Verificar se já verificou recentemente (rate limiting)
+    if (_lastCheckTime != null) {
+      final timeSinceLastCheck = DateTime.now().difference(_lastCheckTime!);
+      if (timeSinceLastCheck < minCheckInterval) {
+        debugPrint('⏭️ Verificação muito recente, pulando (última: $_lastCheckTime)');
+        return;
+      }
+    }
+
     debugPrint('🔍 Iniciando verificação de lançamentos...');
+    _lastCheckTime = DateTime.now();
 
     await Future.wait([
       checkMovieReleases(favorites),
