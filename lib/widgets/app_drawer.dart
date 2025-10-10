@@ -7,7 +7,6 @@ import '../widgets/responsive_widgets.dart';
 import '../widgets/error_widgets.dart';
 import '../screens/search_screen.dart';
 import '../screens/tv_series_search_screen.dart';
-import '../screens/date_night_screen.dart';
 import '../screens/favorites_screen.dart';
 import '../screens/watched_screen.dart';
 import '../screens/profile_screen.dart';
@@ -201,13 +200,30 @@ class AppDrawer extends StatelessWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.favorite_border,
-          title: 'Date Night',
+          title: 'Date Night 🚧',
           onTap: () {
             Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const DateNightScreen(),
+            // Modo bloqueado - em desenvolvimento
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Icon(Icons.construction, color: Colors.white),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Date Night em desenvolvimento!\nEm breve disponível 🚀',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+                backgroundColor: Colors.orange.shade700,
+                duration: Duration(seconds: 3),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             );
           },

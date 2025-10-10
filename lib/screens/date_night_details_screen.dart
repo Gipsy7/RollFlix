@@ -96,7 +96,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       ],
       flexibleSpace: FlexibleSpaceBar(
         title: SafeText(
-          'Detalhes do Encontro',
+          _getThemeTitle(),
           style: AppTextStyles.headlineSmall.copyWith(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.bold,
@@ -199,21 +199,51 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
             ),
           ),
           
-          // Conteúdo das tabs
-          SizedBox(
-            height: 600,
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildMovieTab(isMobile),
-                _buildMealTab(isMobile),
-                _buildShoppingListTab(isMobile),
-              ],
-            ),
+          // Conteúdo das tabs com altura calculada
+          LayoutBuilder(
+            builder: (context, constraints) {
+              // Calcula altura disponível (altura da tela - app bar - tabs - padding)
+              final screenHeight = MediaQuery.of(context).size.height;
+              final appBarHeight = isMobile ? 200.0 : 250.0;
+              final tabBarHeight = 72.0; // Altura aproximada do TabBar
+              final availableHeight = screenHeight - appBarHeight - tabBarHeight - 100;
+              
+              return SizedBox(
+                height: availableHeight.clamp(400.0, 800.0), // Min 400, Max 800
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildMovieTab(isMobile),
+                    _buildMealTab(isMobile),
+                    _buildShoppingListTab(isMobile),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),
     );
+  }
+
+  /// Retorna o título baseado no tema do encontro
+  String _getThemeTitle() {
+    // Extrai o estilo do tema (ex: "Jantar Romântico à Luz de Velas" -> "Romântico")
+    final theme = _currentCombo.theme.toLowerCase();
+    
+    if (theme.contains('romântico') || theme.contains('romantico')) {
+      return '💕 Encontro Romântico';
+    } else if (theme.contains('casual')) {
+      return '🍿 Encontro Casual';
+    } else if (theme.contains('elegante') || theme.contains('sofisticado')) {
+      return '🥂 Encontro Elegante';
+    } else if (theme.contains('divertido') || theme.contains('descontraído')) {
+      return '🎉 Encontro Divertido';
+    } else if (theme.contains('aconchegante') || theme.contains('conforto')) {
+      return '🏠 Encontro Aconchegante';
+    } else {
+      return '🌟 Detalhes do Encontro';
+    }
   }
 
   Widget _buildMovieTab(bool isMobile) {
