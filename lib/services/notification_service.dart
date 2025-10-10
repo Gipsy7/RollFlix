@@ -6,6 +6,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'background_service.dart';
+import '../models/notification_history_item.dart';
 
 /// Serviço para gerenciar notificações locais e push
 class NotificationService {
@@ -20,6 +21,8 @@ class NotificationService {
   static const String _notificationSettingsKey = 'notification_settings';
   static const String _lastCheckKey = 'last_release_check';
   static const String _sentNotificationsKey = 'sent_notifications';
+  static const String _notificationHistoryKey = 'notification_history';
+  static const int _maxHistoryItems = 100; // Máximo de itens no histórico
 
   bool _notificationsEnabled = true;
   bool _movieReleasesEnabled = true;
@@ -152,6 +155,18 @@ class NotificationService {
       id: id,
     );
   }
+  
+  /// Envia uma notificação de teste
+  Future<void> showTestNotification({
+    required String title,
+    required String body,
+  }) async {
+    await showLocalNotification(
+      title: title,
+      body: body,
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+    );
+  }
 
   /// Mostra uma notificação local
   Future<void> _showLocalNotification({
@@ -191,6 +206,116 @@ class NotificationService {
       details,
       payload: payload,
     );
+    
+    // Adicionar ao histórico
+    await _addToHistory(
+      title: title,
+      body: body,
+      type: _getNotificationTypeFromTitle(title),
+      payload: payload,
+    );
+  }
+  
+  /// Adiciona uma notificação ao histórico
+  Future<void> _addToHistory({
+    required String title,
+    required String body,
+    required NotificationType type,
+    String? payload,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final historyJson = prefs.getString(_notificationHistoryKey);
+      
+      List<NotificationHistoryItem> history = [];
+      if (historyJson != null) {
+        final List<dynamic> decoded = jsonDecode(historyJson);
+        history = decoded
+            .map((json) => NotificationHistoryItem.fromJson(json))
+            .toList();
+      }
+      
+      // Extrair IDs do payload se disponível
+      String? movieId;
+      String? showId;
+      if (payload != null) {
+        try {
+          final data = jsonDecode(payload);
+          movieId = data['movieId'] as String?;
+          showId = data['showId'] as String?;
+        } catch (e) {
+          debugPrint('Erro ao parsear payload: $e');
+        }
+      }
+      
+      // Criar novo item
+      final item = NotificationHistoryItem(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: title,
+        body: body,
+        timestamp: DateTime.now(),
+        type: type,
+        movieId: movieId,
+        showId: showId,
+      );
+      
+      // Adicionar no início da lista
+      history.insert(0, item);
+      
+      // Manter apenas os últimos _maxHistoryItems itens
+      if (history.length > _maxHistoryItems) {
+        history = history.sublist(0, _maxHistoryItems);
+      }
+      
+      // Salvar
+      final encoded = jsonEncode(history.map((h) => h.toJson()).toList());
+      await prefs.setString(_notificationHistoryKey, encoded);
+      
+      debugPrint('✅ Notificação adicionada ao histórico');
+    } catch (e) {
+      debugPrint('❌ Erro ao adicionar notificação ao histórico: $e');
+    }
+  }
+  
+  /// Obtém o histórico de notificações
+  Future<List<NotificationHistoryItem>> getNotificationHistory() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final historyJson = prefs.getString(_notificationHistoryKey);
+      
+      if (historyJson == null) return [];
+      
+      final List<dynamic> decoded = jsonDecode(historyJson);
+      return decoded
+          .map((json) => NotificationHistoryItem.fromJson(json))
+          .toList();
+    } catch (e) {
+      debugPrint('❌ Erro ao carregar histórico: $e');
+      return [];
+    }
+  }
+  
+  /// Limpa o histórico de notificações
+  Future<void> clearNotificationHistory() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_notificationHistoryKey);
+      debugPrint('🧹 Histórico de notificações limpo');
+    } catch (e) {
+      debugPrint('❌ Erro ao limpar histórico: $e');
+    }
+  }
+  
+  /// Determina o tipo de notificação baseado no título
+  NotificationType _getNotificationTypeFromTitle(String title) {
+    if (title.contains('lançado') || title.contains('estreia')) {
+      return NotificationType.movieRelease;
+    } else if (title.contains('episódio') || title.contains('EP')) {
+      return NotificationType.tvShowEpisode;
+    } else if (title.contains('lembrete')) {
+      return NotificationType.reminder;
+    }
+    return NotificationType.other;
   }
 
   /// Agenda uma notificação para uma data específica
