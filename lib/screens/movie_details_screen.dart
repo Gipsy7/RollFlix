@@ -228,6 +228,41 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Tela de loading enquanto carrega os detalhes do filme
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(
+            color: AppColors.warning, // Laranja para modo filme
+          ),
+        ),
+      );
+    }
+
+    // Tela de erro se não conseguiu carregar os detalhes
+    if (detailedMovie == null) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        body: const Center(
+          child: Text(
+            'Erro ao carregar detalhes do filme',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    }
+
     final movie = detailedMovie ?? widget.movie;
     
     return Scaffold(
