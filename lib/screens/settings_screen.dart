@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // Para kDebugMode
 import '../services/notification_service.dart';
 
 /// Tela de configurações do aplicativo
@@ -227,61 +228,65 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 24),
               
-              // Seção de Execução em Background
-              _buildSectionHeader('Execução em Background', Icons.settings_backup_restore),
-              Card(
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.sync, color: Colors.blue),
-                      title: const Text('Verificações automáticas'),
-                      subtitle: const Text('A cada 6 horas, mesmo com app fechado'),
-                      trailing: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Text(
-                          'ATIVO',
-                          style: TextStyle(
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+              // Seção de Execução em Background (apenas em Debug)
+              if (kDebugMode) ...[
+                _buildSectionHeader('Execução em Background', Icons.settings_backup_restore),
+                Card(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.sync, color: Colors.blue),
+                        title: const Text('Verificações automáticas'),
+                        subtitle: const Text('A cada 6 horas, mesmo com app fechado'),
+                        trailing: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Text(
+                            'ATIVO',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
+                        onTap: _showBackgroundInfo,
                       ),
-                      onTap: _showBackgroundInfo,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
+              ],
               
-              // Seção de Testes e Manutenção
-              _buildSectionHeader('Testes e Manutenção', Icons.build),
-              Card(
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.notifications_active, color: Colors.blue),
-                      title: const Text('Testar notificação'),
-                      subtitle: const Text('Enviar notificação de teste'),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: _testNotification,
-                    ),
-                    const Divider(height: 1),
-                    ListTile(
-                      leading: const Icon(Icons.delete_sweep, color: Colors.orange),
-                      title: const Text('Limpar histórico de envios'),
-                      subtitle: const Text('Permite reenvio de notificações'),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: _clearNotificationHistory,
-                    ),
-                  ],
+              // Seção de Testes e Manutenção (apenas em Debug)
+              if (kDebugMode) ...[
+                _buildSectionHeader('Testes e Manutenção', Icons.build),
+                Card(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: const Icon(Icons.notifications_active, color: Colors.blue),
+                        title: const Text('Testar notificação'),
+                        subtitle: const Text('Enviar notificação de teste'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: _testNotification,
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        leading: const Icon(Icons.delete_sweep, color: Colors.orange),
+                        title: const Text('Limpar histórico de envios'),
+                        subtitle: const Text('Permite reenvio de notificações'),
+                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: _clearNotificationHistory,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
+              ],
               
               // Informações sobre o app
               _buildSectionHeader('Sobre', Icons.info),
@@ -306,16 +311,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           fontSize: 14,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Sistema de notificações otimizado com:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildFeatureItem('100x mais rápido'),
-                      _buildFeatureItem('0% duplicatas'),
-                      _buildFeatureItem('Funciona 24/7'),
-                      _buildFeatureItem('96% economia de API'),
                     ],
                   ),
                 ),
@@ -350,19 +345,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               color: Colors.grey[700],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeatureItem(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Row(
-        children: [
-          const Icon(Icons.check_circle, size: 16, color: Colors.green),
-          const SizedBox(width: 8),
-          Text(text, style: const TextStyle(fontSize: 14)),
         ],
       ),
     );
