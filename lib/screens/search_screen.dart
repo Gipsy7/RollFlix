@@ -25,22 +25,22 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   
   List<Movie> _searchResults = [];
   List<Movie> _popularMovies = [];
-  List<Movie> _upcomingMovies = [];
+  List<Movie> _topRatedMovies = [];
   
   bool _isSearching = false;
   bool _isLoadingPopular = false;
-  bool _isLoadingUpcoming = false;
+  bool _isLoadingTopRated = false;
   
   // Variáveis de paginação
   bool _isLoadingMore = false;
   bool _hasMoreData = true;
   int _currentSearchPage = 1;
   int _currentPopularPage = 1;
-  int _currentUpcomingPage = 1;
+  int _currentTopRatedPage = 1;
   String _currentSearchQuery = '';
   
   String? _selectedGenre;
-  String _currentFilter = 'popular'; // popular, upcoming, heroes, search
+  String _currentFilter = 'popular'; // popular, toprated, search
   
   late TabController _tabController;
   late ScrollController _scrollController;
@@ -48,7 +48,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this); // Apenas "Em Alta" e "Novidades"
+    _tabController = TabController(length: 2, vsync: this); // "Em Alta" e "Mais Votados"
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
     
@@ -59,7 +59,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         if (_tabController.index == 0) {
           _currentFilter = 'popular';
         } else {
-          _currentFilter = 'upcoming';
+          _currentFilter = 'toprated';
         }
       }
     });
@@ -72,7 +72,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
     setState(() {
       _currentSearchPage = 1;
       _currentPopularPage = 1;
-      _currentUpcomingPage = 1;
+      _currentTopRatedPage = 1;
       _hasMoreData = true;
       _isLoadingMore = false;
     });
@@ -117,12 +117,12 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           }
           break;
           
-        case 'upcoming':
-          _currentUpcomingPage++;
-          final movies = await MovieService.getUpcomingMovies(page: _currentUpcomingPage);
+        case 'toprated':
+          _currentTopRatedPage++;
+          final movies = await MovieService.getTopRatedMovies(page: _currentTopRatedPage);
           if (movies != null && movies.isNotEmpty) {
             newMovies = movies;
-            _upcomingMovies.addAll(newMovies);
+            _topRatedMovies.addAll(newMovies);
           } else {
             _hasMoreData = false;
           }
@@ -157,8 +157,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   Future<void> _loadInitialData() async {
     await Future.wait([
       _loadPopularMovies(),
-      _loadUpcomingMovies(),
-      // Removido _loadHeroMovies() pois será tratado como gênero
+      _loadTopRatedMovies(),
     ]);
   }
 
@@ -179,20 +178,20 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
     }
   }
 
-  Future<void> _loadUpcomingMovies() async {
-    if (_isLoadingUpcoming) return;
+  Future<void> _loadTopRatedMovies() async {
+    if (_isLoadingTopRated) return;
     
-    setState(() => _isLoadingUpcoming = true);
+    setState(() => _isLoadingTopRated = true);
     
     try {
-      final movies = await MovieService.getUpcomingMovies();
+      final movies = await MovieService.getTopRatedMovies();
       if (movies != null && mounted) {
-        setState(() => _upcomingMovies = movies);
+        setState(() => _topRatedMovies = movies);
       }
     } catch (e) {
-      debugPrint('Erro ao carregar novidades: $e');
+      debugPrint('Erro ao carregar filmes mais votados: $e');
     } finally {
-      if (mounted) setState(() => _isLoadingUpcoming = false);
+      if (mounted) setState(() => _isLoadingTopRated = false);
     }
   }
 
@@ -611,7 +610,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         indicatorWeight: 3,
         tabs: const [
           Tab(text: 'Em Alta'),
-          Tab(text: 'Novidades'),
+          Tab(text: 'Mais Votados'),
         ],
       ),
     );
@@ -622,7 +621,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       controller: _tabController,
       children: [
         _buildMovieGrid(_popularMovies, _isLoadingPopular, isMobile),
-        _buildMovieGrid(_upcomingMovies, _isLoadingUpcoming, isMobile),
+        _buildMovieGrid(_topRatedMovies, _isLoadingTopRated, isMobile),
       ],
     );
   }

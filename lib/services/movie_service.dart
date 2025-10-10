@@ -697,6 +697,27 @@ class MovieService {
     }
   }
 
+  static Future<List<Movie>?> getTopRatedMovies({int page = 1}) async {
+    try {
+      final url = Uri.parse(
+        '$_baseUrl/movie/top_rated?api_key=$_apiKey&language=pt-BR&page=$page'
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final moviesResponse = MoviesResponse.fromJson(jsonData);
+        return moviesResponse.results;
+      } else {
+        throw Exception('Erro ao buscar filmes mais votados: ${response.statusCode}');
+      }
+    } catch (e, stack) {
+      AppLogger.error('Erro ao buscar filmes mais votados (page: $page)', error: e, stackTrace: stack);
+      return null;
+    }
+  }
+
   static Future<List<Movie>?> getUpcomingMovies({int page = 1}) async {
     try {
       final url = Uri.parse(
