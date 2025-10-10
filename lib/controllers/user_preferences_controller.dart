@@ -244,11 +244,12 @@ class UserPreferencesController extends ChangeNotifier {
     try {
       debugPrint('🔄 Sincronizando preferências após login...');
 
-      // Carrega dados da nuvem
+      // Carrega dados da nuvem (incluindo recursos!)
       await Future.wait([
         _loadRollPreferencesFromCloud(),
         _loadDateNightPreferencesFromCloud(),
         _loadRollStatsFromCloud(),
+        _loadUserResourcesFromCloud(), // ← FIX: Adiciona reload de recursos
       ]);
 
       notifyListeners();
@@ -266,6 +267,7 @@ class UserPreferencesController extends ChangeNotifier {
         prefs.remove(_rollPreferencesKey),
         prefs.remove(_dateNightPreferencesKey),
         prefs.remove(_rollStatsKey),
+        prefs.remove(_userResourcesKey), // ← Adiciona remoção de recursos
       ]);
 
       // Reseta para valores padrão
@@ -279,6 +281,16 @@ class UserPreferencesController extends ChangeNotifier {
     } catch (e) {
       debugPrint('❌ Erro ao limpar dados locais de preferências: $e');
     }
+  }
+
+  /// Reseta o controller para estado inicial (sem dispose - para singletons)
+  void reset() {
+    _rollPreferences = const RollPreferences();
+    _dateNightPreferences = const DateNightPreferences();
+    _rollStats = const RollStats();
+    _userResources = const UserResources();
+    notifyListeners();
+    debugPrint('♻️ UserPreferencesController resetado para estado inicial');
   }
 
   // ==================== USER RESOURCES ====================
@@ -309,6 +321,9 @@ class UserPreferencesController extends ChangeNotifier {
   }
 
   Future<void> updateUserResources(UserResources newResources) async {
+    debugPrint('📝 updateUserResources - Antes: roll=${_userResources.rollUses}, favorite=${_userResources.favoriteUses}, watched=${_userResources.watchedUses}');
+    debugPrint('📝 updateUserResources - Depois: roll=${newResources.rollUses}, favorite=${newResources.favoriteUses}, watched=${newResources.watchedUses}');
+    
     _userResources = newResources;
     notifyListeners();
 
@@ -330,11 +345,14 @@ class UserPreferencesController extends ChangeNotifier {
   /// Consome um recurso específico e retorna se foi bem-sucedido
   Future<bool> consumeResource(ResourceType type) async {
     if (!_userResources.canUseResource(type)) {
+      debugPrint('⚠️ consumeResource: Não pode usar ${type.name} - recursos: ${_userResources.getUses(type)}');
       return false;
     }
 
+    debugPrint('🔽 consumeResource: Consumindo ${type.name} - antes: ${_userResources.getUses(type)}');
     final newResources = _userResources.consumeResource(type);
     await updateUserResources(newResources);
+    debugPrint('✅ consumeResource: ${type.name} consumido - depois: ${_userResources.getUses(type)}');
     return true;
   }
 
@@ -350,9 +368,15 @@ class UserPreferencesController extends ChangeNotifier {
 
   /// Tenta recarregar recursos se o cooldown expirou
   Future<void> tryReloadResources() async {
+    debugPrint('🔄 tryReloadResources - Recursos atuais: roll=${_userResources.rollUses}, favorite=${_userResources.favoriteUses}, watched=${_userResources.watchedUses}');
+    debugPrint('   Cooldowns: roll=${_userResources.rollCooldownEnd}, favorite=${_userResources.favoriteCooldownEnd}, watched=${_userResources.watchedCooldownEnd}');
+    
     final newResources = _userResources.tryReloadExpired();
     if (newResources != _userResources) {
+      debugPrint('⚡ Cooldown expirado! Recarregando recursos...');
       await updateUserResources(newResources);
+    } else {
+      debugPrint('✓ Nenhum recurso para recarregar (cooldown ativo ou recursos disponíveis)');
     }
   }
 
@@ -363,16 +387,34 @@ class UserPreferencesController extends ChangeNotifier {
     ResourceType type,
     BuildContext context,
   ) async {
+    debugPrint('🎯 tryUseResourceWithAd: ${type.name} - Recursos atuais: ${_userResources.getUses(type)}');
+    
     // Primeiro tenta recarregar recursos expirados
     await tryReloadResources();
 
     // Verifica se pode usar o recurso normalmente
     if (canUseResource(type)) {
-      return await consumeResource(type);
+      debugPrint('✅ Recurso disponível - consumindo...');
+      final consumed = await consumeResource(type);
+      debugPrint('📊 Após consumo: ${_userResources.getUses(type)} recursos restantes');
+      return consumed;
     }
 
+    debugPrint('❌ Sem recursos - oferecendo anúncio...');
+    
     // Sem recursos - oferece assistir anúncio
-    return await _showAdOfferDialog(context, type);
+    final adWatched = await _showAdOfferDialog(context, type);
+    
+    // Se assistiu o anúncio e ganhou o recurso, consome ele para a ação
+    if (adWatched && canUseResource(type)) {
+      debugPrint('🎁 Anúncio assistido - consumindo recurso ganho...');
+      final consumed = await consumeResource(type);
+      debugPrint('📊 Após consumo do recurso ganho: ${_userResources.getUses(type)} recursos restantes');
+      return consumed;
+    }
+    
+    debugPrint('⛔ Anúncio não assistido ou recurso não disponível');
+    return false;
   }
 
   /// Assiste anúncio para ganhar recurso (usado quando clica no contador)
@@ -588,23 +630,27 @@ class UserPreferencesController extends ChangeNotifier {
   /// Concede recompensa do anúncio (adiciona 1 recurso extra)
   void _grantAdReward(ResourceType type) {
     final current = _userResources.getUses(type);
+    debugPrint('🎁 _grantAdReward CHAMADO - Tipo: ${type.name}, Recursos antes: $current');
     
-    // Adiciona 1 recurso extra (não reseta o cooldown)
+    // Adiciona 1 recurso extra e LIMPA o cooldown (já que tem recurso disponível)
     UserResources newResources;
     switch (type) {
       case ResourceType.roll:
         newResources = _userResources.copyWith(
           rollUses: current + 1,
+          clearRollCooldown: true, // ← FIX: Usa flag para limpar cooldown
         );
         break;
       case ResourceType.favorite:
         newResources = _userResources.copyWith(
           favoriteUses: current + 1,
+          clearFavoriteCooldown: true, // ← FIX: Usa flag para limpar cooldown
         );
         break;
       case ResourceType.watched:
         newResources = _userResources.copyWith(
           watchedUses: current + 1,
+          clearWatchedCooldown: true, // ← FIX: Usa flag para limpar cooldown
         );
         break;
     }
@@ -613,7 +659,7 @@ class UserPreferencesController extends ChangeNotifier {
     _saveResources();
     notifyListeners();
 
-    debugPrint('🎁 Recompensa concedida: +1 ${type.name} (Total: ${_userResources.getUses(type)})');
+    debugPrint('🎁 Recompensa concedida: +1 ${type.name} (Total: ${_userResources.getUses(type)}, Cooldown limpo)');
   }
 
   /// Salva recursos (helper method)
@@ -690,14 +736,17 @@ class UserResources {
     DateTime? rollCooldownEnd,
     DateTime? favoriteCooldownEnd,
     DateTime? watchedCooldownEnd,
+    bool clearRollCooldown = false,      // ← FIX: Flag para limpar cooldown explicitamente
+    bool clearFavoriteCooldown = false,  // ← FIX: Flag para limpar cooldown explicitamente
+    bool clearWatchedCooldown = false,   // ← FIX: Flag para limpar cooldown explicitamente
   }) {
     return UserResources(
       rollUses: rollUses ?? this.rollUses,
       favoriteUses: favoriteUses ?? this.favoriteUses,
       watchedUses: watchedUses ?? this.watchedUses,
-      rollCooldownEnd: rollCooldownEnd ?? this.rollCooldownEnd,
-      favoriteCooldownEnd: favoriteCooldownEnd ?? this.favoriteCooldownEnd,
-      watchedCooldownEnd: watchedCooldownEnd ?? this.watchedCooldownEnd,
+      rollCooldownEnd: clearRollCooldown ? null : (rollCooldownEnd ?? this.rollCooldownEnd),
+      favoriteCooldownEnd: clearFavoriteCooldown ? null : (favoriteCooldownEnd ?? this.favoriteCooldownEnd),
+      watchedCooldownEnd: clearWatchedCooldown ? null : (watchedCooldownEnd ?? this.watchedCooldownEnd),
     );
   }
 
@@ -722,6 +771,7 @@ class UserResources {
         return copyWith(
           rollUses: newUses,
           rollCooldownEnd: newUses == 0 ? DateTime.now().add(cooldownDuration) : null,
+          clearRollCooldown: newUses > 0, // ← FIX: Limpa cooldown quando ainda tem recursos
         );
       case ResourceType.favorite:
         if (favoriteUses <= 0) return this;
@@ -729,6 +779,7 @@ class UserResources {
         return copyWith(
           favoriteUses: newUses,
           favoriteCooldownEnd: newUses == 0 ? DateTime.now().add(cooldownDuration) : null,
+          clearFavoriteCooldown: newUses > 0, // ← FIX: Limpa cooldown quando ainda tem recursos
         );
       case ResourceType.watched:
         if (watchedUses <= 0) return this;
@@ -736,6 +787,7 @@ class UserResources {
         return copyWith(
           watchedUses: newUses,
           watchedCooldownEnd: newUses == 0 ? DateTime.now().add(cooldownDuration) : null,
+          clearWatchedCooldown: newUses > 0, // ← FIX: Limpa cooldown quando ainda tem recursos
         );
     }
   }
@@ -768,15 +820,26 @@ class UserResources {
     final now = DateTime.now();
     var updated = this;
 
+    debugPrint('🔍 tryReloadExpired - Estado inicial:');
+    debugPrint('   roll: $rollUses (cooldown: $rollCooldownEnd)');
+    debugPrint('   favorite: $favoriteUses (cooldown: $favoriteCooldownEnd)');
+    debugPrint('   watched: $watchedUses (cooldown: $watchedCooldownEnd)');
+
     if (rollCooldownEnd != null && rollCooldownEnd!.isBefore(now)) {
-      updated = updated.copyWith(rollUses: maxUses, rollCooldownEnd: null);
+      debugPrint('   ⚡ Recarregando ROLL: $rollUses → $maxUses');
+      updated = updated.copyWith(rollUses: maxUses, clearRollCooldown: true);
     }
     if (favoriteCooldownEnd != null && favoriteCooldownEnd!.isBefore(now)) {
-      updated = updated.copyWith(favoriteUses: maxUses, favoriteCooldownEnd: null);
+      debugPrint('   ⚡ Recarregando FAVORITE: $favoriteUses → $maxUses');
+      updated = updated.copyWith(favoriteUses: maxUses, clearFavoriteCooldown: true);
     }
     if (watchedCooldownEnd != null && watchedCooldownEnd!.isBefore(now)) {
-      updated = updated.copyWith(watchedUses: maxUses, watchedCooldownEnd: null);
+      debugPrint('   ⚡ Recarregando WATCHED: $watchedUses → $maxUses');
+      updated = updated.copyWith(watchedUses: maxUses, clearWatchedCooldown: true);
     }
+
+    debugPrint('🔍 tryReloadExpired - Estado final:');
+    debugPrint('   roll: ${updated.rollUses}, favorite: ${updated.favoriteUses}, watched: ${updated.watchedUses}');
 
     return updated;
   }

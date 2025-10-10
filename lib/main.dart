@@ -157,8 +157,22 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     _userPreferencesController = UserPreferencesController.instance;
     
     _setupListeners();
+    _reloadPreferencesFromCloud(); // ← Recarrega preferências do Firebase
     _initializeApp();
-    _tryReloadResources();
+    // _tryReloadResources(); ← REMOVIDO! Causava reset indevido ao voltar para a tela
+  }
+  
+  /// Recarrega preferências do Firebase (para evitar usar dados antigos do singleton)
+  void _reloadPreferencesFromCloud() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      try {
+        await _userPreferencesController.syncAfterLogin();
+        debugPrint('✅ Preferências recarregadas do Firebase no initState');
+      } catch (e) {
+        debugPrint('❌ Erro ao recarregar preferências: $e');
+      }
+    });
   }
   
   /// Configura listeners de forma segura
@@ -198,16 +212,12 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     });
   }
 
-  /// Tenta recarregar recursos que expiraram
-  void _tryReloadResources() {
-    _userPreferencesController.tryReloadResources();
-  }
-
   @override
   void dispose() {
     // Não dispose singletons - apenas reseta para estado inicial
     _movieController.reset();
     _tvShowController.reset();
+    _userPreferencesController.reset();
     _tvShowRepository.cleanExpiredCache();
     super.dispose();
   }
