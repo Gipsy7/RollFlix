@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- AdMob App ID (TESTE - substitua pelo seu ID de produção) -->
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<!-- iOS 14+ ATT - Solicitação de permissão para rastreamento -->
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Este app usa anúncios para oferecer recursos extras gratuitos. Permitir rastreamento nos ajuda a exibir anúncios relevantes.</string>
 </dict>
 </plist>

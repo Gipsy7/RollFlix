@@ -7,6 +7,7 @@ import 'models/movie.dart';
 import 'models/tv_show.dart';
 import 'models/roll_preferences.dart';
 import 'services/movie_service.dart';
+import 'services/ad_service.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/error_widgets.dart';
 import 'widgets/responsive_widgets.dart';
@@ -25,9 +26,14 @@ import 'screens/tv_show_details_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Inicializar Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Inicializar AdMob
+  await AdService.initialize();
 
   // Inicializar sistema de notificações
   NotificationController.instance;
@@ -211,22 +217,6 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   Future<void> _handleRollContent() async {
     debugPrint('=== HANDLE ROLL CONTENT ===');
 
-    // Verifica se há recursos disponíveis para rolagem
-    if (!_userPreferencesController.canUseResource(ResourceType.roll)) {
-      final cooldown = _userPreferencesController.getResourceCooldown(ResourceType.roll);
-      if (cooldown != null) {
-        final hours = cooldown.inHours;
-        final minutes = cooldown.inMinutes.remainder(60);
-        AppSnackBar.showError(
-          context,
-          'Sem recursos para rolagem! Recarrega em ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}h'
-        );
-      } else {
-        AppSnackBar.showError(context, 'Sem recursos para rolagem disponíveis!');
-      }
-      return;
-    }
-
     final selectedGenre = _appModeController.selectedGenre;
     debugPrint('selectedGenre: $selectedGenre');
     debugPrint('isSeriesMode: ${_appModeController.isSeriesMode}');
@@ -236,10 +226,14 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       return;
     }
 
-    // Consome recurso de rolagem
-    final consumed = await _userPreferencesController.consumeResource(ResourceType.roll);
+    // Tenta usar recurso de rolagem (com opção de assistir anúncio se necessário)
+    final consumed = await _userPreferencesController.tryUseResourceWithAd(
+      ResourceType.roll,
+      context,
+    );
+    
     if (!consumed) {
-      AppSnackBar.showError(context, 'Erro ao consumir recurso de rolagem');
+      // Usuário cancelou ou anúncio não disponível
       return;
     }
 

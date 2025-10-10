@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/roll_preferences.dart';
 import '../models/date_night_preferences.dart';
 import '../services/user_data_service.dart';
 import '../services/auth_service.dart';
+import '../services/ad_service.dart';
+import '../theme/app_theme.dart';
 
 /// Controller para gerenciar preferências do usuário
 /// Singleton pattern para garantir instância única
@@ -16,6 +19,23 @@ class UserPreferencesController extends ChangeNotifier {
 
   UserPreferencesController._internal() {
     _loadPreferences();
+    _initializeAdService();
+  }
+
+  // Instância do serviço de anúncios
+  final AdService _adService = AdService();
+
+  /// Inicializa o serviço de anúncios e pré-carrega anúncio
+  void _initializeAdService() {
+    if (_adService.isInitialized) {
+      _adService.loadRewardedAd();
+    }
+  }
+
+  @override
+  void dispose() {
+    _adService.dispose();
+    super.dispose();
   }
 
   // Chaves para SharedPreferences
@@ -333,6 +353,295 @@ class UserPreferencesController extends ChangeNotifier {
     final newResources = _userResources.tryReloadExpired();
     if (newResources != _userResources) {
       await updateUserResources(newResources);
+    }
+  }
+
+  // ==================== INTEGRAÇÃO COM ANÚNCIOS ====================
+
+  /// Tenta usar recurso - se não tiver disponível, oferece assistir anúncio
+  Future<bool> tryUseResourceWithAd(
+    ResourceType type,
+    BuildContext context,
+  ) async {
+    // Primeiro tenta recarregar recursos expirados
+    await tryReloadResources();
+
+    // Verifica se pode usar o recurso normalmente
+    if (canUseResource(type)) {
+      return await consumeResource(type);
+    }
+
+    // Sem recursos - oferece assistir anúncio
+    return await _showAdOfferDialog(context, type);
+  }
+
+  /// Mostra diálogo oferecendo assistir anúncio para ganhar recurso
+  Future<bool> _showAdOfferDialog(
+    BuildContext context,
+    ResourceType type,
+  ) async {
+    final resourceName = _getResourceName(type);
+    final cooldown = getResourceCooldown(type);
+    
+    String cooldownText = '';
+    if (cooldown != null) {
+      final hours = cooldown.inHours;
+      final minutes = cooldown.inMinutes.remainder(60);
+      cooldownText = '\n\nRecarga automática em: ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}h';
+    }
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.backgroundDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.videocam, color: AppColors.primary, size: 28),
+            const SizedBox(width: 12),
+            const Text(
+              'Sem Recursos!',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Você não tem $resourceName disponível.$cooldownText',
+              style: const TextStyle(color: Colors.white70, fontSize: 16),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.primary, width: 1),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.card_giftcard, color: AppColors.primary, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Assista a um anúncio curto e ganhe 1 $resourceName extra!',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.white54)),
+          ),
+          ElevatedButton.icon(
+            onPressed: () => Navigator.of(context).pop(true),
+            icon: const Icon(Icons.play_circle_filled),
+            label: const Text('Assistir Anúncio'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (result != true) return false;
+
+    // Usuário aceitou - mostra o anúncio
+    return await _showAdAndReward(context, type);
+  }
+
+  /// Mostra anúncio e concede recompensa se assistir completamente
+  Future<bool> _showAdAndReward(
+    BuildContext context,
+    ResourceType type,
+  ) async {
+    bool rewardGranted = false;
+
+    // Configura callback para quando o anúncio for assistido
+    _adService.onAdWatched = (rewardType) {
+      if (rewardType == _mapResourceTypeToAdReward(type)) {
+        _grantAdReward(type);
+        rewardGranted = true;
+      }
+    };
+
+    // Mostra loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppColors.backgroundDark,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(color: AppColors.primary),
+              const SizedBox(height: 16),
+              const Text(
+                'Carregando anúncio...',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    // Mostra o anúncio
+    final adRewardType = _mapResourceTypeToAdReward(type);
+    final shown = await _adService.showRewardedAd(adRewardType);
+
+    // Remove loading
+    if (context.mounted) {
+      Navigator.of(context).pop();
+    }
+
+    if (!shown) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.warning_amber, color: Colors.orange),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text('Anúncio não disponível no momento. Tente novamente em instantes.'),
+                ),
+              ],
+            ),
+            backgroundColor: AppColors.backgroundDark,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+      return false;
+    }
+
+    // Aguarda um momento para o callback ser chamado
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    if (rewardGranted && context.mounted) {
+      final resourceName = _getResourceName(type);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.green),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '🎁 Você ganhou 1 $resourceName extra!',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.backgroundDark,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
+
+    return rewardGranted;
+  }
+
+  /// Concede recompensa do anúncio (adiciona 1 recurso extra)
+  void _grantAdReward(ResourceType type) {
+    final current = _userResources.getUses(type);
+    
+    // Adiciona 1 recurso extra (não reseta o cooldown)
+    UserResources newResources;
+    switch (type) {
+      case ResourceType.roll:
+        newResources = _userResources.copyWith(
+          rollUses: current + 1,
+        );
+        break;
+      case ResourceType.favorite:
+        newResources = _userResources.copyWith(
+          favoriteUses: current + 1,
+        );
+        break;
+      case ResourceType.watched:
+        newResources = _userResources.copyWith(
+          watchedUses: current + 1,
+        );
+        break;
+    }
+
+    _userResources = newResources;
+    _saveResources();
+    notifyListeners();
+
+    debugPrint('🎁 Recompensa concedida: +1 ${type.name} (Total: ${_userResources.getUses(type)})');
+  }
+
+  /// Salva recursos (helper method)
+  Future<void> _saveResources() async {
+    try {
+      if (AuthService.isUserLoggedIn()) {
+        await UserDataService.saveUserResources(_userResources);
+      } else {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(_userResourcesKey, jsonEncode(_userResources.toJson()));
+      }
+    } catch (e) {
+      debugPrint('❌ Erro ao salvar recursos: $e');
+    }
+  }
+
+  /// Mapeia ResourceType para AdRewardType
+  AdRewardType _mapResourceTypeToAdReward(ResourceType type) {
+    switch (type) {
+      case ResourceType.roll:
+        return AdRewardType.roll;
+      case ResourceType.favorite:
+        return AdRewardType.favorite;
+      case ResourceType.watched:
+        return AdRewardType.watched;
+    }
+  }
+
+  /// Retorna o nome do recurso em português
+  String _getResourceName(ResourceType type) {
+    switch (type) {
+      case ResourceType.roll:
+        return 'rolagem';
+      case ResourceType.favorite:
+        return 'favorito';
+      case ResourceType.watched:
+        return 'assistido';
     }
   }
 }
