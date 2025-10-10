@@ -27,6 +27,13 @@ class ReleaseCheckService {
 
       // Filtrar apenas filmes favoritos
       final favoriteMovies = favorites.where((fav) => !fav.isTVShow).toList();
+      
+      if (favoriteMovies.isEmpty) {
+        debugPrint('⏭️ Nenhum filme favorito para verificar');
+        return;
+      }
+      
+      debugPrint('🔍 Verificando lançamentos de ${favoriteMovies.length} filmes...');
 
       for (final favorite in favoriteMovies) {
         try {
@@ -73,6 +80,13 @@ class ReleaseCheckService {
 
       // Filtrar apenas séries favoritas
       final favoriteShows = favorites.where((fav) => fav.isTVShow).toList();
+      
+      if (favoriteShows.isEmpty) {
+        debugPrint('⏭️ Nenhuma série favorita para verificar');
+        return;
+      }
+      
+      debugPrint('🔍 Verificando episódios de ${favoriteShows.length} séries...');
 
       for (final favorite in favoriteShows) {
         try {
@@ -225,20 +239,30 @@ class ReleaseCheckService {
     if (_lastCheckTime != null) {
       final timeSinceLastCheck = DateTime.now().difference(_lastCheckTime!);
       if (timeSinceLastCheck < minCheckInterval) {
-        debugPrint('⏭️ Verificação muito recente, pulando (última: $_lastCheckTime)');
+        final remainingTime = minCheckInterval - timeSinceLastCheck;
+        final hours = remainingTime.inHours;
+        final minutes = remainingTime.inMinutes % 60;
+        debugPrint('⏭️ Verificação muito recente. Aguarde ${hours}h${minutes}m (última: ${_lastCheckTime!.toLocal()})');
         return;
       }
     }
 
-    debugPrint('🔍 Iniciando verificação de lançamentos...');
-    _lastCheckTime = DateTime.now();
+    if (favorites.isEmpty) {
+      debugPrint('⏭️ Nenhum favorito para verificar');
+      return;
+    }
+
+    debugPrint('🔍 Iniciando verificação de ${favorites.length} favoritos...');
+    final startTime = DateTime.now();
+    _lastCheckTime = startTime;
 
     await Future.wait([
       checkMovieReleases(favorites),
       checkTVShowEpisodes(favorites),
     ]);
 
-    debugPrint('✅ Verificação completa de lançamentos finalizada');
+    final duration = DateTime.now().difference(startTime);
+    debugPrint('✅ Verificação completa finalizada em ${duration.inSeconds}s');
   }
 
   /// Agenda verificações periódicas (deve ser chamado periodicamente)

@@ -245,6 +245,20 @@ class NotificationService {
     await _localNotifications.cancelAll();
   }
 
+  /// Limpa o histórico de notificações enviadas
+  Future<void> clearSentNotificationsHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_sentNotificationsKey);
+    debugPrint('🧹 Histórico de notificações enviadas limpo');
+  }
+
+  /// Obtém a quantidade de notificações no histórico (para debug)
+  Future<int> getSentNotificationsCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    final sentList = prefs.getStringList(_sentNotificationsKey) ?? [];
+    return sentList.length;
+  }
+
   /// Atualiza configurações de notificação
   Future<void> updateSettings({
     bool? notificationsEnabled,
@@ -259,6 +273,7 @@ class NotificationService {
 
     if (!_notificationsEnabled) {
       await cancelAllNotifications();
+      await clearSentNotificationsHistory(); // Limpa histórico ao desabilitar
     }
 
     debugPrint('⚙️ Configurações de notificação atualizadas');
