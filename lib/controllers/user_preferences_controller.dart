@@ -8,6 +8,7 @@ import '../services/user_data_service.dart';
 import '../services/auth_service.dart';
 import '../services/ad_service.dart';
 import '../theme/app_theme.dart';
+import 'app_mode_controller.dart';
 
 /// Controller para gerenciar preferências do usuário
 /// Singleton pattern para garantir instância única
@@ -434,6 +435,15 @@ class UserPreferencesController extends ChangeNotifier {
     final resourceName = _getResourceName(type);
     final cooldown = getResourceCooldown(type);
     
+    // Detecta o modo atual (série ou filme)
+    final appModeController = AppModeController.instance;
+    final isSeriesMode = appModeController.isSeriesMode;
+    
+    // Define cores baseadas no modo
+    final accentColor = isSeriesMode 
+        ? const Color.fromARGB(255, 240, 43, 109) // Roxo/Rosa vibrante para séries
+        : AppColors.primary; // Dourado para filmes
+    
     String cooldownText = '';
     if (cooldown != null) {
       final hours = cooldown.inHours;
@@ -450,10 +460,10 @@ class UserPreferencesController extends ChangeNotifier {
         ),
         title: Row(
           children: [
-            Icon(Icons.videocam, color: AppColors.primary, size: 28),
+            Icon(Icons.videocam, color: accentColor, size: 28),
             const SizedBox(width: 12),
             const Text(
-              'Sem Recursos!',
+              'Ganhar Recurso Extra',
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ],
@@ -470,19 +480,19 @@ class UserPreferencesController extends ChangeNotifier {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: accentColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.primary, width: 1),
+                border: Border.all(color: accentColor, width: 1),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.card_giftcard, color: AppColors.primary, size: 24),
+                  Icon(Icons.card_giftcard, color: accentColor, size: 24),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Assista a um anúncio curto e ganhe 1 $resourceName extra!',
+                      'Assista a um anúncio curto e ganhe +1 $resourceName extra!',
                       style: TextStyle(
-                        color: AppColors.primary,
+                        color: accentColor,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -503,8 +513,8 @@ class UserPreferencesController extends ChangeNotifier {
             icon: const Icon(Icons.play_circle_filled),
             label: const Text('Assistir Anúncio'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.black,
+              backgroundColor: accentColor,
+              foregroundColor: isSeriesMode ? Colors.white : Colors.black,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -528,6 +538,13 @@ class UserPreferencesController extends ChangeNotifier {
   ) async {
     bool rewardGranted = false;
 
+    // Detecta o modo atual para cores
+    final appModeController = AppModeController.instance;
+    final isSeriesMode = appModeController.isSeriesMode;
+    final accentColor = isSeriesMode 
+        ? const Color.fromARGB(255, 240, 43, 109) 
+        : AppColors.primary;
+
     // Configura callback para quando o anúncio for assistido
     _adService.onAdWatched = (rewardType) {
       if (rewardType == _mapResourceTypeToAdReward(type)) {
@@ -536,25 +553,43 @@ class UserPreferencesController extends ChangeNotifier {
       }
     };
 
-    // Mostra loading
+    // Mostra loading personalizado
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => Center(
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(40),
           decoration: BoxDecoration(
             color: AppColors.backgroundDark,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: accentColor.withOpacity(0.3),
+              width: 2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: accentColor.withOpacity(0.2),
+                blurRadius: 20,
+                spreadRadius: 2,
+              ),
+            ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              CircularProgressIndicator(color: AppColors.primary),
-              const SizedBox(height: 16),
-              const Text(
-                'Carregando anúncio...',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+              SizedBox(
+                width: 60,
+                height: 60,
+                child: CircularProgressIndicator(
+                  color: accentColor,
+                  strokeWidth: 3,
+                ),
+              ),
+              Icon(
+                Icons.play_circle_filled,
+                color: accentColor,
+                size: 32,
               ),
             ],
           ),

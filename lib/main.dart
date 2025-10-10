@@ -1196,6 +1196,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     final uses = _userPreferencesController.userResources.getUses(resourceType);
     final maxUses = UserResources.maxUses;
 
+    // Define cores baseadas no modo
+    final accentColor = _appModeController.isSeriesMode 
+        ? const Color.fromARGB(255, 240, 43, 109) // Roxo/Rosa vibrante para séries
+        : AppColors.primary; // Dourado para filmes
+
     // Confirmação amigável
     final confirm = await showDialog<bool>(
       context: context,
@@ -1206,7 +1211,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         ),
         title: Row(
           children: [
-            Icon(Icons.videocam, color: AppColors.primary, size: 28),
+            Icon(Icons.videocam, color: accentColor, size: 28),
             const SizedBox(width: 12),
             const Text(
               'Ganhar Recurso Extra',
@@ -1226,19 +1231,19 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: accentColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.primary, width: 1),
+                border: Border.all(color: accentColor, width: 1),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.card_giftcard, color: AppColors.primary, size: 24),
+                  Icon(Icons.card_giftcard, color: accentColor, size: 24),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'Assista a um anúncio curto e ganhe +1 recurso extra!',
                       style: TextStyle(
-                        color: AppColors.primary,
+                        color: accentColor,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -1259,8 +1264,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             icon: const Icon(Icons.play_circle_filled),
             label: const Text('Assistir Anúncio'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.black,
+              backgroundColor: accentColor,
+              foregroundColor: _appModeController.isSeriesMode ? Colors.white : Colors.black,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
