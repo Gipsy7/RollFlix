@@ -475,22 +475,18 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     final hasFilters = _userPreferencesController.rollPreferences.hasFilters;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOutCubic,
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        gradient: hasFilters
-            ? (_appModeController.isSeriesMode
-                ? AppColors.secondaryGradient
-                : AppColors.primaryGradient)
-            : AppColors.cardGradient,
+        gradient: _appModeController.isSeriesMode
+            ? AppColors.secondaryGradient
+            : AppColors.primaryGradient,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: hasFilters
-              ? (_appModeController.isSeriesMode
-                  ? AppColors.secondary.withOpacity(0.4)
-                  : AppColors.primary.withOpacity(0.4))
-              : AppColors.borderLight,
+          color: _appModeController.isSeriesMode
+              ? AppColors.secondary.withOpacity(0.4)
+              : AppColors.primary.withOpacity(0.4),
           width: 1.5,
         ),
       ),
@@ -499,64 +495,76 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: _openRollPreferences,
-          splashColor: currentAccentColor.withOpacity(0.15),
-          highlightColor: currentAccentColor.withOpacity(0.08),
+          splashColor: currentAccentColor.withOpacity(0.2),
+          highlightColor: currentAccentColor.withOpacity(0.1),
           child: AnimatedPadding(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             padding: EdgeInsets.all(isMobile ? 12 : 14),
-            child: Stack(
-              children: [
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 400),
-                  transitionBuilder: (child, animation) => ScaleTransition(
-                    scale: animation,
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: child,
+            child: Center(
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 400),
+                    transitionBuilder: (child, animation) => ScaleTransition(
+                      scale: animation,
+                      child: FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.tune,
+                      key: ValueKey(hasFilters),
+                      color: !_appModeController.isSeriesMode
+                          ? Colors.black
+                          : AppColors.textPrimary,
+                      size: isMobile ? 22 : 24,
                     ),
                   ),
-                  child: Icon(
-                    Icons.tune,
-                    key: ValueKey(hasFilters),
-                    color: hasFilters
-                        ? (!_appModeController.isSeriesMode ? AppColors.backgroundDark : Colors.white )
-                        : (!_appModeController.isSeriesMode ? AppColors.textPrimary :Colors.black ),
-                    size: isMobile ? 22 : 24,
-                  ),
-                ),
-                if (hasFilters)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 400),
-                      curve: Curves.elasticOut,
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        gradient: AppColors.secondaryGradient,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.backgroundDark,
-                          width: 2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.secondary.withOpacity(0.4),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
+                  if (hasFilters)
+                    Positioned(
+                      top: -2,
+                      right: -2,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.elasticOut,
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: !_appModeController.isSeriesMode
+                              ? Colors.black
+                              : AppColors.textPrimary,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: _appModeController.isSeriesMode
+                                ? AppColors.secondary
+                                : AppColors.primary,
+                            width: 2,
                           ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.filter_list,
-                        color: AppColors.backgroundDark,
-                        size: 6,
+                          boxShadow: [
+                            BoxShadow(
+                              color: (!_appModeController.isSeriesMode
+                                      ? Colors.black
+                                      : AppColors.textPrimary)
+                                  .withOpacity(0.4),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.filter_list,
+                          color: !_appModeController.isSeriesMode
+                              ? AppColors.primary
+                              : AppColors.secondary,
+                          size: 6,
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
