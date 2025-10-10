@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 import 'constants/app_constants.dart';
@@ -8,6 +9,7 @@ import 'models/tv_show.dart';
 import 'models/roll_preferences.dart';
 import 'services/movie_service.dart';
 import 'services/ad_service.dart';
+import 'services/auth_service.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/error_widgets.dart';
 import 'widgets/responsive_widgets.dart';
@@ -23,6 +25,7 @@ import 'repositories/tv_show_repository.dart';
 import 'mixins/animation_mixin.dart';
 import 'screens/movie_details_screen.dart';
 import 'screens/tv_show_details_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,7 +53,62 @@ class MyApp extends StatelessWidget {
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkCinemaTheme,
-      home: const MovieSorterApp(),
+      home: const AuthWrapper(),
+    );
+  }
+}
+
+/// Wrapper que verifica autenticação e direciona para tela apropriada
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  // Contador incremental para garantir key única a cada nova sessão
+  int _sessionCounter = 0;
+  String? _lastUserId;
+  
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: AuthService.authStateChanges,
+      builder: (context, snapshot) {
+        // Enquanto carrega, mostra splash
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: AppColors.backgroundDark,
+            body: Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primary,
+              ),
+            ),
+          );
+        }
+        
+        // Se está autenticado, vai para o app
+        if (snapshot.hasData && snapshot.data != null) {
+          final currentUserId = snapshot.data!.uid;
+          
+          // Se o usuário mudou ou é um novo login, incrementa o contador
+          if (_lastUserId != currentUserId) {
+            _sessionCounter++;
+            _lastUserId = currentUserId;
+          }
+          
+          // Usa ValueKey com contador para garantir reconstrução completa
+          // a cada nova sessão, mesmo que seja o mesmo usuário
+          return MovieSorterApp(key: ValueKey('session_$_sessionCounter'));
+        }
+        
+        // Se não está autenticado, limpa o último usuário
+        _lastUserId = null;
+        
+        // Se não está autenticado, vai para login
+        return const LoginScreen();
+      },
     );
   }
 }
@@ -147,9 +205,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   @override
   void dispose() {
-    // Não precisamos remover listeners pois usamos ListenableBuilder
-    _movieController.dispose();
-    _tvShowController.dispose();
+    // Não dispose singletons - apenas reseta para estado inicial
+    _movieController.reset();
+    _tvShowController.reset();
     _tvShowRepository.cleanExpiredCache();
     super.dispose();
   }

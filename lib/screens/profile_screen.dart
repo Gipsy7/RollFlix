@@ -8,7 +8,6 @@ import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
 import '../controllers/movie_controller.dart';
 import '../controllers/tv_show_controller.dart';
-import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -100,24 +99,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       
       try {
         await AuthService.signOut();
+        
+        // Navega de volta para a raiz (MaterialApp) removendo todas as rotas
+        // Isso força o AuthWrapper a rebuildar e detectar que não há usuário
         if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/',
+            (route) => false,
           );
         }
       } catch (e) {
         if (mounted) {
+          setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Erro ao fazer logout: $e'),
               backgroundColor: AppColors.error,
             ),
           );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
         }
       }
     }

@@ -3,7 +3,6 @@ import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/ux_components.dart';
-import '../main.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
 import '../controllers/user_preferences_controller.dart';
@@ -32,12 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
           UserPreferencesController.instance.syncAfterLogin(),
         ]);
         
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MyApp()),
-          );
-        }
+        // O AuthWrapper detectará automaticamente a mudança de autenticação
+        // e navegará para MovieSorterApp
       }
     } catch (e) {
       if (mounted) {
@@ -54,13 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() => _isLoading = false);
       }
     }
-  }
-
-  void _continueWithoutLogin() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MyApp()),
-    );
   }
 
   @override
@@ -136,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 8),
                         
                         SafeText(
-                          'Faça login para salvar seus favoritos e sincronizar entre dispositivos',
+                          'Faça login para acessar o aplicativo',
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -148,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           UXComponents.loadingWithText(
                             text: 'Conectando com Google...',
                           )
-                        else ...[
+                        else
                           // Botão Google
                           _buildSocialButton(
                             onPressed: _signInWithGoogle,
@@ -157,41 +145,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Colors.white,
                             textColor: Colors.black87,
                           ),
-                          const SizedBox(height: 24),
-                          
-                          // Divider
-                          Row(
-                            children: [
-                              const Expanded(child: Divider(color: AppColors.textTertiary)),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                child: SafeText(
-                                  'ou',
-                                  style: AppTextStyles.bodySmall.copyWith(
-                                    color: AppColors.textTertiary,
-                                  ),
-                                ),
-                              ),
-                              const Expanded(child: Divider(color: AppColors.textTertiary)),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
-                          
-                          // Botão continuar sem login
-                          TextButton(
-                            onPressed: _continueWithoutLogin,
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                            ),
-                            child: SafeText(
-                              'Continuar sem fazer login',
-                              style: AppTextStyles.labelLarge.copyWith(
-                                color: AppColors.textSecondary,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                   ),

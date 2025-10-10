@@ -96,6 +96,17 @@ class MovieController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Reseta o controller para estado inicial (sem dispose - para singletons)
+  void reset() {
+    _selectedGenre = null;
+    _selectedMovie = null;
+    _errorMessage = null;
+    _isLoading = false;
+    _movieCount = 0;
+    _repository.clearCache();
+    notifyListeners();
+  }
+
   /// Pré-carrega dados para melhor performance
   Future<void> preloadData() async {
     try {
@@ -121,11 +132,7 @@ class MovieController extends ChangeNotifier {
     _isLoading = loading;
     notifyListeners();
   }
-
-  @override
-  void dispose() {
-    // Limpa cache expirado antes de descartar
-    _repository.cleanExpiredCache();
-    super.dispose();
-  }
+  
+  // dispose() removido - singletons não devem ser disposed
+  // Use reset() para limpar estado ao invés de dispose()
 }
