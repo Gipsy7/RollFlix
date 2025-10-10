@@ -18,7 +18,7 @@ mixin AnimationMixin<T extends StatefulWidget> on State<T>, TickerProviderStateM
 
   void _initializeAnimations() {
     _movieCardController = AnimationController(
-      duration: const Duration(milliseconds: 1000), // Mais tempo para suavidade
+      duration: const Duration(milliseconds: 800), // Mais rápido e suave
       vsync: this,
     );
 
@@ -27,7 +27,7 @@ mixin AnimationMixin<T extends StatefulWidget> on State<T>, TickerProviderStateM
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _movieCardController,
-      curve: Curves.easeOutBack, // Curva mais natural e elegante
+      curve: Curves.easeOutQuart, // Curva mais suave e moderna
     ));
   }
 

@@ -415,7 +415,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               ),
             ),
             child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(), // Sempre permite scroll
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ), // Scroll mais suave com efeito bounce
               slivers: [
                 _buildAppBar(isMobile),
                 _buildContent(isMobile),
@@ -475,8 +477,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     final hasFilters = _userPreferencesController.rollPreferences.hasFilters;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOutCubic,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         gradient: _appModeController.isSeriesMode
@@ -498,15 +500,15 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           splashColor: currentAccentColor.withOpacity(0.2),
           highlightColor: currentAccentColor.withOpacity(0.1),
           child: AnimatedPadding(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutCubic,
             padding: EdgeInsets.all(isMobile ? 12 : 14),
             child: Center(
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
                   AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 400),
+                    duration: const Duration(milliseconds: 300),
                     transitionBuilder: (child, animation) => ScaleTransition(
                       scale: animation,
                       child: FadeTransition(
@@ -528,8 +530,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                       top: -2,
                       right: -2,
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.elasticOut,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOutBack,
                         width: 12,
                         height: 12,
                         decoration: BoxDecoration(
@@ -574,8 +576,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   Widget _buildSwapButton(bool isMobile) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOutCubic,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         gradient: _appModeController.isSeriesMode
@@ -598,8 +600,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           splashColor: currentAccentColor.withOpacity(0.2),
           highlightColor: currentAccentColor.withOpacity(0.1),
           child: AnimatedPadding(
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutCubic,
             padding: EdgeInsets.symmetric(
               horizontal: isMobile ? 14 : 18,
               vertical: 10,
@@ -608,7 +610,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               mainAxisSize: MainAxisSize.min,
               children: [
                 AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 400),
+                  duration: const Duration(milliseconds: 300),
                   transitionBuilder: (child, animation) => RotationTransition(
                     turns: animation,
                     child: ScaleTransition(
@@ -630,7 +632,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                 ),
                 const SizedBox(width: 10),
                 AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 400),
+                  duration: const Duration(milliseconds: 300),
                   transitionBuilder: (child, animation) => SlideTransition(
                     position: Tween<Offset>(
                       begin: const Offset(0.2, 0),
@@ -667,7 +669,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                 ),
                 const SizedBox(width: 10),
                 AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 400),
+                  duration: const Duration(milliseconds: 300),
                   transitionBuilder: (child, animation) => RotationTransition(
                     turns: Tween<double>(
                       begin: 0.25,

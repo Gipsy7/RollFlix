@@ -57,12 +57,12 @@ class _GenreWheelState extends State<GenreWheel>
     super.initState();
     
     _scrollController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1600),
       vsync: this,
     );
     
     _pendulumController = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
     
@@ -82,7 +82,7 @@ class _GenreWheelState extends State<GenreWheel>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _pendulumController,
-      curve: Curves.easeOutBack,
+      curve: Curves.easeOutCirc,
     ));
     
     _scrollController.addListener(() {
@@ -170,7 +170,7 @@ class _GenreWheelState extends State<GenreWheel>
       end: targetPosition,
     ).animate(CurvedAnimation(
       parent: _scrollController,
-      curve: Curves.easeOutCubic,
+      curve: Curves.easeOutQuart,
     ));
     
     _scrollController.reset();
@@ -258,7 +258,7 @@ class _GenreWheelState extends State<GenreWheel>
       end: target,
     ).animate(CurvedAnimation(
       parent: _pendulumController,
-      curve: Curves.easeOutBack, // Curva de pêndulo com bounce
+      curve: Curves.easeOutCirc, // Curva mais suave
     ));
     
     setState(() {
@@ -310,7 +310,7 @@ class _GenreWheelState extends State<GenreWheel>
       end: targetPosition,
     ).animate(CurvedAnimation(
       parent: _pendulumController,
-      curve: Curves.easeOutCubic,
+      curve: Curves.easeOutCirc,
     ));
     
     setState(() {
