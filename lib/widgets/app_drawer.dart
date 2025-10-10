@@ -12,7 +12,6 @@ import '../screens/favorites_screen.dart';
 import '../screens/watched_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/login_screen.dart';
-import '../screens/quiz_menu_screen.dart';
 import '../services/auth_service.dart';
 import '../services/recipe_cache_service.dart';
 import '../widgets/notification_settings_dialog.dart';
@@ -209,21 +208,6 @@ class AppDrawer extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => const DateNightScreen(),
-              ),
-            );
-          },
-        ),
-        
-        _buildDrawerItem(
-          context: context,
-          icon: Icons.quiz,
-          title: 'Quiz de Filmes',
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const QuizMenuScreen(),
               ),
             );
           },
