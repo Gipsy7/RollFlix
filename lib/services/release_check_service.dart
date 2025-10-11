@@ -12,7 +12,7 @@ class ReleaseCheckService {
 
   ReleaseCheckService._internal();
 
-  static const String _apiKey = AppConstants.tmdbApiKey;
+  static String get _apiKey => AppConstants.tmdbApiKey;
   static const String _baseUrl = AppConstants.tmdbBaseUrl;
 
   DateTime? _lastCheckTime;

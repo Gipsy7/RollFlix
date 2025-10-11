@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 import 'constants/app_constants.dart';
+import 'config/secure_config.dart'; // ⬅️ NOVO: Configuração segura
 import 'models/movie.dart';
 import 'models/tv_show.dart';
 import 'models/roll_preferences.dart';
@@ -31,6 +32,9 @@ import 'screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // ✅ NOVO: Validar configurações de segurança
+  SecureConfig.validate();
   
   // Inicializar Firebase
   await Firebase.initializeApp(

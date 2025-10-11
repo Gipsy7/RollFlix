@@ -43,3 +43,27 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ==================== SEGURANÇA - ARQUIVOS SENSÍVEIS ====================
+# NUNCA commite estes arquivos!
+
+# Environment variables e chaves de API
+.env
+.env.*
+!.env.example
+
+# Firebase credentials
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+firebase-debug.log
+.firebase/
+
+# Chaves privadas
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Configurações locais sensíveis
+local.properties
+key.properties

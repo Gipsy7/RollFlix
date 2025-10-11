@@ -13,8 +13,8 @@ import '../models/actor_details.dart';
 import '../utils/app_logger.dart';
 
 class MovieService {
-  // Use constants from AppConstants
-  static const String _apiKey = AppConstants.tmdbApiKey;
+  // Use constants from AppConstants - agora via getter
+  static String get _apiKey => AppConstants.tmdbApiKey;
   static const String _baseUrl = AppConstants.tmdbBaseUrl;
 
   // Use genre mapping from constants

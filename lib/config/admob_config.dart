@@ -1,32 +1,30 @@
 import 'dart:io';
+import '../config/secure_config.dart';
 
 /// Configuração de IDs do AdMob
 /// 
-/// IMPORTANTE: Estes são IDs de TESTE do Google AdMob.
-/// Para produção, você DEVE substituir pelos seus próprios IDs:
+/// ATUALIZADO: Agora usa SecureConfig para chaves sensíveis
 /// 
-/// 1. Acesse https://admob.google.com
-/// 2. Crie uma conta e adicione seu aplicativo
-/// 3. Crie unidades de anúncio do tipo "Recompensado"
-/// 4. Substitua os IDs abaixo pelos IDs reais
+/// Para produção, forneça as chaves via --dart-define:
+/// ```bash
+/// flutter build apk --dart-define=ADMOB_ANDROID_APP_ID=sua_chave
+/// ```
 class AdMobConfig {
   // ==================== IDs DO APP ====================
   
-  /// ID do App para Android (TESTE - substitua pelo seu)
-  static const String androidAppId = 'ca-app-pub-8627801071005444~5894654302';
+  /// ID do App para Android
+  static String get androidAppId => SecureConfig.admobAndroidAppId;
   
-  /// ID do App para iOS (TESTE - substitua pelo seu)
-  static const String iosAppId = 'ca-app-pub-3940256099942544~1458002511';
+  /// ID do App para iOS
+  static String get iosAppId => SecureConfig.admobIosAppId;
   
   // ==================== IDs DE ANÚNCIOS RECOMPENSADOS ====================
   
-  /// ID do anúncio recompensado para Android (TESTE)
-  /// Para produção, use: ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
-  static const String androidRewardedAdId = 'ca-app-pub-8627801071005444/4888694395';
+  /// ID do anúncio recompensado para Android
+  static String get androidRewardedAdId => SecureConfig.admobAndroidRewardedId;
   
-  /// ID do anúncio recompensado para iOS (TESTE)
-  /// Para produção, use: ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
-  static const String iosRewardedAdId = 'ca-app-pub-3940256099942544/1712485313';
+  /// ID do anúncio recompensado para iOS
+  static String get iosRewardedAdId => SecureConfig.admobIosRewardedId;
   
   // ==================== GETTERS ====================
   
