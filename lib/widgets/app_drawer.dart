@@ -227,11 +227,8 @@ class AppDrawer extends StatelessWidget {
           title: 'Sobre o App',
           onTap: () {
             Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AboutScreen(),
-              ),
+            Navigator.of(context).pushSmooth(
+              const AboutScreen(),
             );
           },
         ),
@@ -242,11 +239,8 @@ class AppDrawer extends StatelessWidget {
           title: 'Histórico de Notificações',
           onTap: () {
             Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const NotificationHistoryScreen(),
-              ),
+            Navigator.of(context).pushSmooth(
+              const NotificationHistoryScreen(),
             );
           },
         ),

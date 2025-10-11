@@ -3,6 +3,7 @@ import '../theme/app_theme.dart';
 import '../constants/app_constants.dart';
 import '../models/movie.dart';
 import '../services/movie_service.dart';
+import '../utils/page_transitions.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/movie_widgets.dart';
 import '../widgets/optimized_widgets.dart';
@@ -318,11 +319,8 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   }
 
   void _onMovieTap(Movie movie) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MovieDetailsScreen(movie: movie),
-      ),
+    Navigator.of(context).pushDetails(
+      MovieDetailsScreen(movie: movie),
     );
   }
 
@@ -395,11 +393,8 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           borderRadius: BorderRadius.circular(30),
           onTap: () {
             _appModeController.setToSeriesMode();
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const TVSeriesSearchScreen(),
-              ),
+            Navigator.of(context).pushReplacementSmooth(
+              const TVSeriesSearchScreen(),
             );
           },
           child: Padding(

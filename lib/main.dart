@@ -368,10 +368,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         return;
       }
 
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => TVShowDetailsScreen(tvShow: tvShow),
-        ),
+      await Navigator.of(context).pushDetails(
+        TVShowDetailsScreen(tvShow: tvShow),
       );
       return;
     }
@@ -382,10 +380,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       return;
     }
 
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => MovieDetailsScreen(movie: movie),
-      ),
+    await Navigator.of(context).pushDetails(
+      MovieDetailsScreen(movie: movie),
     );
   }
 

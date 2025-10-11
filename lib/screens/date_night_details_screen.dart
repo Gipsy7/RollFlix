@@ -9,6 +9,7 @@ import '../services/recipe_service_firebase.dart';
 import '../services/movie_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/color_extensions.dart';
+import '../utils/page_transitions.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/optimized_widgets.dart';
@@ -1057,12 +1058,10 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       Navigator.of(context).pop();
 
       // Navegar para a tela de detalhes
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => RecipeDetailsScreen(
-            recipe: recipe,
-            recipeType: recipeType,
-          ),
+      Navigator.of(context).pushDetails(
+        RecipeDetailsScreen(
+          recipe: recipe,
+          recipeType: recipeType,
         ),
       );
     } catch (e) {
@@ -1376,10 +1375,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       );
 
       // Navegar para a tela de detalhes do filme
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => MovieDetailsScreen(movie: movie),
-        ),
+      await Navigator.of(context).pushDetails(
+        MovieDetailsScreen(movie: movie),
       );
     } catch (e) {
       if (!mounted) return;

@@ -4,6 +4,7 @@ import '../controllers/app_mode_controller.dart';
 import '../models/favorite_item.dart';
 import '../theme/app_theme.dart';
 import '../constants/app_constants.dart';
+import '../utils/page_transitions.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/error_widgets.dart';
 import '../widgets/ux_components.dart';
@@ -215,21 +216,15 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         borderRadius: BorderRadius.circular(12),
         onTap: () {
           if (favorite.isTVShow) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TVShowDetailsScreen(
-                  tvShow: favorite.toTVShow(),
-                ),
+            Navigator.of(context).pushDetails(
+              TVShowDetailsScreen(
+                tvShow: favorite.toTVShow(),
               ),
             );
           } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MovieDetailsScreen(
-                  movie: favorite.toMovie(),
-                ),
+            Navigator.of(context).pushDetails(
+              MovieDetailsScreen(
+                movie: favorite.toMovie(),
               ),
             );
           }

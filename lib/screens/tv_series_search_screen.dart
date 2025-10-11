@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../models/tv_show.dart';
 import '../services/movie_service.dart';
+import '../utils/page_transitions.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/optimized_widgets.dart';
 import '../widgets/common_widgets.dart';
@@ -284,11 +285,8 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
   }
 
   void _onTVShowTap(TVShow tvShow) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TVShowDetailsScreen(tvShow: tvShow),
-      ),
+    Navigator.of(context).pushDetails(
+      TVShowDetailsScreen(tvShow: tvShow),
     );
   }
 
@@ -368,11 +366,8 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
           borderRadius: BorderRadius.circular(30),
           onTap: () {
             _appModeController.setToMovieMode();
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SearchScreen(),
-              ),
+            Navigator.of(context).pushReplacementSmooth(
+              const SearchScreen(),
             );
           },
           child: Padding(

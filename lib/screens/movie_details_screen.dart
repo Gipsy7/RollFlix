@@ -9,6 +9,7 @@ import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_logger.dart';
+import '../utils/page_transitions.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
 import '../controllers/user_preferences_controller.dart';
@@ -164,13 +165,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   }
 
   void _navigateToActorDetails(CastMember actor) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ActorDetailsScreen(
-          actorId: actor.id,
-          actorName: actor.name,
-        ),
+    Navigator.of(context).pushDetails(
+      ActorDetailsScreen(
+        actorId: actor.id,
+        actorName: actor.name,
       ),
     );
   }
@@ -214,14 +212,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   }
 
   void _navigateToDirectorDetails(CrewMember director) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ActorDetailsScreen(
-          actorId: director.id,
-          actorName: director.name,
-          isDirector: true,
-        ),
+    Navigator.of(context).pushDetails(
+      ActorDetailsScreen(
+        actorId: director.id,
+        actorName: director.name,
+        isDirector: true,
       ),
     );
   }

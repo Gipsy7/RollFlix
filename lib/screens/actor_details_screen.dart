@@ -3,6 +3,7 @@ import '../models/actor_details.dart';
 import '../models/movie.dart';
 import '../services/movie_service.dart';
 import '../theme/app_theme.dart';
+import '../utils/page_transitions.dart';
 import 'movie_details_screen.dart';
 
 class ActorDetailsScreen extends StatefulWidget {
@@ -79,11 +80,8 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
       genreIds: [], // Empty for now, will be loaded in details
     );
     
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MovieDetailsScreen(movie: movie),
-      ),
+    Navigator.of(context).pushDetails(
+      MovieDetailsScreen(movie: movie),
     );
   }
 

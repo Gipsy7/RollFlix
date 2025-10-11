@@ -4,6 +4,7 @@ import '../controllers/app_mode_controller.dart';
 import '../models/watched_item.dart';
 import '../theme/app_theme.dart';
 import '../constants/app_constants.dart';
+import '../utils/page_transitions.dart';
 import '../widgets/responsive_widgets.dart';
 import 'movie_details_screen.dart';
 import 'tv_show_details_screen.dart';
@@ -399,21 +400,15 @@ class _WatchedScreenState extends State<WatchedScreen> {
 
   void _navigateToDetails(WatchedItem item) {
     if (item.isTVShow) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TVShowDetailsScreen(
-            tvShow: item.toTVShow(),
-          ),
+      Navigator.of(context).pushDetails(
+        TVShowDetailsScreen(
+          tvShow: item.toTVShow(),
         ),
       );
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MovieDetailsScreen(
-            movie: item.toMovie(),
-          ),
+      Navigator.of(context).pushDetails(
+        MovieDetailsScreen(
+          movie: item.toMovie(),
         ),
       );
     }

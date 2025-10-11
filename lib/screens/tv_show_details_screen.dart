@@ -7,6 +7,7 @@ import '../models/watch_providers.dart';
 import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
+import '../utils/page_transitions.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
 import '../controllers/user_preferences_controller.dart';
@@ -949,13 +950,10 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       margin: const EdgeInsets.only(right: 12),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ActorDetailsScreen(
-                actorId: actor.id,
-                actorName: actor.name,
-              ),
+          Navigator.of(context).pushDetails(
+            ActorDetailsScreen(
+              actorId: actor.id,
+              actorName: actor.name,
             ),
           );
         },

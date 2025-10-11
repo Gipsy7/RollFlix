@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../models/tv_show.dart';
 import '../services/movie_service.dart';
+import '../utils/page_transitions.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/optimized_widgets.dart';
 import '../widgets/common_widgets.dart';
@@ -563,11 +564,8 @@ class _TVSearchScreenState extends State<TVSearchScreen> with TickerProviderStat
   Widget _buildTVShowCard(TVShow tvShow, bool isMobile) {
     return AppCard(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TVShowDetailsScreen(tvShow: tvShow),
-          ),
+        Navigator.of(context).pushDetails(
+          TVShowDetailsScreen(tvShow: tvShow),
         );
       },
       padding: EdgeInsets.all(isMobile ? 8 : 12),

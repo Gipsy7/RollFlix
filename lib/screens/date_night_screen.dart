@@ -10,6 +10,7 @@ import '../services/preferences_service.dart';
 import '../services/recipe_service_firebase.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_logger.dart';
+import '../utils/page_transitions.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/responsive_widgets.dart';
 import 'date_night_details_screen.dart';
@@ -289,22 +290,16 @@ class _DateNightScreenState extends State<DateNightScreen> {
 
   void _viewComboDetails() {
     if (_currentCombo != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DateNightDetailsScreen(combo: _currentCombo!),
-        ),
+      Navigator.of(context).pushDetails(
+        DateNightDetailsScreen(combo: _currentCombo!),
       );
     }
   }
 
   void _openPreferences() async {
-    final result = await Navigator.push<DateNightPreferences>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DateNightPreferencesScreen(
-          initialPreferences: _preferences,
-        ),
+    final result = await Navigator.of(context).pushSmooth<DateNightPreferences>(
+      DateNightPreferencesScreen(
+        initialPreferences: _preferences,
       ),
     );
 
