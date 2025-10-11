@@ -3,6 +3,7 @@ import '../models/movie.dart';
 import '../models/tv_show.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_utils.dart' as app_utils;
+import '../utils/page_transitions.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/optimized_widgets.dart';
@@ -135,18 +136,12 @@ class ContentCard extends StatelessWidget {
 
   void _navigateToDetails(BuildContext context) {
     if (isMovie) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MovieDetailsScreen(movie: movie!),
-        ),
+      Navigator.of(context).pushDetails(
+        MovieDetailsScreen(movie: movie!),
       );
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TVShowDetailsScreen(tvShow: tvShow!),
-        ),
+      Navigator.of(context).pushDetails(
+        TVShowDetailsScreen(tvShow: tvShow!),
       );
     }
   }

@@ -16,6 +16,7 @@ import '../screens/notification_history_screen.dart';
 import '../screens/about_screen.dart';
 import '../services/auth_service.dart';
 import '../services/recipe_cache_service.dart';
+import '../utils/page_transitions.dart';
 
 /// Widget do menu lateral (drawer) da aplicação
 /// Gerencia navegação e opções do app
@@ -121,12 +122,7 @@ class AppDrawer extends StatelessWidget {
             title: 'Pesquisar Filmes',
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SearchScreen(),
-                ),
-              );
+              Navigator.of(context).pushSearch(const SearchScreen());
             },
           ),
         if (appModeController.isSeriesMode)
@@ -136,12 +132,7 @@ class AppDrawer extends StatelessWidget {
             title: 'Pesquisar Séries',
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const TVSeriesSearchScreen(),
-                ),
-              );
+              Navigator.of(context).pushSearch(const TVSeriesSearchScreen());
             },
           ),
           
@@ -152,19 +143,9 @@ class AppDrawer extends StatelessWidget {
           onTap: () {
             Navigator.pop(context);
             if (AuthService.isUserLoggedIn()) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfileScreen(),
-                ),
-              );
+              Navigator.of(context).pushSmooth(const ProfileScreen());
             } else {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginScreen(),
-                ),
-              );
+              Navigator.of(context).pushSmooth(const LoginScreen());
             }
           },
         ),
@@ -175,12 +156,7 @@ class AppDrawer extends StatelessWidget {
           title: 'Meus Favoritos',
           onTap: () {
             Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const FavoritesScreen(),
-              ),
-            );
+            Navigator.of(context).pushSmooth(const FavoritesScreen());
           },
         ),
         
@@ -190,12 +166,7 @@ class AppDrawer extends StatelessWidget {
           title: 'Já Assisti',
           onTap: () {
             Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const WatchedScreen(),
-              ),
-            );
+            Navigator.of(context).pushSmooth(const WatchedScreen());
           },
         ),
         
@@ -286,12 +257,7 @@ class AppDrawer extends StatelessWidget {
           title: 'Configurações',
           onTap: () {
             Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SettingsScreen(),
-              ),
-            );
+            Navigator.of(context).pushSettings(const SettingsScreen());
           },
         ),
       ],
