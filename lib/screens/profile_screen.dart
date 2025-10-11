@@ -9,6 +9,7 @@ import '../controllers/watched_controller.dart';
 import '../controllers/movie_controller.dart';
 import '../controllers/tv_show_controller.dart';
 import '../controllers/user_preferences_controller.dart';
+import '../controllers/app_mode_controller.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -25,6 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late final MovieController _movieController;
   late final TVShowController _tvShowController;
   late final UserPreferencesController _userPreferencesController;
+  late final AppModeController _appModeController;
 
   @override
   void initState() {
@@ -35,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _movieController = MovieController.instance;
     _tvShowController = TVShowController.instance;
     _userPreferencesController = UserPreferencesController.instance;
+    _appModeController = AppModeController.instance;
 
     _favoritesController.addListener(_onDataChanged);
     _watchedController.addListener(_onDataChanged);
@@ -132,57 +135,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final isMobile = ResponsiveUtils.isMobile(context);
     final provider = AuthService.getLoginProvider();
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
-      appBar: AppBar(
-        title: SafeText(
-          'Meu Perfil',
-          style: AppTextStyles.headlineSmall.copyWith(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: AppColors.surfaceDark,
-        iconTheme: const IconThemeData(color: AppColors.primary),
-        elevation: 0,
-      ),
-      body: _isLoading
-          ? UXComponents.loadingWithText(
-              text: 'Carregando perfil...',
-            )
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(isMobile ? 16 : 24),
-              child: Column(
-                children: [
-                  // Avatar e informações básicas
-                  _buildProfileHeader(isMobile),
-                  const SizedBox(height: 32),
-                  
-                  // Informações da conta
-                  _buildAccountInfo(isMobile, provider),
-                  const SizedBox(height: 24),
-                  
-                  // Estatísticas (futuro)
-                  _buildStatsSection(isMobile),
-                  const SizedBox(height: 32),
-                  
-                  // Botão de logout
-                  _buildLogoutButton(isMobile),
-                ],
+    return ListenableBuilder(
+      listenable: _appModeController,
+      builder: (context, _) {
+        // Cores dinâmicas baseadas no modo
+        final primaryColor = _appModeController.isSeriesMode
+            ? const Color(0xFFBB86FC)  // Roxo para séries
+            : AppColors.primary;        // Dourado para filmes
+
+        return Scaffold(
+          backgroundColor: AppColors.backgroundDark,
+          appBar: AppBar(
+            title: SafeText(
+              'Meu Perfil',
+              style: AppTextStyles.headlineSmall.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
               ),
             ),
+            backgroundColor: AppColors.surfaceDark,
+            iconTheme: IconThemeData(color: primaryColor),
+            elevation: 0,
+          ),
+          body: _isLoading
+              ? UXComponents.loadingWithText(
+                  text: 'Carregando perfil...',
+                )
+              : SingleChildScrollView(
+                  padding: EdgeInsets.all(isMobile ? 16 : 24),
+                  child: Column(
+                    children: [
+                      // Avatar e informações básicas
+                      _buildProfileHeader(isMobile, primaryColor),
+                      const SizedBox(height: 32),
+                      
+                      // Informações da conta
+                      _buildAccountInfo(isMobile, provider, primaryColor),
+                      const SizedBox(height: 24),
+                      
+                      // Estatísticas
+                      _buildStatsSection(isMobile, primaryColor),
+                      const SizedBox(height: 32),
+                      
+                      // Botão de logout
+                      _buildLogoutButton(isMobile),
+                    ],
+                  ),
+                ),
+        );
+      },
     );
   }
 
-  Widget _buildProfileHeader(bool isMobile) {
+  Widget _buildProfileHeader(bool isMobile, Color primaryColor) {
+    // Gradiente adaptativo
+    final gradient = _appModeController.isSeriesMode
+        ? const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFBB86FC),  // Roxo
+              Color(0xFF9C27B0),  // Roxo mais escuro
+            ],
+          )
+        : AppColors.cinemaGradient;  // Gradiente dourado para filmes
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: AppColors.cinemaGradient,
+        gradient: gradient,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
+            color: primaryColor.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -234,12 +259,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildAccountInfo(bool isMobile, String? provider) {
+  Widget _buildAccountInfo(bool isMobile, String? provider, Color primaryColor) {
     return Card(
       color: AppColors.surfaceDark,
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: primaryColor.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -259,6 +288,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Icons.badge,
               'ID do Usuário',
               _user?.uid ?? 'N/A',
+              primaryColor,
             ),
             Divider(color: AppColors.textSecondary.withAlpha(80)),
             
@@ -267,6 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 provider == 'Google' ? Icons.g_mobiledata : Icons.facebook,
                 'Conectado via',
                 provider,
+                primaryColor,
               ),
             if (provider != null)
               Divider(color: AppColors.textSecondary.withAlpha(80)),
@@ -275,6 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _user?.emailVerified == true ? Icons.verified : Icons.email,
               'Email verificado',
               _user?.emailVerified == true ? 'Sim' : 'Não',
+              primaryColor,
             ),
           ],
         ),
@@ -282,12 +314,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(IconData icon, String label, String value, Color primaryColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.primary, size: 24),
+          Icon(icon, color: primaryColor, size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -316,7 +348,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildStatsSection(bool isMobile) {
+  Widget _buildStatsSection(bool isMobile, Color primaryColor) {
     final favoritesCount = _favoritesController.count;
     final watchedCount = _watchedController.count;
     final rollStats = _userPreferencesController.rollStats;
@@ -327,6 +359,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: primaryColor.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -345,9 +381,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildStatItem(Icons.favorite, 'Favoritos', favoritesCount.toString(), isMobile),
-                _buildStatItem(Icons.casino, 'Sorteios', totalRolls.toString(), isMobile),
-                _buildStatItem(Icons.visibility, 'Assistidos', watchedCount.toString(), isMobile),
+                _buildStatItem(Icons.favorite, 'Favoritos', favoritesCount.toString(), isMobile, primaryColor),
+                _buildStatItem(Icons.casino, 'Sorteios', totalRolls.toString(), isMobile, primaryColor),
+                _buildStatItem(Icons.visibility, 'Assistidos', watchedCount.toString(), isMobile, primaryColor),
               ],
             ),
             
@@ -357,9 +393,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildDetailedStatItem(Icons.movie, 'Filmes', rollStats.movieRolls.toString(), isMobile),
-                _buildDetailedStatItem(Icons.tv, 'Séries', rollStats.seriesRolls.toString(), isMobile),
-                _buildDetailedStatItem(Icons.favorite_border, 'Date Nights', rollStats.dateNightCount.toString(), isMobile),
+                _buildDetailedStatItem(Icons.movie, 'Filmes', rollStats.movieRolls.toString(), isMobile, primaryColor),
+                _buildDetailedStatItem(Icons.tv, 'Séries', rollStats.seriesRolls.toString(), isMobile, primaryColor),
+                _buildDetailedStatItem(Icons.favorite_border, 'Date Nights', rollStats.dateNightCount.toString(), isMobile, primaryColor),
               ],
             ),
           ],
@@ -368,10 +404,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildStatItem(IconData icon, String label, String value, bool isMobile) {
+  Widget _buildStatItem(IconData icon, String label, String value, bool isMobile, Color primaryColor) {
     return Column(
       children: [
-        Icon(icon, color: AppColors.primary, size: isMobile ? 32 : 40),
+        Icon(icon, color: primaryColor, size: isMobile ? 32 : 40),
         const SizedBox(height: 8),
         SafeText(
           value,
@@ -392,10 +428,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildDetailedStatItem(IconData icon, String label, String value, bool isMobile) {
+  Widget _buildDetailedStatItem(IconData icon, String label, String value, bool isMobile, Color primaryColor) {
+    // Cor secundária baseada no modo
+    final secondaryColor = _appModeController.isSeriesMode
+        ? const Color(0xFF9C27B0)  // Roxo mais escuro para séries
+        : AppColors.secondary;      // Secundária padrão para filmes
+    
     return Column(
       children: [
-        Icon(icon, color: AppColors.secondary, size: isMobile ? 24 : 28),
+        Icon(icon, color: secondaryColor, size: isMobile ? 24 : 28),
         const SizedBox(height: 6),
         SafeText(
           value,
