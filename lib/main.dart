@@ -38,6 +38,10 @@ void main() async {
 
   // Inicializar AdMob
   await AdService.initialize();
+  
+  // Pré-carregar anúncios para melhor experiência do usuário
+  // Isso garante que os anúncios estejam prontos quando o usuário precisar
+  await AdService.preloadAds();
 
   // Inicializar sistema de notificações
   NotificationController.instance;

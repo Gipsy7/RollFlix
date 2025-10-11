@@ -37,11 +37,42 @@ class AdService {
       await MobileAds.instance.initialize();
       _instance._isInitialized = true;
       debugPrint('✅ AdMob inicializado com sucesso');
-      
-      // Pré-carrega o primeiro anúncio
-      _instance.loadRewardedAd();
     } catch (e) {
       debugPrint('❌ Erro ao inicializar AdMob: $e');
+    }
+  }
+
+  /// Pré-carrega anúncios para uso futuro
+  /// Deve ser chamado após initialize() para melhor experiência do usuário
+  static Future<void> preloadAds() async {
+    if (!_instance._isInitialized) {
+      debugPrint('⚠️ AdMob não foi inicializado. Chame initialize() primeiro.');
+      return;
+    }
+
+    debugPrint('🎬 Pré-carregando anúncios...');
+    
+    try {
+      // Inicia o carregamento do anúncio
+      await _instance.loadRewardedAd();
+      
+      // Aguarda até que o anúncio esteja pronto ou dê timeout
+      final startTime = DateTime.now();
+      const maxWaitTime = Duration(seconds: 10);
+      
+      while (!_instance._isAdReady && 
+             DateTime.now().difference(startTime) < maxWaitTime) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+      
+      if (_instance._isAdReady) {
+        debugPrint('✅ Anúncios pré-carregados com sucesso!');
+      } else {
+        debugPrint('⏱️ Timeout ao pré-carregar anúncios (continuará carregando em background)');
+      }
+    } catch (e) {
+      debugPrint('⚠️ Erro ao pré-carregar anúncios: $e');
+      // Não falha - o anúncio continuará tentando carregar
     }
   }
 
