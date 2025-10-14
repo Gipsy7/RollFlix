@@ -241,9 +241,6 @@ class _AboutScreenState extends State<AboutScreen> {
 
                 _buildInfoRow(Icons.code, 'Desenvolvido com Flutter'),
                 const SizedBox(height: 12),
-                _buildInfoRow(Icons.movie, 'Powered by TMDB API'),
-                const SizedBox(height: 12),
-                _buildInfoRow(Icons.star, 'The Movie Database'),
 
                 const SizedBox(height: 32),
 

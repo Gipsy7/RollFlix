@@ -67,3 +67,4 @@ firebase-debug.log
 # Configurações locais sensíveis
 local.properties
 key.properties
+# build_android.ps1

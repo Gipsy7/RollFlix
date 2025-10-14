@@ -18,10 +18,7 @@ class SecureConfig {
   /// Chave de API do The Movie Database
   /// Obtenha em: https://www.themoviedb.org/settings/api
   static const String tmdbApiKey = String.fromEnvironment(
-    'TMDB_API_KEY',
-    defaultValue: kDebugMode 
-      ? '4e44d9029b1270a757cddc766a1bcb63' // Chave de desenvolvimento (pública)
-      : '', // Em produção, DEVE ser fornecida via --dart-define
+    'TMDB_API_KEY',defaultValue: '', // Em produção, DEVE ser fornecida via --dart-define
   );
   
   // ==================== Firebase ====================
@@ -39,33 +36,25 @@ class SecureConfig {
   /// App ID do AdMob para Android
   static const String admobAndroidAppId = String.fromEnvironment(
     'ADMOB_ANDROID_APP_ID',
-    defaultValue: kDebugMode
-      ? 'ca-app-pub-8627801071005444~xxxx' // ID de desenvolvimento
-      : '',
+    defaultValue: '',
   );
   
   /// App ID do AdMob para iOS
   static const String admobIosAppId = String.fromEnvironment(
     'ADMOB_IOS_APP_ID',
-    defaultValue: kDebugMode
-      ? 'ca-app-pub-3940256099942544~xxx' // ID de teste do Google
-      : '',
+    defaultValue: '',
   );
   
   /// ID do anúncio recompensado para Android
   static const String admobAndroidRewardedId = String.fromEnvironment(
     'ADMOB_ANDROID_REWARDED_ID',
-    defaultValue: kDebugMode
-      ? 'ca-app-pub-8627801071005444/xxx' // ID de desenvolvimento
-      : '',
+    defaultValue: '',
   );
   
   /// ID do anúncio recompensado para iOS
   static const String admobIosRewardedId = String.fromEnvironment(
     'ADMOB_IOS_REWARDED_ID',
-    defaultValue: kDebugMode
-      ? 'ca-app-pub-3940256099942544/xxx' // ID de teste do Google
-      : '',
+    defaultValue: '',
   );
   
   // ==================== Validações ====================
