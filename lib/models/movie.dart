@@ -119,7 +119,8 @@ class Movie {
         return '${minutes}min';
       }
     }
-    return 'Duração não disponível';
+    // Return empty when runtime is not available; UI should check isNotEmpty
+    return '';
   }
 
   String get formattedReleaseDate {

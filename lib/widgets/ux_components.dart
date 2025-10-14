@@ -68,7 +68,7 @@ class UXComponents {
 
   /// Loading com texto
   static Widget loadingWithText({
-    String text = 'Carregando...',
+    String text = '',
     Color? spinnerColor,
     double spinnerSize = 30.0,
   }) {
@@ -150,9 +150,9 @@ class UXComponents {
 
   /// Error state com retry
   static Widget errorState({
-    String title = 'Ops! Algo deu errado',
-    String message = 'Não foi possível carregar os dados.',
-    String retryText = 'Tentar Novamente',
+    String title = '',
+    String message = '',
+  String retryText = '',
     VoidCallback? onRetryPressed,
   }) {
     return Center(

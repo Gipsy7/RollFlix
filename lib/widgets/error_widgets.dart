@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../constants/app_constants.dart';
 
@@ -40,7 +41,7 @@ class ErrorDisplay extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Tentar Novamente'),
+              label: Text(AppLocalizations.of(context)!.tryAgain),
             ),
           ],
         ],

@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 import 'constants/app_constants.dart';
 import 'config/secure_config.dart'; // ⬅️ NOVO: Configuração segura
 import 'models/movie.dart';
@@ -29,6 +31,7 @@ import 'mixins/animation_mixin.dart';
 import 'screens/movie_details_screen.dart';
 import 'screens/tv_show_details_screen.dart';
 import 'screens/login_screen.dart';
+import 'controllers/locale_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,16 +58,58 @@ void main() async {
   await BackgroundService.initialize();
   await BackgroundService.registerPeriodicTask();
 
+  // Inicializar controlador de locale (carrega preferência salva)
+  await LocaleController.instance.init();
+
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final VoidCallback _localeListener;
+
+  @override
+  void initState() {
+    super.initState();
+    _localeListener = () {
+      if (mounted) setState(() {});
+    };
+    LocaleController.instance.addListener(_localeListener);
+  }
+
+  @override
+  void dispose() {
+    LocaleController.instance.removeListener(_localeListener);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: AppConstants.appName,
+      // Localization
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: LocaleController.instance.locale,
+      localeResolutionCallback: (locale, supportedLocales) {
+        // Fallback to first supported locale if none match
+        if (locale == null) return supportedLocales.first;
+        for (var supported in supportedLocales) {
+          if (supported.languageCode == locale.languageCode) return supported;
+        }
+        return supportedLocales.first;
+      },
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkCinemaTheme,
       home: const AuthWrapper(),
@@ -1203,8 +1248,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   /// Mostra anúncio para recarregar recurso
   Future<void> _showAdToRechargeResource(ResourceType resourceType, String resourceName) async {
-    final uses = _userPreferencesController.userResources.getUses(resourceType);
-    final maxUses = UserResources.maxUses;
+  final uses = _userPreferencesController.userResources.getUses(resourceType);
+  final maxUses = UserResources.maxUses;
 
     // Define cores baseadas no modo
     final accentColor = _appModeController.isSeriesMode 
@@ -1223,9 +1268,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           children: [
             Icon(Icons.videocam, color: accentColor, size: 28),
             const SizedBox(width: 12),
-            const Text(
-              'Ganhar Recurso Extra',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context)!.watchAdConfirmTitle,
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -1234,7 +1279,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Você tem $uses/$maxUses $resourceName disponíveis.',
+              // Use localized string with placeholders
+              AppLocalizations.of(context)!.resourceCount(uses, maxUses, resourceName),
               style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
             const SizedBox(height: 16),

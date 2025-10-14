@@ -1,0 +1,119 @@
+{
+  "@@locale": "en",
+  "appName": "RollFlix",
+  "cancel": "Cancel",
+  "watchAd": "Watch Ad",
+  "tryAgain": "Try Again",
+  "clear": "Clear",
+  "watchAdConfirmTitle": "Watch an ad to get a resource?",
+  "watchAdConfirmBody": "Watching an ad will grant you a resource recharge.",
+  "resourceCount": "You have {uses}/{maxUses} {resource} available.",
+  "@resourceCount": {
+    "placeholders": {
+      "uses": {},
+      "maxUses": {},
+      "resource": {}
+    }
+  },
+  "testNotification": "Test Notification",
+  "rollAndChill": "Roll and Chill",
+  "welcome": "Welcome!",
+  "loginToAccess": "Sign in to access the app",
+  "connectingGoogle": "Connecting with Google...",
+  "continueWithGoogle": "Continue with Google",
+  "loginTerms": "By signing in, you agree to our\nTerms of Use and Privacy Policy",
+  "loginError": "Error signing in with Google: {error}",
+  "@loginError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "settings": "Settings",
+  "notifications": "Notifications",
+  "enableNotifications": "Enable notifications",
+  "receiveReleaseNotifications": "Receive notifications about releases",
+  "movieReleases": "Movie releases",
+  "notifyFavoriteMovieReleases": "Notify when favorite movies are released",
+  "newEpisodes": "New episodes",
+  "notifyFavoriteShowEpisodes": "Notify about episodes of favorite shows",
+  "backgroundExecution": "Background Execution",
+  "automaticChecks": "Automatic checks",
+  "every6HoursEvenClosed": "Every 6 hours, even with app closed",
+  "active": "ACTIVE",
+  "testsMaintenance": "Tests & Maintenance",
+  "testNotification": "Test notification",
+  "sendTestNotification": "Send test notification",
+  "clearSendHistory": "Clear send history",
+  "allowResendNotifications": "Allow resending notifications",
+  "clearHistory": "Clear History",
+  "clearHistoryConfirm": "Do you want to clear the sent notifications history? This allows notifications to be sent again.",
+  "understood": "Understood",
+  "settingsSaved": "Settings saved successfully",
+  "settingsSaveError": "Error saving settings: {error}",
+  "@settingsSaveError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "sendHistoryCleared": "Send history cleared successfully",
+  "testNotificationSent": "Test notification sent",
+  "notificationTestTitle": "Notification Test",
+  "notificationTestBody": "If you're seeing this, notifications are working! 🎉",
+  "backgroundInfoTitle": "How it works:",
+  "backgroundInfoContent": "• Automatic checks every 6 hours\n• Works even with app closed\n• Requires internet connection\n• Does not run on low battery\n• Android managed system",
+  "performanceTitle": "Performance:",
+  "performanceContent": "• Maximum 4 checks per day\n• Only checks new favorites\n• 90% battery savings\n• 96% fewer API calls",
+  "language": "Language",
+  "selectLanguage": "Select Language",
+  "english": "English",
+  "portuguese": "Portuguese",
+  "spanish": "Spanish",
+  "french": "French",
+  "languageChanged": "Language changed successfully",
+  "restartApp": "Please restart the app for changes to take effect",
+  "settingsSaved": "Settings saved successfully",
+  "settingsSaveError": "Error saving settings: {error}",
+  "@settingsSaveError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "sendHistoryCleared": "Send history cleared successfully",
+  "testNotificationSent": "Test notification sent",
+  "cannotOpenLink": "Unable to open link",
+  "errorOpeningLink": "Error opening link",
+  "watchTrailer": "Watch Trailer",
+  "synopsis": "Synopsis",
+  "synopsisNotAvailable": "Synopsis not available.",
+  "direction": "Direction",
+  "mainCast": "Main Cast",
+  "videos": "Videos",
+  "whereToWatch": "Where to Watch",
+  "streamingIncluded": "Streaming (Included in subscription):",
+  "rent": "Rent:",
+  "buy": "Buy:",
+  "streamingInfoNotAvailable": "Streaming information not available at the moment.",
+  "soundtrack": "Soundtrack",
+  "themeSong": "Theme Song",
+  "by": "by",
+  "spotify": "Spotify",
+  "youtube": "YouTube",
+  "completePlaylist": "Complete Playlist",
+  "spotifyPlaylist": "Playlist on Spotify",
+  "youtubePlaylist": "Playlist on YouTube"
+  ,
+  "genresLabel": "Genres",
+  "discoverMore": "Discover more great movies on RollFlix!",
+  "trailerNotAvailable": "Trailer not available",
+  "shareTooltip": "Share movie",
+  "markAsWatched": "Mark as watched",
+  "markAsUnwatched": "Mark as not watched",
+  "removedFromWatched": "Removed from watched",
+  "markedAsWatched": "Marked as watched",
+  "removedFromFavorites": "Removed from favorites",
+  "addedToFavorites": "Added to favorites",
+  "errorLoadingDetails": "Error loading movie details"
+}
+
+
+

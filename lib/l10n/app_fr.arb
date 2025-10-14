@@ -1,0 +1,119 @@
+{
+  "@@locale": "fr",
+  "appName": "RollFlix",
+  "cancel": "Annuler",
+  "watchAd": "Regarder la pub",
+  "tryAgain": "Réessayer",
+  "clear": "Effacer",
+  "watchAdConfirmTitle": "Regarder une pub pour obtenir une ressource ?",
+  "watchAdConfirmBody": "Regarder une pub vous accordera une recharge de ressource.",
+  "resourceCount": "Vous avez {uses}/{maxUses} {resource} disponibles.",
+  "@resourceCount": {
+    "placeholders": {
+      "uses": {},
+      "maxUses": {},
+      "resource": {}
+    }
+  },
+  "testNotification": "Notification de test",
+  "rollAndChill": "Roll and Chill",
+  "welcome": "Bienvenue !",
+  "loginToAccess": "Connectez-vous pour accéder à l'application",
+  "connectingGoogle": "Connexion avec Google...",
+  "continueWithGoogle": "Continuer avec Google",
+  "loginTerms": "En vous connectant, vous acceptez nos\nConditions d'utilisation et Politique de confidentialité",
+  "loginError": "Erreur lors de la connexion avec Google : {error}",
+  "@loginError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "settings": "Paramètres",
+  "notifications": "Notifications",
+  "enableNotifications": "Activer les notifications",
+  "receiveReleaseNotifications": "Recevoir des notifications sur les sorties",
+  "movieReleases": "Sorties de films",
+  "notifyFavoriteMovieReleases": "Notifier quand les films favoris sortent",
+  "newEpisodes": "Nouveaux épisodes",
+  "notifyFavoriteShowEpisodes": "Notifier des épisodes des séries favorites",
+  "backgroundExecution": "Exécution en arrière-plan",
+  "automaticChecks": "Vérifications automatiques",
+  "every6HoursEvenClosed": "Toutes les 6 heures, même app fermée",
+  "active": "ACTIF",
+  "testsMaintenance": "Tests et Maintenance",
+  "testNotification": "Tester la notification",
+  "sendTestNotification": "Envoyer une notification de test",
+  "clearSendHistory": "Effacer l'historique d'envoi",
+  "allowResendNotifications": "Permettre le renvoi des notifications",
+  "clearHistory": "Effacer l'Historique",
+  "clearHistoryConfirm": "Voulez-vous effacer l'historique des notifications envoyées ? Cela permet de renvoyer les notifications.",
+  "understood": "Compris",
+  "settingsSaved": "Paramètres sauvegardés avec succès",
+  "settingsSaveError": "Erreur lors de la sauvegarde des paramètres : {error}",
+  "@settingsSaveError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "sendHistoryCleared": "Historique d'envoi effacé avec succès",
+  "testNotificationSent": "Notification de test envoyée",
+  "notificationTestTitle": "Test de Notification",
+  "notificationTestBody": "Si vous voyez ceci, les notifications fonctionnent ! 🎉",
+  "backgroundInfoTitle": "Comment ça marche :",
+  "backgroundInfoContent": "• Vérifications automatiques toutes les 6 heures\n• Fonctionne même app fermée\n• Nécessite une connexion internet\n• Ne s'exécute pas avec batterie faible\n• Système géré par Android",
+  "performanceTitle": "Performance :",
+  "performanceContent": "• Maximum 4 vérifications par jour\n• Vérifie seulement les nouveaux favoris\n• Économie de 90% de batterie\n• 96% d'appels API en moins",
+  "language": "Langue",
+  "selectLanguage": "Sélectionner la Langue",
+  "english": "Anglais",
+  "portuguese": "Portugais",
+  "spanish": "Espagnol",
+  "french": "Français",
+  "languageChanged": "Langue changée avec succès",
+  "restartApp": "Redémarrez l'application pour que les changements prennent effet",
+  "settingsSaved": "Paramètres sauvegardés avec succès",
+  "settingsSaveError": "Erreur lors de la sauvegarde des paramètres : {error}",
+  "@settingsSaveError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "sendHistoryCleared": "Historique d'envoi effacé avec succès",
+  "testNotificationSent": "Notification de test envoyée",
+  "cannotOpenLink": "Impossible d'ouvrir le lien",
+  "errorOpeningLink": "Erreur lors de l'ouverture du lien",
+  "watchTrailer": "Voir la Bande-Annonce",
+  "synopsis": "Synopsis",
+  "synopsisNotAvailable": "Synopsis non disponible.",
+  "direction": "Réalisation",
+  "mainCast": "Distribution Principale",
+  "videos": "Vidéos",
+  "whereToWatch": "Où Regarder",
+  "streamingIncluded": "Streaming (Inclus dans l'abonnement):",
+  "rent": "Location:",
+  "buy": "Achat:",
+  "streamingInfoNotAvailable": "Informations de streaming non disponibles pour le moment.",
+  "soundtrack": "Bande Originale",
+  "themeSong": "Chanson Thème",
+  "by": "par",
+  "spotify": "Spotify",
+  "youtube": "YouTube",
+  "completePlaylist": "Playlist Complète",
+  "spotifyPlaylist": "Playlist sur Spotify",
+  "youtubePlaylist": "Playlist sur YouTube"
+  ,
+  "genresLabel": "Genres",
+  "discoverMore": "Découvrez plus de films sur RollFlix !",
+  "trailerNotAvailable": "Bande-annonce non disponible",
+  "shareTooltip": "Partager le film",
+  "markAsWatched": "Marquer comme vu",
+  "markAsUnwatched": "Marquer comme non vu",
+  "removedFromWatched": "Retiré des vus",
+  "markedAsWatched": "Marqué comme vu",
+  "removedFromFavorites": "Retiré des favoris",
+  "addedToFavorites": "Ajouté aux favoris",
+  "errorLoadingDetails": "Erreur lors du chargement des détails du film"
+}
+
+
+

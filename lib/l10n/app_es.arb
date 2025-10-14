@@ -1,0 +1,119 @@
+{
+  "@@locale": "es",
+  "appName": "RollFlix",
+  "cancel": "Cancelar",
+  "watchAd": "Ver anuncio",
+  "tryAgain": "Intentar de nuevo",
+  "clear": "Limpiar",
+  "watchAdConfirmTitle": "¿Ver un anuncio para obtener un recurso?",
+  "watchAdConfirmBody": "Ver un anuncio te otorgará una recarga de recurso.",
+  "resourceCount": "Tienes {uses}/{maxUses} {resource} disponibles.",
+  "@resourceCount": {
+    "placeholders": {
+      "uses": {},
+      "maxUses": {},
+      "resource": {}
+    }
+  },
+  "testNotification": "Notificación de prueba",
+  "rollAndChill": "Roll and Chill",
+  "welcome": "¡Bienvenido!",
+  "loginToAccess": "Inicia sesión para acceder a la aplicación",
+  "connectingGoogle": "Conectando con Google...",
+  "continueWithGoogle": "Continuar con Google",
+  "loginTerms": "Al iniciar sesión, aceptas nuestros\nTérminos de Uso y Política de Privacidad",
+  "loginError": "Error al iniciar sesión con Google: {error}",
+  "@loginError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "settings": "Configuraciones",
+  "notifications": "Notificaciones",
+  "enableNotifications": "Activar notificaciones",
+  "receiveReleaseNotifications": "Recibir notificaciones sobre lanzamientos",
+  "movieReleases": "Lanzamientos de películas",
+  "notifyFavoriteMovieReleases": "Notificar cuando se lancen películas favoritas",
+  "newEpisodes": "Nuevos episodios",
+  "notifyFavoriteShowEpisodes": "Notificar sobre episodios de series favoritas",
+  "backgroundExecution": "Ejecución en segundo plano",
+  "automaticChecks": "Verificaciones automáticas",
+  "every6HoursEvenClosed": "Cada 6 horas, incluso con app cerrada",
+  "active": "ACTIVO",
+  "testsMaintenance": "Pruebas y Mantenimiento",
+  "testNotification": "Probar notificación",
+  "sendTestNotification": "Enviar notificación de prueba",
+  "clearSendHistory": "Limpiar historial de envíos",
+  "allowResendNotifications": "Permitir reenvío de notificaciones",
+  "clearHistory": "Limpiar Historial",
+  "clearHistoryConfirm": "¿Desea limpiar el historial de notificaciones enviadas? Esto permite que las notificaciones se envíen nuevamente.",
+  "understood": "Entendido",
+  "settingsSaved": "Configuraciones guardadas exitosamente",
+  "settingsSaveError": "Error al guardar configuraciones: {error}",
+  "@settingsSaveError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "sendHistoryCleared": "Historial de envíos limpiado exitosamente",
+  "testNotificationSent": "Notificación de prueba enviada",
+  "notificationTestTitle": "Prueba de Notificación",
+  "notificationTestBody": "¡Si estás viendo esto, las notificaciones funcionan! 🎉",
+  "backgroundInfoTitle": "Cómo funciona:",
+  "backgroundInfoContent": "• Verificaciones automáticas cada 6 horas\n• Funciona incluso con app cerrada\n• Requiere conexión a internet\n• No ejecuta con batería baja\n• Sistema gestionado por Android",
+  "performanceTitle": "Rendimiento:",
+  "performanceContent": "• Máximo 4 verificaciones por día\n• Solo verifica favoritos nuevos\n• Ahorro de 90% de batería\n• 96% menos llamadas a la API",
+  "language": "Idioma",
+  "selectLanguage": "Seleccionar Idioma",
+  "english": "Inglés",
+  "portuguese": "Portugués",
+  "spanish": "Español",
+  "french": "Francés",
+  "languageChanged": "Idioma cambiado exitosamente",
+  "restartApp": "Reinicia la aplicación para que los cambios tengan efecto",
+  "settingsSaved": "Configuraciones guardadas exitosamente",
+  "settingsSaveError": "Error al guardar configuraciones: {error}",
+  "@settingsSaveError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "sendHistoryCleared": "Historial de envíos limpiado exitosamente",
+  "testNotificationSent": "Notificación de prueba enviada",
+  "cannotOpenLink": "No se pudo abrir el enlace",
+  "errorOpeningLink": "Error al abrir el enlace",
+  "watchTrailer": "Ver Trailer",
+  "synopsis": "Sinopsis",
+  "synopsisNotAvailable": "Sinopsis no disponible.",
+  "direction": "Dirección",
+  "mainCast": "Reparto Principal",
+  "videos": "Videos",
+  "whereToWatch": "Dónde Ver",
+  "streamingIncluded": "Streaming (Incluido en la suscripción):",
+  "rent": "Alquiler:",
+  "buy": "Compra:",
+  "streamingInfoNotAvailable": "Información de streaming no disponible en este momento.",
+  "soundtrack": "Banda Sonora",
+  "themeSong": "Canción Tema",
+  "by": "por",
+  "spotify": "Spotify",
+  "youtube": "YouTube",
+  "completePlaylist": "Lista de Reproducción Completa",
+  "spotifyPlaylist": "Lista en Spotify",
+  "youtubePlaylist": "Lista en YouTube"
+  ,
+  "genresLabel": "Géneros",
+  "discoverMore": "Descubre más películas geniales en RollFlix!",
+  "trailerNotAvailable": "Trailer no disponible",
+  "shareTooltip": "Compartir película",
+  "markAsWatched": "Marcar como visto",
+  "markAsUnwatched": "Marcar como no visto",
+  "removedFromWatched": "Eliminado de vistos",
+  "markedAsWatched": "Marcado como visto",
+  "removedFromFavorites": "Eliminado de favoritos",
+  "addedToFavorites": "Añadido a favoritos",
+  "errorLoadingDetails": "Error al cargar detalles de la película"
+}
+
+
+

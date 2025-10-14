@@ -6,6 +6,7 @@ import '../widgets/ux_components.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
 import '../controllers/user_preferences_controller.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erro ao fazer login com Google: $e'),
+            content: Text(AppLocalizations.of(context)!.loginError(e.toString())),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
@@ -90,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   
                   // Subtítulo
                   SafeText(
-                    'Roll and Chill',
+                    AppLocalizations.of(context)!.rollAndChill,
                     style: AppTextStyles.headlineSmall.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -115,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       children: [
                         SafeText(
-                          'Bem-vindo!',
+                          AppLocalizations.of(context)!.welcome,
                           style: AppTextStyles.headlineMedium.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.bold,
@@ -124,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 8),
                         
                         SafeText(
-                          'Faça login para acessar o aplicativo',
+                          AppLocalizations.of(context)!.loginToAccess,
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -134,14 +135,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         
                         if (_isLoading)
                           UXComponents.loadingWithText(
-                            text: 'Conectando com Google...',
+                            text: AppLocalizations.of(context)!.connectingGoogle,
                           )
                         else
                           // Botão Google
                           _buildSocialButton(
                             onPressed: _signInWithGoogle,
                             icon: Icons.g_mobiledata,
-                            label: 'Continuar com Google',
+                            label: AppLocalizations.of(context)!.continueWithGoogle,
                             color: Colors.white,
                             textColor: Colors.black87,
                           ),
@@ -153,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   
                   // Informação adicional
                   SafeText(
-                    'Ao fazer login, você concorda com nossos\nTermos de Uso e Política de Privacidade',
+                    AppLocalizations.of(context)!.loginTerms,
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.textTertiary,
                     ),

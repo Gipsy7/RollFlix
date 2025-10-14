@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // Para kDebugMode
 import '../services/notification_service.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
+import '../controllers/locale_controller.dart';
 
 /// Tela de configurações do aplicativo
 class SettingsScreen extends StatefulWidget {
@@ -17,11 +19,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _movieReleasesEnabled = true;
   bool _tvShowEpisodesEnabled = true;
   bool _isLoading = false;
+  String _selectedLanguage = 'pt'; // Default to Portuguese
+  late final VoidCallback _localeListener;
 
   @override
   void initState() {
     super.initState();
+    _localeListener = () {
+      if (mounted) {
+        setState(() {
+          _selectedLanguage = LocaleController.instance.locale?.languageCode ?? 'pt';
+        });
+      }
+    };
+    LocaleController.instance.addListener(_localeListener);
     _loadSettings();
+    // Initialize selected language from LocaleController
+    _selectedLanguage = LocaleController.instance.locale?.languageCode ?? 'pt';
+  }
+
+  @override
+  void dispose() {
+    LocaleController.instance.removeListener(_localeListener);
+    super.dispose();
   }
 
   void _loadSettings() {
@@ -44,10 +64,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Configurações salvas com sucesso'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.settingsSaved),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -55,7 +75,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erro ao salvar configurações: $e'),
+            content: Text(AppLocalizations.of(context)!.settingsSaveError(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -69,20 +89,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Limpar Histórico'),
-        content: const Text(
-          'Deseja limpar o histórico de notificações enviadas? '
-          'Isso permite que notificações sejam enviadas novamente.',
-        ),
+        title: Text(AppLocalizations.of(context)!.clearHistory),
+        content: Text(AppLocalizations.of(context)!.clearHistoryConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.orange),
-            child: const Text('Limpar'),
+            child: Text(AppLocalizations.of(context)!.clear),
           ),
         ],
       ),
@@ -93,8 +110,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Histórico de envios limpo com sucesso'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.sendHistoryCleared),
             backgroundColor: Colors.green,
           ),
         );
@@ -104,17 +121,73 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _testNotification() async {
     await _notificationService.showTestNotification(
-      title: 'Teste de Notificação',
-      body: 'Se você está vendo isso, as notificações estão funcionando! 🎉',
+      title: AppLocalizations.of(context)!.notificationTestTitle,
+      body: AppLocalizations.of(context)!.notificationTestBody,
     );
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Notificação de teste enviada'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.testNotificationSent),
+          duration: const Duration(seconds: 2),
         ),
       );
+    }
+  }
+
+  String _getCurrentLanguageName() {
+    switch (_selectedLanguage) {
+      case 'en': return AppLocalizations.of(context)!.english;
+      case 'pt': return AppLocalizations.of(context)!.portuguese;
+      case 'es': return AppLocalizations.of(context)!.spanish;
+      case 'fr': return AppLocalizations.of(context)!.french;
+      default: return AppLocalizations.of(context)!.portuguese;
+    }
+  }
+
+  Future<void> _showLanguageDialog() async {
+    final languages = {
+      'en': AppLocalizations.of(context)!.english,
+      'pt': AppLocalizations.of(context)!.portuguese,
+      'es': AppLocalizations.of(context)!.spanish,
+      'fr': AppLocalizations.of(context)!.french,
+    };
+
+    final selected = await showDialog<String>(
+      context: context,
+        builder: (context) => AlertDialog(
+          title: Text(AppLocalizations.of(context)!.selectLanguage),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: languages.entries.map((entry) => RadioListTile<String>(
+              title: Text(entry.value),
+              value: entry.key,
+              groupValue: _selectedLanguage,
+              onChanged: (value) => Navigator.pop(context, value),
+            )).toList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(AppLocalizations.of(context)!.cancel),
+            ),
+          ],
+        ),
+    );
+
+    if (selected != null && selected != _selectedLanguage) {
+      setState(() => _selectedLanguage = selected);
+      // Save the language preference using LocaleController
+      await LocaleController.instance.setLocale(selected);
+      // The app will automatically update due to the listener in main.dart
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.languageChanged),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 
@@ -122,49 +195,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.info_outline, color: Colors.blue),
-            SizedBox(width: 8),
-            Text('Execução em Background'),
+            const Icon(Icons.info_outline, color: Colors.blue),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(context)!.backgroundExecution),
           ],
         ),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Como funciona:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                AppLocalizations.of(context)!.backgroundInfoTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
+              Text(AppLocalizations.of(context)!.backgroundInfoContent),
+              const SizedBox(height: 16),
               Text(
-                '• Verificações automáticas a cada 6 horas\n'
-                '• Funciona mesmo com app fechado\n'
-                '• Requer conexão com internet\n'
-                '• Não executa com bateria baixa\n'
-                '• Sistema gerenciado pelo Android',
+                AppLocalizations.of(context)!.performanceTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 16),
-              Text(
-                'Performance:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                '• Máximo 4 verificações por dia\n'
-                '• Verifica apenas favoritos novos\n'
-                '• Economia de 90% de bateria\n'
-                '• 96% menos chamadas à API',
-              ),
+              const SizedBox(height: 8),
+              Text(AppLocalizations.of(context)!.performanceContent),
             ],
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Entendi'),
+            child: Text(AppLocalizations.of(context)!.understood),
           ),
         ],
       ),
@@ -175,7 +237,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Configurações'),
+        title: Text(AppLocalizations.of(context)!.settings),
       ),
       body: Stack(
         children: [
@@ -183,13 +245,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             padding: const EdgeInsets.all(16),
             children: [
               // Seção de Notificações
-              _buildSectionHeader('Notificações', Icons.notifications),
+              _buildSectionHeader(AppLocalizations.of(context)!.notifications, Icons.notifications),
               Card(
                 child: Column(
                   children: [
                     SwitchListTile(
-                      title: const Text('Ativar notificações'),
-                      subtitle: const Text('Receber notificações sobre lançamentos'),
+                      title: Text(AppLocalizations.of(context)!.enableNotifications),
+                      subtitle: Text(AppLocalizations.of(context)!.receiveReleaseNotifications),
                       value: _notificationsEnabled,
                       onChanged: (value) {
                         setState(() => _notificationsEnabled = value);
@@ -199,8 +261,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const Divider(height: 1),
                     SwitchListTile(
-                      title: const Text('Lançamentos de filmes'),
-                      subtitle: const Text('Notificar quando filmes favoritos forem lançados'),
+                      title: Text(AppLocalizations.of(context)!.movieReleases),
+                      subtitle: Text(AppLocalizations.of(context)!.notifyFavoriteMovieReleases),
                       value: _movieReleasesEnabled,
                       onChanged: _notificationsEnabled
                           ? (value) {
@@ -212,8 +274,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const Divider(height: 1),
                     SwitchListTile(
-                      title: const Text('Novos episódios'),
-                      subtitle: const Text('Notificar sobre episódios de séries favoritas'),
+                      title: Text(AppLocalizations.of(context)!.newEpisodes),
+                      subtitle: Text(AppLocalizations.of(context)!.notifyFavoriteShowEpisodes),
                       value: _tvShowEpisodesEnabled,
                       onChanged: _notificationsEnabled
                           ? (value) {
@@ -228,16 +290,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 24),
               
+              // Seção de Idioma
+              _buildSectionHeader(AppLocalizations.of(context)!.language, Icons.language),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.translate, color: Colors.blue),
+                  title: Text(AppLocalizations.of(context)!.selectLanguage),
+                  subtitle: Text(_getCurrentLanguageName()),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: _showLanguageDialog,
+                ),
+              ),
+              const SizedBox(height: 24),
+              
               // Seção de Execução em Background (apenas em Debug)
               if (kDebugMode) ...[
-                _buildSectionHeader('Execução em Background', Icons.settings_backup_restore),
+                _buildSectionHeader(AppLocalizations.of(context)!.backgroundExecution, Icons.settings_backup_restore),
                 Card(
                   child: Column(
                     children: [
                       ListTile(
                         leading: const Icon(Icons.sync, color: Colors.blue),
-                        title: const Text('Verificações automáticas'),
-                        subtitle: const Text('A cada 6 horas, mesmo com app fechado'),
+                        title: Text(AppLocalizations.of(context)!.automaticChecks),
+                        subtitle: Text(AppLocalizations.of(context)!.every6HoursEvenClosed),
                         trailing: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
@@ -263,22 +338,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
               
               // Seção de Testes e Manutenção (apenas em Debug)
               if (kDebugMode) ...[
-                _buildSectionHeader('Testes e Manutenção', Icons.build),
+                _buildSectionHeader(AppLocalizations.of(context)!.testsMaintenance, Icons.build),
                 Card(
                   child: Column(
                     children: [
                       ListTile(
                         leading: const Icon(Icons.notifications_active, color: Colors.blue),
-                        title: const Text('Testar notificação'),
-                        subtitle: const Text('Enviar notificação de teste'),
+                        title: Text(AppLocalizations.of(context)!.testNotification),
+                        subtitle: Text(AppLocalizations.of(context)!.sendTestNotification),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: _testNotification,
                       ),
                       const Divider(height: 1),
                       ListTile(
                         leading: const Icon(Icons.delete_sweep, color: Colors.orange),
-                        title: const Text('Limpar histórico de envios'),
-                        subtitle: const Text('Permite reenvio de notificações'),
+                        title: Text(AppLocalizations.of(context)!.clearSendHistory),
+                        subtitle: Text(AppLocalizations.of(context)!.allowResendNotifications),
                         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                         onTap: _clearNotificationHistory,
                       ),

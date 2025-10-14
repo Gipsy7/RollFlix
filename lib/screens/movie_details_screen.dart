@@ -13,6 +13,7 @@ import '../utils/page_transitions.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
 import '../controllers/user_preferences_controller.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 import 'actor_details_screen.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
@@ -79,8 +80,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Não foi possível abrir o link'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.cannotOpenLink),
               backgroundColor: Colors.red,
             ),
           );
@@ -89,8 +90,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erro ao abrir o link'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.errorOpeningLink),
             backgroundColor: Colors.red,
           ),
         );
@@ -108,8 +109,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Não foi possível abrir o trailer'),
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.cannotOpenLink),
                 backgroundColor: Colors.red,
               ),
             );
@@ -118,8 +119,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Erro ao abrir o trailer'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.errorOpeningLink),
               backgroundColor: Colors.red,
             ),
           );
@@ -128,8 +129,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Trailer não disponível'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.trailerNotAvailable),
             backgroundColor: Colors.orange,
           ),
         );
@@ -143,24 +144,24 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Não foi possível abrir o link'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.cannotOpenLink),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erro ao abrir o link'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.errorOpeningLink),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
     }
   }
 
@@ -175,9 +176,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
   void _shareMovie() {
     final movie = detailedMovie ?? widget.movie;
-    final year = movie.releaseDate.isNotEmpty 
-        ? movie.releaseDate.split('-')[0] 
-        : '';
+  final year = movie.releaseDate.isNotEmpty 
+    ? movie.releaseDate.split('-')[0] 
+    : '';
     final rating = movie.voteAverage > 0 
         ? '⭐ ${movie.voteAverage.toStringAsFixed(1)}/10' 
         : '';
@@ -198,10 +199,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     
     if (movie.genres.isNotEmpty) {
       final genres = movie.genres.map((g) => g.name).join(', ');
-      shareText += '🎭 Gêneros: $genres\n\n';
+      final genresLabel = AppLocalizations.of(context)!.genresLabel;
+      shareText += '🎭 $genresLabel: $genres\n\n';
     }
-    
-    shareText += '🍿 Descubra mais filmes incríveis no RollFlix!';
+
+    final discoverText = AppLocalizations.of(context)!.discoverMore;
+    shareText += '🍿 $discoverText';
     
     SharePlus.instance.share(
       ShareParams(
@@ -249,10 +252,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
         ),
-        body: const Center(
+        body: Center(
           child: Text(
-            'Erro ao carregar detalhes do filme',
-            style: TextStyle(color: Colors.white),
+            AppLocalizations.of(context)!.errorLoadingDetails,
+            style: const TextStyle(color: Colors.white),
           ),
         ),
       );
@@ -272,7 +275,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.share),
-                tooltip: 'Compartilhar filme',
+            tooltip: AppLocalizations.of(context)!.shareTooltip,
                 onPressed: _shareMovie,
               ),
               // Botão de Assistido
@@ -285,14 +288,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       isWatched ? Icons.check_circle : Icons.check_circle_outline,
                       color: isWatched ? Colors.green : AppColors.textPrimary,
                     ),
-                    tooltip: isWatched ? 'Marcar como não assistido' : 'Marcar como assistido',
+                    tooltip: isWatched ? AppLocalizations.of(context)!.markAsUnwatched : AppLocalizations.of(context)!.markAsWatched,
                     onPressed: () async {
                       // Se está desmarcando, não consome recurso
                       if (isWatched) {
                         _watchedController.toggleMovieWatched(widget.movie);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Removido de assistidos'),
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.removedFromWatched),
                             duration: Duration(seconds: 2),
                             behavior: SnackBarBehavior.floating,
                           ),
@@ -314,8 +317,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                       _watchedController.toggleMovieWatched(widget.movie);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Marcado como assistido'),
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.markedAsWatched),
                           duration: Duration(seconds: 2),
                           behavior: SnackBarBehavior.floating,
                         ),
@@ -334,14 +337,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       isFavorite ? Icons.favorite : Icons.favorite_border,
                       color: isFavorite ? Colors.red : AppColors.textPrimary,
                     ),
-                    tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
+                    tooltip: isFavorite ? AppLocalizations.of(context)!.removedFromFavorites : AppLocalizations.of(context)!.addedToFavorites,
                     onPressed: () async {
                       // Se está desmarcando, não consome recurso
                       if (isFavorite) {
                         _favoritesController.toggleMovieFavorite(widget.movie);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Removido dos favoritos'),
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.removedFromFavorites),
                             duration: Duration(seconds: 2),
                             behavior: SnackBarBehavior.floating,
                           ),
@@ -363,8 +366,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                       _favoritesController.toggleMovieFavorite(widget.movie);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Adicionado aos favoritos'),
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.addedToFavorites),
                           duration: Duration(seconds: 2),
                           behavior: SnackBarBehavior.floating,
                         ),
@@ -509,7 +512,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            if (movie.formattedRuntime != 'Duração não disponível')
+                            if (movie.formattedRuntime.isNotEmpty)
                               Text(
                                 movie.formattedRuntime,
                                 style: TextStyle(
@@ -562,9 +565,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       child: ElevatedButton.icon(
                         onPressed: _openTrailer,
                         icon: const Icon(Icons.play_arrow, color: Colors.white),
-                        label: const Text(
-                          'Assistir Trailer',
-                          style: TextStyle(
+                        label: Text(
+                          AppLocalizations.of(context)!.watchTrailer,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -589,11 +592,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       fontWeight: FontWeight.bold,
                       color: AppColors.primary,
                     ),
-                    child: const Text('Sinopse'),
+                    child: Text(AppLocalizations.of(context)!.synopsis),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    movie.overview.isNotEmpty ? movie.overview : 'Sinopse não disponível.',
+                    movie.overview.isNotEmpty ? movie.overview : AppLocalizations.of(context)!.synopsisNotAvailable,
                     style: TextStyle(
                       fontSize: 16,
                       height: 1.5,
@@ -611,7 +614,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
                       ),
-                      child: const Text('Direção'),
+                      child: Text(AppLocalizations.of(context)!.direction),
                     ),
                     const SizedBox(height: 8),
                     Wrap(
@@ -658,7 +661,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
                       ),
-                      child: const Text('Elenco Principal'),
+                      child: Text(AppLocalizations.of(context)!.mainCast),
                     ),
                     const SizedBox(height: 12),
                     SizedBox(
@@ -742,7 +745,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   // Vídeos/Trailers adicionais
                   if (movieVideos != null && movieVideos!.results.length > 1) ...[
                     Text(
-                      'Vídeos',
+                      AppLocalizations.of(context)!.videos,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -895,7 +898,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.primary,
                                 ),
-                                child: const Text('Onde Assistir'),
+                                child: Text(AppLocalizations.of(context)!.whereToWatch),
                               ),
                             ],
                           ),
@@ -903,7 +906,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     
                     if (watchProviders!.flatrate.isNotEmpty) ...[
                       Text(
-                        'Streaming (Incluído na assinatura):',
+                        AppLocalizations.of(context)!.streamingIncluded,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -989,7 +992,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                     if (watchProviders!.rent.isNotEmpty) ...[
                       Text(
-                        'Aluguel:',
+                        AppLocalizations.of(context)!.rent,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -1068,7 +1071,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
                     if (watchProviders!.buy.isNotEmpty) ...[
                       Text(
-                        'Compra:',
+                        AppLocalizations.of(context)!.buy,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -1202,7 +1205,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                'Onde Assistir',
+                                AppLocalizations.of(context)!.whereToWatch,
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -1232,7 +1235,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
-                                    'Informações de streaming não disponíveis no momento.',
+                                    AppLocalizations.of(context)!.streamingInfoNotAvailable,
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: AppColors.textTertiary,
@@ -1252,7 +1255,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   if (soundtrackInfo != null) ...[
                     const SizedBox(height: 24),
                     Text(
-                      'Trilha Sonora',
+                      AppLocalizations.of(context)!.soundtrack,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -1278,7 +1281,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 Icon(Icons.music_note, color: AppColors.primary, size: 24),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Música Tema',
+                                  AppLocalizations.of(context)!.themeSong,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -1299,7 +1302,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                             if (soundtrackInfo!.themeSongArtist != null) ...[
                               const SizedBox(height: 4),
                               Text(
-                                'por ${soundtrackInfo!.themeSongArtist}',
+                                '${AppLocalizations.of(context)!.by} ${soundtrackInfo!.themeSongArtist}',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade700,
@@ -1321,7 +1324,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       }
                                     },
                                     icon: const Icon(Icons.music_note, color: Colors.white),
-                                    label: const Text('Spotify', style: TextStyle(color: Colors.white)),
+                                    label: Text(AppLocalizations.of(context)!.spotify, style: const TextStyle(color: Colors.white)),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.green.shade600,
                                       shape: RoundedRectangleBorder(
@@ -1342,7 +1345,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       }
                                     },
                                     icon: const Icon(Icons.play_arrow, color: Colors.white),
-                                    label: const Text('YouTube', style: TextStyle(color: Colors.white)),
+                                    label: Text(AppLocalizations.of(context)!.youtube, style: const TextStyle(color: Colors.white)),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.red.shade600,
                                       shape: RoundedRectangleBorder(
@@ -1360,9 +1363,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ],
                     
                     // Playlists Completas
-                    const Text(
-                      'Playlist Completa',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.completePlaylist,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -1391,16 +1394,16 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       color: Colors.green.shade600,
                                     ),
                                     const SizedBox(height: 8),
-                                    const Text(
-                                      'Spotify',
-                                      style: TextStyle(
+                                    Text(
+                                      AppLocalizations.of(context)!.spotify,
+                                      style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Playlist no Spotify',
+                                      AppLocalizations.of(context)!.spotifyPlaylist,
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey.shade600,
@@ -1435,16 +1438,16 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       color: Colors.red.shade600,
                                     ),
                                     const SizedBox(height: 8),
-                                    const Text(
-                                      'YouTube',
-                                      style: TextStyle(
+                                    Text(
+                                      AppLocalizations.of(context)!.youtube,
+                                      style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Playlist no YouTube',
+                                      AppLocalizations.of(context)!.youtubePlaylist,
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey.shade600,

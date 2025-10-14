@@ -547,7 +547,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                                     ),
                                   ),
                                 ),
-                              if (_currentCombo.movieRuntime.isNotEmpty && _currentCombo.movieRuntime != 'Duração não disponível')
+                              if (_currentCombo.movieRuntime.isNotEmpty)
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: SafeText(
