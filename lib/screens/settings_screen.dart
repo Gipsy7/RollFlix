@@ -20,28 +20,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _tvShowEpisodesEnabled = true;
   bool _isLoading = false;
   String _selectedLanguage = 'pt'; // Default to Portuguese
-  late final VoidCallback _localeListener;
 
   @override
   void initState() {
     super.initState();
-    _localeListener = () {
-      if (mounted) {
-        setState(() {
-          _selectedLanguage = LocaleController.instance.locale?.languageCode ?? 'pt';
-        });
-      }
-    };
-    LocaleController.instance.addListener(_localeListener);
     _loadSettings();
     // Initialize selected language from LocaleController
     _selectedLanguage = LocaleController.instance.locale?.languageCode ?? 'pt';
-  }
-
-  @override
-  void dispose() {
-    LocaleController.instance.removeListener(_localeListener);
-    super.dispose();
   }
 
   void _loadSettings() {
@@ -231,6 +216,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
+  }
+
+  void _changeLanguage(String languageCode) {
+    setState(() {
+      _selectedLanguage = languageCode;
+      LocaleController.instance.setLocale(languageCode); // Corrigido para passar apenas a string
+    });
   }
 
   @override

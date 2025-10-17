@@ -9,6 +9,7 @@ import '../widgets/common_widgets.dart';
 import '../controllers/app_mode_controller.dart';
 import 'tv_show_details_screen.dart';
 import 'search_screen.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class TVSeriesSearchScreen extends StatefulWidget {
   const TVSeriesSearchScreen({super.key});
@@ -236,7 +237,7 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erro ao pesquisar séries'),
+            content: Text(AppLocalizations.of(context)!.searchError),
             backgroundColor: Colors.red.shade700,
           ),
         );

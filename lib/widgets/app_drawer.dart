@@ -17,6 +17,7 @@ import '../screens/about_screen.dart';
 import '../services/auth_service.dart';
 import '../services/recipe_cache_service.dart';
 import '../utils/page_transitions.dart';
+import '../l10n/app_localizations.dart';
 
 /// Widget do menu lateral (drawer) da aplicação
 /// Gerencia navegação e opções do app
@@ -40,25 +41,25 @@ class AppDrawer extends StatelessWidget {
       backgroundColor: AppColors.backgroundDark,
       child: Column(
         children: [
-          _buildDrawerHeader(),
+          _buildDrawerHeader(context),
           Expanded(
             child: _buildMenuItems(context),
           ),
-          _buildFooter(),
+          _buildFooter(context),
         ],
       ),
     );
   }
 
-  Widget _buildDrawerHeader() {
+  Widget _buildDrawerHeader(BuildContext context) {
     // Ícone e texto adaptativos baseados no modo
     final headerIcon = appModeController.isSeriesMode 
         ? Icons.tv // TV para séries
         : Icons.local_movies; // Cinema para filmes
     
-    final headerSubtitle = appModeController.isSeriesMode
-        ? 'Descubra séries incríveis'
-        : 'Roll and chill';
+  final headerSubtitle = appModeController.isSeriesMode
+    ? AppLocalizations.of(context)!.discoverAmazingSeries
+    : 'Roll and chill';
     
     // Cor adaptativa para o subtítulo
     final subtitleColor = appModeController.isSeriesMode 
@@ -110,7 +111,7 @@ class AppDrawer extends StatelessWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.home,
-          title: 'Início',
+          title: AppLocalizations.of(context)!.home,
           onTap: () => Navigator.pop(context),
         ),
         
@@ -119,7 +120,7 @@ class AppDrawer extends StatelessWidget {
           _buildDrawerItem(
             context: context,
             icon: Icons.search,
-            title: 'Pesquisar Filmes',
+            title: AppLocalizations.of(context)!.searchMovies,
             onTap: () {
               Navigator.pop(context);
               Navigator.of(context).pushSearch(const SearchScreen());
@@ -129,7 +130,7 @@ class AppDrawer extends StatelessWidget {
           _buildDrawerItem(
             context: context,
             icon: Icons.search,
-            title: 'Pesquisar Séries',
+            title: AppLocalizations.of(context)!.searchSeries,
             onTap: () {
               Navigator.pop(context);
               Navigator.of(context).pushSearch(const TVSeriesSearchScreen());
@@ -139,7 +140,7 @@ class AppDrawer extends StatelessWidget {
         _buildDrawerItem(
           context: context,
           icon: AuthService.isUserLoggedIn() ? Icons.person : Icons.login,
-          title: AuthService.isUserLoggedIn() ? 'Meu Perfil' : 'Entrar',
+          title: AuthService.isUserLoggedIn() ? AppLocalizations.of(context)!.myProfile : AppLocalizations.of(context)!.login,
           onTap: () {
             Navigator.pop(context);
             if (AuthService.isUserLoggedIn()) {
@@ -153,7 +154,7 @@ class AppDrawer extends StatelessWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.favorite,
-          title: 'Meus Favoritos',
+          title: AppLocalizations.of(context)!.favorites,
           onTap: () {
             Navigator.pop(context);
             Navigator.of(context).pushSmooth(const FavoritesScreen());
@@ -163,7 +164,7 @@ class AppDrawer extends StatelessWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.check_circle,
-          title: 'Já Assisti',
+          title: AppLocalizations.of(context)!.watched,
           onTap: () {
             Navigator.pop(context);
             Navigator.of(context).pushSmooth(const WatchedScreen());
@@ -185,7 +186,7 @@ class AppDrawer extends StatelessWidget {
                     SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Date Night em desenvolvimento!\nEm breve disponível 🚀',
+                        AppLocalizations.of(context)!.dateNightComingSoon,
                         style: TextStyle(fontSize: 14),
                       ),
                     ),
@@ -205,13 +206,13 @@ class AppDrawer extends StatelessWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.refresh,
-          title: 'Limpar Cache',
+          title: AppLocalizations.of(context)!.clearCache,
           onTap: () async {
             movieController.clearCache();
             await RecipeCacheService.clearAllCache();
             if (!context.mounted) return;
             Navigator.pop(context);
-            AppSnackBar.showSuccess(context, 'Cache de filmes e receitas limpo!');
+            AppSnackBar.showSuccess(context, AppLocalizations.of(context)!.cacheCleared);
           },
         ),
         
@@ -224,7 +225,7 @@ class AppDrawer extends StatelessWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.info_outline,
-          title: 'Sobre o App',
+          title: AppLocalizations.of(context)!.aboutApp,
           onTap: () {
             Navigator.pop(context);
             Navigator.of(context).pushSmooth(
@@ -236,7 +237,7 @@ class AppDrawer extends StatelessWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.notifications,
-          title: 'Histórico de Notificações',
+          title: AppLocalizations.of(context)!.notificationHistory,
           onTap: () {
             Navigator.pop(context);
             Navigator.of(context).pushSmooth(
@@ -248,7 +249,7 @@ class AppDrawer extends StatelessWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.settings,
-          title: 'Configurações',
+          title: AppLocalizations.of(context)!.settings,
           onTap: () {
             Navigator.pop(context);
             Navigator.of(context).pushSettings(const SettingsScreen());
@@ -287,7 +288,7 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter(BuildContext context) {
     // Cor adaptativa para o texto do footer
     final footerColor = appModeController.isSeriesMode 
         ? const Color(0xFFBB86FC).withAlpha(150) // Roxo semi-transparente
@@ -296,7 +297,7 @@ class AppDrawer extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       child: SafeText(
-        'Versão ${AppConstants.appVersion}',
+        '${AppLocalizations.of(context)!.version} ${AppConstants.appVersion}',
         style: AppTextStyles.bodySmall.copyWith(
           color: footerColor,
         ),

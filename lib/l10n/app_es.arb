@@ -110,10 +110,244 @@
   "markAsUnwatched": "Marcar como no visto",
   "removedFromWatched": "Eliminado de vistos",
   "markedAsWatched": "Marcado como visto",
+  "errorLoadingDetails": "Error al cargar detalles de la película",
+  "errorLoadingTVShowDetails": "Error al cargar detalles de la serie",
+  "errorLoadingInitialData": "Error al cargar datos iniciales",
+  "selectGenreFirst": "Selecciona un género primero",
+  "rollError": "No se pudo realizar el sorteo. Inténtalo de nuevo.",
+  "noSeriesFound": "No se encontró ninguna serie para este filtro. Inténtalo de nuevo.",
+  "noMovieFound": "No se encontró ninguna película para este filtro. Inténtalo de nuevo."
+  ,
+  "cancel": "Cancelar",
+  "watchAd": "Ver Anuncio",
+  "clear": "Limpiar",
+  "testNotification": "Probar Notificación",
+  "testNotificationSent": "¡Notificación de prueba enviada!",
+  "removedFromWatched": "Eliminado de vistos",
+  "markedAsWatched": "Marcado como visto",
   "removedFromFavorites": "Eliminado de favoritos",
   "addedToFavorites": "Añadido a favoritos",
-  "errorLoadingDetails": "Error al cargar detalles de la película"
+  "allItemsRemoved": "Todos los {contentType} han sido eliminados",
+  "@allItemsRemoved": {
+    "placeholders": {
+      "contentType": {}
+    }
+  },
+  "spotify": "Spotify",
+  "youtube": "YouTube",
+  "searchError": "Error al buscar series"
+  ,
+  "favorites": "Favoritos",
+  "watched": "Vistos",
+  "movies": "Películas",
+  "series": "Series",
+  "seriesUpper": "SERIES",
+  "moviesUpper": "PELÍCULAS",
+  "seriesLower": "series",
+  "moviesLower": "películas",
+  "removeFromWatched": "Eliminar de vistos",
+  "removeFromWatchedQuestion": "¿Eliminar de vistos?",
+  "confirmRemoveWatched": "¿Estás seguro de que quieres eliminar \"{title}\" de la lista de vistos?",
+  "clearAllWatched": "¿Limpiar todos los vistos?",
+  "confirmClearAllWatched": "¿Estás seguro de que quieres eliminar todas las {count} {contentType} vistas?",
+  "prioritizeHighRated": "Prioriza películas con mayor calificación",
+  "prioritizePopular": "Prioriza películas más conocidas",
+  "excludeWatched": "Excluir ya vistas",
+  "excludeWatchedDescription": "No muestra contenido ya marcado como visto",
+  "notificationDescription": "Configura cuándo deseas recibir notificaciones sobre tus películas y series favoritas.",
+  "movieReleasesTitle": "🎬 Estrenos de Películas",
+  "movieReleasesSubtitle": "Notificar cuando se lancen películas favoritas",
+  "newEpisodesTitle": "📺 Nuevos Episodios",
+  "newEpisodesSubtitle": "Notificar sobre nuevos episodios de series favoritas",
+  "close": "Cerrar",
+  "searchSeries": "Buscar Series",
+  "seriesMode": "Modo: Series",
+  "movieMode": "Modo: Películas",
+  "switchToSeries": "Cambiar a Series",
+  "switchToMovies": "Cambiar a Películas",
+  "loadingMovies": "Cargando películas...",
+  "addedToFavorites": "❤️ {title} añadido a favoritos",
+  "removedFromFavorites": "{title} eliminado de favoritos",
+  "shareSeriesText": "🍿 ¡Descubre más series increíbles en RollFlix!",
+  "typeToSearchSeries": "Escribe algo para buscar series",
+  "initialGenreSelected": "Género inicial seleccionado: {genre}",
+  "@initialGenreSelected": {
+    "placeholders": {
+      "genre": {}
+    }
+  },
+  "errorInitializingApp": "Error al inicializar app: {error}",
+  "@errorInitializingApp": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "modeChangedTo": "Modo cambiado a: {mode}",
+  "@modeChangedTo": {
+    "placeholders": {
+      "mode": {}
+    }
+  },
+  "modeSetTo": "Modo establecido a: {mode}",
+  "@modeSetTo": {
+    "placeholders": {
+      "mode": {}
+    }
+  },
+  "remove": "Eliminar",
+  "addToFavorites": "Agregar a favoritos",
+  "removeFromFavorites": "Eliminar de favoritos",
+  "markAsNotWatched": "Marcar como no visto",
+  "addToFavoritesTooltip": "Agregar a favoritos",
+  "removeFromFavoritesTooltip": "Eliminar de favoritos",
+  "clearAllTooltip": "Limpiar todo",
+  "rollPreferencesTitle": "Preferencias de Rol",
+  "chooseGenre": "Elige un Género de {contentType}",
+  "@chooseGenre": {
+    "placeholders": {
+      "contentType": {}
+    }
+  },
+  "rolling": "Rodando...",
+  "rollNewSeries": "Rodar Nueva Serie",
+  "rollNewMovie": "Rodar Nueva Película",
+  "rollSeries": "Rodar Serie",
+  "rollMovie": "Rodar Película",
+  "releasePeriod": "Período de Lanzamiento",
+  "sortBy": "Ordenar Por",
+  "contentRating": "Clasificación de Contenido",
+  "otherOptions": "Otras Opciones",
+  "apply": "Aplicar",
+  "from": "Desde",
+  "to": "Hasta",
+  "any": "Cualquiera",
+  "clearPeriod": "Limpiar período",
+  "selectInitialYear": "Seleccionar Año Inicial",
+  "selectFinalYear": "Seleccionar Año Final",
+  "random": "Aleatorio",
+  "randomDescription": "Orden completamente aleatorio",
+  "bestRated": "Mejor Valorados",
+  "mostPopular": "Más Populares",
+  "allowAdultContent": "Permitir contenido +18",
+  "showAllContent": "Mostrar todo tipo de contenido",
+  "onlyNonAdultContent": "Solo contenido no adulto",
+  "activeNotifications": "Notificaciones Activas",
+  "activeNotificationsDescription": "Activar/desactivar todas las notificaciones",
+  "movieReleasesTitle": "🎬 Lanzamientos de Películas",
+  "movieReleasesSubtitle": "Notificar cuando películas favoritas sean lanzadas",
+  "newEpisodesTitle": "📺 Nuevos Episodios",
+  "newEpisodesSubtitle": "Notificar sobre nuevos episodios de series favoritas",
+  "testNotificationHint": "Toca para enviar una notificación de prueba",
+  "home": "Inicio",
+  "searchMovies": "Buscar Películas",
+  "searchSeries": "Buscar Series",
+  "myProfile": "Mi Perfil",
+  "login": "Iniciar Sesión",
+  "discoverAmazingSeries": "Descubre series increíbles",
+  "dateNight": "Date Night 🚧",
+  "dateNightComingSoon": "¡Date Night en desarrollo!\nPróximamente disponible 🚀",
+  "clearCache": "Limpiar Caché",
+  "cacheCleared": "¡Caché de películas y recetas limpiado!",
+  "aboutApp": "Acerca de la App",
+  "notificationHistory": "Historial de Notificaciones",
+  "version": "Versión",
+  "whatIsRollflix": "¿Qué es Rollflix?",
+  "whatIsRollflixDescription": "Aplicación para descubrir películas y series aleatorias por género. ¡Elige entre más de 18 géneros diferentes y encuentra tu próximo entretenimiento!",
+  "availableFeatures": "Características Disponibles",
+  "movieSeriesRoller": "Sorteador de Películas y Series",
+  "movieSeriesRollerDescription": "Descubre tu próximo entretenimiento de forma aleatoria",
+  "genresAvailable": "18+ Géneros Disponibles",
+  "genresAvailableDescription": "Acción, comedia, terror, romance, ciencia ficción y mucho más",
+  "smartNotifications": "Notificaciones Inteligentes",
+  "smartNotificationsDescription": "Mantente al día con los lanzamientos de tus favoritos",
+  "favoritesSystem": "Sistema de Favoritos",
+  "favoritesSystemDescription": "Guarda y sigue tus películas y series favoritas",
+  "movieSeriesMode": "Modo Películas y Series",
+  "movieSeriesModeDescription": "Cambia fácilmente entre películas y series",
+  "inDevelopment": "🚀 En Desarrollo",
+  "newFeaturesComing": "Nuevas características que se están desarrollando y estarán disponibles pronto:",
+  "movieQuiz": "Quiz de Películas",
+  "movieQuizDescription": "Pon a prueba tus conocimientos de cine con preguntas desafiantes",
+  "dateNight": "Noche de Cita",
+  "dateNightDescription": "Encuentra la película o serie perfecta para ver juntos",
+  "soundtrackQuiz": "Quiz de Banda Sonora",
+  "soundtrackQuizDescription": "Adivina la película o serie por la música",
+  "technologies": "Tecnologías",
+  "developedWithFlutter": "Desarrollado con Flutter",
+  "copyright": "2025 Rollflix",
+  "allRightsReserved": "Todos los derechos reservados",
+  "comingSoon": "PRÓXIMAMENTE",
+  "series": "SERIES",
+  "movies": "PELÍCULAS",
+  "seriesLower": "series",
+  "moviesLower": "películas",
+  "noWatchedItems": "Ningún elemento visto",
+  "markWatchedHint": "Marca las {contentType} que ya has visto para verlas aquí",
+  "@markWatchedHint": {
+    "placeholders": {
+      "contentType": {}
+    }
+  },
+  "seriesLabel": "Serie",
+  "movieLabel": "Película",
+  "watchedToday": "Visto hoy",
+  "watchedYesterday": "Visto ayer",
+  "watchedDaysAgo": "Visto hace {days} días",
+  "@watchedDaysAgo": {
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "watchedWeeksAgo": "Visto hace {weeks} {weekWord}",
+  "@watchedWeeksAgo": {
+    "placeholders": {
+      "weeks": {},
+      "weekWord": {}
+    }
+  },
+  "watchedMonthsAgo": "Visto hace {months} {monthWord}",
+  "@watchedMonthsAgo": {
+    "placeholders": {
+      "months": {},
+      "monthWord": {}
+    }
+  },
+  "watchedYearsAgo": "Visto hace {years} {yearWord}",
+  "@watchedYearsAgo": {
+    "placeholders": {
+      "years": {},
+      "yearWord": {}
+    }
+  },
+  "week": "semana",
+  "weeks": "semanas",
+  "month": "mes",
+  "months": "meses",
+  "year": "año",
+  "years": "años",
+  "clearAll": "Limpiar Todo",
+  "watched": "Visto",
+  "myFavorites": "Mis Favoritos",
+  "favorites": "Favoritos",
+  "clearAll": "Limpiar todos",
+  "loadingFavorites": "Cargando favoritos...",
+  "noFavoritesYet": "Ningún favorito aún",
+  "addToFavoritesHint": "¡Agrega {contentType} a favoritos\npara verlos aquí!",
+  "removeFromFavorites": "Remover de favoritos",
+  "removeFavorite": "¿Remover favorito?",
+  "confirmRemoveFavorite": "¿Quieres remover \"{title}\" de favoritos?",
+  "removedFromFavorites": "Removido de favoritos",
+  "noFavoritesToClear": "No hay {contentType} favoritos para limpiar",
+  "clearAllFavorites": "¿Limpiar todos los favoritos?",
+  "confirmClearAllFavorites": "Todos los {count} {contentType} favoritos serán removidos. Esta acción no se puede deshacer.",
+  "allFavoritesCleared": "Todos los {contentType} favoritos han sido removidos",
+  "logoutConfirmTitle": "¿Salir de la cuenta?",
+  "logoutConfirmMessage": "Serás desconectado y necesitarás iniciar sesión nuevamente.",
+  "logout": "Salir",
+  "logoutError": "Error al cerrar sesión: {error}",
+  "loadingProfile": "Cargando perfil...",
+  "logoutButton": "Salir de la Cuenta",
+  "rolls": "Sorteos"
 }
-
 
 

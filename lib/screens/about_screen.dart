@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
 import '../controllers/app_mode_controller.dart';
+import '../controllers/locale_controller.dart';
 
 /// Tela "Sobre o App" com informações detalhadas do aplicativo
 class AboutScreen extends StatefulWidget {
@@ -22,9 +24,12 @@ class _AboutScreenState extends State<AboutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: _appModeController,
-      builder: (context, _) {
+    return ValueListenableBuilder<Locale?>(
+      valueListenable: LocaleController.instance,
+      builder: (context, locale, _) {
+        return ListenableBuilder(
+          listenable: _appModeController,
+          builder: (context, _) {
         // Cores adaptativas baseadas no modo
         final primaryColor = _appModeController.isSeriesMode
             ? const Color(0xFFBB86FC) // Roxo para séries
@@ -45,9 +50,9 @@ class _AboutScreenState extends State<AboutScreen> {
         return Scaffold(
           backgroundColor: AppColors.backgroundDark,
           appBar: AppBar(
-            title: const SafeText(
-              'Sobre o App',
-              style: TextStyle(
+            title: SafeText(
+              AppLocalizations.of(context)!.aboutApp,
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -130,11 +135,10 @@ class _AboutScreenState extends State<AboutScreen> {
                 const SizedBox(height: 32),
 
                 // Descrição
-                _buildSectionTitle('O que é o Rollflix?', primaryColor),
+                _buildSectionTitle(AppLocalizations.of(context)!.whatIsRollflix, primaryColor),
                 const SizedBox(height: 12),
                 Text(
-                  'Aplicativo para descobrir filmes e séries aleatórios por gênero. '
-                  'Escolha entre mais de 18 gêneros diferentes e encontre seu próximo entretenimento!',
+                  AppLocalizations.of(context)!.whatIsRollflixDescription,
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 15,
@@ -145,13 +149,13 @@ class _AboutScreenState extends State<AboutScreen> {
                 const SizedBox(height: 32),
 
                 // Recursos Disponíveis
-                _buildSectionTitle('Recursos Disponíveis', primaryColor),
+                _buildSectionTitle(AppLocalizations.of(context)!.availableFeatures, primaryColor),
                 const SizedBox(height: 16),
 
                 _buildFeatureItem(
                   Icons.casino,
-                  'Sorteador de Filmes e Séries',
-                  'Descubra seu próximo entretenimento de forma aleatória',
+                  AppLocalizations.of(context)!.movieSeriesRoller,
+                  AppLocalizations.of(context)!.movieSeriesRollerDescription,
                   isAvailable: true,
                   primaryColor: primaryColor,
                 ),
@@ -159,8 +163,8 @@ class _AboutScreenState extends State<AboutScreen> {
 
                 _buildFeatureItem(
                   Icons.category,
-                  '18+ Gêneros Disponíveis',
-                  'Ação, comédia, terror, romance, ficção científica e muito mais',
+                  AppLocalizations.of(context)!.genresAvailable,
+                  AppLocalizations.of(context)!.genresAvailableDescription,
                   isAvailable: true,
                   primaryColor: primaryColor,
                 ),
@@ -168,8 +172,8 @@ class _AboutScreenState extends State<AboutScreen> {
 
                 _buildFeatureItem(
                   Icons.notifications_active,
-                  'Notificações Inteligentes',
-                  'Fique por dentro dos lançamentos dos seus favoritos',
+                  AppLocalizations.of(context)!.smartNotifications,
+                  AppLocalizations.of(context)!.smartNotificationsDescription,
                   isAvailable: true,
                   primaryColor: primaryColor,
                 ),
@@ -177,8 +181,8 @@ class _AboutScreenState extends State<AboutScreen> {
 
                 _buildFeatureItem(
                   Icons.favorite,
-                  'Sistema de Favoritos',
-                  'Salve e acompanhe seus filmes e séries preferidos',
+                  AppLocalizations.of(context)!.favoritesSystem,
+                  AppLocalizations.of(context)!.favoritesSystemDescription,
                   isAvailable: true,
                   primaryColor: primaryColor,
                 ),
@@ -186,8 +190,8 @@ class _AboutScreenState extends State<AboutScreen> {
 
                 _buildFeatureItem(
                   Icons.switch_left,
-                  'Modo Filmes e Séries',
-                  'Alterne facilmente entre filmes e séries',
+                  AppLocalizations.of(context)!.movieSeriesMode,
+                  AppLocalizations.of(context)!.movieSeriesModeDescription,
                   isAvailable: true,
                   primaryColor: primaryColor,
                 ),
@@ -195,10 +199,10 @@ class _AboutScreenState extends State<AboutScreen> {
                 const SizedBox(height: 32),
 
                 // Lançamentos Futuros
-                _buildSectionTitle('🚀 Em Desenvolvimento', primaryColor),
+                _buildSectionTitle(AppLocalizations.of(context)!.inDevelopment, primaryColor),
                 const SizedBox(height: 12),
                 Text(
-                  'Novos recursos que estão sendo desenvolvidos e em breve estarão disponíveis:',
+                  AppLocalizations.of(context)!.newFeaturesComing,
                   style: TextStyle(
                     color: Colors.grey[500],
                     fontSize: 14,
@@ -209,8 +213,8 @@ class _AboutScreenState extends State<AboutScreen> {
 
                 _buildFeatureItem(
                   Icons.quiz,
-                  'Quiz de Filmes',
-                  'Teste seus conhecimentos sobre cinema com perguntas desafiadoras',
+                  AppLocalizations.of(context)!.movieQuiz,
+                  AppLocalizations.of(context)!.movieQuizDescription,
                   isAvailable: false,
                   primaryColor: primaryColor,
                 ),
@@ -218,8 +222,8 @@ class _AboutScreenState extends State<AboutScreen> {
 
                 _buildFeatureItem(
                   Icons.nightlight,
-                  'Date Night',
-                  'Encontre o filme ou série perfeito para assistir a dois',
+                  AppLocalizations.of(context)!.dateNight,
+                  AppLocalizations.of(context)!.dateNightDescription,
                   isAvailable: false,
                   primaryColor: primaryColor,
                 ),
@@ -227,8 +231,8 @@ class _AboutScreenState extends State<AboutScreen> {
 
                 _buildFeatureItem(
                   Icons.music_note,
-                  'Quiz de Trilha Sonora',
-                  'Adivinhe o filme ou série pela música',
+                  AppLocalizations.of(context)!.soundtrackQuiz,
+                  AppLocalizations.of(context)!.soundtrackQuizDescription,
                   isAvailable: false,
                   primaryColor: primaryColor,
                 ),
@@ -236,10 +240,10 @@ class _AboutScreenState extends State<AboutScreen> {
                 const SizedBox(height: 32),
 
                 // Informações Técnicas
-                _buildSectionTitle('Tecnologias', primaryColor),
+                _buildSectionTitle(AppLocalizations.of(context)!.technologies, primaryColor),
                 const SizedBox(height: 16),
 
-                _buildInfoRow(Icons.code, 'Desenvolvido com Flutter'),
+                _buildInfoRow(Icons.code, AppLocalizations.of(context)!.developedWithFlutter),
                 const SizedBox(height: 12),
 
                 const SizedBox(height: 32),
@@ -260,7 +264,7 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '2025 Rollflix',
+                        AppLocalizations.of(context)!.copyright,
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 13,
@@ -268,7 +272,7 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Todos os direitos reservados',
+                        AppLocalizations.of(context)!.allRightsReserved,
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 13,
@@ -283,7 +287,9 @@ class _AboutScreenState extends State<AboutScreen> {
             ),
           ),
         );
-      },
+          },
+        );
+      }
     );
   }
 
@@ -357,8 +363,8 @@ class _AboutScreenState extends State<AboutScreen> {
                           width: 1,
                         ),
                       ),
-                      child: const Text(
-                        'EM BREVE',
+                      child: Text(
+                        AppLocalizations.of(context)!.comingSoon,
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,

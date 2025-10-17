@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../controllers/notification_controller.dart';
 import '../../controllers/app_mode_controller.dart';
 import '../../theme/app_theme.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 /// Diálogo para configurar notificações
 class NotificationSettingsDialog extends StatefulWidget {
@@ -46,7 +47,7 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
           ),
           const SizedBox(width: 12),
           Text(
-            'Notificações',
+            AppLocalizations.of(context)!.notifications,
             style: AppTextStyles.headlineSmall.copyWith(
               color: AppColors.textPrimary,
             ),
@@ -59,7 +60,7 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Configure quando deseja receber notificações sobre seus filmes e séries favoritos.',
+              AppLocalizations.of(context)!.notificationDescription,
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -68,8 +69,8 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
 
             // Notificações gerais
             _buildSettingTile(
-              title: 'Notificações Ativas',
-              subtitle: 'Ativar/desativar todas as notificações',
+              title: AppLocalizations.of(context)!.activeNotifications,
+              subtitle: AppLocalizations.of(context)!.activeNotificationsDescription,
               value: _notificationController.notificationsEnabled,
               onChanged: (value) {
                 _notificationController.updateNotificationSettings(
@@ -83,8 +84,8 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
 
             // Lançamentos de filmes
             _buildSettingTile(
-              title: '🎬 Lançamentos de Filmes',
-              subtitle: 'Notificar quando filmes favoritos forem lançados',
+              title: AppLocalizations.of(context)!.movieReleasesTitle,
+              subtitle: AppLocalizations.of(context)!.movieReleasesSubtitle,
               value: _notificationController.movieReleasesEnabled,
               onChanged: _notificationController.notificationsEnabled
                   ? (value) {
@@ -100,8 +101,8 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
 
             // Novos episódios
             _buildSettingTile(
-              title: '📺 Novos Episódios',
-              subtitle: 'Notificar sobre novos episódios de séries favoritas',
+              title: AppLocalizations.of(context)!.newEpisodesTitle,
+              subtitle: AppLocalizations.of(context)!.newEpisodesSubtitle,
               value: _notificationController.tvShowEpisodesEnabled,
               onChanged: _notificationController.notificationsEnabled
                   ? (value) {
@@ -124,8 +125,8 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
                         await _notificationController.testNotification();
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Notificação de teste enviada!'),
+                            SnackBar(
+                              content: Text(AppLocalizations.of(context)!.testNotificationSent),
                               duration: Duration(seconds: 2),
                             ),
                           );
@@ -133,7 +134,7 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
                       }
                     : null,
                 icon: const Icon(Icons.play_arrow),
-                label: const Text('Testar Notificação'),
+                label: Text(AppLocalizations.of(context)!.testNotification),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   foregroundColor: AppColors.backgroundDark,
@@ -148,7 +149,7 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
             const SizedBox(height: 8),
 
             Text(
-              'Toque para enviar uma notificação de teste',
+              AppLocalizations.of(context)!.testNotificationHint,
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -161,7 +162,7 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
-            'Fechar',
+            AppLocalizations.of(context)!.close,
             style: AppTextStyles.labelLarge.copyWith(
               color: primaryColor,
             ),

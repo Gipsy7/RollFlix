@@ -12,6 +12,7 @@ import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
 import '../controllers/user_preferences_controller.dart';
 import 'actor_details_screen.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class TVShowDetailsScreen extends StatefulWidget {
   final TVShow tvShow;
@@ -90,9 +91,9 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
         ),
-        body: const Center(
+        body: Center(
           child: Text(
-            'Erro ao carregar detalhes da série',
+            AppLocalizations.of(context)!.errorLoadingTVShowDetails,
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -160,7 +161,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       shareText += '🎭 Gêneros: $genres\n\n';
     }
     
-    shareText += '🍿 Descubra mais séries incríveis no RollFlix!';
+    shareText += AppLocalizations.of(context)!.shareSeriesText;
     
     SharePlus.instance.share(
       ShareParams(
@@ -191,14 +192,14 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                 isWatched ? Icons.check_circle : Icons.check_circle_outline,
                 color: isWatched ? Colors.green : Colors.white,
               ),
-              tooltip: isWatched ? 'Marcar como não assistido' : 'Marcar como assistido',
+              tooltip: isWatched ? AppLocalizations.of(context)!.markAsNotWatched : AppLocalizations.of(context)!.markAsWatched,
               onPressed: () async {
                 // Se está desmarcando, não consome recurso
                 if (isWatched) {
                   _watchedController.toggleTVShowWatched(widget.tvShow);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Removido de assistidos'),
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context)!.removedFromWatched),
                       duration: Duration(seconds: 2),
                       behavior: SnackBarBehavior.floating,
                     ),
@@ -220,8 +221,8 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
 
                 _watchedController.toggleTVShowWatched(widget.tvShow);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Marcado como assistido'),
+                  SnackBar(
+                    content: Text(AppLocalizations.of(context)!.markedAsWatched),
                     duration: Duration(seconds: 2),
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -240,14 +241,14 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                 isFavorite ? Icons.favorite : Icons.favorite_border,
                 color: isFavorite ? Colors.red : Colors.white,
               ),
-              tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
+              tooltip: isFavorite ? AppLocalizations.of(context)!.removeFromFavoritesTooltip : AppLocalizations.of(context)!.addToFavoritesTooltip,
               onPressed: () async {
                 // Se está desmarcando, não consome recurso
                 if (isFavorite) {
                   _favoritesController.toggleTVShowFavorite(widget.tvShow);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Removido dos favoritos'),
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context)!.removedFromFavorites),
                       duration: Duration(seconds: 2),
                       behavior: SnackBarBehavior.floating,
                     ),
@@ -269,8 +270,8 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
 
                 _favoritesController.toggleTVShowFavorite(widget.tvShow);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Adicionado aos favoritos'),
+                  SnackBar(
+                    content: Text(AppLocalizations.of(context)!.addedToFavorites(widget.tvShow.name)),
                     duration: Duration(seconds: 2),
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -1159,7 +1160,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                             }
                           },
                           icon: const Icon(Icons.music_note, color: Colors.white),
-                          label: const Text('Spotify', style: TextStyle(color: Colors.white)),
+                          label: Text(AppLocalizations.of(context)!.spotify, style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green.shade600,
                             shape: RoundedRectangleBorder(
@@ -1180,7 +1181,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                             }
                           },
                           icon: const Icon(Icons.play_arrow, color: Colors.white),
-                          label: const Text('YouTube', style: TextStyle(color: Colors.white)),
+                          label: Text(AppLocalizations.of(context)!.youtube, style: TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red.shade600,
                             shape: RoundedRectangleBorder(

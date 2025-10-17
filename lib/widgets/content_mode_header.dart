@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../controllers/app_mode_controller.dart';
 import '../widgets/responsive_widgets.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 /// Widget do cabeçalho que exibe o modo atual (Filme/Série)
 /// e permite alternar entre os modos
@@ -43,8 +44,8 @@ class ContentModeHeader extends StatelessWidget {
           Expanded(
             child: SafeText(
               appModeController.isSeriesMode 
-                  ? 'Modo: Séries' 
-                  : 'Modo: Filmes',
+                  ? AppLocalizations.of(context)!.seriesMode 
+                  : AppLocalizations.of(context)!.movieMode,
               style: isMobile
                   ? AppTextStyles.headlineSmall.copyWith(
                       color: AppColors.backgroundDark,
@@ -56,26 +57,28 @@ class ContentModeHeader extends StatelessWidget {
                     ),
             ),
           ),
-          _buildSwapButton(),
+          _buildSwapButton(context),
         ],
       ),
     );
   }
 
-  Widget _buildSwapButton() {
-    return IconButton(
-      icon: Icon(
-        appModeController.isSeriesMode ? Icons.movie : Icons.tv,
-        color: AppColors.backgroundDark,
-        size: isMobile ? 24 : 28,
+  Widget _buildSwapButton(BuildContext context) {
+    return Tooltip(
+      message: appModeController.isSeriesMode 
+          ? AppLocalizations.of(context)!.switchToMovies 
+          : AppLocalizations.of(context)!.switchToSeries,
+      child: IconButton(
+        icon: Icon(
+          appModeController.isSeriesMode ? Icons.movie : Icons.tv,
+          color: AppColors.backgroundDark,
+          size: isMobile ? 24 : 28,
+        ),
+        onPressed: () {
+          appModeController.toggleMode();
+          onModeChanged();
+        },
       ),
-      tooltip: appModeController.isSeriesMode 
-          ? 'Alternar para Filmes' 
-          : 'Alternar para Séries',
-      onPressed: () {
-        appModeController.toggleMode();
-        onModeChanged();
-      },
     );
   }
 }

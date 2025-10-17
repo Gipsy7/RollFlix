@@ -15,7 +15,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get cancel => 'Cancelar';
 
   @override
-  String get watchAd => 'Ver anuncio';
+  String get watchAd => 'Ver Anuncio';
 
   @override
   String get tryAgain => 'Intentar de nuevo';
@@ -35,7 +35,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get testNotification => 'Probar notificación';
+  String get testNotification => 'Probar Notificación';
 
   @override
   String get rollAndChill => 'Roll and Chill';
@@ -129,7 +129,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sendHistoryCleared => 'Historial de envíos limpiado exitosamente';
 
   @override
-  String get testNotificationSent => 'Notificación de prueba enviada';
+  String get testNotificationSent => '¡Notificación de prueba enviada!';
 
   @override
   String get notificationTestTitle => 'Prueba de Notificación';
@@ -261,11 +261,498 @@ class AppLocalizationsEs extends AppLocalizations {
   String get markedAsWatched => 'Marcado como visto';
 
   @override
-  String get removedFromFavorites => 'Eliminado de favoritos';
-
-  @override
-  String get addedToFavorites => 'Añadido a favoritos';
-
-  @override
   String get errorLoadingDetails => 'Error al cargar detalles de la película';
+
+  @override
+  String get errorLoadingTVShowDetails => 'Error al cargar detalles de la serie';
+
+  @override
+  String get errorLoadingInitialData => 'Error al cargar datos iniciales';
+
+  @override
+  String get selectGenreFirst => 'Selecciona un género primero';
+
+  @override
+  String get rollError => 'No se pudo realizar el sorteo. Inténtalo de nuevo.';
+
+  @override
+  String get noSeriesFound => 'No se encontró ninguna serie para este filtro. Inténtalo de nuevo.';
+
+  @override
+  String get noMovieFound => 'No se encontró ninguna película para este filtro. Inténtalo de nuevo.';
+
+  @override
+  String get removedFromFavorites => 'Removido de favoritos';
+
+  @override
+  String addedToFavorites(Object title) {
+    return '❤️ $title añadido a favoritos';
+  }
+
+  @override
+  String allItemsRemoved(Object contentType) {
+    return 'Todos los $contentType han sido eliminados';
+  }
+
+  @override
+  String get searchError => 'Error al buscar series';
+
+  @override
+  String get favorites => 'Favoritos';
+
+  @override
+  String get watched => 'Visto';
+
+  @override
+  String get movies => 'PELÍCULAS';
+
+  @override
+  String get series => 'SERIES';
+
+  @override
+  String get seriesUpper => 'SERIES';
+
+  @override
+  String get moviesUpper => 'PELÍCULAS';
+
+  @override
+  String get seriesLower => 'series';
+
+  @override
+  String get moviesLower => 'películas';
+
+  @override
+  String get removeFromWatched => 'Eliminar de vistos';
+
+  @override
+  String get removeFromWatchedQuestion => '¿Eliminar de vistos?';
+
+  @override
+  String confirmRemoveWatched(Object title) {
+    return '¿Estás seguro de que quieres eliminar \"$title\" de la lista de vistos?';
+  }
+
+  @override
+  String get clearAllWatched => '¿Limpiar todos los vistos?';
+
+  @override
+  String confirmClearAllWatched(Object contentType, Object count) {
+    return '¿Estás seguro de que quieres eliminar todas las $count $contentType vistas?';
+  }
+
+  @override
+  String get prioritizeHighRated => 'Prioriza películas con mayor calificación';
+
+  @override
+  String get prioritizePopular => 'Prioriza películas más conocidas';
+
+  @override
+  String get excludeWatched => 'Excluir ya vistas';
+
+  @override
+  String get excludeWatchedDescription => 'No muestra contenido ya marcado como visto';
+
+  @override
+  String get notificationDescription => 'Configura cuándo deseas recibir notificaciones sobre tus películas y series favoritas.';
+
+  @override
+  String get movieReleasesTitle => '🎬 Lanzamientos de Películas';
+
+  @override
+  String get movieReleasesSubtitle => 'Notificar cuando películas favoritas sean lanzadas';
+
+  @override
+  String get newEpisodesTitle => '📺 Nuevos Episodios';
+
+  @override
+  String get newEpisodesSubtitle => 'Notificar sobre nuevos episodios de series favoritas';
+
+  @override
+  String get close => 'Cerrar';
+
+  @override
+  String get searchSeries => 'Buscar Series';
+
+  @override
+  String get seriesMode => 'Modo: Series';
+
+  @override
+  String get movieMode => 'Modo: Películas';
+
+  @override
+  String get switchToSeries => 'Cambiar a Series';
+
+  @override
+  String get switchToMovies => 'Cambiar a Películas';
+
+  @override
+  String get loadingMovies => 'Cargando películas...';
+
+  @override
+  String get shareSeriesText => '🍿 ¡Descubre más series increíbles en RollFlix!';
+
+  @override
+  String get typeToSearchSeries => 'Escribe algo para buscar series';
+
+  @override
+  String initialGenreSelected(Object genre) {
+    return 'Género inicial seleccionado: $genre';
+  }
+
+  @override
+  String errorInitializingApp(Object error) {
+    return 'Error al inicializar app: $error';
+  }
+
+  @override
+  String modeChangedTo(Object mode) {
+    return 'Modo cambiado a: $mode';
+  }
+
+  @override
+  String modeSetTo(Object mode) {
+    return 'Modo establecido a: $mode';
+  }
+
+  @override
+  String get remove => 'Eliminar';
+
+  @override
+  String get addToFavorites => 'Agregar a favoritos';
+
+  @override
+  String get removeFromFavorites => 'Remover de favoritos';
+
+  @override
+  String get markAsNotWatched => 'Marcar como no visto';
+
+  @override
+  String get addToFavoritesTooltip => 'Agregar a favoritos';
+
+  @override
+  String get removeFromFavoritesTooltip => 'Eliminar de favoritos';
+
+  @override
+  String get clearAllTooltip => 'Limpiar todo';
+
+  @override
+  String get rollPreferencesTitle => 'Preferencias de Rol';
+
+  @override
+  String chooseGenre(Object contentType) {
+    return 'Elige un Género de $contentType';
+  }
+
+  @override
+  String get rolling => 'Rodando...';
+
+  @override
+  String get rollNewSeries => 'Rodar Nueva Serie';
+
+  @override
+  String get rollNewMovie => 'Rodar Nueva Película';
+
+  @override
+  String get rollSeries => 'Rodar Serie';
+
+  @override
+  String get rollMovie => 'Rodar Película';
+
+  @override
+  String get releasePeriod => 'Período de Lanzamiento';
+
+  @override
+  String get sortBy => 'Ordenar Por';
+
+  @override
+  String get contentRating => 'Clasificación de Contenido';
+
+  @override
+  String get otherOptions => 'Otras Opciones';
+
+  @override
+  String get apply => 'Aplicar';
+
+  @override
+  String get from => 'Desde';
+
+  @override
+  String get to => 'Hasta';
+
+  @override
+  String get any => 'Cualquiera';
+
+  @override
+  String get clearPeriod => 'Limpiar período';
+
+  @override
+  String get selectInitialYear => 'Seleccionar Año Inicial';
+
+  @override
+  String get selectFinalYear => 'Seleccionar Año Final';
+
+  @override
+  String get random => 'Aleatorio';
+
+  @override
+  String get randomDescription => 'Orden completamente aleatorio';
+
+  @override
+  String get bestRated => 'Mejor Valorados';
+
+  @override
+  String get mostPopular => 'Más Populares';
+
+  @override
+  String get allowAdultContent => 'Permitir contenido +18';
+
+  @override
+  String get showAllContent => 'Mostrar todo tipo de contenido';
+
+  @override
+  String get onlyNonAdultContent => 'Solo contenido no adulto';
+
+  @override
+  String get activeNotifications => 'Notificaciones Activas';
+
+  @override
+  String get activeNotificationsDescription => 'Activar/desactivar todas las notificaciones';
+
+  @override
+  String get testNotificationHint => 'Toca para enviar una notificación de prueba';
+
+  @override
+  String get home => 'Inicio';
+
+  @override
+  String get searchMovies => 'Buscar Películas';
+
+  @override
+  String get myProfile => 'Mi Perfil';
+
+  @override
+  String get login => 'Iniciar Sesión';
+
+  @override
+  String get discoverAmazingSeries => 'Descubre series increíbles';
+
+  @override
+  String get dateNight => 'Noche de Cita';
+
+  @override
+  String get dateNightComingSoon => '¡Date Night en desarrollo!\nPróximamente disponible 🚀';
+
+  @override
+  String get clearCache => 'Limpiar Caché';
+
+  @override
+  String get cacheCleared => '¡Caché de películas y recetas limpiado!';
+
+  @override
+  String get aboutApp => 'Acerca de la App';
+
+  @override
+  String get notificationHistory => 'Historial de Notificaciones';
+
+  @override
+  String get version => 'Versión';
+
+  @override
+  String get whatIsRollflix => '¿Qué es Rollflix?';
+
+  @override
+  String get whatIsRollflixDescription => 'Aplicación para descubrir películas y series aleatorias por género. ¡Elige entre más de 18 géneros diferentes y encuentra tu próximo entretenimiento!';
+
+  @override
+  String get availableFeatures => 'Características Disponibles';
+
+  @override
+  String get movieSeriesRoller => 'Sorteador de Películas y Series';
+
+  @override
+  String get movieSeriesRollerDescription => 'Descubre tu próximo entretenimiento de forma aleatoria';
+
+  @override
+  String get genresAvailable => '18+ Géneros Disponibles';
+
+  @override
+  String get genresAvailableDescription => 'Acción, comedia, terror, romance, ciencia ficción y mucho más';
+
+  @override
+  String get smartNotifications => 'Notificaciones Inteligentes';
+
+  @override
+  String get smartNotificationsDescription => 'Mantente al día con los lanzamientos de tus favoritos';
+
+  @override
+  String get favoritesSystem => 'Sistema de Favoritos';
+
+  @override
+  String get favoritesSystemDescription => 'Guarda y sigue tus películas y series favoritas';
+
+  @override
+  String get movieSeriesMode => 'Modo Películas y Series';
+
+  @override
+  String get movieSeriesModeDescription => 'Cambia fácilmente entre películas y series';
+
+  @override
+  String get inDevelopment => '🚀 En Desarrollo';
+
+  @override
+  String get newFeaturesComing => 'Nuevas características que se están desarrollando y estarán disponibles pronto:';
+
+  @override
+  String get movieQuiz => 'Quiz de Películas';
+
+  @override
+  String get movieQuizDescription => 'Pon a prueba tus conocimientos de cine con preguntas desafiantes';
+
+  @override
+  String get dateNightDescription => 'Encuentra la película o serie perfecta para ver juntos';
+
+  @override
+  String get soundtrackQuiz => 'Quiz de Banda Sonora';
+
+  @override
+  String get soundtrackQuizDescription => 'Adivina la película o serie por la música';
+
+  @override
+  String get technologies => 'Tecnologías';
+
+  @override
+  String get developedWithFlutter => 'Desarrollado con Flutter';
+
+  @override
+  String get copyright => '2025 Rollflix';
+
+  @override
+  String get allRightsReserved => 'Todos los derechos reservados';
+
+  @override
+  String get comingSoon => 'PRÓXIMAMENTE';
+
+  @override
+  String get noWatchedItems => 'Ningún elemento visto';
+
+  @override
+  String markWatchedHint(Object contentType) {
+    return 'Marca las $contentType que ya has visto para verlas aquí';
+  }
+
+  @override
+  String get seriesLabel => 'Serie';
+
+  @override
+  String get movieLabel => 'Película';
+
+  @override
+  String get watchedToday => 'Visto hoy';
+
+  @override
+  String get watchedYesterday => 'Visto ayer';
+
+  @override
+  String watchedDaysAgo(Object days) {
+    return 'Visto hace $days días';
+  }
+
+  @override
+  String watchedWeeksAgo(Object weeks, Object weekWord) {
+    return 'Visto hace $weeks $weekWord';
+  }
+
+  @override
+  String watchedMonthsAgo(Object months, Object monthWord) {
+    return 'Visto hace $months $monthWord';
+  }
+
+  @override
+  String watchedYearsAgo(Object years, Object yearWord) {
+    return 'Visto hace $years $yearWord';
+  }
+
+  @override
+  String get week => 'semana';
+
+  @override
+  String get weeks => 'semanas';
+
+  @override
+  String get month => 'mes';
+
+  @override
+  String get months => 'meses';
+
+  @override
+  String get year => 'año';
+
+  @override
+  String get years => 'años';
+
+  @override
+  String get clearAll => 'Limpiar todos';
+
+  @override
+  String get myFavorites => 'Mis Favoritos';
+
+  @override
+  String get loadingFavorites => 'Cargando favoritos...';
+
+  @override
+  String get noFavoritesYet => 'Ningún favorito aún';
+
+  @override
+  String addToFavoritesHint(Object contentType) {
+    return '¡Agrega $contentType a favoritos\npara verlos aquí!';
+  }
+
+  @override
+  String get removeFavorite => '¿Remover favorito?';
+
+  @override
+  String confirmRemoveFavorite(Object title) {
+    return '¿Quieres remover \"$title\" de favoritos?';
+  }
+
+  @override
+  String noFavoritesToClear(Object contentType) {
+    return 'No hay $contentType favoritos para limpiar';
+  }
+
+  @override
+  String get clearAllFavorites => '¿Limpiar todos los favoritos?';
+
+  @override
+  String confirmClearAllFavorites(Object contentType, Object count) {
+    return 'Todos los $count $contentType favoritos serán removidos. Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String allFavoritesCleared(Object contentType) {
+    return 'Todos los $contentType favoritos han sido removidos';
+  }
+
+  @override
+  String get logoutConfirmTitle => '¿Salir de la cuenta?';
+
+  @override
+  String get logoutConfirmMessage => 'Serás desconectado y necesitarás iniciar sesión nuevamente.';
+
+  @override
+  String get logout => 'Salir';
+
+  @override
+  String logoutError(Object error) {
+    return 'Error al cerrar sesión: $error';
+  }
+
+  @override
+  String get loadingProfile => 'Cargando perfil...';
+
+  @override
+  String get logoutButton => 'Salir de la Cuenta';
+
+  @override
+  String get rolls => 'Sorteos';
 }

@@ -10,6 +10,7 @@ import '../widgets/error_widgets.dart';
 import '../widgets/ux_components.dart';
 import 'movie_details_screen.dart';
 import 'tv_show_details_screen.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -69,7 +70,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 // Se a largura disponível for menor que 300, mostra apenas "Favoritos"
                 final showFullTitle = constraints.maxWidth > 300;
                 return SafeText(
-                  showFullTitle ? 'Meus Favoritos' : 'Favoritos',
+                  showFullTitle ? AppLocalizations.of(context)!.myFavorites : AppLocalizations.of(context)!.favorites,
                   style: AppTextStyles.headlineSmall.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
@@ -92,7 +93,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               // Botão de limpar
               IconButton(
                 icon: const Icon(Icons.delete_sweep),
-                tooltip: 'Limpar todos',
+                tooltip: AppLocalizations.of(context)!.clearAll,
                 color: accentColor,
                 onPressed: currentFavorites.isEmpty ? null : _showClearAllDialog,
               ),
@@ -151,7 +152,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 ),
                 const SizedBox(width: 8),
                 SafeText(
-                  _appModeController.isSeriesMode ? 'SÉRIES' : 'FILMES',
+                  _appModeController.isSeriesMode ? AppLocalizations.of(context)!.series : AppLocalizations.of(context)!.movies,
                   style: (isMobile 
                       ? AppTextStyles.labelMedium
                       : AppTextStyles.labelLarge).copyWith(
@@ -177,15 +178,17 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   Widget _buildBody(List<FavoriteItem> favorites, bool isMobile, Color accentColor) {
     if (_favoritesController.isLoading) {
       return UXComponents.loadingWithText(
-        text: 'Carregando favoritos...',
+        text: AppLocalizations.of(context)!.loadingFavorites,
       );
     }
 
     if (favorites.isEmpty) {
-      final contentType = _appModeController.isSeriesMode ? 'séries' : 'filmes';
+      final contentType = _appModeController.isSeriesMode 
+          ? AppLocalizations.of(context)!.seriesLower 
+          : AppLocalizations.of(context)!.moviesLower;
       return UXComponents.emptyState(
-        title: 'Nenhum favorito ainda',
-        message: 'Adicione $contentType aos favoritos\npara vê-los aqui!',
+        title: AppLocalizations.of(context)!.noFavoritesYet,
+        message: AppLocalizations.of(context)!.addToFavoritesHint(contentType),
         icon: _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
       );
     }
@@ -354,13 +357,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surfaceDark,
         title: SafeText(
-          'Remover favorito?',
+          AppLocalizations.of(context)!.removeFavorite,
           style: AppTextStyles.headlineSmall.copyWith(
             color: AppColors.textPrimary,
           ),
         ),
         content: SafeText(
-          'Deseja remover "${favorite.title}" dos favoritos?',
+          AppLocalizations.of(context)!.confirmRemoveFavorite(favorite.title),
           style: AppTextStyles.bodyMedium.copyWith(
             color: AppColors.textSecondary,
           ),
@@ -369,7 +372,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: SafeText(
-              'Cancelar',
+              AppLocalizations.of(context)!.cancel,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -379,10 +382,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             onPressed: () {
               _favoritesController.removeFavorite(favorite.id);
               Navigator.pop(context);
-              AppSnackBar.showSuccess(context, 'Removido dos favoritos');
+              AppSnackBar.showSuccess(context, AppLocalizations.of(context)!.removedFromFavorites);
             },
             child: SafeText(
-              'Remover',
+              AppLocalizations.of(context)!.removeFromFavorites,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.error,
               ),
@@ -399,25 +402,29 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         : _favoritesController.favoriteMovies;
     
     if (currentFavorites.isEmpty) {
-      final contentType = _appModeController.isSeriesMode ? 'séries' : 'filmes';
-      AppSnackBar.showInfo(context, 'Não há $contentType favoritos para limpar');
+      final contentType = _appModeController.isSeriesMode 
+          ? AppLocalizations.of(context)!.seriesLower 
+          : AppLocalizations.of(context)!.moviesLower;
+      AppSnackBar.showInfo(context, AppLocalizations.of(context)!.noFavoritesToClear(contentType));
       return;
     }
 
-    final contentType = _appModeController.isSeriesMode ? 'séries' : 'filmes';
+    final contentType = _appModeController.isSeriesMode 
+        ? AppLocalizations.of(context)!.seriesLower 
+        : AppLocalizations.of(context)!.moviesLower;
     
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surfaceDark,
         title: SafeText(
-          'Limpar todos os favoritos?',
+          AppLocalizations.of(context)!.clearAllFavorites,
           style: AppTextStyles.headlineSmall.copyWith(
             color: AppColors.textPrimary,
           ),
         ),
         content: SafeText(
-          'Todos os ${currentFavorites.length} $contentType favoritos serão removidos. Esta ação não pode ser desfeita.',
+          AppLocalizations.of(context)!.confirmClearAllFavorites(currentFavorites.length.toString(), contentType),
           style: AppTextStyles.bodyMedium.copyWith(
             color: AppColors.textSecondary,
           ),
@@ -426,7 +433,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: SafeText(
-              'Cancelar',
+              AppLocalizations.of(context)!.cancel,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -439,10 +446,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 _favoritesController.removeFavorite(favorite.id);
               }
               Navigator.pop(context);
-              AppSnackBar.showSuccess(context, 'Todos os $contentType favoritos foram removidos');
+              AppSnackBar.showSuccess(context, AppLocalizations.of(context)!.allFavoritesCleared(contentType));
             },
             child: SafeText(
-              'Limpar Tudo',
+              AppLocalizations.of(context)!.clearAll,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.error,
               ),

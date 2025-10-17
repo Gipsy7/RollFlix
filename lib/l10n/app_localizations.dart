@@ -150,7 +150,7 @@ abstract class AppLocalizations {
   /// No description provided for @testNotification.
   ///
   /// In en, this message translates to:
-  /// **'Test notification'**
+  /// **'Test Notification'**
   String get testNotification;
 
   /// No description provided for @rollAndChill.
@@ -330,7 +330,7 @@ abstract class AppLocalizations {
   /// No description provided for @testNotificationSent.
   ///
   /// In en, this message translates to:
-  /// **'Test notification sent'**
+  /// **'Test notification sent!'**
   String get testNotificationSent;
 
   /// No description provided for @notificationTestTitle.
@@ -591,6 +591,48 @@ abstract class AppLocalizations {
   /// **'Marked as watched'**
   String get markedAsWatched;
 
+  /// No description provided for @errorLoadingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading movie details'**
+  String get errorLoadingDetails;
+
+  /// No description provided for @errorLoadingTVShowDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading TV show details'**
+  String get errorLoadingTVShowDetails;
+
+  /// No description provided for @errorLoadingInitialData.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading initial data'**
+  String get errorLoadingInitialData;
+
+  /// No description provided for @selectGenreFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a genre first'**
+  String get selectGenreFirst;
+
+  /// No description provided for @rollError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to perform roll. Please try again.'**
+  String get rollError;
+
+  /// No description provided for @noSeriesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No series found for this filter. Please try again.'**
+  String get noSeriesFound;
+
+  /// No description provided for @noMovieFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No movie found for this filter. Please try again.'**
+  String get noMovieFound;
+
   /// No description provided for @removedFromFavorites.
   ///
   /// In en, this message translates to:
@@ -600,14 +642,866 @@ abstract class AppLocalizations {
   /// No description provided for @addedToFavorites.
   ///
   /// In en, this message translates to:
-  /// **'Added to favorites'**
-  String get addedToFavorites;
+  /// **'❤️ {title} added to favorites'**
+  String addedToFavorites(Object title);
 
-  /// No description provided for @errorLoadingDetails.
+  /// No description provided for @allItemsRemoved.
   ///
   /// In en, this message translates to:
-  /// **'Error loading movie details'**
-  String get errorLoadingDetails;
+  /// **'All {contentType} have been removed'**
+  String allItemsRemoved(Object contentType);
+
+  /// No description provided for @searchError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error searching series'**
+  String get searchError;
+
+  /// No description provided for @favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favorites;
+
+  /// No description provided for @watched.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched'**
+  String get watched;
+
+  /// No description provided for @movies.
+  ///
+  /// In en, this message translates to:
+  /// **'MOVIES'**
+  String get movies;
+
+  /// No description provided for @series.
+  ///
+  /// In en, this message translates to:
+  /// **'SERIES'**
+  String get series;
+
+  /// No description provided for @seriesUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'SERIES'**
+  String get seriesUpper;
+
+  /// No description provided for @moviesUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'MOVIES'**
+  String get moviesUpper;
+
+  /// No description provided for @seriesLower.
+  ///
+  /// In en, this message translates to:
+  /// **'series'**
+  String get seriesLower;
+
+  /// No description provided for @moviesLower.
+  ///
+  /// In en, this message translates to:
+  /// **'movies'**
+  String get moviesLower;
+
+  /// No description provided for @removeFromWatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from watched'**
+  String get removeFromWatched;
+
+  /// No description provided for @removeFromWatchedQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from watched?'**
+  String get removeFromWatchedQuestion;
+
+  /// No description provided for @confirmRemoveWatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove \"{title}\" from the watched list?'**
+  String confirmRemoveWatched(Object title);
+
+  /// No description provided for @clearAllWatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all watched?'**
+  String get clearAllWatched;
+
+  /// No description provided for @confirmClearAllWatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove all {count} watched {contentType}?'**
+  String confirmClearAllWatched(Object contentType, Object count);
+
+  /// No description provided for @prioritizeHighRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Prioritize movies with higher rating'**
+  String get prioritizeHighRated;
+
+  /// No description provided for @prioritizePopular.
+  ///
+  /// In en, this message translates to:
+  /// **'Prioritize more popular movies'**
+  String get prioritizePopular;
+
+  /// No description provided for @excludeWatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Exclude already watched'**
+  String get excludeWatched;
+
+  /// No description provided for @excludeWatchedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Does not show content already marked as watched'**
+  String get excludeWatchedDescription;
+
+  /// No description provided for @notificationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure when you want to receive notifications about your favorite movies and series.'**
+  String get notificationDescription;
+
+  /// No description provided for @movieReleasesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'🎬 Movie Releases'**
+  String get movieReleasesTitle;
+
+  /// No description provided for @movieReleasesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify when favorite movies are released'**
+  String get movieReleasesSubtitle;
+
+  /// No description provided for @newEpisodesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'📺 New Episodes'**
+  String get newEpisodesTitle;
+
+  /// No description provided for @newEpisodesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify about new episodes of favorite shows'**
+  String get newEpisodesSubtitle;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @searchSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Series'**
+  String get searchSeries;
+
+  /// No description provided for @seriesMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Series'**
+  String get seriesMode;
+
+  /// No description provided for @movieMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Movies'**
+  String get movieMode;
+
+  /// No description provided for @switchToSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Series'**
+  String get switchToSeries;
+
+  /// No description provided for @switchToMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Movies'**
+  String get switchToMovies;
+
+  /// No description provided for @loadingMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading movies...'**
+  String get loadingMovies;
+
+  /// No description provided for @shareSeriesText.
+  ///
+  /// In en, this message translates to:
+  /// **'🍿 Discover more amazing series on RollFlix!'**
+  String get shareSeriesText;
+
+  /// No description provided for @typeToSearchSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Type something to search series'**
+  String get typeToSearchSeries;
+
+  /// No description provided for @initialGenreSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial genre selected: {genre}'**
+  String initialGenreSelected(Object genre);
+
+  /// No description provided for @errorInitializingApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Error initializing app: {error}'**
+  String errorInitializingApp(Object error);
+
+  /// No description provided for @modeChangedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode changed to: {mode}'**
+  String modeChangedTo(Object mode);
+
+  /// No description provided for @modeSetTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode set to: {mode}'**
+  String modeSetTo(Object mode);
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @addToFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favorites'**
+  String get addToFavorites;
+
+  /// No description provided for @removeFromFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get removeFromFavorites;
+
+  /// No description provided for @markAsNotWatched.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as not watched'**
+  String get markAsNotWatched;
+
+  /// No description provided for @addToFavoritesTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favorites'**
+  String get addToFavoritesTooltip;
+
+  /// No description provided for @removeFromFavoritesTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get removeFromFavoritesTooltip;
+
+  /// No description provided for @clearAllTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get clearAllTooltip;
+
+  /// No description provided for @rollPreferencesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Roll Preferences'**
+  String get rollPreferencesTitle;
+
+  /// No description provided for @chooseGenre.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a Genre of {contentType}'**
+  String chooseGenre(Object contentType);
+
+  /// No description provided for @rolling.
+  ///
+  /// In en, this message translates to:
+  /// **'Rolling...'**
+  String get rolling;
+
+  /// No description provided for @rollNewSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Roll New Series'**
+  String get rollNewSeries;
+
+  /// No description provided for @rollNewMovie.
+  ///
+  /// In en, this message translates to:
+  /// **'Roll New Movie'**
+  String get rollNewMovie;
+
+  /// No description provided for @rollSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Roll Series'**
+  String get rollSeries;
+
+  /// No description provided for @rollMovie.
+  ///
+  /// In en, this message translates to:
+  /// **'Roll Movie'**
+  String get rollMovie;
+
+  /// No description provided for @releasePeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Release Period'**
+  String get releasePeriod;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort By'**
+  String get sortBy;
+
+  /// No description provided for @contentRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Content Rating'**
+  String get contentRating;
+
+  /// No description provided for @otherOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Other Options'**
+  String get otherOptions;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @from.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get from;
+
+  /// No description provided for @to.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get to;
+
+  /// No description provided for @any.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get any;
+
+  /// No description provided for @clearPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear period'**
+  String get clearPeriod;
+
+  /// No description provided for @selectInitialYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Initial Year'**
+  String get selectInitialYear;
+
+  /// No description provided for @selectFinalYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Final Year'**
+  String get selectFinalYear;
+
+  /// No description provided for @random.
+  ///
+  /// In en, this message translates to:
+  /// **'Random'**
+  String get random;
+
+  /// No description provided for @randomDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Completely random order'**
+  String get randomDescription;
+
+  /// No description provided for @bestRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Best Rated'**
+  String get bestRated;
+
+  /// No description provided for @mostPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'Most Popular'**
+  String get mostPopular;
+
+  /// No description provided for @allowAdultContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow +18 content'**
+  String get allowAdultContent;
+
+  /// No description provided for @showAllContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all types of content'**
+  String get showAllContent;
+
+  /// No description provided for @onlyNonAdultContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Only non-adult content'**
+  String get onlyNonAdultContent;
+
+  /// No description provided for @activeNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Notifications'**
+  String get activeNotifications;
+
+  /// No description provided for @activeNotificationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable/disable all notifications'**
+  String get activeNotificationsDescription;
+
+  /// No description provided for @testNotificationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to send a test notification'**
+  String get testNotificationHint;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @searchMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Movies'**
+  String get searchMovies;
+
+  /// No description provided for @myProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'My Profile'**
+  String get myProfile;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @discoverAmazingSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover amazing series'**
+  String get discoverAmazingSeries;
+
+  /// No description provided for @dateNight.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Night'**
+  String get dateNight;
+
+  /// No description provided for @dateNightComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Night in development!\nComing soon 🚀'**
+  String get dateNightComingSoon;
+
+  /// No description provided for @clearCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Cache'**
+  String get clearCache;
+
+  /// No description provided for @cacheCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Movies and recipes cache cleared!'**
+  String get cacheCleared;
+
+  /// No description provided for @aboutApp.
+  ///
+  /// In en, this message translates to:
+  /// **'About the App'**
+  String get aboutApp;
+
+  /// No description provided for @notificationHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification History'**
+  String get notificationHistory;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
+
+  /// No description provided for @whatIsRollflix.
+  ///
+  /// In en, this message translates to:
+  /// **'What is Rollflix?'**
+  String get whatIsRollflix;
+
+  /// No description provided for @whatIsRollflixDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'App to discover random movies and series by genre. Choose from more than 18 different genres and find your next entertainment!'**
+  String get whatIsRollflixDescription;
+
+  /// No description provided for @availableFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Features'**
+  String get availableFeatures;
+
+  /// No description provided for @movieSeriesRoller.
+  ///
+  /// In en, this message translates to:
+  /// **'Movie & Series Roller'**
+  String get movieSeriesRoller;
+
+  /// No description provided for @movieSeriesRollerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover your next entertainment randomly'**
+  String get movieSeriesRollerDescription;
+
+  /// No description provided for @genresAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'18+ Genres Available'**
+  String get genresAvailable;
+
+  /// No description provided for @genresAvailableDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Action, comedy, horror, romance, science fiction and much more'**
+  String get genresAvailableDescription;
+
+  /// No description provided for @smartNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Notifications'**
+  String get smartNotifications;
+
+  /// No description provided for @smartNotificationsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay up to date with releases of your favorites'**
+  String get smartNotificationsDescription;
+
+  /// No description provided for @favoritesSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites System'**
+  String get favoritesSystem;
+
+  /// No description provided for @favoritesSystemDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and track your favorite movies and series'**
+  String get favoritesSystemDescription;
+
+  /// No description provided for @movieSeriesMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Movies & Series Mode'**
+  String get movieSeriesMode;
+
+  /// No description provided for @movieSeriesModeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Easily switch between movies and series'**
+  String get movieSeriesModeDescription;
+
+  /// No description provided for @inDevelopment.
+  ///
+  /// In en, this message translates to:
+  /// **'🚀 In Development'**
+  String get inDevelopment;
+
+  /// No description provided for @newFeaturesComing.
+  ///
+  /// In en, this message translates to:
+  /// **'New features that are being developed and will be available soon:'**
+  String get newFeaturesComing;
+
+  /// No description provided for @movieQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Movie Quiz'**
+  String get movieQuiz;
+
+  /// No description provided for @movieQuizDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Test your cinema knowledge with challenging questions'**
+  String get movieQuizDescription;
+
+  /// No description provided for @dateNightDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Find the perfect movie or series to watch together'**
+  String get dateNightDescription;
+
+  /// No description provided for @soundtrackQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Soundtrack Quiz'**
+  String get soundtrackQuiz;
+
+  /// No description provided for @soundtrackQuizDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Guess the movie or series by the music'**
+  String get soundtrackQuizDescription;
+
+  /// No description provided for @technologies.
+  ///
+  /// In en, this message translates to:
+  /// **'Technologies'**
+  String get technologies;
+
+  /// No description provided for @developedWithFlutter.
+  ///
+  /// In en, this message translates to:
+  /// **'Developed with Flutter'**
+  String get developedWithFlutter;
+
+  /// No description provided for @copyright.
+  ///
+  /// In en, this message translates to:
+  /// **'2025 Rollflix'**
+  String get copyright;
+
+  /// No description provided for @allRightsReserved.
+  ///
+  /// In en, this message translates to:
+  /// **'All rights reserved'**
+  String get allRightsReserved;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'COMING SOON'**
+  String get comingSoon;
+
+  /// No description provided for @noWatchedItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No watched items'**
+  String get noWatchedItems;
+
+  /// No description provided for @markWatchedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark the {contentType} you\'ve already watched to see them here'**
+  String markWatchedHint(Object contentType);
+
+  /// No description provided for @seriesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Series'**
+  String get seriesLabel;
+
+  /// No description provided for @movieLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Movie'**
+  String get movieLabel;
+
+  /// No description provided for @watchedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched today'**
+  String get watchedToday;
+
+  /// No description provided for @watchedYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched yesterday'**
+  String get watchedYesterday;
+
+  /// No description provided for @watchedDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched {days} days ago'**
+  String watchedDaysAgo(Object days);
+
+  /// No description provided for @watchedWeeksAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched {weeks} {weekWord} ago'**
+  String watchedWeeksAgo(Object weeks, Object weekWord);
+
+  /// No description provided for @watchedMonthsAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched {months} {monthWord} ago'**
+  String watchedMonthsAgo(Object months, Object monthWord);
+
+  /// No description provided for @watchedYearsAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched {years} {yearWord} ago'**
+  String watchedYearsAgo(Object years, Object yearWord);
+
+  /// No description provided for @week.
+  ///
+  /// In en, this message translates to:
+  /// **'week'**
+  String get week;
+
+  /// No description provided for @weeks.
+  ///
+  /// In en, this message translates to:
+  /// **'weeks'**
+  String get weeks;
+
+  /// No description provided for @month.
+  ///
+  /// In en, this message translates to:
+  /// **'month'**
+  String get month;
+
+  /// No description provided for @months.
+  ///
+  /// In en, this message translates to:
+  /// **'months'**
+  String get months;
+
+  /// No description provided for @year.
+  ///
+  /// In en, this message translates to:
+  /// **'year'**
+  String get year;
+
+  /// No description provided for @years.
+  ///
+  /// In en, this message translates to:
+  /// **'years'**
+  String get years;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get clearAll;
+
+  /// No description provided for @myFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'My Favorites'**
+  String get myFavorites;
+
+  /// No description provided for @loadingFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading favorites...'**
+  String get loadingFavorites;
+
+  /// No description provided for @noFavoritesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites yet'**
+  String get noFavoritesYet;
+
+  /// No description provided for @addToFavoritesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {contentType} to favorites\nto see them here!'**
+  String addToFavoritesHint(Object contentType);
+
+  /// No description provided for @removeFavorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove favorite?'**
+  String get removeFavorite;
+
+  /// No description provided for @confirmRemoveFavorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to remove \"{title}\" from favorites?'**
+  String confirmRemoveFavorite(Object title);
+
+  /// No description provided for @noFavoritesToClear.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no {contentType} favorites to clear'**
+  String noFavoritesToClear(Object contentType);
+
+  /// No description provided for @clearAllFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all favorites?'**
+  String get clearAllFavorites;
+
+  /// No description provided for @confirmClearAllFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'All {count} {contentType} favorites will be removed. This action cannot be undone.'**
+  String confirmClearAllFavorites(Object contentType, Object count);
+
+  /// No description provided for @allFavoritesCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'All {contentType} favorites have been removed'**
+  String allFavoritesCleared(Object contentType);
+
+  /// No description provided for @logoutConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of account?'**
+  String get logoutConfirmTitle;
+
+  /// No description provided for @logoutConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be signed out and will need to log in again.'**
+  String get logoutConfirmMessage;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get logout;
+
+  /// No description provided for @logoutError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error signing out: {error}'**
+  String logoutError(Object error);
+
+  /// No description provided for @loadingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading profile...'**
+  String get loadingProfile;
+
+  /// No description provided for @logoutButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out of Account'**
+  String get logoutButton;
+
+  /// No description provided for @rolls.
+  ///
+  /// In en, this message translates to:
+  /// **'Rolls'**
+  String get rolls;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

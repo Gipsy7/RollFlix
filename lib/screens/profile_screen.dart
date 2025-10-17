@@ -10,6 +10,7 @@ import '../controllers/movie_controller.dart';
 import '../controllers/tv_show_controller.dart';
 import '../controllers/user_preferences_controller.dart';
 import '../controllers/app_mode_controller.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -68,13 +69,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surfaceDark,
         title: SafeText(
-          'Sair da conta?',
+          AppLocalizations.of(context)!.logoutConfirmTitle,
           style: AppTextStyles.headlineSmall.copyWith(
             color: AppColors.textPrimary,
           ),
         ),
         content: SafeText(
-          'Você será desconectado e precisará fazer login novamente.',
+          AppLocalizations.of(context)!.logoutConfirmMessage,
           style: AppTextStyles.bodyMedium.copyWith(
             color: AppColors.textSecondary,
           ),
@@ -92,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: SafeText(
-              'Sair',
+              AppLocalizations.of(context)!.logout,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.error,
               ),
@@ -121,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Erro ao fazer logout: $e'),
+              content: Text(AppLocalizations.of(context)!.logoutError(e.toString())),
               backgroundColor: AppColors.error,
             ),
           );
@@ -147,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: AppColors.backgroundDark,
           appBar: AppBar(
             title: SafeText(
-              'Meu Perfil',
+              AppLocalizations.of(context)!.myProfile,
               style: AppTextStyles.headlineSmall.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
@@ -159,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           body: _isLoading
               ? UXComponents.loadingWithText(
-                  text: 'Carregando perfil...',
+                  text: AppLocalizations.of(context)!.loadingProfile,
                 )
               : SingleChildScrollView(
                   padding: EdgeInsets.all(isMobile ? 16 : 24),
@@ -381,9 +382,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildStatItem(Icons.favorite, 'Favoritos', favoritesCount.toString(), isMobile, primaryColor),
-                _buildStatItem(Icons.casino, 'Sorteios', totalRolls.toString(), isMobile, primaryColor),
-                _buildStatItem(Icons.visibility, 'Assistidos', watchedCount.toString(), isMobile, primaryColor),
+                _buildStatItem(Icons.favorite, AppLocalizations.of(context)!.favorites, favoritesCount.toString(), isMobile, primaryColor),
+                _buildStatItem(Icons.casino, AppLocalizations.of(context)!.rolls, totalRolls.toString(), isMobile, primaryColor),
+                _buildStatItem(Icons.visibility, AppLocalizations.of(context)!.watched, watchedCount.toString(), isMobile, primaryColor),
               ],
             ),
             
@@ -479,7 +480,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const Icon(Icons.logout),
             const SizedBox(width: 8),
             SafeText(
-              'Sair da Conta',
+              AppLocalizations.of(context)!.logoutButton,
               style: (isMobile 
                   ? AppTextStyles.labelLarge
                   : AppTextStyles.bodyLarge).copyWith(

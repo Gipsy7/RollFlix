@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 /// Widget do cabeçalho da seção de seleção de gênero
 class GenreHeader extends StatelessWidget {
@@ -35,7 +36,7 @@ class GenreHeader extends StatelessWidget {
         const SizedBox(width: 16),
         Flexible(
           child: SafeText(
-            'Escolha um Gênero de $contentType',
+            AppLocalizations.of(context)!.chooseGenre(contentType),
             style: (isMobile 
               ? AppTextStyles.headlineSmall
               : AppTextStyles.headlineMedium).copyWith(
@@ -66,14 +67,14 @@ class RollActionButton extends StatelessWidget {
     required this.accentColor,
   });
 
-  String get _buttonText {
-    if (isLoading) return 'Rolando...';
+  String _getButtonText(BuildContext context) {
+    if (isLoading) return AppLocalizations.of(context)!.rolling;
     
     if (hasSelection) {
-      return isSeriesMode ? 'Rolar Nova Série' : 'Rolar Novo Filme';
+      return isSeriesMode ? AppLocalizations.of(context)!.rollNewSeries : AppLocalizations.of(context)!.rollNewMovie;
     }
     
-    return isSeriesMode ? 'Rolar Série' : 'Rolar Filme';
+    return isSeriesMode ? AppLocalizations.of(context)!.rollSeries : AppLocalizations.of(context)!.rollMovie;
   }
 
   IconData? get _buttonIcon {
@@ -85,7 +86,7 @@ class RollActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppButton(
       onPressed: onPressed,
-      text: _buttonText,
+      text: _getButtonText(context),
       isLoading: isLoading,
       icon: _buttonIcon,
       backgroundColor: accentColor,

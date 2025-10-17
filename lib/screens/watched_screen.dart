@@ -8,6 +8,8 @@ import '../utils/page_transitions.dart';
 import '../widgets/responsive_widgets.dart';
 import 'movie_details_screen.dart';
 import 'tv_show_details_screen.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
+import '../controllers/locale_controller.dart';
 
 class WatchedScreen extends StatefulWidget {
   const WatchedScreen({super.key});
@@ -31,12 +33,15 @@ class _WatchedScreenState extends State<WatchedScreen> {
   Widget build(BuildContext context) {
     final isMobile = ResponsiveUtils.isMobile(context);
     
-    return ListenableBuilder(
-      listenable: Listenable.merge([
-        _watchedController,
-        _appModeController,
-      ]),
-      builder: (context, _) {
+    return ValueListenableBuilder<Locale?>(
+      valueListenable: LocaleController.instance,
+      builder: (context, locale, _) {
+        return ListenableBuilder(
+          listenable: Listenable.merge([
+            _watchedController,
+            _appModeController,
+          ]),
+          builder: (context, _) {
         // Obtém os assistidos baseado no modo atual
         final currentWatched = _appModeController.isSeriesMode
             ? _watchedController.tvShows
@@ -63,7 +68,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
           backgroundColor: AppColors.backgroundDark,
           appBar: AppBar(
             title: SafeText(
-              'Já Assisti',
+              AppLocalizations.of(context)!.watched,
               style: AppTextStyles.headlineSmall.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
@@ -84,7 +89,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
               // Botão de limpar
               IconButton(
                 icon: const Icon(Icons.delete_sweep),
-                tooltip: 'Limpar todos',
+                tooltip: AppLocalizations.of(context)!.clearAllTooltip,
                 color: accentColor,
                 onPressed: currentWatched.isEmpty ? null : _showClearAllDialog,
               ),
@@ -92,6 +97,8 @@ class _WatchedScreenState extends State<WatchedScreen> {
             ],
           ),
           body: _buildBody(currentWatched, isMobile, accentColor),
+        );
+          },
         );
       },
     );
@@ -143,7 +150,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
                 ),
                 const SizedBox(width: 8),
                 SafeText(
-                  _appModeController.isSeriesMode ? 'SÉRIES' : 'FILMES',
+                  _appModeController.isSeriesMode ? AppLocalizations.of(context)!.series : AppLocalizations.of(context)!.movies,
                   style: (isMobile 
                       ? AppTextStyles.labelMedium
                       : AppTextStyles.labelLarge).copyWith(
@@ -190,7 +197,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
   }
 
   Widget _buildEmptyState(Color accentColor) {
-    final contentType = _appModeController.isSeriesMode ? 'séries' : 'filmes';
+    final contentType = _appModeController.isSeriesMode ? AppLocalizations.of(context)!.seriesLower : AppLocalizations.of(context)!.moviesLower;
     
     return Center(
       child: Column(
@@ -203,7 +210,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
           ),
           const SizedBox(height: 24),
           SafeText(
-            'Nenhum item assistido',
+            AppLocalizations.of(context)!.noWatchedItems,
             style: AppTextStyles.headlineSmall.copyWith(
               color: AppColors.textPrimary,
             ),
@@ -212,7 +219,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: SafeText(
-              'Marque os $contentType que você já assistiu para vê-los aqui',
+              AppLocalizations.of(context)!.markWatchedHint(contentType),
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -251,7 +258,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
                 icon: const Icon(Icons.check_circle),
                 color: accentColor,
                 onPressed: () => _removeFromWatched(item),
-                tooltip: 'Remover de assistidos',
+                tooltip: AppLocalizations.of(context)!.removeFromWatched,
               ),
             ],
           ),
@@ -337,7 +344,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
             ),
             const SizedBox(width: 4),
             SafeText(
-              item.isTVShow ? 'Série' : 'Filme',
+              item.isTVShow ? AppLocalizations.of(context)!.seriesLabel : AppLocalizations.of(context)!.movieLabel,
               style: AppTextStyles.bodySmall.copyWith(
                 color: accentColor,
               ),
@@ -381,20 +388,23 @@ class _WatchedScreenState extends State<WatchedScreen> {
     final difference = now.difference(date);
     
     if (difference.inDays == 0) {
-      return 'Assistido hoje';
+      return AppLocalizations.of(context)!.watchedToday;
     } else if (difference.inDays == 1) {
-      return 'Assistido ontem';
+      return AppLocalizations.of(context)!.watchedYesterday;
     } else if (difference.inDays < 7) {
-      return 'Assistido há ${difference.inDays} dias';
+      return AppLocalizations.of(context)!.watchedDaysAgo(difference.inDays.toString());
     } else if (difference.inDays < 30) {
       final weeks = (difference.inDays / 7).floor();
-      return 'Assistido há $weeks ${weeks == 1 ? "semana" : "semanas"}';
+      final weekWord = weeks == 1 ? AppLocalizations.of(context)!.week : AppLocalizations.of(context)!.weeks;
+      return AppLocalizations.of(context)!.watchedWeeksAgo(weeks.toString(), weekWord);
     } else if (difference.inDays < 365) {
       final months = (difference.inDays / 30).floor();
-      return 'Assistido há $months ${months == 1 ? "mês" : "meses"}';
+      final monthWord = months == 1 ? AppLocalizations.of(context)!.month : AppLocalizations.of(context)!.months;
+      return AppLocalizations.of(context)!.watchedMonthsAgo(months.toString(), monthWord);
     } else {
       final years = (difference.inDays / 365).floor();
-      return 'Assistido há $years ${years == 1 ? "ano" : "anos"}';
+      final yearWord = years == 1 ? AppLocalizations.of(context)!.year : AppLocalizations.of(context)!.years;
+      return AppLocalizations.of(context)!.watchedYearsAgo(years.toString(), yearWord);
     }
   }
 
@@ -420,13 +430,13 @@ class _WatchedScreenState extends State<WatchedScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surfaceDark,
         title: SafeText(
-          'Remover de assistidos?',
+          AppLocalizations.of(context)!.removeFromWatchedQuestion,
           style: AppTextStyles.headlineSmall.copyWith(
             color: AppColors.textPrimary,
           ),
         ),
         content: SafeText(
-          'Tem certeza que deseja remover "${item.title}" da lista de assistidos?',
+          AppLocalizations.of(context)!.confirmRemoveWatched(item.title),
           style: AppTextStyles.bodyMedium.copyWith(
             color: AppColors.textSecondary,
           ),
@@ -435,7 +445,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: SafeText(
-              'Cancelar',
+              AppLocalizations.of(context)!.cancel,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -447,7 +457,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
               _watchedController.removeWatchedItem(item.id);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: SafeText('Removido de assistidos'),
+                  content: SafeText(AppLocalizations.of(context)!.removedFromWatched),
                   backgroundColor: AppColors.success,
                 ),
               );
@@ -456,7 +466,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
               backgroundColor: AppColors.error,
             ),
             child: SafeText(
-              'Remover',
+              AppLocalizations.of(context)!.remove,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.textPrimary,
               ),
@@ -468,7 +478,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
   }
 
   void _showClearAllDialog() {
-    final contentType = _appModeController.isSeriesMode ? 'séries' : 'filmes';
+    final contentType = _appModeController.isSeriesMode ? AppLocalizations.of(context)!.seriesLower : AppLocalizations.of(context)!.moviesLower;
     final count = _appModeController.isSeriesMode 
         ? _watchedController.tvShows.length
         : _watchedController.movies.length;
@@ -478,13 +488,13 @@ class _WatchedScreenState extends State<WatchedScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surfaceDark,
         title: SafeText(
-          'Limpar todos os assistidos?',
+          AppLocalizations.of(context)!.clearAllWatched,
           style: AppTextStyles.headlineSmall.copyWith(
             color: AppColors.textPrimary,
           ),
         ),
         content: SafeText(
-          'Tem certeza que deseja remover todos os $count $contentType assistidos?',
+          AppLocalizations.of(context)!.confirmClearAllWatched(count.toString(), contentType),
           style: AppTextStyles.bodyMedium.copyWith(
             color: AppColors.textSecondary,
           ),
@@ -493,7 +503,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: SafeText(
-              'Cancelar',
+              AppLocalizations.of(context)!.cancel,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -516,7 +526,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
               
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: SafeText('Todos os $contentType foram removidos'),
+                  content: SafeText(AppLocalizations.of(context)!.allItemsRemoved(contentType)),
                   backgroundColor: AppColors.success,
                 ),
               );
@@ -525,7 +535,7 @@ class _WatchedScreenState extends State<WatchedScreen> {
               backgroundColor: AppColors.error,
             ),
             child: SafeText(
-              'Limpar Tudo',
+              AppLocalizations.of(context)!.clearAll,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.textPrimary,
               ),

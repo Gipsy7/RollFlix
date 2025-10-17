@@ -72,47 +72,46 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late final VoidCallback _localeListener;
-
-  @override
-  void initState() {
-    super.initState();
-    _localeListener = () {
-      if (mounted) setState(() {});
-    };
-    LocaleController.instance.addListener(_localeListener);
-  }
-
-  @override
-  void dispose() {
-    LocaleController.instance.removeListener(_localeListener);
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: AppConstants.appName,
-      // Localization
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      locale: LocaleController.instance.locale,
-      localeResolutionCallback: (locale, supportedLocales) {
-        // Fallback to first supported locale if none match
-        if (locale == null) return supportedLocales.first;
-        for (var supported in supportedLocales) {
-          if (supported.languageCode == locale.languageCode) return supported;
-        }
-        return supportedLocales.first;
+    return ValueListenableBuilder<Locale?>(
+      valueListenable: LocaleController.instance,
+      builder: (context, locale, child) {
+        debugPrint('🏗️ MaterialApp rebuilding with locale: $locale');
+        return ValueListenableBuilder<Locale?>(
+          valueListenable: LocaleController.instance,
+          builder: (context, locale, child) {
+            return MaterialApp(
+              title: AppConstants.appName,
+              // Localization
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: locale,
+              localeResolutionCallback: (locale, supportedLocales) {
+                // Fallback to first supported locale if none match
+                if (locale == null) return supportedLocales.first;
+                for (var supported in supportedLocales) {
+                  if (supported.languageCode == locale.languageCode) return supported;
+                }
+                return supportedLocales.first;
+              },
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.darkCinemaTheme,
+              home: ValueListenableBuilder<Locale?>(
+                valueListenable: LocaleController.instance,
+                builder: (context, locale, child) {
+                  return const AuthWrapper();
+                },
+              ),
+            );
+          },
+        );
       },
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkCinemaTheme,
-      home: const AuthWrapper(),
     );
   }
 }
@@ -236,8 +235,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   
   /// Configura listeners de forma segura
   void _setupListeners() {
-    // Listeners removidos - usando ListenableBuilder no build()
-    // que escuta _movieController, _tvShowController e _appModeController
+    // Listeners removidos - usando ValueListenableBuilder no build()
+    // que escuta LocaleController.instance diretamente
   }
   
   /// Inicialização assíncrona da aplicação
@@ -260,12 +259,12 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           } else {
             _tvShowController.selectGenre(currentGenres.first);
           }
-          debugPrint('Gênero inicial selecionado: ${currentGenres.first}');
+          debugPrint(AppLocalizations.of(context)!.initialGenreSelected(currentGenres.first));
         }
       } catch (e) {
-        debugPrint('Erro ao inicializar app: $e');
+        debugPrint(AppLocalizations.of(context)!.errorInitializingApp(e.toString()));
         if (mounted) {
-          AppSnackBar.showError(context, 'Erro ao carregar dados iniciais');
+          AppSnackBar.showError(context, AppLocalizations.of(context)!.errorLoadingInitialData);
         }
       }
     });
@@ -349,7 +348,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     debugPrint('isSeriesMode: ${_appModeController.isSeriesMode}');
 
     if (selectedGenre == null) {
-      AppSnackBar.showInfo(context, 'Selecione um gênero primeiro');
+      ValueListenableBuilder<Locale?>(
+        valueListenable: LocaleController.instance,
+        builder: (context, locale, child) {
+          AppSnackBar.showInfo(context, AppLocalizations.of(context)!.selectGenreFirst);
+          return const SizedBox();
+        },
+      );
       return;
     }
 
@@ -403,7 +408,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     } catch (e) {
       debugPrint('Erro em _handleRollContent: $e');
       if (!mounted) return;
-      AppSnackBar.showError(context, 'Não foi possível realizar o sorteio. Tente novamente.');
+      AppSnackBar.showError(context, AppLocalizations.of(context)!.rollError);
     }
   }
 
@@ -413,7 +418,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     if (_appModeController.isSeriesMode) {
       final tvShow = _tvShowController.selectedShow;
       if (tvShow == null) {
-        AppSnackBar.showInfo(context, 'Nenhuma série encontrada para esse filtro. Tente novamente.');
+        AppSnackBar.showInfo(context, AppLocalizations.of(context)!.noSeriesFound);
         return;
       }
 
@@ -425,7 +430,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
     final movie = _movieController.selectedMovie;
     if (movie == null) {
-      AppSnackBar.showInfo(context, 'Nenhum filme encontrado para esse filtro. Tente novamente.');
+      AppSnackBar.showInfo(context, AppLocalizations.of(context)!.noMovieFound);
       return;
     }
 
@@ -1033,10 +1038,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.1),
+        color: Colors.red.withOpacity(0.1), // Corrigido para withOpacity
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.red.withValues(alpha: 0.3),
+          color: Colors.red.withOpacity(0.3), // Corrigido para withOpacity
           width: 1,
         ),
       ),
@@ -1313,12 +1318,12 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar', style: TextStyle(color: Colors.white54)),
+            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: Colors.white54)),
           ),
           ElevatedButton.icon(
             onPressed: () => Navigator.of(context).pop(true),
             icon: const Icon(Icons.play_circle_filled),
-            label: const Text('Assistir Anúncio'),
+            label: Text(AppLocalizations.of(context)!.watchAd),
             style: ElevatedButton.styleFrom(
               backgroundColor: accentColor,
               foregroundColor: _appModeController.isSeriesMode ? Colors.white : Colors.black,

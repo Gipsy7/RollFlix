@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/roll_preferences.dart';
 import '../theme/app_theme.dart';
 import '../controllers/user_preferences_controller.dart';
+import '../controllers/locale_controller.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class RollPreferencesDialog extends StatefulWidget {
   final RollPreferences initialPreferences;
@@ -83,117 +85,122 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Container(
-        width: isMobile ? double.infinity : 500,
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.8,
-        ),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              children: [
-                Icon(
-                  Icons.tune,
-                  color: _accentColor,
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Preferências de Rolagem',
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.close, color: _secondaryTextColor),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
+      child: ValueListenableBuilder<Locale?>(
+        valueListenable: LocaleController.instance,
+        builder: (context, locale, child) {
+          return Container(
+            width: isMobile ? double.infinity : 500,
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.8,
             ),
-            const SizedBox(height: 24),
-
-            Flexible(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
                   children: [
-                    // Período
-                    _buildSectionTitle('Período de Lançamento'),
-                    const SizedBox(height: 12),
-                    _buildYearRangePicker(),
-                    const SizedBox(height: 24),
-
-                    // Ordenação
-                    _buildSectionTitle('Ordenar Por'),
-                    const SizedBox(height: 12),
-                    _buildSortByOptions(),
-                    const SizedBox(height: 24),
-
-                    // Classificação Indicativa
-                    _buildSectionTitle('Classificação Indicativa'),
-                    const SizedBox(height: 12),
-                    _buildAdultContentToggle(),
-                    const SizedBox(height: 24),
-
-                    // Outras opções
-                    _buildSectionTitle('Outras Opções'),
-                    const SizedBox(height: 8),
-                    _buildExcludeWatchedOption(),
+                    Icon(
+                      Icons.tune,
+                      color: _accentColor,
+                      size: 28,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context)!.rollPreferencesTitle,
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close, color: _secondaryTextColor),
+                      onPressed: () => Navigator.pop(context),
+                    ),
                   ],
                 ),
-              ),
-            ),
+                const SizedBox(height: 24),
 
-            const SizedBox(height: 24),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Período
+                        _buildSectionTitle(AppLocalizations.of(context)!.releasePeriod),
+                        const SizedBox(height: 12),
+                        _buildYearRangePicker(),
+                        const SizedBox(height: 24),
 
-            // Botões de ação
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _resetPreferences,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: _secondaryTextColor,
-                      side: BorderSide(color: _secondaryTextColor.withValues(alpha: 0.3)),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                        // Ordenação
+                        _buildSectionTitle(AppLocalizations.of(context)!.sortBy),
+                        const SizedBox(height: 12),
+                        _buildSortByOptions(),
+                        const SizedBox(height: 24),
+
+                        // Classificação Indicativa
+                        _buildSectionTitle(AppLocalizations.of(context)!.contentRating),
+                        const SizedBox(height: 12),
+                        _buildAdultContentToggle(),
+                        const SizedBox(height: 24),
+
+                        // Outras opções
+                        _buildSectionTitle(AppLocalizations.of(context)!.otherOptions),
+                        const SizedBox(height: 8),
+                        _buildExcludeWatchedOption(),
+                      ],
                     ),
-                    child: const Text('Limpar'),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
-                    onPressed: _applyPreferences,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _accentColor,
-                      foregroundColor: AppColors.backgroundDark,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+
+                const SizedBox(height: 24),
+
+                // Botões de ação
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: _resetPreferences,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: _secondaryTextColor,
+                          side: BorderSide(color: _secondaryTextColor.withValues(alpha: 0.3)),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(AppLocalizations.of(context)!.clear),
                       ),
                     ),
-                    child: const Text(
-                      'Aplicar',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed: _applyPreferences,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _accentColor,
+                          foregroundColor: AppColors.backgroundDark,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)!.apply,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -226,7 +233,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'De',
+                      AppLocalizations.of(context)!.from,
                       style: TextStyle(
                         color: _mutedTextColor,
                         fontSize: 12,
@@ -245,7 +252,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                           ),
                         ),
                         child: Text(
-                          _minYear?.toString() ?? 'Qualquer',
+                          _minYear?.toString() ?? AppLocalizations.of(context)!.any,
                           style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 14,
@@ -262,7 +269,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Até',
+                      AppLocalizations.of(context)!.to,
                       style: TextStyle(
                         color: _mutedTextColor,
                         fontSize: 12,
@@ -281,7 +288,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                           ),
                         ),
                         child: Text(
-                          _maxYear?.toString() ?? 'Qualquer',
+                          _maxYear?.toString() ?? AppLocalizations.of(context)!.any,
                           style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 14,
@@ -305,7 +312,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
               },
               icon: Icon(Icons.clear, size: 16, color: _secondaryTextColor),
               label: Text(
-                'Limpar período',
+                AppLocalizations.of(context)!.clearPeriod,
                 style: TextStyle(color: _secondaryTextColor, fontSize: 12),
               ),
             ),
@@ -332,7 +339,9 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Selecionar Ano ${isMinYear ? "Inicial" : "Final"}',
+                isMinYear 
+                    ? AppLocalizations.of(context)!.selectInitialYear
+                    : AppLocalizations.of(context)!.selectFinalYear,
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 18,
@@ -385,22 +394,22 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
       children: [
         _buildSortOption(
           'random',
-          'Aleatório',
-          'Ordem completamente aleatória',
+          AppLocalizations.of(context)!.random,
+          AppLocalizations.of(context)!.randomDescription,
           Icons.shuffle,
         ),
         const SizedBox(height: 8),
         _buildSortOption(
           'rating',
-          'Melhor Avaliados',
-          'Prioriza filmes com maior nota',
+          AppLocalizations.of(context)!.bestRated,
+          AppLocalizations.of(context)!.prioritizeHighRated,
           Icons.star,
         ),
         const SizedBox(height: 8),
         _buildSortOption(
           'popularity',
-          'Mais Populares',
-          'Prioriza filmes mais conhecidos',
+          AppLocalizations.of(context)!.mostPopular,
+          AppLocalizations.of(context)!.prioritizePopular,
           Icons.trending_up,
         ),
       ],
@@ -499,7 +508,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Permitir conteúdo +18',
+                  AppLocalizations.of(context)!.allowAdultContent,
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 14,
@@ -509,8 +518,8 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                 const SizedBox(height: 2),
                 Text(
                   _allowAdult 
-                      ? 'Exibir todo tipo de conteúdo' 
-                      : 'Apenas conteúdo não adulto',
+                      ? AppLocalizations.of(context)!.showAllContent 
+                      : AppLocalizations.of(context)!.onlyNonAdultContent,
                   style: TextStyle(
                     color: _mutedTextColor,
                     fontSize: 12,
@@ -576,7 +585,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Excluir já assistidos',
+                    AppLocalizations.of(context)!.excludeWatched,
                     style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 14,
@@ -584,7 +593,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                     ),
                   ),
                   Text(
-                    'Não mostra conteúdos já marcados como assistidos',
+                    AppLocalizations.of(context)!.excludeWatchedDescription,
                     style: TextStyle(
                       color: _mutedTextColor,
                       fontSize: 12,

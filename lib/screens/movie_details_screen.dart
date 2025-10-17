@@ -337,15 +337,15 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       isFavorite ? Icons.favorite : Icons.favorite_border,
                       color: isFavorite ? Colors.red : AppColors.textPrimary,
                     ),
-                    tooltip: isFavorite ? AppLocalizations.of(context)!.removedFromFavorites : AppLocalizations.of(context)!.addedToFavorites,
+                    tooltip: isFavorite ? AppLocalizations.of(context)!.removeFromFavoritesTooltip : AppLocalizations.of(context)!.addToFavoritesTooltip,
                     onPressed: () async {
                       // Se está desmarcando, não consome recurso
                       if (isFavorite) {
                         _favoritesController.toggleMovieFavorite(widget.movie);
                         ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context)!.removedFromFavorites),
-                            duration: Duration(seconds: 2),
+                          SnackBar(
+                            content: Text(AppLocalizations.of(context)!.removedFromFavorites),
+                            duration: const Duration(seconds: 2),
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
@@ -367,7 +367,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       _favoritesController.toggleMovieFavorite(widget.movie);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(AppLocalizations.of(context)!.addedToFavorites),
+                          content: Text(AppLocalizations.of(context)!.addedToFavorites(widget.movie.title)),
                           duration: Duration(seconds: 2),
                           behavior: SnackBarBehavior.floating,
                         ),
