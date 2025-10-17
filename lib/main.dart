@@ -334,7 +334,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           'Preferências aplicadas! ${filterParts.isNotEmpty ? filterParts.join(" • ") : ""}',
         );
       } else {
-        AppSnackBar.showInfo(context, 'Preferências limpas');
+        AppSnackBar.showInfo(context, AppLocalizations.of(context)!.preferencesCleared);
       }
     }
   }

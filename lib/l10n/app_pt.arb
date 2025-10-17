@@ -421,7 +421,20 @@
   "onlyNonAlcoholicBeverages": "Apenas bebidas não-alcoólicas",
   "selectIngredientsToAvoid": "Selecione ingredientes que deseja evitar:",
   "preferencesRestoredToDefault": "Preferências restauradas para o padrão",
-  "preferencesSavedSuccessfully": "Preferências salvas com sucesso!"
+  "preferencesSavedSuccessfully": "Preferências salvas com sucesso!",
+  "recipeReady": "⏰ {title} está pronto!",
+  "@recipeReady": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "next": "Próxima",
+  "recipeLoadError": "Não foi possível carregar a receita. Tente novamente.",
+  "adNotAvailable": "Anúncio não disponível no momento. Tente novamente em instantes.",
+  "preferencesCleared": "Preferências limpas",
+  "shareSeries": "Compartilhar série",
+  "preferences": "Preferências",
+  "changeMeal": "Trocar refeição"
 }
 
 

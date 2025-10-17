@@ -910,4 +910,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get preferencesSavedSuccessfully => 'Préférences enregistrées avec succès !';
+
+  @override
+  String recipeReady(Object title) {
+    return '⏰ $title est prêt !';
+  }
+
+  @override
+  String get next => 'Suivant';
+
+  @override
+  String get recipeLoadError => 'Impossible de charger la recette. Veuillez réessayer.';
+
+  @override
+  String get adNotAvailable => 'Annonce non disponible pour le moment. Veuillez réessayer dans quelques instants.';
+
+  @override
+  String get preferencesCleared => 'Préférences effacées';
+
+  @override
+  String get shareSeries => 'Partager la série';
+
+  @override
+  String get preferences => 'Préférences';
+
+  @override
+  String get changeMeal => 'Changer de repas';
 }

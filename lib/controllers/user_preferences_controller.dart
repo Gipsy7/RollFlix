@@ -9,6 +9,7 @@ import '../services/auth_service.dart';
 import '../services/ad_service.dart';
 import '../theme/app_theme.dart';
 import 'app_mode_controller.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 /// Controller para gerenciar preferências do usuário
 /// Singleton pattern para garantir instância única
@@ -511,7 +512,7 @@ class UserPreferencesController extends ChangeNotifier {
           ElevatedButton.icon(
             onPressed: () => Navigator.of(context).pop(true),
             icon: const Icon(Icons.play_circle_filled),
-            label: const Text('Assistir Anúncio'),
+            label: Text(AppLocalizations.of(context)!.watchAd),
             style: ElevatedButton.styleFrom(
               backgroundColor: accentColor,
               foregroundColor: isSeriesMode ? Colors.white : Colors.black,
@@ -614,8 +615,8 @@ class UserPreferencesController extends ChangeNotifier {
               children: [
                 Icon(Icons.warning_amber, color: Colors.orange),
                 const SizedBox(width: 12),
-                const Expanded(
-                  child: Text('Anúncio não disponível no momento. Tente novamente em instantes.'),
+                Expanded(
+                  child: Text(AppLocalizations.of(context)!.adNotAvailable),
                 ),
               ],
             ),

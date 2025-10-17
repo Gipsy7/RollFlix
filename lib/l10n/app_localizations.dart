@@ -1808,6 +1808,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Preferences saved successfully!'**
   String get preferencesSavedSuccessfully;
+
+  /// No description provided for @recipeReady.
+  ///
+  /// In en, this message translates to:
+  /// **'⏰ {title} is ready!'**
+  String recipeReady(Object title);
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @recipeLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load recipe. Please try again.'**
+  String get recipeLoadError;
+
+  /// No description provided for @adNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad not available at the moment. Please try again in a few moments.'**
+  String get adNotAvailable;
+
+  /// No description provided for @preferencesCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences cleared'**
+  String get preferencesCleared;
+
+  /// No description provided for @shareSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Share series'**
+  String get shareSeries;
+
+  /// No description provided for @preferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferences;
+
+  /// No description provided for @changeMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Change meal'**
+  String get changeMeal;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

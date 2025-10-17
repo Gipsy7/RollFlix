@@ -15,6 +15,7 @@ import '../widgets/common_widgets.dart';
 import '../widgets/responsive_widgets.dart';
 import 'date_night_details_screen.dart';
 import 'date_night_preferences_screen.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class DateNightScreen extends StatefulWidget {
   const DateNightScreen({super.key});
@@ -352,7 +353,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
         IconButton(
           icon: const Icon(Icons.tune, color: Colors.white),
           onPressed: _openPreferences,
-          tooltip: 'Preferências',
+          tooltip: AppLocalizations.of(context)!.preferences,
         ),
       ],
       flexibleSpace: Container(

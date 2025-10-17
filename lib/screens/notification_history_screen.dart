@@ -87,7 +87,7 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
           if (_history.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_sweep),
-              tooltip: 'Limpar histórico',
+              tooltip: AppLocalizations.of(context)!.clearHistory,
               onPressed: _clearHistory,
             ),
         ],

@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../models/date_night_preferences.dart';
 import '../utils/color_extensions.dart';
 import '../widgets/responsive_widgets.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class DateNightGamesScreen extends StatelessWidget {
   const DateNightGamesScreen({super.key});
@@ -572,7 +573,7 @@ class _ConversationCardState extends State<_ConversationCard> {
                   });
                 },
                 icon: const Icon(Icons.arrow_forward),
-                label: const Text('Próxima'),
+                label: Text(AppLocalizations.of(context)!.next),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primaryRose,
                 ),

@@ -179,7 +179,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       actions: [
         IconButton(
           icon: const Icon(Icons.share),
-          tooltip: 'Compartilhar série',
+          tooltip: AppLocalizations.of(context)!.shareSeries,
           onPressed: _shareTVShow,
         ),
         // Botão de Assistido

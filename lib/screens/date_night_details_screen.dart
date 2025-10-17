@@ -16,6 +16,7 @@ import '../widgets/optimized_widgets.dart';
 import '../widgets/date_night_widgets.dart';
 import 'recipe_details_screen.dart';
 import 'movie_details_screen.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class DateNightDetailsScreen extends StatefulWidget {
   final DateNightCombo combo;
@@ -828,7 +829,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                   : IconButton(
                       icon: Icon(Icons.refresh, color: _primaryRose),
                       onPressed: _changeMeal,
-                      tooltip: 'Trocar refeição',
+                      tooltip: AppLocalizations.of(context)!.changeMeal,
                     ),
             ],
           ),
@@ -1072,7 +1073,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Não foi possível carregar a receita. Tente novamente.'),
+          content: Text(AppLocalizations.of(context)!.recipeLoadError),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 5),
         ),

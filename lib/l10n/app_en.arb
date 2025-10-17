@@ -421,7 +421,20 @@
   "onlyNonAlcoholicBeverages": "Only non-alcoholic beverages",
   "selectIngredientsToAvoid": "Select ingredients you want to avoid:",
   "preferencesRestoredToDefault": "Preferences restored to default",
-  "preferencesSavedSuccessfully": "Preferences saved successfully!"
+  "preferencesSavedSuccessfully": "Preferences saved successfully!",
+  "recipeReady": "⏰ {title} is ready!",
+  "@recipeReady": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "next": "Next",
+  "recipeLoadError": "Could not load recipe. Please try again.",
+  "adNotAvailable": "Ad not available at the moment. Please try again in a few moments.",
+  "preferencesCleared": "Preferences cleared",
+  "shareSeries": "Share series",
+  "preferences": "Preferences",
+  "changeMeal": "Change meal"
 }
 
 

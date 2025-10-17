@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/date_night_widgets.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class RecipeDetailsScreen extends StatelessWidget {
   final Recipe recipe;
@@ -106,7 +107,7 @@ class RecipeDetailsScreen extends StatelessWidget {
                   onComplete: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('⏰ ${recipe.title} está pronto!'),
+                        content: Text(AppLocalizations.of(context)!.recipeReady(recipe.title)),
                         duration: const Duration(seconds: 3),
                         backgroundColor: _primaryRose,
                       ),
