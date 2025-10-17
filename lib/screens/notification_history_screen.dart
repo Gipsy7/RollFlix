@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 import '../services/notification_service.dart';
 import '../models/notification_history_item.dart';
 
@@ -34,7 +35,7 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao carregar histórico: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorLoadingHistory(e.toString()))),
         );
       }
     }
@@ -44,20 +45,17 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Limpar Histórico'),
-        content: const Text(
-          'Deseja realmente limpar todo o histórico de notificações? '
-          'Esta ação não pode ser desfeita.',
-        ),
+        title: Text(AppLocalizations.of(context)!.clearHistory),
+        content: Text(AppLocalizations.of(context)!.clearHistoryConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Limpar'),
+            child: Text(AppLocalizations.of(context)!.clear),
           ),
         ],
       ),
@@ -69,8 +67,8 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Histórico limpo com sucesso'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.historyCleared),
             backgroundColor: Colors.green,
           ),
         );
@@ -84,7 +82,7 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Histórico de Notificações'),
+        title: Text(AppLocalizations.of(context)!.notificationHistory),
         actions: [
           if (_history.isNotEmpty)
             IconButton(
@@ -125,7 +123,7 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Nenhuma notificação',
+            AppLocalizations.of(context)!.noNotifications,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -134,7 +132,7 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Você será notificado quando houver\nnovos lançamentos dos seus favoritos',
+            AppLocalizations.of(context)!.notificationHint,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,

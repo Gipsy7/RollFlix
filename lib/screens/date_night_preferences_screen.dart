@@ -5,6 +5,7 @@ import '../models/date_night_preferences.dart';
 import '../services/preferences_service.dart';
 import '../utils/color_extensions.dart';
 import '../widgets/responsive_widgets.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class DateNightPreferencesScreen extends StatefulWidget {
   final DateNightPreferences? initialPreferences;
@@ -42,7 +43,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
       backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
         title: SafeText(
-          'Preferências do Date Night',
+          AppLocalizations.of(context)!.dateNightPreferences,
           style: AppTextStyles.headlineSmall.copyWith(color: Colors.white),
         ),
         backgroundColor: _darkRose,
@@ -78,7 +79,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
                   ),
                   const SizedBox(height: 16),
                   SafeText(
-                    'Personalize Sua Experiência',
+                    AppLocalizations.of(context)!.customizeYourExperience,
                     style: AppTextStyles.headlineSmall.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -87,7 +88,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
                   ),
                   const SizedBox(height: 8),
                   SafeText(
-                    'Configure suas preferências para sugestões personalizadas',
+                    AppLocalizations.of(context)!.configurePreferencesForPersonalizedSuggestions,
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: Colors.white70,
                     ),
@@ -104,7 +105,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
                 children: [
                   // Restrições Alimentares
                   _buildSection(
-                    title: 'Restrições Alimentares',
+                    title: AppLocalizations.of(context)!.dietaryRestrictions,
                     icon: Icons.restaurant_menu,
                     child: _buildDietaryRestrictionSelector(),
                   ),
@@ -113,7 +114,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
 
                   // Orçamento
                   _buildSection(
-                    title: 'Orçamento',
+                    title: AppLocalizations.of(context)!.budget,
                     icon: Icons.attach_money,
                     child: _buildBudgetSelector(),
                   ),
@@ -122,7 +123,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
 
                   // Tempo de Preparo
                   _buildSection(
-                    title: 'Tempo de Preparo',
+                    title: AppLocalizations.of(context)!.preparationTime,
                     icon: Icons.timer,
                     child: _buildPreparationTimeSelector(),
                   ),
@@ -131,7 +132,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
 
                   // Nível de Habilidade
                   _buildSection(
-                    title: 'Nível Culinário',
+                    title: AppLocalizations.of(context)!.culinaryLevel,
                     icon: Icons.restaurant,
                     child: _buildSkillLevelSelector(),
                   ),
@@ -140,7 +141,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
 
                   // Bebidas Alcoólicas
                   _buildSection(
-                    title: 'Preferências de Bebidas',
+                    title: AppLocalizations.of(context)!.drinkPreferences,
                     icon: Icons.local_bar,
                     child: _buildAlcoholSwitch(),
                   ),
@@ -149,7 +150,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
 
                   // Ingredientes que Não Gosta
                   _buildSection(
-                    title: 'Ingredientes a Evitar',
+                    title: AppLocalizations.of(context)!.ingredientsToAvoid,
                     icon: Icons.block,
                     child: _buildDislikedIngredients(),
                   ),
@@ -166,7 +167,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             side: BorderSide(color: _primaryRose),
                           ),
-                          child: const Text('Restaurar Padrão'),
+                          child: Text(AppLocalizations.of(context)!.restoreDefault),
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -177,7 +178,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             backgroundColor: _primaryRose,
                           ),
-                          child: const Text('Salvar Preferências'),
+                          child: Text(AppLocalizations.of(context)!.savePreferences),
                         ),
                       ),
                     ],
@@ -456,14 +457,14 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
 
   Widget _buildAlcoholSwitch() {
     return SwitchListTile(
-      title: const Text(
-        'Incluir bebidas alcoólicas',
-        style: TextStyle(color: Colors.white),
+      title: Text(
+        AppLocalizations.of(context)!.includeAlcoholicBeverages,
+        style: const TextStyle(color: Colors.white),
       ),
       subtitle: Text(
         _preferences.includeAlcohol 
-            ? 'Sugestões incluirão vinhos e drinques' 
-            : 'Apenas bebidas não-alcoólicas',
+            ? AppLocalizations.of(context)!.suggestionsWillIncludeWinesAndDrinks
+            : AppLocalizations.of(context)!.onlyNonAlcoholicBeverages,
         style: const TextStyle(color: Colors.white70, fontSize: 12),
       ),
       value: _preferences.includeAlcohol,
@@ -496,9 +497,9 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Selecione ingredientes que deseja evitar:',
-          style: TextStyle(color: Colors.white70, fontSize: 14),
+        Text(
+          AppLocalizations.of(context)!.selectIngredientsToAvoid,
+          style: const TextStyle(color: Colors.white70, fontSize: 14),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -539,8 +540,8 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
       _dislikedIngredients.clear();
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Preferências restauradas para o padrão'),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.preferencesRestoredToDefault),
         backgroundColor: Colors.green,
       ),
     );
@@ -554,8 +555,8 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
     
     Navigator.pop(context, _preferences);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Preferências salvas com sucesso!'),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.preferencesSavedSuccessfully),
         backgroundColor: Colors.green,
       ),
     );

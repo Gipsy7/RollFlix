@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 import '../models/actor_details.dart';
 import '../models/movie.dart';
 import '../services/movie_service.dart';
@@ -194,7 +195,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.primary,
                                     ),
-                                    child: const Text('Informações Básicas'),
+                                    child: Text(AppLocalizations.of(context)!.basicInfo),
                                   ),
                                 ],
                               ),
@@ -257,7 +258,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                                         fontWeight: FontWeight.bold,
                                         color: AppColors.primary,
                                       ),
-                                      child: const Text('Biografia'),
+                                      child: Text(AppLocalizations.of(context)!.biography),
                                     ),
                                   ],
                                 ),
@@ -298,7 +299,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                                         fontWeight: FontWeight.bold,
                                         color: AppColors.primary,
                                       ),
-                                      child: Text(widget.isDirector ? 'Filmografia como Diretor' : 'Filmografia'),
+                                      child: Text(widget.isDirector ? AppLocalizations.of(context)!.filmographyAsDirector : AppLocalizations.of(context)!.filmography),
                                     ),
                                   ],
                                 ),

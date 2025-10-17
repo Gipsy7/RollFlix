@@ -112,7 +112,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearHistory => 'Clear History';
 
   @override
-  String get clearHistoryConfirm => 'Do you want to clear the sent notifications history? This allows notifications to be sent again.';
+  String get clearHistoryConfirm => 'Do you really want to clear all notification history? This action cannot be undone.';
 
   @override
   String get understood => 'Understood';
@@ -189,7 +189,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get synopsisNotAvailable => 'Synopsis not available.';
 
   @override
-  String get direction => 'Direction';
+  String get direction => 'Direction:';
 
   @override
   String get mainCast => 'Main Cast';
@@ -304,10 +304,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get watched => 'Watched';
 
   @override
-  String get movies => 'MOVIES';
+  String get movies => 'Movies';
 
   @override
-  String get series => 'SERIES';
+  String get series => 'Series';
 
   @override
   String get seriesUpper => 'SERIES';
@@ -755,4 +755,159 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rolls => 'Rolls';
+
+  @override
+  String get searchHint => 'Type the name of the movie or series...';
+
+  @override
+  String get searchMoviesError => 'Error searching movies';
+
+  @override
+  String get searchingMovies => 'Searching movies...';
+
+  @override
+  String get noResultsFound => 'No results found';
+
+  @override
+  String get tryDifferentKeywords => 'Try searching with other keywords';
+
+  @override
+  String get noMoviesFound => 'No movies found';
+
+  @override
+  String get loadingMoreResults => 'Loading more results...';
+
+  @override
+  String get tapPlusOne => 'Tap +1';
+
+  @override
+  String get watchAdForExtraResource => 'Watch a short ad and get +1 extra resource!';
+
+  @override
+  String get appVersion => 'Version 4.0.0';
+
+  @override
+  String get basicInfo => 'Basic Information';
+
+  @override
+  String get biography => 'Biography';
+
+  @override
+  String get filmography => 'Filmography';
+
+  @override
+  String get filmographyAsDirector => 'Filmography as Director';
+
+  @override
+  String errorLoadingHistory(Object error) {
+    return 'Error loading history';
+  }
+
+  @override
+  String get historyCleared => 'History cleared successfully';
+
+  @override
+  String get noNotifications => 'No notifications';
+
+  @override
+  String get notificationHint => 'You will be notified when there are new releases of your favorites';
+
+  @override
+  String get firstAirDate => 'First air date:';
+
+  @override
+  String get cast => 'Cast';
+
+  @override
+  String get crew => 'Crew';
+
+  @override
+  String get screenplay => 'Screenplay:';
+
+  @override
+  String get trailers => 'Trailers';
+
+  @override
+  String get user => 'User';
+
+  @override
+  String get accountInfo => 'Account Information';
+
+  @override
+  String get userId => 'User ID';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get findYourNextFavoriteMovie => 'Find your next favorite movie';
+
+  @override
+  String get heroes => 'Heroes';
+
+  @override
+  String get chooseGenreOf => 'Choose a Genre of';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get unavailable => 'Unavailable';
+
+  @override
+  String get dateNightPreferences => 'Date Night Preferences';
+
+  @override
+  String get customizeYourExperience => 'Customize Your Experience';
+
+  @override
+  String get configurePreferencesForPersonalizedSuggestions => 'Configure your preferences for personalized suggestions';
+
+  @override
+  String get dietaryRestrictions => 'Dietary Restrictions';
+
+  @override
+  String get budget => 'Budget';
+
+  @override
+  String get preparationTime => 'Preparation Time';
+
+  @override
+  String get culinaryLevel => 'Culinary Level';
+
+  @override
+  String get drinkPreferences => 'Drink Preferences';
+
+  @override
+  String get ingredientsToAvoid => 'Ingredients to Avoid';
+
+  @override
+  String get restoreDefault => 'Restore Default';
+
+  @override
+  String get savePreferences => 'Save Preferences';
+
+  @override
+  String get includeAlcoholicBeverages => 'Include alcoholic beverages';
+
+  @override
+  String get suggestionsWillIncludeWinesAndDrinks => 'Suggestions will include wines and drinks';
+
+  @override
+  String get onlyNonAlcoholicBeverages => 'Only non-alcoholic beverages';
+
+  @override
+  String get selectIngredientsToAvoid => 'Select ingredients you want to avoid:';
+
+  @override
+  String get preferencesRestoredToDefault => 'Preferences restored to default';
+
+  @override
+  String get preferencesSavedSuccessfully => 'Preferences saved successfully!';
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../constants/app_constants.dart';
 import '../models/movie.dart';
@@ -238,7 +239,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erro ao pesquisar filmes'),
+            content: Text(AppLocalizations.of(context)!.searchMoviesError),
             backgroundColor: Colors.red.shade700,
           ),
         );
@@ -350,7 +351,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         onPressed: () => Navigator.pop(context),
       ),
       title: SafeText(
-        'Pesquisar Filmes',
+        AppLocalizations.of(context)!.searchMovies,
         style: AppTextStyles.headlineSmall.copyWith(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,
@@ -412,7 +413,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                 ),
                 const SizedBox(width: 8),
                 SafeText(
-                  'FILMES',
+                  AppLocalizations.of(context)!.movies,
                   style: (isMobile 
                       ? AppTextStyles.labelMedium
                       : AppTextStyles.labelLarge).copyWith(
@@ -451,7 +452,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SafeText(
-            'Encontre seu próximo filme favorito',
+            AppLocalizations.of(context)!.findYourNextFavoriteMovie,
             style: AppTextStyles.bodyLarge.copyWith(
               color: AppColors.textSecondary,
               fontStyle: FontStyle.italic,
@@ -479,7 +480,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         focusNode: _searchFocusNode,
         style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textPrimary),
         decoration: InputDecoration(
-          hintText: 'Digite o nome do filme ou série...',
+          hintText: AppLocalizations.of(context)!.searchHint,
           hintStyle: AppTextStyles.bodyLarge.copyWith(
             color: AppColors.textSecondary.withValues(alpha:0.7),
           ),
@@ -518,7 +519,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
 
   Widget _buildGenreFilter(bool isMobile) {
     // Lista de gêneros incluindo "Heróis"
-    final allGenres = [...AppConstants.movieGenres, 'Heróis'];
+    final allGenres = [...AppConstants.movieGenres, AppLocalizations.of(context)!.heroes];
     
     return Container(
       height: 60,
@@ -623,9 +624,9 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
 
   Widget _buildSearchResults(bool isMobile) {
     if (_isSearching) {
-      return const Center(
+      return Center(
         child: OptimizedLoadingIndicator(
-          message: 'Pesquisando filmes...',
+          message: AppLocalizations.of(context)!.searchingMovies,
         ),
       );
     }
@@ -642,14 +643,14 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
             ),
             const SizedBox(height: 16),
             SafeText(
-              'Nenhum resultado encontrado',
+              AppLocalizations.of(context)!.noResultsFound,
               style: AppTextStyles.headlineSmall.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 8),
             SafeText(
-              'Tente pesquisar com outras palavras-chave',
+              AppLocalizations.of(context)!.tryDifferentKeywords,
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.textSecondary.withValues(alpha:0.7),
               ),
@@ -664,9 +665,9 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
 
   Widget _buildMovieGrid(List<Movie> movies, bool isLoading, bool isMobile) {
     if (isLoading) {
-      return const Center(
+      return Center(
         child: OptimizedLoadingIndicator(
-          message: 'Carregando filmes...',
+          message: AppLocalizations.of(context)!.loadingMovies,
         ),
       );
     }
@@ -683,7 +684,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
             ),
             const SizedBox(height: 16),
             SafeText(
-              'Nenhum filme encontrado',
+              AppLocalizations.of(context)!.noMoviesFound,
               style: AppTextStyles.headlineSmall.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -749,7 +750,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           Container(
             padding: const EdgeInsets.all(16),
             child: UXComponents.loadingWithText(
-              text: 'Carregando mais resultados...',
+              text: AppLocalizations.of(context)!.loadingMoreResults,
               spinnerSize: 20,
             ),
           ),

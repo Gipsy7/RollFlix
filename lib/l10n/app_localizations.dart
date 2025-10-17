@@ -300,7 +300,7 @@ abstract class AppLocalizations {
   /// No description provided for @clearHistoryConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Do you want to clear the sent notifications history? This allows notifications to be sent again.'**
+  /// **'Do you really want to clear all notification history? This action cannot be undone.'**
   String get clearHistoryConfirm;
 
   /// No description provided for @understood.
@@ -450,7 +450,7 @@ abstract class AppLocalizations {
   /// No description provided for @direction.
   ///
   /// In en, this message translates to:
-  /// **'Direction'**
+  /// **'Direction:'**
   String get direction;
 
   /// No description provided for @mainCast.
@@ -672,13 +672,13 @@ abstract class AppLocalizations {
   /// No description provided for @movies.
   ///
   /// In en, this message translates to:
-  /// **'MOVIES'**
+  /// **'Movies'**
   String get movies;
 
   /// No description provided for @series.
   ///
   /// In en, this message translates to:
-  /// **'SERIES'**
+  /// **'Series'**
   String get series;
 
   /// No description provided for @seriesUpper.
@@ -1502,6 +1502,312 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rolls'**
   String get rolls;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type the name of the movie or series...'**
+  String get searchHint;
+
+  /// No description provided for @searchMoviesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error searching movies'**
+  String get searchMoviesError;
+
+  /// No description provided for @searchingMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching movies...'**
+  String get searchingMovies;
+
+  /// No description provided for @noResultsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResultsFound;
+
+  /// No description provided for @tryDifferentKeywords.
+  ///
+  /// In en, this message translates to:
+  /// **'Try searching with other keywords'**
+  String get tryDifferentKeywords;
+
+  /// No description provided for @noMoviesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No movies found'**
+  String get noMoviesFound;
+
+  /// No description provided for @loadingMoreResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading more results...'**
+  String get loadingMoreResults;
+
+  /// No description provided for @tapPlusOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap +1'**
+  String get tapPlusOne;
+
+  /// No description provided for @watchAdForExtraResource.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch a short ad and get +1 extra resource!'**
+  String get watchAdForExtraResource;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version 4.0.0'**
+  String get appVersion;
+
+  /// No description provided for @basicInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Information'**
+  String get basicInfo;
+
+  /// No description provided for @biography.
+  ///
+  /// In en, this message translates to:
+  /// **'Biography'**
+  String get biography;
+
+  /// No description provided for @filmography.
+  ///
+  /// In en, this message translates to:
+  /// **'Filmography'**
+  String get filmography;
+
+  /// No description provided for @filmographyAsDirector.
+  ///
+  /// In en, this message translates to:
+  /// **'Filmography as Director'**
+  String get filmographyAsDirector;
+
+  /// No description provided for @errorLoadingHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading history'**
+  String errorLoadingHistory(Object error);
+
+  /// No description provided for @historyCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'History cleared successfully'**
+  String get historyCleared;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get noNotifications;
+
+  /// No description provided for @notificationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be notified when there are new releases of your favorites'**
+  String get notificationHint;
+
+  /// No description provided for @firstAirDate.
+  ///
+  /// In en, this message translates to:
+  /// **'First air date:'**
+  String get firstAirDate;
+
+  /// No description provided for @cast.
+  ///
+  /// In en, this message translates to:
+  /// **'Cast'**
+  String get cast;
+
+  /// No description provided for @crew.
+  ///
+  /// In en, this message translates to:
+  /// **'Crew'**
+  String get crew;
+
+  /// No description provided for @screenplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenplay:'**
+  String get screenplay;
+
+  /// No description provided for @trailers.
+  ///
+  /// In en, this message translates to:
+  /// **'Trailers'**
+  String get trailers;
+
+  /// No description provided for @user.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get user;
+
+  /// No description provided for @accountInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Information'**
+  String get accountInfo;
+
+  /// No description provided for @userId.
+  ///
+  /// In en, this message translates to:
+  /// **'User ID'**
+  String get userId;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @findYourNextFavoriteMovie.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your next favorite movie'**
+  String get findYourNextFavoriteMovie;
+
+  /// No description provided for @heroes.
+  ///
+  /// In en, this message translates to:
+  /// **'Heroes'**
+  String get heroes;
+
+  /// No description provided for @chooseGenreOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a Genre of'**
+  String get chooseGenreOf;
+
+  /// No description provided for @available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// No description provided for @unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get unavailable;
+
+  /// No description provided for @dateNightPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Night Preferences'**
+  String get dateNightPreferences;
+
+  /// No description provided for @customizeYourExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize Your Experience'**
+  String get customizeYourExperience;
+
+  /// No description provided for @configurePreferencesForPersonalizedSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure your preferences for personalized suggestions'**
+  String get configurePreferencesForPersonalizedSuggestions;
+
+  /// No description provided for @dietaryRestrictions.
+  ///
+  /// In en, this message translates to:
+  /// **'Dietary Restrictions'**
+  String get dietaryRestrictions;
+
+  /// No description provided for @budget.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get budget;
+
+  /// No description provided for @preparationTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparation Time'**
+  String get preparationTime;
+
+  /// No description provided for @culinaryLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Culinary Level'**
+  String get culinaryLevel;
+
+  /// No description provided for @drinkPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Drink Preferences'**
+  String get drinkPreferences;
+
+  /// No description provided for @ingredientsToAvoid.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients to Avoid'**
+  String get ingredientsToAvoid;
+
+  /// No description provided for @restoreDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Default'**
+  String get restoreDefault;
+
+  /// No description provided for @savePreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Preferences'**
+  String get savePreferences;
+
+  /// No description provided for @includeAlcoholicBeverages.
+  ///
+  /// In en, this message translates to:
+  /// **'Include alcoholic beverages'**
+  String get includeAlcoholicBeverages;
+
+  /// No description provided for @suggestionsWillIncludeWinesAndDrinks.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions will include wines and drinks'**
+  String get suggestionsWillIncludeWinesAndDrinks;
+
+  /// No description provided for @onlyNonAlcoholicBeverages.
+  ///
+  /// In en, this message translates to:
+  /// **'Only non-alcoholic beverages'**
+  String get onlyNonAlcoholicBeverages;
+
+  /// No description provided for @selectIngredientsToAvoid.
+  ///
+  /// In en, this message translates to:
+  /// **'Select ingredients you want to avoid:'**
+  String get selectIngredientsToAvoid;
+
+  /// No description provided for @preferencesRestoredToDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences restored to default'**
+  String get preferencesRestoredToDefault;
+
+  /// No description provided for @preferencesSavedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences saved successfully!'**
+  String get preferencesSavedSuccessfully;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

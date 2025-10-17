@@ -235,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           
           // Nome
           SafeText(
-            _user?.displayName ?? 'Usuário',
+            _user?.displayName ?? AppLocalizations.of(context)!.user,
             style: (isMobile 
                 ? AppTextStyles.headlineSmall
                 : AppTextStyles.headlineMedium).copyWith(
@@ -277,7 +277,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SafeText(
-              'Informações da Conta',
+              AppLocalizations.of(context)!.accountInfo,
               style: AppTextStyles.bodyLarge.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
@@ -287,7 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             
             _buildInfoRow(
               Icons.badge,
-              'ID do Usuário',
+              AppLocalizations.of(context)!.userId,
               _user?.uid ?? 'N/A',
               primaryColor,
             ),
@@ -306,7 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _buildInfoRow(
               _user?.emailVerified == true ? Icons.verified : Icons.email,
               'Email verificado',
-              _user?.emailVerified == true ? 'Sim' : 'Não',
+              _user?.emailVerified == true ? AppLocalizations.of(context)!.yes : AppLocalizations.of(context)!.no,
               primaryColor,
             ),
           ],
@@ -371,7 +371,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SafeText(
-              'Estatísticas',
+              AppLocalizations.of(context)!.statistics,
               style: AppTextStyles.bodyLarge.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
@@ -394,8 +394,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildDetailedStatItem(Icons.movie, 'Filmes', rollStats.movieRolls.toString(), isMobile, primaryColor),
-                _buildDetailedStatItem(Icons.tv, 'Séries', rollStats.seriesRolls.toString(), isMobile, primaryColor),
+                _buildDetailedStatItem(Icons.movie, AppLocalizations.of(context)!.movies, rollStats.movieRolls.toString(), isMobile, primaryColor),
+                _buildDetailedStatItem(Icons.tv, AppLocalizations.of(context)!.series, rollStats.seriesRolls.toString(), isMobile, primaryColor),
                 _buildDetailedStatItem(Icons.favorite_border, 'Date Nights', rollStats.dateNightCount.toString(), isMobile, primaryColor),
               ],
             ),

@@ -456,8 +456,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       ? const Color.fromARGB(255, 240, 43, 109) // Roxo vibrante
       : AppColors.primary; // Dourado original
 
-  String get currentContentType => _appModeController.isSeriesMode ? 'Série' : 'Filme';
-  String get currentModeLabel => _appModeController.isSeriesMode ? 'Séries' : 'Filmes';
+  String get currentContentType => _appModeController.isSeriesMode ? AppLocalizations.of(context)!.series : AppLocalizations.of(context)!.movies;
+  String get currentModeLabel => _appModeController.isSeriesMode ? AppLocalizations.of(context)!.series : AppLocalizations.of(context)!.movies;
 
   @override
   Widget build(BuildContext context) {
@@ -1021,7 +1021,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         const SizedBox(width: 16),
         Flexible(
           child: SafeText(
-            'Escolha um Gênero de $currentContentType',
+            '${AppLocalizations.of(context)!.chooseGenreOf} $currentContentType',
             style: (isMobile 
               ? AppTextStyles.headlineSmall
               : AppTextStyles.headlineMedium).copyWith(
@@ -1171,7 +1171,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
     if (canUse) {
       displayValue = uses.toString();
-      subtitle = 'Disponível';
+      subtitle = AppLocalizations.of(context)!.available;
     } else if (cooldown != null) {
       // Formatar tempo restante
       final hours = cooldown.inHours;
@@ -1182,7 +1182,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     } else {
       displayValue = '0';
       displayColor = Colors.grey;
-      subtitle = 'Indisponível';
+      subtitle = AppLocalizations.of(context)!.unavailable;
     }
 
     // Widget base
@@ -1219,7 +1219,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                 ),
                 const SizedBox(width: 2),
                 Text(
-                  'Toque +1',
+                  AppLocalizations.of(context)!.tapPlusOne,
                   style: TextStyle(
                     fontSize: isMobile ? 8 : 10,
                     color: AppColors.primary.withOpacity(0.8),
@@ -1302,7 +1302,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Assista a um anúncio curto e ganhe +1 recurso extra!',
+                      AppLocalizations.of(context)!.watchAdForExtraResource,
                       style: TextStyle(
                         color: accentColor,
                         fontSize: 14,

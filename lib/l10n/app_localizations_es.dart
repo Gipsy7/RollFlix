@@ -112,7 +112,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clearHistory => 'Limpiar Historial';
 
   @override
-  String get clearHistoryConfirm => '¿Desea limpiar el historial de notificaciones enviadas? Esto permite que las notificaciones se envíen nuevamente.';
+  String get clearHistoryConfirm => '¿Realmente quieres limpiar todo el historial de notificaciones? Esta acción no se puede deshacer.';
 
   @override
   String get understood => 'Entendido';
@@ -189,7 +189,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get synopsisNotAvailable => 'Sinopsis no disponible.';
 
   @override
-  String get direction => 'Dirección';
+  String get direction => 'Dirección:';
 
   @override
   String get mainCast => 'Reparto Principal';
@@ -207,7 +207,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get rent => 'Alquiler:';
 
   @override
-  String get buy => 'Compra:';
+  String get buy => 'Comprar:';
 
   @override
   String get streamingInfoNotAvailable => 'Información de streaming no disponible en este momento.';
@@ -228,7 +228,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get youtube => 'YouTube';
 
   @override
-  String get completePlaylist => 'Lista de Reproducción Completa';
+  String get completePlaylist => 'Lista Completa';
 
   @override
   String get spotifyPlaylist => 'Lista en Spotify';
@@ -304,10 +304,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get watched => 'Visto';
 
   @override
-  String get movies => 'PELÍCULAS';
+  String get movies => 'Películas';
 
   @override
-  String get series => 'SERIES';
+  String get series => 'Series';
 
   @override
   String get seriesUpper => 'SERIES';
@@ -755,4 +755,159 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get rolls => 'Sorteos';
+
+  @override
+  String get searchHint => 'Escribe el nombre de la película o serie...';
+
+  @override
+  String get searchMoviesError => 'Error al buscar películas';
+
+  @override
+  String get searchingMovies => 'Buscando películas...';
+
+  @override
+  String get noResultsFound => 'No se encontraron resultados';
+
+  @override
+  String get tryDifferentKeywords => 'Intenta buscar con otras palabras clave';
+
+  @override
+  String get noMoviesFound => 'No se encontraron películas';
+
+  @override
+  String get loadingMoreResults => 'Cargando más resultados...';
+
+  @override
+  String get tapPlusOne => 'Toca +1';
+
+  @override
+  String get watchAdForExtraResource => '¡Mira un anuncio corto y obtén +1 recurso extra!';
+
+  @override
+  String get appVersion => 'Versión 4.0.0';
+
+  @override
+  String get basicInfo => 'Información Básica';
+
+  @override
+  String get biography => 'Biografía';
+
+  @override
+  String get filmography => 'Filmografía';
+
+  @override
+  String get filmographyAsDirector => 'Filmografía como Director';
+
+  @override
+  String errorLoadingHistory(Object error) {
+    return 'Error al cargar el historial';
+  }
+
+  @override
+  String get historyCleared => 'Historial limpiado exitosamente';
+
+  @override
+  String get noNotifications => 'No hay notificaciones';
+
+  @override
+  String get notificationHint => 'Serás notificado cuando haya nuevos lanzamientos de tus favoritos';
+
+  @override
+  String get firstAirDate => 'Primera emisión:';
+
+  @override
+  String get cast => 'Reparto';
+
+  @override
+  String get crew => 'Equipo';
+
+  @override
+  String get screenplay => 'Guión:';
+
+  @override
+  String get trailers => 'Tráilers';
+
+  @override
+  String get user => 'Usuario';
+
+  @override
+  String get accountInfo => 'Información de la Cuenta';
+
+  @override
+  String get userId => 'ID de Usuario';
+
+  @override
+  String get yes => 'Sí';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get statistics => 'Estadísticas';
+
+  @override
+  String get findYourNextFavoriteMovie => 'Encuentra tu próxima película favorita';
+
+  @override
+  String get heroes => 'Héroes';
+
+  @override
+  String get chooseGenreOf => 'Elige un Género de';
+
+  @override
+  String get available => 'Disponible';
+
+  @override
+  String get unavailable => 'No Disponible';
+
+  @override
+  String get dateNightPreferences => 'Preferencias de Cita Nocturna';
+
+  @override
+  String get customizeYourExperience => 'Personaliza Tu Experiencia';
+
+  @override
+  String get configurePreferencesForPersonalizedSuggestions => 'Configura tus preferencias para sugerencias personalizadas';
+
+  @override
+  String get dietaryRestrictions => 'Restricciones Alimentarias';
+
+  @override
+  String get budget => 'Presupuesto';
+
+  @override
+  String get preparationTime => 'Tiempo de Preparación';
+
+  @override
+  String get culinaryLevel => 'Nivel Culinario';
+
+  @override
+  String get drinkPreferences => 'Preferencias de Bebidas';
+
+  @override
+  String get ingredientsToAvoid => 'Ingredientes a Evitar';
+
+  @override
+  String get restoreDefault => 'Restaurar Predeterminado';
+
+  @override
+  String get savePreferences => 'Guardar Preferencias';
+
+  @override
+  String get includeAlcoholicBeverages => 'Incluir bebidas alcohólicas';
+
+  @override
+  String get suggestionsWillIncludeWinesAndDrinks => 'Las sugerencias incluirán vinos y bebidas';
+
+  @override
+  String get onlyNonAlcoholicBeverages => 'Solo bebidas no alcohólicas';
+
+  @override
+  String get selectIngredientsToAvoid => 'Selecciona ingredientes que deseas evitar:';
+
+  @override
+  String get preferencesRestoredToDefault => 'Preferencias restauradas a predeterminado';
+
+  @override
+  String get preferencesSavedSuccessfully => '¡Preferencias guardadas exitosamente!';
 }

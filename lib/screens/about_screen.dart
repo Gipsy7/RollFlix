@@ -122,7 +122,7 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Versão 4.0.0',
+                        AppLocalizations.of(context)!.appVersion,
                         style: TextStyle(
                           color: Colors.grey[500],
                           fontSize: 16,

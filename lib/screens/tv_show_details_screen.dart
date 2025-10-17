@@ -381,7 +381,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                 ),
                 if (detailedTVShow!.firstAirDate.isNotEmpty)
                   Text(
-                    'Primeira exibição: ${_formatDate(detailedTVShow!.firstAirDate)}',
+                    '${AppLocalizations.of(context)!.firstAirDate} ${_formatDate(detailedTVShow!.firstAirDate)}',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[400],
@@ -472,9 +472,9 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Sinopse',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.synopsis,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -499,11 +499,11 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'Elenco',
-            style: TextStyle(
+            AppLocalizations.of(context)!.cast,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -543,9 +543,9 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Equipe',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.crew,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -554,7 +554,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           const SizedBox(height: 16),
           if (directors.isNotEmpty) ...[
             Text(
-              'Direção: ${directors.map((d) => d.name).join(', ')}',
+              '${AppLocalizations.of(context)!.direction} ${directors.map((d) => d.name).join(', ')}',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[300],
@@ -564,7 +564,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           ],
           if (writers.isNotEmpty) ...[
             Text(
-              'Roteiro: ${writers.map((w) => w.name).join(', ')}',
+              '${AppLocalizations.of(context)!.screenplay} ${writers.map((w) => w.name).join(', ')}',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[300],
@@ -634,9 +634,9 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'Onde Assistir',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.whereToWatch,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -648,7 +648,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           
           if (watchProviders!.flatrate.isNotEmpty) ...[
             Text(
-              'Streaming (Incluído na assinatura):',
+              AppLocalizations.of(context)!.streamingIncluded,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -736,7 +736,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           
           if (watchProviders!.rent.isNotEmpty) ...[
             Text(
-              'Aluguel:',
+              AppLocalizations.of(context)!.rent,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -817,7 +817,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           
           if (watchProviders!.buy.isNotEmpty) ...[
             Text(
-              'Compra:',
+              AppLocalizations.of(context)!.buy,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -916,11 +916,11 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'Trailers',
-            style: TextStyle(
+            AppLocalizations.of(context)!.trailers,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -1090,9 +1090,9 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Trilha Sonora',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.soundtrack,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -1117,7 +1117,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                       Icon(Icons.music_note, color: Colors.purple, size: 24),
                       const SizedBox(width: 8),
                       Text(
-                        'Música Tema',
+                        AppLocalizations.of(context)!.themeSong,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -1138,7 +1138,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                   if (soundtrackInfo!.themeSongArtist != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      'por ${soundtrackInfo!.themeSongArtist}',
+                      '${AppLocalizations.of(context)!.by} ${soundtrackInfo!.themeSongArtist}',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[400],
@@ -1199,9 +1199,9 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           ],
           
           // Playlists Completas
-          const Text(
-            'Playlist Completa',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.completePlaylist,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -1242,7 +1242,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Playlist no Spotify',
+                            AppLocalizations.of(context)!.spotifyPlaylist,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[400],
@@ -1288,7 +1288,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Playlist no YouTube',
+                            AppLocalizations.of(context)!.youtubePlaylist,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[400],
