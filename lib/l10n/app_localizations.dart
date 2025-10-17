@@ -804,7 +804,7 @@ abstract class AppLocalizations {
   /// No description provided for @seriesMode.
   ///
   /// In en, this message translates to:
-  /// **'Mode: Series'**
+  /// **'SERIES'**
   String get seriesMode;
 
   /// No description provided for @movieMode.
@@ -1856,6 +1856,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change meal'**
   String get changeMeal;
+
+  /// No description provided for @movieTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Movie'**
+  String get movieTab;
+
+  /// No description provided for @mealTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal'**
+  String get mealTab;
+
+  /// No description provided for @checklistTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Checklist'**
+  String get checklistTab;
+
+  /// No description provided for @romanticDate.
+  ///
+  /// In en, this message translates to:
+  /// **'💕 Romantic Date'**
+  String get romanticDate;
+
+  /// No description provided for @casualDate.
+  ///
+  /// In en, this message translates to:
+  /// **'🍿 Casual Date'**
+  String get casualDate;
+
+  /// No description provided for @elegantDate.
+  ///
+  /// In en, this message translates to:
+  /// **'🥂 Elegant Date'**
+  String get elegantDate;
+
+  /// No description provided for @funDate.
+  ///
+  /// In en, this message translates to:
+  /// **'🎉 Fun Date'**
+  String get funDate;
+
+  /// No description provided for @cozyDate.
+  ///
+  /// In en, this message translates to:
+  /// **'🏠 Cozy Date'**
+  String get cozyDate;
+
+  /// No description provided for @dateDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'🌟 Date Details'**
+  String get dateDetails;
+
+  /// No description provided for @releaseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Release:'**
+  String get releaseLabel;
+
+  /// No description provided for @durationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration:'**
+  String get durationLabel;
+
+  /// No description provided for @defaultMovieOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'An exciting romantic story that will make your night even more special.'**
+  String get defaultMovieOverview;
+
+  /// No description provided for @technicalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Information'**
+  String get technicalInfo;
+
+  /// No description provided for @productionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Production:'**
+  String get productionLabel;
+
+  /// No description provided for @checklistHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check items as you add them to your cart!'**
+  String get checklistHint;
+
+  /// No description provided for @intimateQuestionsGame.
+  ///
+  /// In en, this message translates to:
+  /// **'20 Intimate Questions'**
+  String get intimateQuestionsGame;
+
+  /// No description provided for @intimateQuestionsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get to know each other better with deep and fun questions'**
+  String get intimateQuestionsDesc;
+
+  /// No description provided for @easy.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy'**
+  String get easy;
+
+  /// No description provided for @romanticTruthOrDare.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic Truth or Dare'**
+  String get romanticTruthOrDare;
+
+  /// No description provided for @romanticTruthOrDareDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic version of the classic game'**
+  String get romanticTruthOrDareDesc;
+
+  /// No description provided for @medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get medium;
+
+  /// No description provided for @cookingBattle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooking Battle'**
+  String get cookingBattle;
+
+  /// No description provided for @cookingBattleDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Friendly competition to prepare a dish'**
+  String get cookingBattleDesc;
+
+  /// No description provided for @loserDoesDishes.
+  ///
+  /// In en, this message translates to:
+  /// **'Loser does the dishes!'**
+  String get loserDoesDishes;
+
+  /// No description provided for @advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get advanced;
+
+  /// No description provided for @coupleQuizDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Test how well you know each other'**
+  String get coupleQuizDesc;
+
+  /// No description provided for @dreamsAndAspirations.
+  ///
+  /// In en, this message translates to:
+  /// **'Dreams and Aspirations'**
+  String get dreamsAndAspirations;
+
+  /// No description provided for @dreamLocationQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'If you could live anywhere in the world, where would it be?'**
+  String get dreamLocationQuestion;
+
+  /// No description provided for @professionalDreamQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What is your biggest professional dream?'**
+  String get professionalDreamQuestion;
+
+  /// No description provided for @servingsUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'servings'**
+  String get servingsUnit;
+
+  /// No description provided for @nutritionalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutritional Information'**
+  String get nutritionalInfo;
+
+  /// No description provided for @protein.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein'**
+  String get protein;
+
+  /// No description provided for @adultFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'🔞 Non-adult only'**
+  String get adultFilter;
+
+  /// No description provided for @preferencesApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences applied!'**
+  String get preferencesApplied;
+
+  /// No description provided for @moviesMode.
+  ///
+  /// In en, this message translates to:
+  /// **'MOVIES'**
+  String get moviesMode;
+
+  /// No description provided for @rollGenre.
+  ///
+  /// In en, this message translates to:
+  /// **'Roll Genre'**
+  String get rollGenre;
+
+  /// No description provided for @seriesRolled.
+  ///
+  /// In en, this message translates to:
+  /// **'Series {count} rolled'**
+  String seriesRolled(Object count);
+
+  /// No description provided for @movieRolled.
+  ///
+  /// In en, this message translates to:
+  /// **'Movie {count} rolled'**
+  String movieRolled(Object count);
+
+  /// No description provided for @tryDifferentGenre.
+  ///
+  /// In en, this message translates to:
+  /// **'Try selecting a different genre or reload the page.'**
+  String get tryDifferentGenre;
+
+  /// No description provided for @players.
+  ///
+  /// In en, this message translates to:
+  /// **'players'**
+  String get players;
+
+  /// No description provided for @minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get minutes;
+
+  /// No description provided for @rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules'**
+  String get rules;
+
+  /// No description provided for @questions.
+  ///
+  /// In en, this message translates to:
+  /// **'questions'**
+  String get questions;
+
+  /// No description provided for @interestingQuestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Interesting questions to get to know each other better'**
+  String get interestingQuestions;
+
+  /// No description provided for @conversationStarters.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Starters'**
+  String get conversationStarters;
+
+  /// No description provided for @dateNightGames.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Night Games'**
+  String get dateNightGames;
+
+  /// No description provided for @makeNightFun.
+  ///
+  /// In en, this message translates to:
+  /// **'Make the night more fun and memorable'**
+  String get makeNightFun;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

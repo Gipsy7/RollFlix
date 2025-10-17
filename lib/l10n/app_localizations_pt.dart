@@ -374,7 +374,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get searchSeries => 'Pesquisar Séries';
 
   @override
-  String get seriesMode => 'Modo: Séries';
+  String get seriesMode => 'SÉRIES';
 
   @override
   String get movieMode => 'Modo: Filmes';
@@ -936,4 +936,149 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get changeMeal => 'Trocar refeição';
+
+  @override
+  String get movieTab => 'Filme';
+
+  @override
+  String get mealTab => 'Refeição';
+
+  @override
+  String get checklistTab => 'Checklist';
+
+  @override
+  String get romanticDate => '💕 Encontro Romântico';
+
+  @override
+  String get casualDate => '🍿 Encontro Casual';
+
+  @override
+  String get elegantDate => '🥂 Encontro Elegante';
+
+  @override
+  String get funDate => '🎉 Encontro Divertido';
+
+  @override
+  String get cozyDate => '🏠 Encontro Aconchegante';
+
+  @override
+  String get dateDetails => '🌟 Detalhes do Encontro';
+
+  @override
+  String get releaseLabel => 'Lançamento:';
+
+  @override
+  String get durationLabel => 'Duração:';
+
+  @override
+  String get defaultMovieOverview => 'Uma história romântica emocionante que vai tornar sua noite ainda mais especial.';
+
+  @override
+  String get technicalInfo => 'Informações Técnicas';
+
+  @override
+  String get productionLabel => 'Produção:';
+
+  @override
+  String get checklistHint => 'Marque os itens conforme você os adiciona ao carrinho!';
+
+  @override
+  String get intimateQuestionsGame => '20 Perguntas Íntimas';
+
+  @override
+  String get intimateQuestionsDesc => 'Conheçam melhor um ao outro com perguntas profundas e divertidas';
+
+  @override
+  String get easy => 'Fácil';
+
+  @override
+  String get romanticTruthOrDare => 'Verdade ou Desafio Romântico';
+
+  @override
+  String get romanticTruthOrDareDesc => 'Versão romântica do clássico jogo';
+
+  @override
+  String get medium => 'Médio';
+
+  @override
+  String get cookingBattle => 'Batalha Culinária';
+
+  @override
+  String get cookingBattleDesc => 'Competição amigável de preparar um prato';
+
+  @override
+  String get loserDoesDishes => 'Quem perder faz a louça!';
+
+  @override
+  String get advanced => 'Avançado';
+
+  @override
+  String get coupleQuizDesc => 'Testem o quanto se conhecem';
+
+  @override
+  String get dreamsAndAspirations => 'Sonhos e Aspirações';
+
+  @override
+  String get dreamLocationQuestion => 'Se você pudesse viver em qualquer lugar do mundo, onde seria?';
+
+  @override
+  String get professionalDreamQuestion => 'Qual é o seu maior sonho profissional?';
+
+  @override
+  String get servingsUnit => 'porções';
+
+  @override
+  String get nutritionalInfo => 'Informações Nutricionais';
+
+  @override
+  String get protein => 'Proteína';
+
+  @override
+  String get adultFilter => '🔞 Apenas não adulto';
+
+  @override
+  String get preferencesApplied => 'Preferências aplicadas!';
+
+  @override
+  String get moviesMode => 'FILMES';
+
+  @override
+  String get rollGenre => 'Rolar Gênero';
+
+  @override
+  String seriesRolled(Object count) {
+    return 'Série $count sorteada';
+  }
+
+  @override
+  String movieRolled(Object count) {
+    return 'Filme $count sorteado';
+  }
+
+  @override
+  String get tryDifferentGenre => 'Tente selecionar outro gênero ou recarregar a página.';
+
+  @override
+  String get players => 'jogadores';
+
+  @override
+  String get minutes => 'min';
+
+  @override
+  String get rules => 'Regras';
+
+  @override
+  String get questions => 'perguntas';
+
+  @override
+  String get interestingQuestions => 'Perguntas interessantes para conhecerem melhor um ao outro';
+
+  @override
+  String get conversationStarters => 'Iniciadores de Conversa';
+
+  @override
+  String get dateNightGames => 'Jogos para o Encontro';
+
+  @override
+  String get makeNightFun => 'Deixe a noite mais divertida e memorável';
 }

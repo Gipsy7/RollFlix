@@ -434,7 +434,70 @@
   "preferencesCleared": "Préférences effacées",
   "shareSeries": "Partager la série",
   "preferences": "Préférences",
-  "changeMeal": "Changer de repas"
+  "changeMeal": "Changer de repas",
+  "movieTab": "Film",
+  "mealTab": "Repas",
+  "checklistTab": "Liste de contrôle",
+  "romanticDate": "💕 Rendez-vous Romantique",
+  "casualDate": "🍿 Rendez-vous Décontracté",
+  "elegantDate": "🥂 Rendez-vous Élégant",
+  "funDate": "🎉 Rendez-vous Amusant",
+  "cozyDate": "🏠 Rendez-vous Confortable",
+  "dateDetails": "🌟 Détails du Rendez-vous",
+  "releaseLabel": "Sortie :",
+  "durationLabel": "Durée :",
+  "synopsis": "Synopsis",
+  "defaultMovieOverview": "Une histoire romantique passionnante qui rendra votre soirée encore plus spéciale.",
+  "technicalInfo": "Informations Techniques",
+  "productionLabel": "Production :",
+  "checklistHint": "Cochez les articles au fur et à mesure que vous les ajoutez à votre panier !",
+  "streamingIncluded": "Streaming (Inclus dans l'abonnement) :",
+  "intimateQuestionsGame": "20 Questions Intimes",
+  "intimateQuestionsDesc": "Apprenez à mieux vous connaître avec des questions profondes et amusantes",
+  "easy": "Facile",
+  "romanticTruthOrDare": "Action ou Vérité Romantique",
+  "romanticTruthOrDareDesc": "Version romantique du jeu classique",
+  "medium": "Moyen",
+  "cookingBattle": "Bataille Culinare",
+  "cookingBattleDesc": "Compétition amicale pour préparer un plat",
+  "loserDoesDishes": "Le perdant fait la vaisselle !",
+  "advanced": "Avancé",
+  "coupleQuizDesc": "Testez à quel point vous vous connaissez",
+  "dreamsAndAspirations": "Rêves et Aspirations",
+  "dreamLocationQuestion": "Si vous pouviez vivre n'importe où dans le monde, où serait-ce ?",
+  "professionalDreamQuestion": "Quel est votre plus grand rêve professionnel ?",
+  "servingsUnit": "portions",
+  "nutritionalInfo": "Informations Nutritionnelles",
+  "protein": "Protéine",
+  "adultFilter": "🔞 Adulte uniquement",
+  "preferencesApplied": "Préférences appliquées !",
+  "seriesMode": "SÉRIES",
+  "moviesMode": "FILMS",
+  "rolling": "Lancement...",
+  "rollSeries": "Lancer Série",
+  "rollMovie": "Lancer Film",
+  "rollGenre": "Lancer Genre",
+  "seriesRolled": "Série {count} lancée",
+  "@seriesRolled": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "movieRolled": "Film {count} lancé",
+  "@movieRolled": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "tryDifferentGenre": "Essayez de sélectionner un genre différent ou rechargez la page.",
+  "players": "joueurs",
+  "minutes": "min",
+  "rules": "Règles",
+  "questions": "questions",
+  "interestingQuestions": "Questions intéressantes pour mieux se connaître",
+  "conversationStarters": "Initiateurs de Conversation",
+  "dateNightGames": "Jeux pour le Rendez-vous",
+  "makeNightFun": "Rendez la nuit plus amusante et mémorable"
 }
 
 

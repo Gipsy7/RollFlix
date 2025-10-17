@@ -434,7 +434,70 @@
   "preferencesCleared": "Preferencias limpiadas",
   "shareSeries": "Compartir serie",
   "preferences": "Preferencias",
-  "changeMeal": "Cambiar comida"
+  "changeMeal": "Cambiar comida",
+  "movieTab": "Película",
+  "mealTab": "Comida",
+  "checklistTab": "Lista de verificación",
+  "romanticDate": "💕 Cita Romántica",
+  "casualDate": "🍿 Cita Casual",
+  "elegantDate": "🥂 Cita Elegante",
+  "funDate": "🎉 Cita Divertida",
+  "cozyDate": "🏠 Cita Acogedora",
+  "dateDetails": "🌟 Detalles de la Cita",
+  "releaseLabel": "Lanzamiento:",
+  "durationLabel": "Duración:",
+  "synopsis": "Sinopsis",
+  "defaultMovieOverview": "Una historia romántica emocionante que hará tu noche aún más especial.",
+  "technicalInfo": "Información Técnica",
+  "productionLabel": "Producción:",
+  "checklistHint": "¡Marca los artículos a medida que los agregas al carrito!",
+  "streamingIncluded": "Streaming (Incluido en la suscripción):",
+  "intimateQuestionsGame": "20 Preguntas Íntimas",
+  "intimateQuestionsDesc": "Conozcan mejor el uno al otro con preguntas profundas y divertidas",
+  "easy": "Fácil",
+  "romanticTruthOrDare": "Verdad o Reto Romántico",
+  "romanticTruthOrDareDesc": "Versión romántica del juego clásico",
+  "medium": "Medio",
+  "cookingBattle": "Batalla de Cocina",
+  "cookingBattleDesc": "Competencia amistosa para preparar un plato",
+  "loserDoesDishes": "¡El perdedor lava los platos!",
+  "advanced": "Avanzado",
+  "coupleQuizDesc": "Prueba cuánto se conocen",
+  "dreamsAndAspirations": "Sueños y Aspiraciones",
+  "dreamLocationQuestion": "¿Si pudieras vivir en cualquier lugar del mundo, dónde sería?",
+  "professionalDreamQuestion": "¿Cuál es tu mayor sueño profesional?",
+  "servingsUnit": "porciones",
+  "nutritionalInfo": "Información Nutricional",
+  "protein": "Proteína",
+  "adultFilter": "🔞 Solo no adultos",
+  "preferencesApplied": "¡Preferencias aplicadas!",
+  "seriesMode": "SERIES",
+  "moviesMode": "PELÍCULAS",
+  "rolling": "Rodando...",
+  "rollSeries": "Rodar Serie",
+  "rollMovie": "Rodar Película",
+  "rollGenre": "Rodar Género",
+  "seriesRolled": "Serie {count} rodada",
+  "@seriesRolled": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "movieRolled": "Película {count} rodada",
+  "@movieRolled": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "tryDifferentGenre": "Intenta seleccionar un género diferente o recarga la página.",
+  "players": "jugadores",
+  "minutes": "min",
+  "rules": "Reglas",
+  "questions": "preguntas",
+  "interestingQuestions": "Preguntas interesantes para conocerse mejor el uno al otro",
+  "conversationStarters": "Iniciadores de Conversación",
+  "dateNightGames": "Juegos para la Cita",
+  "makeNightFun": "Haz la noche más divertida y memorable"
 }
 
 

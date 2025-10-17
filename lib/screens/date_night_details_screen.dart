@@ -183,17 +183,17 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
               ),
               tabs: [
                 Tab(
-                  text: 'Filme',
+                  text: AppLocalizations.of(context)!.movieTab,
                   icon: Icon(Icons.movie, size: isMobile ? 18 : 20),
                   iconMargin: const EdgeInsets.only(bottom: 4),
                 ),
                 Tab(
-                  text: 'Refeição',
+                  text: AppLocalizations.of(context)!.mealTab,
                   icon: Icon(Icons.restaurant, size: isMobile ? 18 : 20),
                   iconMargin: const EdgeInsets.only(bottom: 4),
                 ),
                 Tab(
-                  text: 'Checklist',
+                  text: AppLocalizations.of(context)!.checklistTab,
                   icon: Icon(Icons.checklist, size: isMobile ? 18 : 20),
                   iconMargin: const EdgeInsets.only(bottom: 4),
                 ),
@@ -234,17 +234,17 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
     final theme = _currentCombo.theme.toLowerCase();
     
     if (theme.contains('romântico') || theme.contains('romantico')) {
-      return '💕 Encontro Romântico';
+      return AppLocalizations.of(context)!.romanticDate;
     } else if (theme.contains('casual')) {
-      return '🍿 Encontro Casual';
+      return AppLocalizations.of(context)!.casualDate;
     } else if (theme.contains('elegante') || theme.contains('sofisticado')) {
-      return '🥂 Encontro Elegante';
+      return AppLocalizations.of(context)!.elegantDate;
     } else if (theme.contains('divertido') || theme.contains('descontraído')) {
-      return '🎉 Encontro Divertido';
+      return AppLocalizations.of(context)!.funDate;
     } else if (theme.contains('aconchegante') || theme.contains('conforto')) {
-      return '🏠 Encontro Aconchegante';
+      return AppLocalizations.of(context)!.cozyDate;
     } else {
-      return '🌟 Detalhes do Encontro';
+      return AppLocalizations.of(context)!.dateDetails;
     }
   }
 
@@ -542,7 +542,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: SafeText(
-                                    'Lançamento: ${_currentCombo.movieReleaseDate}',
+                                    '${AppLocalizations.of(context)!.releaseLabel} ${_currentCombo.movieReleaseDate}',
                                     style: AppTextStyles.bodySmall.copyWith(
                                       color: AppColors.textSecondary,
                                     ),
@@ -552,7 +552,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: SafeText(
-                                    'Duração: ${_currentCombo.movieRuntime}',
+                                    '${AppLocalizations.of(context)!.durationLabel} ${_currentCombo.movieRuntime}',
                                     style: AppTextStyles.bodySmall.copyWith(
                                       color: AppColors.textSecondary,
                                     ),
@@ -648,7 +648,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SafeText(
-                      'Sinopse',
+                      AppLocalizations.of(context)!.synopsis,
                       style: AppTextStyles.headlineSmall.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w600,
@@ -658,7 +658,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                     SafeText(
                       _currentCombo.movieOverview.isNotEmpty 
                           ? _currentCombo.movieOverview
-                          : 'Uma história romântica emocionante que vai tornar sua noite ainda mais especial.',
+                          : AppLocalizations.of(context)!.defaultMovieOverview,
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                         height: 1.5,
@@ -677,7 +677,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SafeText(
-                        'Informações Técnicas',
+                        AppLocalizations.of(context)!.technicalInfo,
                         style: AppTextStyles.headlineSmall.copyWith(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w600,
@@ -727,7 +727,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                             ),
                             const SizedBox(width: 8),
                             SafeText(
-                              'Produção: ',
+                              AppLocalizations.of(context)!.productionLabel,
                               style: AppTextStyles.bodyMedium.copyWith(
                                 color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w500,
@@ -1450,7 +1450,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                 const SizedBox(width: 12),
                 Expanded(
                   child: SafeText(
-                    'Marque os itens conforme você os adiciona ao carrinho!',
+                    AppLocalizations.of(context)!.checklistHint,
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
@@ -1506,7 +1506,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       children: [
         if (streamingProviders.isNotEmpty) ...[
           SafeText(
-            'Streaming (Incluído na assinatura):',
+            AppLocalizations.of(context)!.streamingIncluded,
             style: AppTextStyles.bodyLarge.copyWith(
               color: _primaryRose,
               fontWeight: FontWeight.w600,

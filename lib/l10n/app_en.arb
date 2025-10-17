@@ -434,7 +434,70 @@
   "preferencesCleared": "Preferences cleared",
   "shareSeries": "Share series",
   "preferences": "Preferences",
-  "changeMeal": "Change meal"
+  "changeMeal": "Change meal",
+  "movieTab": "Movie",
+  "mealTab": "Meal",
+  "checklistTab": "Checklist",
+  "romanticDate": "💕 Romantic Date",
+  "casualDate": "🍿 Casual Date",
+  "elegantDate": "🥂 Elegant Date",
+  "funDate": "🎉 Fun Date",
+  "cozyDate": "🏠 Cozy Date",
+  "dateDetails": "🌟 Date Details",
+  "releaseLabel": "Release:",
+  "durationLabel": "Duration:",
+  "synopsis": "Synopsis",
+  "defaultMovieOverview": "An exciting romantic story that will make your night even more special.",
+  "technicalInfo": "Technical Information",
+  "productionLabel": "Production:",
+  "checklistHint": "Check items as you add them to your cart!",
+  "streamingIncluded": "Streaming (Included in subscription):",
+  "intimateQuestionsGame": "20 Intimate Questions",
+  "intimateQuestionsDesc": "Get to know each other better with deep and fun questions",
+  "easy": "Easy",
+  "romanticTruthOrDare": "Romantic Truth or Dare",
+  "romanticTruthOrDareDesc": "Romantic version of the classic game",
+  "medium": "Medium",
+  "cookingBattle": "Cooking Battle",
+  "cookingBattleDesc": "Friendly competition to prepare a dish",
+  "loserDoesDishes": "Loser does the dishes!",
+  "advanced": "Advanced",
+  "coupleQuizDesc": "Test how well you know each other",
+  "dreamsAndAspirations": "Dreams and Aspirations",
+  "dreamLocationQuestion": "If you could live anywhere in the world, where would it be?",
+  "professionalDreamQuestion": "What is your biggest professional dream?",
+  "servingsUnit": "servings",
+  "nutritionalInfo": "Nutritional Information",
+  "protein": "Protein",
+  "adultFilter": "🔞 Non-adult only",
+  "preferencesApplied": "Preferences applied!",
+  "seriesMode": "SERIES",
+  "moviesMode": "MOVIES",
+  "rolling": "Rolling...",
+  "rollSeries": "Roll Series",
+  "rollMovie": "Roll Movie",
+  "rollGenre": "Roll Genre",
+  "seriesRolled": "Series {count} rolled",
+  "@seriesRolled": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "movieRolled": "Movie {count} rolled",
+  "@movieRolled": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "tryDifferentGenre": "Try selecting a different genre or reload the page.",
+  "players": "players",
+  "minutes": "min",
+  "rules": "Rules",
+  "questions": "questions",
+  "interestingQuestions": "Interesting questions to get to know each other better",
+  "conversationStarters": "Conversation Starters",
+  "dateNightGames": "Date Night Games",
+  "makeNightFun": "Make the night more fun and memorable"
 }
 
 

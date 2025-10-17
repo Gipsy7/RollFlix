@@ -202,8 +202,8 @@ class DateNightGamesScreen extends StatelessWidget {
             Expanded(
               child: TabBarView(
                 children: [
-                  _buildGamesTab(isMobile),
-                  _buildConversationTab(isMobile),
+                  _buildGamesTab(context, isMobile),
+                  _buildConversationTab(context, isMobile),
                 ],
               ),
             ),
@@ -213,13 +213,13 @@ class DateNightGamesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGamesTab(bool isMobile) {
+  Widget _buildGamesTab(BuildContext context, bool isMobile) {
     return ListView(
       padding: EdgeInsets.all(isMobile ? 16 : 24),
       children: [
         _buildSectionHeader(
-          title: 'Jogos para o Encontro',
-          subtitle: 'Deixe a noite mais divertida e memorável',
+          title: AppLocalizations.of(context)!.dateNightGames,
+          subtitle: AppLocalizations.of(context)!.makeNightFun,
           icon: Icons.celebration,
         ),
         const SizedBox(height: 16),
@@ -231,13 +231,13 @@ class DateNightGamesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildConversationTab(bool isMobile) {
+  Widget _buildConversationTab(BuildContext context, bool isMobile) {
     return ListView(
       padding: EdgeInsets.all(isMobile ? 16 : 24),
       children: [
         _buildSectionHeader(
-          title: 'Iniciadores de Conversa',
-          subtitle: 'Perguntas interessantes para conhecerem melhor um ao outro',
+          title: AppLocalizations.of(context)!.conversationStarters,
+          subtitle: AppLocalizations.of(context)!.interestingQuestions,
           icon: Icons.forum,
         ),
         const SizedBox(height: 16),
@@ -300,6 +300,20 @@ class _GameCard extends StatelessWidget {
 
   const _GameCard({required this.game});
 
+  String _getLocalizedName(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (game.name) {
+      case '20 Perguntas Íntimas':
+        return l10n.intimateQuestionsGame;
+      case 'Verdade ou Desafio Romântico':
+        return l10n.romanticTruthOrDare;
+      case 'Batalha Culinária':
+        return l10n.cookingBattle;
+      default:
+        return game.name;
+    }
+  }
+
   static const Color _primaryRose = Color(0xFFE91E63);
   static const Color _secondaryGold = Color(0xFFFFD700);
 
@@ -346,7 +360,7 @@ class _GameCard extends StatelessWidget {
             child: const Icon(Icons.casino, color: Colors.white),
           ),
           title: Text(
-            game.name,
+            _getLocalizedName(context),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -361,12 +375,12 @@ class _GameCard extends StatelessWidget {
               children: [
                 _InfoChip(
                   icon: Icons.people,
-                  label: '${game.players} jogadores',
+                  label: '${game.players} ${AppLocalizations.of(context)!.players}',
                   color: _secondaryGold,
                 ),
                 _InfoChip(
                   icon: Icons.timer,
-                  label: '${game.durationMinutes} min',
+                  label: '${game.durationMinutes} ${AppLocalizations.of(context)!.minutes}',
                   color: Colors.blue,
                 ),
                 _InfoChip(
@@ -396,13 +410,13 @@ class _GameCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      Icon(Icons.rule, color: _secondaryGold, size: 20),
-                      SizedBox(width: 8),
+                      const Icon(Icons.rule, color: _secondaryGold, size: 20),
+                      const SizedBox(width: 8),
                       Text(
-                        'Regras',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.rules,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -511,7 +525,7 @@ class _ConversationCardState extends State<_ConversationCard> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '${widget.starter.questions.length} perguntas',
+                  '${widget.starter.questions.length} ${AppLocalizations.of(context)!.questions}',
                   style: TextStyle(
                     color: _secondaryGold,
                     fontSize: 12,
