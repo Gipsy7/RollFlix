@@ -463,8 +463,8 @@ class UserPreferencesController extends ChangeNotifier {
           children: [
             Icon(Icons.videocam, color: accentColor, size: 28),
             const SizedBox(width: 12),
-            const Text(
-              'Ganhar Recurso Extra',
+            Text(
+              AppLocalizations.of(context)!.earnExtraResource,
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ],
@@ -474,7 +474,7 @@ class UserPreferencesController extends ChangeNotifier {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Você não tem $resourceName disponível.$cooldownText',
+              AppLocalizations.of(context)!.noResourceAvailable(resourceName) + cooldownText,
               style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
             const SizedBox(height: 16),
@@ -491,7 +491,7 @@ class UserPreferencesController extends ChangeNotifier {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Assista a um anúncio curto e ganhe +1 $resourceName extra!',
+                      AppLocalizations.of(context)!.watchAdForExtraResource(resourceName),
                       style: TextStyle(
                         color: accentColor,
                         fontSize: 14,
@@ -507,7 +507,7 @@ class UserPreferencesController extends ChangeNotifier {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar', style: TextStyle(color: Colors.white54)),
+            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: Colors.white54)),
           ),
           ElevatedButton.icon(
             onPressed: () => Navigator.of(context).pop(true),

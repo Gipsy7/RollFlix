@@ -564,7 +564,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Share movie'**
+  /// **'Share'**
   String get shareTooltip;
 
   /// No description provided for @markAsWatched.
@@ -1554,8 +1554,8 @@ abstract class AppLocalizations {
   /// No description provided for @watchAdForExtraResource.
   ///
   /// In en, this message translates to:
-  /// **'Watch a short ad and get +1 extra resource!'**
-  String get watchAdForExtraResource;
+  /// **'Watch a short ad and earn +1 {resource} extra!'**
+  String watchAdForExtraResource(Object resource);
 
   /// No description provided for @appVersion.
   ///
@@ -2180,6 +2180,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New episode of'**
   String get newEpisodeOf;
+
+  /// No description provided for @earnExtraResource.
+  ///
+  /// In en, this message translates to:
+  /// **'Earn Extra Resource'**
+  String get earnExtraResource;
+
+  /// No description provided for @noResourceAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have {resource} available.'**
+  String noResourceAvailable(Object resource);
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @errorChangingMovie.
+  ///
+  /// In en, this message translates to:
+  /// **'Error changing movie: {error}'**
+  String errorChangingMovie(Object error);
+
+  /// No description provided for @errorChangingMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Error changing menu: {error}'**
+  String errorChangingMenu(Object error);
+
+  /// No description provided for @errorSharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Error sharing: {error}'**
+  String errorSharing(Object error);
+
+  /// No description provided for @errorOpeningDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Error opening details: {error}'**
+  String errorOpeningDetails(Object error);
+
+  /// No description provided for @selectDateNightType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a date night type first'**
+  String get selectDateNightType;
+
+  /// No description provided for @noMoviesForDateNight.
+  ///
+  /// In en, this message translates to:
+  /// **'No movies found for this date night type'**
+  String get noMoviesForDateNight;
+
+  /// No description provided for @errorGeneratingDateNight.
+  ///
+  /// In en, this message translates to:
+  /// **'Error generating date night: {error}'**
+  String errorGeneratingDateNight(Object error);
 
   /// No description provided for @seriesType.
   ///

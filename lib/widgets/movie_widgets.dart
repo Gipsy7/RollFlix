@@ -5,6 +5,7 @@ import '../utils/app_utils.dart';
 import '../models/movie.dart';
 import 'common_widgets.dart';
 import 'responsive_widgets.dart' as responsive_widgets;
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
@@ -244,9 +245,9 @@ class MovieGridView extends StatelessWidget {
     }
 
     if (movies.isEmpty) {
-      return const AppEmptyState(
-        title: 'Nenhum filme encontrado',
-        subtitle: 'Tente selecionar outro gênero ou recarregar a página.',
+      return AppEmptyState(
+        title: AppLocalizations.of(context)!.noMoviesFound,
+        subtitle: AppLocalizations.of(context)!.tryDifferentGenre,
         icon: Icons.movie_outlined,
       );
     }

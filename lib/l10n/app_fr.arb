@@ -513,6 +513,56 @@
   },
   "rollSeries": "Lancer Série",
   "rollMovie": "Lancer Film",
+  "rollGenre": "Lancer Genre",
+  "noMoviesFound": "Aucun film trouvé",
+  "tryDifferentGenre": "Essayez de sélectionner un genre différent ou rechargez la page.",
+  "earnExtraResource": "Gagner Ressource Supplémentaire",
+  "noResourceAvailable": "Vous n'avez pas {resource} disponible.",
+  "@noResourceAvailable": {
+    "placeholders": {
+      "resource": {}
+    }
+  },
+  "watchAdForExtraResource": "Regardez une courte publicité et gagnez +1 {resource} supplémentaire !",
+  "@watchAdForExtraResource": {
+    "placeholders": {
+      "resource": {}
+    }
+  },
+  "confirm": "Confirmer",
+  "shareTooltip": "Partager",
+  "errorChangingMovie": "Erreur lors du changement de film : {error}",
+  "@errorChangingMovie": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorChangingMenu": "Erreur lors du changement de menu : {error}",
+  "@errorChangingMenu": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorSharing": "Erreur lors du partage : {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorOpeningDetails": "Erreur lors de l'ouverture des détails : {error}",
+  "@errorOpeningDetails": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "selectDateNightType": "Sélectionnez d'abord un type de soirée",
+  "noMoviesForDateNight": "Aucun film trouvé pour ce type de soirée",
+  "errorGeneratingDateNight": "Erreur lors de la génération de la soirée : {error}",
+  "@errorGeneratingDateNight": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "seriesType": "SÉRIE",
   "movieType": "FILM",
   "reminderType": "RAPPEL",

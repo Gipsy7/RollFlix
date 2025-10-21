@@ -1302,7 +1302,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      AppLocalizations.of(context)!.watchAdForExtraResource,
+                      AppLocalizations.of(context)!.watchAdForExtraResource(resourceName),
                       style: TextStyle(
                         color: accentColor,
                         fontSize: 14,

@@ -246,7 +246,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get trailerNotAvailable => 'Trailer não disponível';
 
   @override
-  String get shareTooltip => 'Compartilhar filme';
+  String get shareTooltip => 'Compartilhar';
 
   @override
   String get markAsWatched => 'Marcar como assistido';
@@ -781,7 +781,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tapPlusOne => 'Toque +1';
 
   @override
-  String get watchAdForExtraResource => 'Assista a um anúncio curto e ganhe +1 recurso extra!';
+  String watchAdForExtraResource(Object resource) {
+    return 'Assista a um anúncio curto e ganhe +1 $resource extra!';
+  }
 
   @override
   String get appVersion => 'Versão 4.0.0';
@@ -1102,6 +1104,48 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get newEpisodeOf => 'Novo episódio de';
+
+  @override
+  String get earnExtraResource => 'Ganhar Recurso Extra';
+
+  @override
+  String noResourceAvailable(Object resource) {
+    return 'Você não tem $resource disponível.';
+  }
+
+  @override
+  String get confirm => 'Confirmar';
+
+  @override
+  String errorChangingMovie(Object error) {
+    return 'Erro ao trocar filme: $error';
+  }
+
+  @override
+  String errorChangingMenu(Object error) {
+    return 'Erro ao trocar menu: $error';
+  }
+
+  @override
+  String errorSharing(Object error) {
+    return 'Erro ao compartilhar: $error';
+  }
+
+  @override
+  String errorOpeningDetails(Object error) {
+    return 'Erro ao abrir detalhes: $error';
+  }
+
+  @override
+  String get selectDateNightType => 'Selecione um tipo de encontro primeiro';
+
+  @override
+  String get noMoviesForDateNight => 'Nenhum filme encontrado para este tipo de encontro';
+
+  @override
+  String errorGeneratingDateNight(Object error) {
+    return 'Erro ao gerar encontro: $error';
+  }
 
   @override
   String get seriesType => 'SÉRIE';

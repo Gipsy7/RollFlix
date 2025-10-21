@@ -73,7 +73,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
 
   Future<void> _generateDateNight() async {
     if (_selectedDateType == null) {
-      _showError('Selecione um tipo de encontro primeiro');
+      _showError(AppLocalizations.of(context)!.selectDateNightType);
       return;
     }
 
@@ -268,10 +268,10 @@ class _DateNightScreenState extends State<DateNightScreen> {
         }
 
       } else {
-        _showError('Nenhum filme encontrado para este tipo de encontro');
+        _showError(AppLocalizations.of(context)!.noMoviesForDateNight);
       }
     } catch (e) {
-      _showError('Erro ao gerar encontro: $e');
+      _showError(AppLocalizations.of(context)!.errorGeneratingDateNight(e.toString()));
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

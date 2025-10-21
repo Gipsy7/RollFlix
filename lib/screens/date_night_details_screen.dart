@@ -93,7 +93,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
         IconButton(
           icon: Icon(Icons.share, color: AppColors.textPrimary),
           onPressed: _shareDetails,
-          tooltip: 'Compartilhar',
+          tooltip: AppLocalizations.of(context)!.shareTooltip,
         ),
       ],
       flexibleSpace: FlexibleSpaceBar(
@@ -1178,7 +1178,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('❌ Erro ao trocar filme: $e'),
+          content: Text(AppLocalizations.of(context)!.errorChangingMovie(e.toString())),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
@@ -1259,7 +1259,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('❌ Erro ao trocar menu: $e'),
+          content: Text(AppLocalizations.of(context)!.errorChangingMenu(e.toString())),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
@@ -1347,7 +1347,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('❌ Erro ao compartilhar: $e'),
+          content: Text(AppLocalizations.of(context)!.errorSharing(e.toString())),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
@@ -1384,7 +1384,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('❌ Erro ao abrir detalhes: $e'),
+          content: Text(AppLocalizations.of(context)!.errorOpeningDetails(e.toString())),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),

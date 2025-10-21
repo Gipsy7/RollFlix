@@ -513,6 +513,56 @@
   },
   "rollSeries": "Rodar Serie",
   "rollMovie": "Rodar Película",
+  "rollGenre": "Rodar Género",
+  "noMoviesFound": "No se encontraron películas",
+  "tryDifferentGenre": "Intenta seleccionar un género diferente o recargar la página.",
+  "earnExtraResource": "Ganar Recurso Extra",
+  "noResourceAvailable": "No tienes {resource} disponible.",
+  "@noResourceAvailable": {
+    "placeholders": {
+      "resource": {}
+    }
+  },
+  "watchAdForExtraResource": "¡Mira un anuncio corto y gana +1 {resource} extra!",
+  "@watchAdForExtraResource": {
+    "placeholders": {
+      "resource": {}
+    }
+  },
+  "confirm": "Confirmar",
+  "shareTooltip": "Compartir",
+  "errorChangingMovie": "Error cambiando película: {error}",
+  "@errorChangingMovie": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorChangingMenu": "Error cambiando menú: {error}",
+  "@errorChangingMenu": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorSharing": "Error compartiendo: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorOpeningDetails": "Error abriendo detalles: {error}",
+  "@errorOpeningDetails": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "selectDateNightType": "Selecciona un tipo de cita primero",
+  "noMoviesForDateNight": "No se encontraron películas para este tipo de cita",
+  "errorGeneratingDateNight": "Error generando cita: {error}",
+  "@errorGeneratingDateNight": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "seriesType": "SERIE",
   "movieType": "PELICULA",
   "reminderType": "RECORDATORIO",

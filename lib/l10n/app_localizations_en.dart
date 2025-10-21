@@ -246,7 +246,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trailerNotAvailable => 'Trailer not available';
 
   @override
-  String get shareTooltip => 'Share movie';
+  String get shareTooltip => 'Share';
 
   @override
   String get markAsWatched => 'Mark as watched';
@@ -781,7 +781,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tapPlusOne => 'Tap +1';
 
   @override
-  String get watchAdForExtraResource => 'Watch a short ad and get +1 extra resource!';
+  String watchAdForExtraResource(Object resource) {
+    return 'Watch a short ad and earn +1 $resource extra!';
+  }
 
   @override
   String get appVersion => 'Version 4.0.0';
@@ -1102,6 +1104,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newEpisodeOf => 'New episode of';
+
+  @override
+  String get earnExtraResource => 'Earn Extra Resource';
+
+  @override
+  String noResourceAvailable(Object resource) {
+    return 'You don\'t have $resource available.';
+  }
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String errorChangingMovie(Object error) {
+    return 'Error changing movie: $error';
+  }
+
+  @override
+  String errorChangingMenu(Object error) {
+    return 'Error changing menu: $error';
+  }
+
+  @override
+  String errorSharing(Object error) {
+    return 'Error sharing: $error';
+  }
+
+  @override
+  String errorOpeningDetails(Object error) {
+    return 'Error opening details: $error';
+  }
+
+  @override
+  String get selectDateNightType => 'Select a date night type first';
+
+  @override
+  String get noMoviesForDateNight => 'No movies found for this date night type';
+
+  @override
+  String errorGeneratingDateNight(Object error) {
+    return 'Error generating date night: $error';
+  }
 
   @override
   String get seriesType => 'SERIES';

@@ -469,7 +469,7 @@ class _GenreWheelState extends State<GenreWheel>
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Rolar Gênero',
+                                AppLocalizations.of(context)!.rollGenre,
                                 style: TextStyle(
                                   color: AppColors.backgroundDark,
                                   fontSize: 16,

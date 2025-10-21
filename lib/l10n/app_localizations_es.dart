@@ -246,7 +246,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get trailerNotAvailable => 'Trailer no disponible';
 
   @override
-  String get shareTooltip => 'Compartir película';
+  String get shareTooltip => 'Compartir';
 
   @override
   String get markAsWatched => 'Marcar como visto';
@@ -781,7 +781,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tapPlusOne => 'Toca +1';
 
   @override
-  String get watchAdForExtraResource => '¡Mira un anuncio corto y obtén +1 recurso extra!';
+  String watchAdForExtraResource(Object resource) {
+    return '¡Mira un anuncio corto y gana +1 $resource extra!';
+  }
 
   @override
   String get appVersion => 'Versión 4.0.0';
@@ -1056,7 +1058,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get tryDifferentGenre => 'Intenta seleccionar un género diferente o recarga la página.';
+  String get tryDifferentGenre => 'Intenta seleccionar un género diferente o recargar la página.';
 
   @override
   String get players => 'jugadores';
@@ -1102,6 +1104,48 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get newEpisodeOf => 'Nuevo episodio de';
+
+  @override
+  String get earnExtraResource => 'Ganar Recurso Extra';
+
+  @override
+  String noResourceAvailable(Object resource) {
+    return 'No tienes $resource disponible.';
+  }
+
+  @override
+  String get confirm => 'Confirmar';
+
+  @override
+  String errorChangingMovie(Object error) {
+    return 'Error cambiando película: $error';
+  }
+
+  @override
+  String errorChangingMenu(Object error) {
+    return 'Error cambiando menú: $error';
+  }
+
+  @override
+  String errorSharing(Object error) {
+    return 'Error compartiendo: $error';
+  }
+
+  @override
+  String errorOpeningDetails(Object error) {
+    return 'Error abriendo detalles: $error';
+  }
+
+  @override
+  String get selectDateNightType => 'Selecciona un tipo de cita primero';
+
+  @override
+  String get noMoviesForDateNight => 'No se encontraron películas para este tipo de cita';
+
+  @override
+  String errorGeneratingDateNight(Object error) {
+    return 'Error generando cita: $error';
+  }
 
   @override
   String get seriesType => 'SERIE';

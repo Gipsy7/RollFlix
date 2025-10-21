@@ -513,6 +513,56 @@
   },
   "rollSeries": "Roll Series",
   "rollMovie": "Roll Movie",
+  "rollGenre": "Roll Genre",
+  "noMoviesFound": "No movies found",
+  "tryDifferentGenre": "Try selecting a different genre or reload the page.",
+  "earnExtraResource": "Earn Extra Resource",
+  "noResourceAvailable": "You don't have {resource} available.",
+  "@noResourceAvailable": {
+    "placeholders": {
+      "resource": {}
+    }
+  },
+  "watchAdForExtraResource": "Watch a short ad and earn +1 {resource} extra!",
+  "@watchAdForExtraResource": {
+    "placeholders": {
+      "resource": {}
+    }
+  },
+  "confirm": "Confirm",
+  "shareTooltip": "Share",
+  "errorChangingMovie": "Error changing movie: {error}",
+  "@errorChangingMovie": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorChangingMenu": "Error changing menu: {error}",
+  "@errorChangingMenu": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorSharing": "Error sharing: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorOpeningDetails": "Error opening details: {error}",
+  "@errorOpeningDetails": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "selectDateNightType": "Select a date night type first",
+  "noMoviesForDateNight": "No movies found for this date night type",
+  "errorGeneratingDateNight": "Error generating date night: {error}",
+  "@errorGeneratingDateNight": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "seriesType": "SERIES",
   "movieType": "MOVIE",
   "reminderType": "REMINDER",

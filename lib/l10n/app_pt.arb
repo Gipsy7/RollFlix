@@ -513,6 +513,56 @@
   },
   "rollSeries": "Rolar Série",
   "rollMovie": "Rolar Filme",
+  "rollGenre": "Rolar Gênero",
+  "noMoviesFound": "Nenhum filme encontrado",
+  "tryDifferentGenre": "Tente selecionar outro gênero ou recarregar a página.",
+  "earnExtraResource": "Ganhar Recurso Extra",
+  "noResourceAvailable": "Você não tem {resource} disponível.",
+  "@noResourceAvailable": {
+    "placeholders": {
+      "resource": {}
+    }
+  },
+  "watchAdForExtraResource": "Assista a um anúncio curto e ganhe +1 {resource} extra!",
+  "@watchAdForExtraResource": {
+    "placeholders": {
+      "resource": {}
+    }
+  },
+  "confirm": "Confirmar",
+  "shareTooltip": "Compartilhar",
+  "errorChangingMovie": "Erro ao trocar filme: {error}",
+  "@errorChangingMovie": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorChangingMenu": "Erro ao trocar menu: {error}",
+  "@errorChangingMenu": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorSharing": "Erro ao compartilhar: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorOpeningDetails": "Erro ao abrir detalhes: {error}",
+  "@errorOpeningDetails": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "selectDateNightType": "Selecione um tipo de encontro primeiro",
+  "noMoviesForDateNight": "Nenhum filme encontrado para este tipo de encontro",
+  "errorGeneratingDateNight": "Erro ao gerar encontro: {error}",
+  "@errorGeneratingDateNight": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "seriesType": "SÉRIE",
   "movieType": "FILME",
   "reminderType": "LEMBRETE",

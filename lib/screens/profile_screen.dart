@@ -84,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: SafeText(
-              'Cancelar',
+              AppLocalizations.of(context)!.cancel,
               style: AppTextStyles.labelLarge.copyWith(
                 color: AppColors.textSecondary,
               ),
