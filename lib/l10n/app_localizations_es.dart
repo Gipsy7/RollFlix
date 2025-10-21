@@ -931,6 +931,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get recipeLoadError => 'No se pudo cargar la receta. Inténtalo de nuevo.';
 
   @override
+  String get aboutTheDish => 'Sobre el Plato';
+
+  @override
   String get adNotAvailable => 'Anuncio no disponible en este momento. Inténtalo de nuevo en unos momentos.';
 
   @override
@@ -1091,6 +1094,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get dateNightGames => 'Juegos para la Cita';
 
   @override
+  String get gamesAndActivities => 'Juegos y Actividades';
+
+  @override
   String get makeNightFun => 'Haz la noche más divertida y memorable';
 
   @override
@@ -1160,11 +1166,32 @@ class AppLocalizationsEs extends AppLocalizations {
   String get seriesType => 'SERIE';
 
   @override
-  String get movieType => 'PELICULA';
+  String get movieType => 'PELÍCULA';
 
   @override
   String get reminderType => 'RECORDATORIO';
 
   @override
   String get otherType => 'OTRO';
+
+  @override
+  String get coupleQuizRule1 => 'Escriban respuestas sobre el otro';
+
+  @override
+  String get coupleQuizRule2 => 'Comparen las respuestas';
+
+  @override
+  String get coupleQuizRule3 => 'Ganen puntos por aciertos';
+
+  @override
+  String get coupleQuizRule4 => '¡Descubran cosas nuevas!';
+
+  @override
+  String get movieMimicRule1 => 'Uno hace mímica, el otro adivina';
+
+  @override
+  String get movieMimicRule2 => '¡Sin palabras!';
+
+  @override
+  String get movieMimicRule3 => 'Tiempo límite: 1 minuto por película';
 }

@@ -1836,8 +1836,14 @@ abstract class AppLocalizations {
   /// No description provided for @recipeLoadError.
   ///
   /// In en, this message translates to:
-  /// **'Could not load recipe. Please try again.'**
+  /// **'Could not load the recipe. Please try again.'**
   String get recipeLoadError;
+
+  /// No description provided for @aboutTheDish.
+  ///
+  /// In en, this message translates to:
+  /// **'About the Dish'**
+  String get aboutTheDish;
 
   /// No description provided for @adNotAvailable.
   ///
@@ -2151,6 +2157,12 @@ abstract class AppLocalizations {
   /// **'Date Night Games'**
   String get dateNightGames;
 
+  /// No description provided for @gamesAndActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'Games & Activities'**
+  String get gamesAndActivities;
+
   /// No description provided for @makeNightFun.
   ///
   /// In en, this message translates to:
@@ -2282,6 +2294,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OTHER'**
   String get otherType;
+
+  /// No description provided for @coupleQuizRule1.
+  ///
+  /// In en, this message translates to:
+  /// **'Write answers about each other'**
+  String get coupleQuizRule1;
+
+  /// No description provided for @coupleQuizRule2.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare your answers'**
+  String get coupleQuizRule2;
+
+  /// No description provided for @coupleQuizRule3.
+  ///
+  /// In en, this message translates to:
+  /// **'Score points for correct answers'**
+  String get coupleQuizRule3;
+
+  /// No description provided for @coupleQuizRule4.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover new things!'**
+  String get coupleQuizRule4;
+
+  /// No description provided for @movieMimicRule1.
+  ///
+  /// In en, this message translates to:
+  /// **'One acts out, the other guesses'**
+  String get movieMimicRule1;
+
+  /// No description provided for @movieMimicRule2.
+  ///
+  /// In en, this message translates to:
+  /// **'No words!'**
+  String get movieMimicRule2;
+
+  /// No description provided for @movieMimicRule3.
+  ///
+  /// In en, this message translates to:
+  /// **'Time limit: 1 minute per movie'**
+  String get movieMimicRule3;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

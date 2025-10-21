@@ -432,6 +432,7 @@
   },
   "next": "Suivant",
   "recipeLoadError": "Impossible de charger la recette. Veuillez réessayer.",
+  "aboutTheDish": "À propos du Plat",
   "adNotAvailable": "Annonce non disponible pour le moment. Veuillez réessayer dans quelques instants.",
   "preferencesCleared": "Préférences effacées",
   "shareSeries": "Partager la série",
@@ -500,6 +501,7 @@
   "conversationStarters": "Initiateurs de Conversation",
   "movieGenreQuestion": "Si votre vie était un film, quel serait le genre ?",
   "dateNightGames": "Jeux pour le Rendez-vous",
+  "gamesAndActivities": "Jeux et Activités",
   "makeNightFun": "Rendez la nuit plus amusante et mémorable",
   "season": "saison",
   "seasons": "saisons",
@@ -569,7 +571,14 @@
   "seriesType": "SÉRIE",
   "movieType": "FILM",
   "reminderType": "RAPPEL",
-  "otherType": "AUTRE"
+  "otherType": "AUTRE",
+  "coupleQuizRule1": "Écrivez des réponses sur l'autre",
+  "coupleQuizRule2": "Comparez vos réponses",
+  "coupleQuizRule3": "Gagnez des points pour les bonnes réponses",
+  "coupleQuizRule4": "Découvrez de nouvelles choses !",
+  "movieMimicRule1": "Un mime, l'autre devine",
+  "movieMimicRule2": "Pas de mots !",
+  "movieMimicRule3": "Temps limite : 1 minute par film"
 }
 
 

@@ -35,7 +35,7 @@ class RecipeDetailsScreen extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           _buildAppBar(context),
-          _buildContent(isMobile),
+          _buildContent(isMobile, context),
         ],
       ),
     );
@@ -84,7 +84,7 @@ class RecipeDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(bool isMobile) {
+  Widget _buildContent(bool isMobile, BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
         padding: EdgeInsets.all(isMobile ? 16 : 24),
@@ -126,7 +126,7 @@ class RecipeDetailsScreen extends StatelessWidget {
 
             // Resumo
             if (recipe.summary != null) ...[
-              _buildSummary(),
+              _buildSummary(context),
               const SizedBox(height: 24),
             ],
 
@@ -253,7 +253,7 @@ class RecipeDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummary() {
+  Widget _buildSummary(BuildContext context) {
     // Remove HTML tags
     final cleanSummary = recipe.summary!
         .replaceAll(RegExp(r'<[^>]*>'), '')
@@ -280,7 +280,7 @@ class RecipeDetailsScreen extends StatelessWidget {
           childrenPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           leading: Icon(Icons.description, color: _primaryRose, size: 24),
           title: SafeText(
-            'Sobre o Prato',
+            AppLocalizations.of(context)!.aboutTheDish,
             style: AppTextStyles.headlineSmall.copyWith(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w600,

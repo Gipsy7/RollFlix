@@ -432,6 +432,7 @@
   },
   "next": "Próxima",
   "recipeLoadError": "Não foi possível carregar a receita. Tente novamente.",
+  "aboutTheDish": "Sobre o Prato",
   "adNotAvailable": "Anúncio não disponível no momento. Tente novamente em instantes.",
   "preferencesCleared": "Preferências limpas",
   "shareSeries": "Compartilhar série",
@@ -500,6 +501,7 @@
   "conversationStarters": "Iniciadores de Conversa",
   "movieGenreQuestion": "Se sua vida fosse um filme, qual seria o gênero?",
   "dateNightGames": "Jogos para o Encontro",
+  "gamesAndActivities": "Jogos & Atividades",
   "makeNightFun": "Deixe a noite mais divertida e memorável",
   "season": "temporada",
   "seasons": "temporadas",
@@ -569,7 +571,15 @@
   "seriesType": "SÉRIE",
   "movieType": "FILME",
   "reminderType": "LEMBRETE",
-  "otherType": "OUTRO"
+  "otherType": "OUTRO",
+  "coupleQuizRule1": "Escrevam respostas sobre o outro",
+  "coupleQuizRule2": "Comparem as respostas",
+  "coupleQuizRule3": "Ganhem pontos por acertos",
+  "coupleQuizRule4": "Descubram coisas novas!",
+  "movieMimicRule1": "Um faz mímica, outro adivinha",
+  "movieMimicRule2": "Sem palavras!",
+  "movieMimicRule3": "Tempo limite: 1 minuto por filme"
 }
+
 
 

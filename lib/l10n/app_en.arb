@@ -431,7 +431,8 @@
     }
   },
   "next": "Next",
-  "recipeLoadError": "Could not load recipe. Please try again.",
+  "recipeLoadError": "Could not load the recipe. Please try again.",
+  "aboutTheDish": "About the Dish",
   "adNotAvailable": "Ad not available at the moment. Please try again in a few moments.",
   "preferencesCleared": "Preferences cleared",
   "shareSeries": "Share series",
@@ -500,6 +501,7 @@
   "conversationStarters": "Conversation Starters",
   "movieGenreQuestion": "If your life were a movie, what would be the genre?",
   "dateNightGames": "Date Night Games",
+  "gamesAndActivities": "Games & Activities",
   "makeNightFun": "Make the night more fun and memorable",
   "season": "season",
   "seasons": "seasons",
@@ -569,7 +571,14 @@
   "seriesType": "SERIES",
   "movieType": "MOVIE",
   "reminderType": "REMINDER",
-  "otherType": "OTHER"
+  "otherType": "OTHER",
+  "coupleQuizRule1": "Write answers about each other",
+  "coupleQuizRule2": "Compare your answers",
+  "coupleQuizRule3": "Score points for correct answers",
+  "coupleQuizRule4": "Discover new things!",
+  "movieMimicRule1": "One acts out, the other guesses",
+  "movieMimicRule2": "No words!",
+  "movieMimicRule3": "Time limit: 1 minute per movie"
 }
 
 

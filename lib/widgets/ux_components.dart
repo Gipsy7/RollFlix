@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 /// Componentes reutilizáveis para melhorar a experiência do usuário
 class UXComponents {
@@ -246,10 +247,13 @@ class UXComponents {
     required BuildContext context,
     required String title,
     required String message,
-    String confirmText = 'Confirmar',
-    String cancelText = 'Cancelar',
+    String? confirmText,
+    String? cancelText,
     Color? confirmColor,
   }) {
+    final localizations = AppLocalizations.of(context)!;
+    final defaultConfirmText = confirmText ?? localizations.confirm;
+    final defaultCancelText = cancelText ?? localizations.cancel;
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -267,7 +271,7 @@ class UXComponents {
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
-              cancelText,
+              defaultCancelText,
               style: const TextStyle(color: Colors.grey),
             ),
           ),
@@ -277,7 +281,7 @@ class UXComponents {
               backgroundColor: confirmColor ?? _primaryColor,
               foregroundColor: Colors.white,
             ),
-            child: Text(confirmText),
+            child: Text(defaultConfirmText),
           ),
         ],
       ),

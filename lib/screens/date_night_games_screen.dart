@@ -13,86 +13,89 @@ class DateNightGamesScreen extends StatelessWidget {
   static const Color _secondaryGold = Color(0xFFFFD700);
   static const Color _darkRose = Color(0xFF880E4F);
 
-  static final List<DateNightGame> _games = [
-    const DateNightGame(
-      name: '20 Perguntas Íntimas',
-      description: 'Conheçam melhor um ao outro com perguntas profundas e divertidas',
-      rules: [
-        'Alternem entre fazer perguntas',
-        'Sejam honestos e abertos',
-        'Sem julgamentos',
-        'Podem passar uma pergunta se quiserem',
-      ],
-      difficulty: 'Fácil',
-      players: 2,
-      durationMinutes: 30,
-    ),
-    const DateNightGame(
-      name: 'Verdade ou Desafio Romântico',
-      description: 'Versão romântica do clássico jogo',
-      rules: [
-        'Escolha verdade ou desafio',
-        'Verdades devem ser sinceras',
-        'Desafios devem ser cumpridos',
-        'Mantenha o clima leve e divertido',
-      ],
-      difficulty: 'Médio',
-      players: 2,
-      durationMinutes: 45,
-    ),
-    const DateNightGame(
-      name: 'Batalha Culinária',
-      description: 'Competição amigável de preparar um prato',
-      rules: [
-        'Mesmo ingredientes, pratos diferentes',
-        'Tempo limite: 30 minutos',
-        'Avaliem juntos',
-        'Quem perder faz a louça!',
-      ],
-      difficulty: 'Avançado',
-      players: 2,
-      durationMinutes: 60,
-    ),
-    const DateNightGame(
-      name: 'Quiz do Casal',
-      description: 'Testem o quanto se conhecem',
-      rules: [
-        'Escrevam respostas sobre o outro',
-        'Comparem as respostas',
-        'Ganhem pontos por acertos',
-        'Descubram coisas novas!',
-      ],
-      difficulty: 'Fácil',
-      players: 2,
-      durationMinutes: 20,
-    ),
-    const DateNightGame(
-      name: 'Adivinha o Filme',
-      description: 'Mímica de cenas de filmes',
-      rules: [
-        'Um faz mímica, outro adivinha',
-        'Sem palavras!',
-        'Tempo limite: 1 minuto por filme',
-        'Quem acertar mais ganha',
-      ],
-      difficulty: 'Médio',
-      players: 2,
-      durationMinutes: 30,
-    ),
-    const DateNightGame(
-      name: 'Construam a História',
-      description: 'Criem uma história juntos',
-      rules: [
-        'Um começa a história',
-        'Outro continua',
-        'Alternem a cada frase',
-        'Quanto mais absurdo, melhor!',
-      ],
-      difficulty: 'Fácil',
-      players: 2,
-      durationMinutes: 25,
-    ),
-  ];
+  static List<DateNightGame> _getDateNightGames(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return [
+      DateNightGame(
+        name: localizations.intimateQuestionsGame,
+        description: localizations.intimateQuestionsDesc,
+        rules: [
+          'Alternem entre fazer perguntas',
+          'Sejam honestos e abertos',
+          'Sem julgamentos',
+          'Podem passar uma pergunta se quiserem',
+        ],
+        difficulty: 'Fácil',
+        players: 2,
+        durationMinutes: 30,
+      ),
+      DateNightGame(
+        name: 'Verdade ou Desafio Romântico',
+        description: localizations.romanticTruthOrDareDesc,
+        rules: [
+          'Escolha verdade ou desafio',
+          'Verdades devem ser sinceras',
+          'Desafios devem ser cumpridos',
+          'Mantenha o clima leve e divertido',
+        ],
+        difficulty: 'Médio',
+        players: 2,
+        durationMinutes: 45,
+      ),
+      DateNightGame(
+        name: 'Batalha Culinária',
+        description: 'Competição amigável de preparar um prato',
+        rules: [
+          'Mesmo ingredientes, pratos diferentes',
+          'Tempo limite: 30 minutos',
+          'Avaliem juntos',
+          'Quem perder faz a louça!',
+        ],
+        difficulty: 'Avançado',
+        players: 2,
+        durationMinutes: 60,
+      ),
+      DateNightGame(
+        name: 'Quiz do Casal',
+        description: localizations.coupleQuizDesc,
+        rules: [
+          localizations.coupleQuizRule1,
+          localizations.coupleQuizRule2,
+          localizations.coupleQuizRule3,
+          localizations.coupleQuizRule4,
+        ],
+        difficulty: 'Fácil',
+        players: 2,
+        durationMinutes: 20,
+      ),
+      DateNightGame(
+        name: 'Adivinha o Filme',
+        description: 'Mímica de cenas de filmes',
+        rules: [
+          localizations.movieMimicRule1,
+          localizations.movieMimicRule2,
+          localizations.movieMimicRule3,
+          'Quem acertar mais ganha',
+        ],
+        difficulty: 'Médio',
+        players: 2,
+        durationMinutes: 30,
+      ),
+      DateNightGame(
+        name: 'Construam a História',
+        description: 'Criem uma história juntos',
+        rules: [
+          'Um começa a história',
+          'Outro continua',
+          'Alternem a cada frase',
+          'Quanto mais absurdo, melhor!',
+        ],
+        difficulty: 'Fácil',
+        players: 2,
+        durationMinutes: 25,
+      ),
+    ];
+  }
 
   static List<ConversationStarter> _getConversationStarters(BuildContext context) {
     return [
@@ -173,7 +176,7 @@ class DateNightGamesScreen extends StatelessWidget {
       backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
         title: SafeText(
-          'Jogos & Atividades',
+          AppLocalizations.of(context)!.gamesAndActivities,
           style: AppTextStyles.headlineSmall.copyWith(color: Colors.white),
         ),
         backgroundColor: _darkRose,
@@ -225,7 +228,7 @@ class DateNightGamesScreen extends StatelessWidget {
           icon: Icons.celebration,
         ),
         const SizedBox(height: 16),
-        ..._games.map((game) => Padding(
+        ..._getDateNightGames(context).map((game) => Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: _GameCard(game: game),
         )),

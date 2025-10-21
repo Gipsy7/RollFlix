@@ -161,7 +161,7 @@ class DateNightGame {
   final int players;
   final int durationMinutes;
 
-  const DateNightGame({
+  DateNightGame({
     required this.name,
     required this.description,
     required this.rules,

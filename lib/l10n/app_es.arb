@@ -432,6 +432,7 @@
   },
   "next": "Siguiente",
   "recipeLoadError": "No se pudo cargar la receta. Inténtalo de nuevo.",
+  "aboutTheDish": "Sobre el Plato",
   "adNotAvailable": "Anuncio no disponible en este momento. Inténtalo de nuevo en unos momentos.",
   "preferencesCleared": "Preferencias limpiadas",
   "shareSeries": "Compartir serie",
@@ -500,6 +501,7 @@
   "conversationStarters": "Iniciadores de Conversación",
   "movieGenreQuestion": "Si tu vida fuera una película, ¿cuál sería el género?",
   "dateNightGames": "Juegos para la Cita",
+  "gamesAndActivities": "Juegos y Actividades",
   "makeNightFun": "Haz la noche más divertida y memorable",
   "season": "temporada",
   "seasons": "temporadas",
@@ -567,9 +569,16 @@
     }
   },
   "seriesType": "SERIE",
-  "movieType": "PELICULA",
+  "movieType": "PELÍCULA",
   "reminderType": "RECORDATORIO",
-  "otherType": "OTRO"
+  "otherType": "OTRO",
+  "coupleQuizRule1": "Escriban respuestas sobre el otro",
+  "coupleQuizRule2": "Comparen las respuestas",
+  "coupleQuizRule3": "Ganen puntos por aciertos",
+  "coupleQuizRule4": "¡Descubran cosas nuevas!",
+  "movieMimicRule1": "Uno hace mímica, el otro adivina",
+  "movieMimicRule2": "¡Sin palabras!",
+  "movieMimicRule3": "Tiempo límite: 1 minuto por película"
 }
 
 

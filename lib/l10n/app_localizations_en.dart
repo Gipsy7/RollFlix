@@ -928,7 +928,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get next => 'Next';
 
   @override
-  String get recipeLoadError => 'Could not load recipe. Please try again.';
+  String get recipeLoadError => 'Could not load the recipe. Please try again.';
+
+  @override
+  String get aboutTheDish => 'About the Dish';
 
   @override
   String get adNotAvailable => 'Ad not available at the moment. Please try again in a few moments.';
@@ -1091,6 +1094,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dateNightGames => 'Date Night Games';
 
   @override
+  String get gamesAndActivities => 'Games & Activities';
+
+  @override
   String get makeNightFun => 'Make the night more fun and memorable';
 
   @override
@@ -1167,4 +1173,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otherType => 'OTHER';
+
+  @override
+  String get coupleQuizRule1 => 'Write answers about each other';
+
+  @override
+  String get coupleQuizRule2 => 'Compare your answers';
+
+  @override
+  String get coupleQuizRule3 => 'Score points for correct answers';
+
+  @override
+  String get coupleQuizRule4 => 'Discover new things!';
+
+  @override
+  String get movieMimicRule1 => 'One acts out, the other guesses';
+
+  @override
+  String get movieMimicRule2 => 'No words!';
+
+  @override
+  String get movieMimicRule3 => 'Time limit: 1 minute per movie';
 }
