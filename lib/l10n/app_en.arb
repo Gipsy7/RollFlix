@@ -497,7 +497,26 @@
   "interestingQuestions": "Interesting questions to get to know each other better",
   "conversationStarters": "Conversation Starters",
   "dateNightGames": "Date Night Games",
-  "makeNightFun": "Make the night more fun and memorable"
+  "makeNightFun": "Make the night more fun and memorable",
+  "season": "season",
+  "seasons": "seasons",
+  "episode": "episode",
+  "episodes": "episodes",
+  "genres": "Genres",
+  "newEpisodeAvailable": "New Episode Available!",
+  "newEpisodeOf": "New episode of",
+  "seriesRolled": "Series {count} rolled",
+  "@seriesRolled": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "rollSeries": "Roll Series",
+  "rollMovie": "Roll Movie",
+  "seriesType": "SERIES",
+  "movieType": "MOVIE",
+  "reminderType": "REMINDER",
+  "otherType": "OTHER"
 }
 
 

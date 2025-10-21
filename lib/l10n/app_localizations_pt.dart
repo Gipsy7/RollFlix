@@ -1081,4 +1081,37 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get makeNightFun => 'Deixe a noite mais divertida e memorável';
+
+  @override
+  String get season => 'temporada';
+
+  @override
+  String get seasons => 'temporadas';
+
+  @override
+  String get episode => 'episódio';
+
+  @override
+  String get episodes => 'episódios';
+
+  @override
+  String get genres => 'Gêneros';
+
+  @override
+  String get newEpisodeAvailable => 'Novo Episódio Disponível!';
+
+  @override
+  String get newEpisodeOf => 'Novo episódio de';
+
+  @override
+  String get seriesType => 'SÉRIE';
+
+  @override
+  String get movieType => 'FILME';
+
+  @override
+  String get reminderType => 'LEMBRETE';
+
+  @override
+  String get otherType => 'OUTRO';
 }

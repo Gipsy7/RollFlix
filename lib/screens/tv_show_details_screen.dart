@@ -145,9 +145,12 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
     }
     
     if (tvShow.numberOfSeasons > 0) {
-      shareText += '📺 ${tvShow.numberOfSeasons} temporada${tvShow.numberOfSeasons > 1 ? 's' : ''}';
+      final seasonText = tvShow.numberOfSeasons > 1 
+          ? AppLocalizations.of(context)!.seasons 
+          : AppLocalizations.of(context)!.season;
+      shareText += '📺 ${tvShow.numberOfSeasons} $seasonText';
       if (tvShow.numberOfEpisodes > 0) {
-        shareText += ' • ${tvShow.numberOfEpisodes} episódios';
+        shareText += ' • ${tvShow.numberOfEpisodes} ${AppLocalizations.of(context)!.episodes}';
       }
       shareText += '\n\n';
     }
@@ -158,7 +161,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
     
     if (tvShow.genres.isNotEmpty) {
       final genres = tvShow.genres.map((g) => g.name).join(', ');
-      shareText += '🎭 Gêneros: $genres\n\n';
+      shareText += '🎭 ${AppLocalizations.of(context)!.genres}: $genres\n\n';
     }
     
     shareText += AppLocalizations.of(context)!.shareSeriesText;
@@ -389,7 +392,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                   ),
                 if (detailedTVShow!.numberOfSeasons > 0)
                   Text(
-                    '${detailedTVShow!.numberOfSeasons} temporada${detailedTVShow!.numberOfSeasons > 1 ? 's' : ''}',
+                    '${detailedTVShow!.numberOfSeasons} ${detailedTVShow!.numberOfSeasons > 1 ? AppLocalizations.of(context)!.seasons : AppLocalizations.of(context)!.season}',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[400],
@@ -397,7 +400,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                   ),
                 if (detailedTVShow!.numberOfEpisodes > 0)
                   Text(
-                    '${detailedTVShow!.numberOfEpisodes} episódio${detailedTVShow!.numberOfEpisodes > 1 ? 's' : ''}',
+                    '${detailedTVShow!.numberOfEpisodes} ${detailedTVShow!.numberOfEpisodes > 1 ? AppLocalizations.of(context)!.episodes : AppLocalizations.of(context)!.episode}',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[400],

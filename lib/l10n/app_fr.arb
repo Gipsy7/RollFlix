@@ -497,7 +497,26 @@
   "interestingQuestions": "Questions intéressantes pour mieux se connaître",
   "conversationStarters": "Initiateurs de Conversation",
   "dateNightGames": "Jeux pour le Rendez-vous",
-  "makeNightFun": "Rendez la nuit plus amusante et mémorable"
+  "makeNightFun": "Rendez la nuit plus amusante et mémorable",
+  "season": "saison",
+  "seasons": "saisons",
+  "episode": "épisode",
+  "episodes": "épisodes",
+  "genres": "Genres",
+  "newEpisodeAvailable": "Nouvel Épisode Disponible !",
+  "newEpisodeOf": "Nouvel épisode de",
+  "seriesRolled": "Série {count} lancée",
+  "@seriesRolled": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "rollSeries": "Lancer Série",
+  "rollMovie": "Lancer Film",
+  "seriesType": "SÉRIE",
+  "movieType": "FILM",
+  "reminderType": "RAPPEL",
+  "otherType": "AUTRE"
 }
 
 

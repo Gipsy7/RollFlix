@@ -15,6 +15,10 @@ class NotificationService {
 
   NotificationService._internal();
 
+  // Strings de notificação (por enquanto em português - TODO: implementar localização)
+  static const String _newEpisodeTitle = 'Novo Episódio Disponível!';
+  static const String _newEpisodeBodyPrefix = 'Novo episódio de';
+
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
@@ -532,8 +536,8 @@ class NotificationService {
       return;
     }
 
-    final title = '📺 Novo Episódio Disponível!';
-    final body = 'Novo episódio de $showTitle: $episodeInfo';
+    final title = '📺 $_newEpisodeTitle';
+    final body = '$_newEpisodeBodyPrefix $showTitle: $episodeInfo';
 
     await _showLocalNotification(
       title: title,

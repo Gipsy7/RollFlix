@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class GenreWheel extends StatefulWidget {
   final List<String> genres;
@@ -396,8 +397,10 @@ class _GenreWheelState extends State<GenreWheel>
                             const SizedBox(width: 8),
                             Text(
                               widget.isLoadingContent 
-                                  ? 'Rolando...' 
-                                  : 'Rolar ${widget.isSeriesMode ? 'Série' : 'Filme'}',
+                                  ? AppLocalizations.of(context)!.rolling 
+                                  : widget.isSeriesMode 
+                                      ? AppLocalizations.of(context)!.rollSeries 
+                                      : AppLocalizations.of(context)!.rollMovie,
                               style: TextStyle(
                                 color: AppColors.backgroundDark,
                                 fontSize: 16,

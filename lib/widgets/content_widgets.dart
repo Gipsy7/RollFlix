@@ -8,6 +8,7 @@ import '../widgets/responsive_widgets.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/optimized_widgets.dart';
 import '../mixins/animation_mixin.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 import '../screens/movie_details_screen.dart';
 import '../screens/tv_show_details_screen.dart';
 import '../controllers/favorites_controller.dart';
@@ -354,8 +355,8 @@ class ContentCounter extends StatelessWidget {
     
     final icon = isSeriesMode ? Icons.tv : Icons.movie_filter;
     final counterText = isSeriesMode 
-        ? 'Série $count sorteada'
-        : 'Filme $count sorteado';
+        ? AppLocalizations.of(context)!.seriesRolled(count)
+        : AppLocalizations.of(context)!.movieRolled(count);
     
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

@@ -230,15 +230,16 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
   }
 
   String _getTypeLabel(NotificationType type) {
+    final l10n = AppLocalizations.of(context)!;
     switch (type) {
       case NotificationType.movieRelease:
-        return 'FILME';
+        return l10n.movieType;
       case NotificationType.tvShowEpisode:
-        return 'SÉRIE';
+        return l10n.seriesType;
       case NotificationType.reminder:
-        return 'LEMBRETE';
+        return l10n.reminderType;
       case NotificationType.other:
-        return 'OUTRO';
+        return l10n.otherType;
     }
   }
 }

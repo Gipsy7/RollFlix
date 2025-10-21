@@ -2138,6 +2138,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Make the night more fun and memorable'**
   String get makeNightFun;
+
+  /// No description provided for @season.
+  ///
+  /// In en, this message translates to:
+  /// **'season'**
+  String get season;
+
+  /// No description provided for @seasons.
+  ///
+  /// In en, this message translates to:
+  /// **'seasons'**
+  String get seasons;
+
+  /// No description provided for @episode.
+  ///
+  /// In en, this message translates to:
+  /// **'episode'**
+  String get episode;
+
+  /// No description provided for @episodes.
+  ///
+  /// In en, this message translates to:
+  /// **'episodes'**
+  String get episodes;
+
+  /// No description provided for @genres.
+  ///
+  /// In en, this message translates to:
+  /// **'Genres'**
+  String get genres;
+
+  /// No description provided for @newEpisodeAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'New Episode Available!'**
+  String get newEpisodeAvailable;
+
+  /// No description provided for @newEpisodeOf.
+  ///
+  /// In en, this message translates to:
+  /// **'New episode of'**
+  String get newEpisodeOf;
+
+  /// No description provided for @seriesType.
+  ///
+  /// In en, this message translates to:
+  /// **'SERIES'**
+  String get seriesType;
+
+  /// No description provided for @movieType.
+  ///
+  /// In en, this message translates to:
+  /// **'MOVIE'**
+  String get movieType;
+
+  /// No description provided for @reminderType.
+  ///
+  /// In en, this message translates to:
+  /// **'REMINDER'**
+  String get reminderType;
+
+  /// No description provided for @otherType.
+  ///
+  /// In en, this message translates to:
+  /// **'OTHER'**
+  String get otherType;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

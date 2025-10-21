@@ -497,7 +497,26 @@
   "interestingQuestions": "Preguntas interesantes para conocerse mejor el uno al otro",
   "conversationStarters": "Iniciadores de Conversación",
   "dateNightGames": "Juegos para la Cita",
-  "makeNightFun": "Haz la noche más divertida y memorable"
+  "makeNightFun": "Haz la noche más divertida y memorable",
+  "season": "temporada",
+  "seasons": "temporadas",
+  "episode": "episodio",
+  "episodes": "episodios",
+  "genres": "Géneros",
+  "newEpisodeAvailable": "¡Nuevo Episodio Disponible!",
+  "newEpisodeOf": "Nuevo episodio de",
+  "seriesRolled": "Serie {count} rodada",
+  "@seriesRolled": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "rollSeries": "Rodar Serie",
+  "rollMovie": "Rodar Película",
+  "seriesType": "SERIE",
+  "movieType": "PELICULA",
+  "reminderType": "RECORDATORIO",
+  "otherType": "OTRO"
 }
 
 
