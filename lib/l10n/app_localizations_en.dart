@@ -276,7 +276,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rollError => 'Unable to perform roll. Please try again.';
 
   @override
-  String get noSeriesFound => 'No series found for this filter. Please try again.';
+  String noSeriesFound(Object query) {
+    return 'No series found for \"$query\"';
+  }
 
   @override
   String get noMovieFound => 'No movie found for this filter. Please try again.';
@@ -307,7 +309,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get movies => 'Movies';
 
   @override
-  String get series => 'Series';
+  String get series => 'SERIES';
 
   @override
   String get seriesUpper => 'SERIES';
@@ -1194,4 +1196,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get movieMimicRule3 => 'Time limit: 1 minute per movie';
+
+  @override
+  String get searchSeriesHint => 'Enter series name...';
+
+  @override
+  String get searchSeriesPrompt => 'Type something to search for series';
+
+  @override
+  String get trending => 'Trending';
+
+  @override
+  String get topRated => 'Top Rated';
+
+  @override
+  String get all => 'All';
 }

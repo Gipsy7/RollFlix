@@ -276,7 +276,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get rollError => 'No se pudo realizar el sorteo. Inténtalo de nuevo.';
 
   @override
-  String get noSeriesFound => 'No se encontró ninguna serie para este filtro. Inténtalo de nuevo.';
+  String noSeriesFound(Object query) {
+    return 'No se encontraron series para \"$query\"';
+  }
 
   @override
   String get noMovieFound => 'No se encontró ninguna película para este filtro. Inténtalo de nuevo.';
@@ -307,7 +309,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get movies => 'Películas';
 
   @override
-  String get series => 'Series';
+  String get series => 'SERIES';
 
   @override
   String get seriesUpper => 'SERIES';
@@ -1194,4 +1196,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get movieMimicRule3 => 'Tiempo límite: 1 minuto por película';
+
+  @override
+  String get searchSeriesHint => 'Ingresa el nombre de la serie...';
+
+  @override
+  String get searchSeriesPrompt => 'Escribe algo para buscar series';
+
+  @override
+  String get trending => 'Tendencias';
+
+  @override
+  String get topRated => 'Mejor Valoradas';
+
+  @override
+  String get all => 'Todos';
 }

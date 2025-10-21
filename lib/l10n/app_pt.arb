@@ -578,7 +578,19 @@
   "coupleQuizRule4": "Descubram coisas novas!",
   "movieMimicRule1": "Um faz mímica, outro adivinha",
   "movieMimicRule2": "Sem palavras!",
-  "movieMimicRule3": "Tempo limite: 1 minuto por filme"
+  "movieMimicRule3": "Tempo limite: 1 minuto por filme",
+  "series": "SÉRIES",
+  "searchSeriesHint": "Digite o nome da série...",
+  "noSeriesFound": "Nenhuma série encontrada para \"{query}\"",
+  "@noSeriesFound": {
+    "placeholders": {
+      "query": {}
+    }
+  },
+  "searchSeriesPrompt": "Digite algo para pesquisar séries",
+  "trending": "Em Alta",
+  "topRated": "Mais Votados",
+  "all": "Todos"
 }
 
 

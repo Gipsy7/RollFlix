@@ -276,7 +276,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get rollError => 'Impossible d\'effectuer le tirage. Veuillez réessayer.';
 
   @override
-  String get noSeriesFound => 'Aucune série trouvée pour ce filtre. Veuillez réessayer.';
+  String noSeriesFound(Object query) {
+    return 'Aucune série trouvée pour \"$query\"';
+  }
 
   @override
   String get noMovieFound => 'Aucun film trouvé pour ce filtre. Veuillez réessayer.';
@@ -307,7 +309,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get movies => 'Films';
 
   @override
-  String get series => 'Séries';
+  String get series => 'SÉRIES';
 
   @override
   String get seriesUpper => 'SÉRIES';
@@ -1194,4 +1196,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get movieMimicRule3 => 'Temps limite : 1 minute par film';
+
+  @override
+  String get searchSeriesHint => 'Entrez le nom de la série...';
+
+  @override
+  String get searchSeriesPrompt => 'Tapez quelque chose pour rechercher des séries';
+
+  @override
+  String get trending => 'Tendances';
+
+  @override
+  String get topRated => 'Mieux Notées';
+
+  @override
+  String get all => 'Tous';
 }

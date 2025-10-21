@@ -386,7 +386,7 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
                 ),
                 const SizedBox(width: 8),
                 SafeText(
-                  'SÉRIES',
+                  AppLocalizations.of(context)!.series,
                   style: (isMobile 
                       ? AppTextStyles.labelMedium
                       : AppTextStyles.labelLarge).copyWith(
@@ -460,7 +460,7 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
         focusNode: _searchFocusNode,
         style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textPrimary),
         decoration: InputDecoration(
-          hintText: 'Digite o nome da série...',
+          hintText: AppLocalizations.of(context)!.searchSeriesHint,
           hintStyle: AppTextStyles.bodyLarge.copyWith(
             color: AppColors.textSecondary.withValues(alpha: 0.7),
           ),
@@ -508,7 +508,7 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
         children: [
-          _buildGenreChip('Todos', null, isMobile),
+          _buildGenreChip(AppLocalizations.of(context)!.all, null, isMobile),
           const SizedBox(width: 8),
           ...tvGenres.map((genre) => 
             Padding(
@@ -648,11 +648,11 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
     }
 
     if (_searchResults.isEmpty && _currentSearchQuery.isNotEmpty) {
-      return _buildEmptyState('Nenhuma série encontrada para "$_currentSearchQuery"');
+      return _buildEmptyState(AppLocalizations.of(context)!.noSeriesFound(_currentSearchQuery));
     }
 
     if (_searchResults.isEmpty) {
-      return _buildEmptyState('Digite algo para pesquisar séries');
+      return _buildEmptyState(AppLocalizations.of(context)!.searchSeriesPrompt);
     }
 
     return _buildTVShowGrid(_searchResults, isMobile);

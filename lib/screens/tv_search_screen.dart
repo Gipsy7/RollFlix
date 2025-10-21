@@ -7,6 +7,7 @@ import '../widgets/responsive_widgets.dart';
 import '../widgets/optimized_widgets.dart';
 import '../widgets/common_widgets.dart';
 import 'tv_show_details_screen.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class TVSearchScreen extends StatefulWidget {
   const TVSearchScreen({super.key});
@@ -418,14 +419,14 @@ class _TVSearchScreenState extends State<TVSearchScreen> with TickerProviderStat
               break;
           }
         },
-        tabs: const [
+        tabs: [
           Tab(
             icon: Icon(Icons.trending_up, size: 20),
-            text: 'Em Alta',
+            text: AppLocalizations.of(context)!.trending,
           ),
           Tab(
             icon: Icon(Icons.star, size: 20),
-            text: 'Mais Avaliadas',
+            text: AppLocalizations.of(context)!.topRated,
           ),
         ],
       ),

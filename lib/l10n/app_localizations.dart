@@ -624,8 +624,8 @@ abstract class AppLocalizations {
   /// No description provided for @noSeriesFound.
   ///
   /// In en, this message translates to:
-  /// **'No series found for this filter. Please try again.'**
-  String get noSeriesFound;
+  /// **'No series found for \"{query}\"'**
+  String noSeriesFound(Object query);
 
   /// No description provided for @noMovieFound.
   ///
@@ -678,7 +678,7 @@ abstract class AppLocalizations {
   /// No description provided for @series.
   ///
   /// In en, this message translates to:
-  /// **'Series'**
+  /// **'SERIES'**
   String get series;
 
   /// No description provided for @seriesUpper.
@@ -2336,6 +2336,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Time limit: 1 minute per movie'**
   String get movieMimicRule3;
+
+  /// No description provided for @searchSeriesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter series name...'**
+  String get searchSeriesHint;
+
+  /// No description provided for @searchSeriesPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Type something to search for series'**
+  String get searchSeriesPrompt;
+
+  /// No description provided for @trending.
+  ///
+  /// In en, this message translates to:
+  /// **'Trending'**
+  String get trending;
+
+  /// No description provided for @topRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Rated'**
+  String get topRated;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

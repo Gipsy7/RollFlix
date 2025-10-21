@@ -418,7 +418,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     if (_appModeController.isSeriesMode) {
       final tvShow = _tvShowController.selectedShow;
       if (tvShow == null) {
-        AppSnackBar.showInfo(context, AppLocalizations.of(context)!.noSeriesFound);
+        AppSnackBar.showInfo(context, AppLocalizations.of(context)!.noSeriesFound(''));
         return;
       }
 

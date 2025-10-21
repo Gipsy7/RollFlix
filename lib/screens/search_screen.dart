@@ -528,7 +528,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
         children: [
-          _buildGenreChip('Todos', null, isMobile),
+          _buildGenreChip(AppLocalizations.of(context)!.all, null, isMobile),
           const SizedBox(width: 8),
           ...allGenres.map((genre) => 
             Padding(
@@ -604,9 +604,9 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         unselectedLabelColor: AppColors.textSecondary,
         indicatorColor: AppColors.primary,
         indicatorWeight: 3,
-        tabs: const [
-          Tab(text: 'Em Alta'),
-          Tab(text: 'Mais Votados'),
+        tabs: [
+          Tab(text: AppLocalizations.of(context)!.trending),
+          Tab(text: AppLocalizations.of(context)!.topRated),
         ],
       ),
     );
