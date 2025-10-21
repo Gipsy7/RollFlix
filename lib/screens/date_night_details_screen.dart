@@ -1165,8 +1165,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       if (!mounted) return;
       
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ Novo filme selecionado!'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.newMovieSelected),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 2),
         ),
@@ -1246,8 +1246,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       if (!mounted) return;
       
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ Novo menu selecionado!'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.newMenuSelected),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 2),
         ),

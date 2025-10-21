@@ -176,6 +176,8 @@
       "genre": {}
     }
   },
+  "newMovieSelected": "✅ Nouveau film sélectionné !",
+  "newMenuSelected": "✅ Nouveau menu sélectionné !",
   "errorInitializingApp": "Erreur lors de l'initialisation de l'app : {error}",
   "@errorInitializingApp": {
     "placeholders": {
@@ -496,6 +498,7 @@
   "questions": "questions",
   "interestingQuestions": "Questions intéressantes pour mieux se connaître",
   "conversationStarters": "Initiateurs de Conversation",
+  "movieGenreQuestion": "Si votre vie était un film, quel serait le genre ?",
   "dateNightGames": "Jeux pour le Rendez-vous",
   "makeNightFun": "Rendez la nuit plus amusante et mémorable",
   "season": "saison",

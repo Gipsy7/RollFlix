@@ -775,7 +775,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                     ),
                   ),
                   child: SafeText(
-                    _appModeController.isSeriesMode ? 'SÉRIES' : 'FILMES',
+                    _appModeController.isSeriesMode ? AppLocalizations.of(context)!.seriesUpper : AppLocalizations.of(context)!.moviesUpper,
                     key: ValueKey(_appModeController.isSeriesMode),
                     style: (isMobile
                         ? AppTextStyles.labelMedium
@@ -1133,7 +1133,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               ),
               _buildResourceItem(
                 icon: Icons.favorite,
-                label: 'Favoritos',
+                label: AppLocalizations.of(context)!.favorites,
                 resourceType: ResourceType.favorite,
                 color: Colors.red,
                 isMobile: isMobile,

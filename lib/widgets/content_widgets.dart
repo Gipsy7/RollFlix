@@ -111,8 +111,8 @@ class ContentCard extends StatelessWidget {
         SnackBar(
           content: Text(
             isFavorite 
-                ? '❤️ ${movie!.title} adicionado aos favoritos'
-                : '${movie!.title} removido dos favoritos',
+                ? AppLocalizations.of(context)!.addedToFavorites(movie!.title)
+                : '${movie!.title} ${AppLocalizations.of(context)!.removedFromFavorites.toLowerCase()}',
           ),
           duration: const Duration(seconds: 2),
           backgroundColor: isFavorite ? AppColors.success : AppColors.surfaceDark,
@@ -125,8 +125,8 @@ class ContentCard extends StatelessWidget {
         SnackBar(
           content: Text(
             isFavorite 
-                ? '❤️ ${tvShow!.name} adicionado aos favoritos'
-                : '${tvShow!.name} removido dos favoritos',
+                ? AppLocalizations.of(context)!.addedToFavorites(tvShow!.name)
+                : '${tvShow!.name} ${AppLocalizations.of(context)!.removedFromFavorites.toLowerCase()}',
           ),
           duration: const Duration(seconds: 2),
           backgroundColor: isFavorite ? AppColors.success : AppColors.surfaceDark,

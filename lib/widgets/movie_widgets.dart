@@ -232,8 +232,8 @@ class MovieGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const AppLoadingIndicator(
-        message: 'Carregando filmes...',
+      return AppLoadingIndicator(
+        message: AppLocalizations.of(context)!.loadingMovies,
       );
     }
 

@@ -146,7 +146,7 @@ class ConversationStarter {
   final List<String> questions;
   final String icon;
 
-  const ConversationStarter({
+  ConversationStarter({
     required this.category,
     required this.questions,
     required this.icon,

@@ -94,74 +94,76 @@ class DateNightGamesScreen extends StatelessWidget {
     ),
   ];
 
-  static final List<ConversationStarter> _conversationStarters = [
-    const ConversationStarter(
-      category: 'Sonhos e Aspirações',
-      icon: '✨',
-      questions: [
-        'Se você pudesse viver em qualquer lugar do mundo, onde seria?',
-        'Qual é o seu maior sonho profissional?',
-        'O que você gostaria de aprender nos próximos 5 anos?',
-        'Se pudesse ter qualquer superpoder, qual seria?',
-        'Qual seria sua vida ideal daqui a 10 anos?',
-      ],
-    ),
-    const ConversationStarter(
-      category: 'Memórias e Experiências',
-      icon: '📸',
-      questions: [
-        'Qual é a sua melhor memória de infância?',
-        'Qual foi a viagem mais marcante que você já fez?',
-        'Qual foi o momento mais embaraçoso da sua vida?',
-        'Qual foi o melhor presente que você já recebeu?',
-        'Qual foi o dia mais feliz da sua vida até agora?',
-      ],
-    ),
-    const ConversationStarter(
-      category: 'Gostos e Preferências',
-      icon: '❤️',
-      questions: [
-        'Qual é o seu filme favorito de todos os tempos?',
-        'Se pudesse jantar com qualquer pessoa, viva ou morta, quem seria?',
-        'Qual é a sua comida de conforto?',
-        'Praia ou montanha? Por quê?',
-        'Qual música te faz sentir mais vivo?',
-      ],
-    ),
-    const ConversationStarter(
-      category: 'Diversão e Imaginação',
-      icon: '🎭',
-      questions: [
-        'Se sua vida fosse um filme, qual seria o gênero?',
-        'Qual superpoder você NÃO gostaria de ter?',
-        'Se pudesse ser invisível por um dia, o que faria?',
-        'Qual seria seu nome de estrela de cinema?',
-        'Se pudesse voltar para qualquer década, qual seria?',
-      ],
-    ),
-    const ConversationStarter(
-      category: 'Filosofia e Valores',
-      icon: '💭',
-      questions: [
-        'O que você considera mais importante na vida?',
-        'Qual conselho você daria para seu eu de 10 anos atrás?',
-        'O que te faz sentir mais grato?',
-        'Qual é o seu maior medo?',
-        'O que significa sucesso para você?',
-      ],
-    ),
-    const ConversationStarter(
-      category: 'Relacionamento',
-      icon: '💑',
-      questions: [
-        'O que você mais valoriza em um relacionamento?',
-        'Qual foi nossa melhor memória juntos?',
-        'O que você gostaria que fizéssemos mais frequentemente?',
-        'Como você se sente mais amado(a)?',
-        'Onde você nos vê daqui a 5 anos?',
-      ],
-    ),
-  ];
+  static List<ConversationStarter> _getConversationStarters(BuildContext context) {
+    return [
+      ConversationStarter(
+        category: 'Sonhos e Aspirações',
+        icon: '✨',
+        questions: [
+          'Se você pudesse viver em qualquer lugar do mundo, onde seria?',
+          'Qual é o seu maior sonho profissional?',
+          'O que você gostaria de aprender nos próximos 5 anos?',
+          'Se pudesse ter qualquer superpoder, qual seria?',
+          'Qual seria sua vida ideal daqui a 10 anos?',
+        ],
+      ),
+      ConversationStarter(
+        category: 'Memórias e Experiências',
+        icon: '📸',
+        questions: [
+          'Qual é a sua melhor memória de infância?',
+          'Qual foi a viagem mais marcante que você já fez?',
+          'Qual foi o momento mais embaraçoso da sua vida?',
+          'Qual foi o melhor presente que você já recebeu?',
+          'Qual foi o dia mais feliz da sua vida até agora?',
+        ],
+      ),
+      ConversationStarter(
+        category: 'Gostos e Preferências',
+        icon: '❤️',
+        questions: [
+          'Qual é o seu filme favorito de todos os tempos?',
+          'Se pudesse jantar com qualquer pessoa, viva ou morta, quem seria?',
+          'Qual é a sua comida de conforto?',
+          'Praia ou montanha? Por quê?',
+          'Qual música te faz sentir mais vivo?',
+        ],
+      ),
+      ConversationStarter(
+        category: 'Diversão e Imaginação',
+        icon: '🎭',
+        questions: [
+          AppLocalizations.of(context)!.movieGenreQuestion,
+          'Qual superpoder você NÃO gostaria de ter?',
+          'Se pudesse ser invisível por um dia, o que faria?',
+          'Qual seria seu nome de estrela de cinema?',
+          'Se pudesse voltar para qualquer década, qual seria?',
+        ],
+      ),
+      ConversationStarter(
+        category: 'Filosofia e Valores',
+        icon: '💭',
+        questions: [
+          'O que você considera mais importante na vida?',
+          'Qual conselho você daria para seu eu de 10 anos atrás?',
+          'O que te faz sentir mais grato?',
+          'Qual é o seu maior medo?',
+          'O que significa sucesso para você?',
+        ],
+      ),
+      ConversationStarter(
+        category: 'Relacionamento',
+        icon: '💑',
+        questions: [
+          'O que você mais valoriza em um relacionamento?',
+          'Qual foi nossa melhor memória juntos?',
+          'O que você gostaria que fizéssemos mais frequentemente?',
+          'Como você se sente mais amado(a)?',
+          'Onde você nos vê daqui a 5 anos?',
+        ],
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +243,7 @@ class DateNightGamesScreen extends StatelessWidget {
           icon: Icons.forum,
         ),
         const SizedBox(height: 16),
-        ..._conversationStarters.map((starter) => Padding(
+        ..._getConversationStarters(context).map((starter) => Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: _ConversationCard(starter: starter),
         )),

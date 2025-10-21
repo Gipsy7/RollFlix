@@ -176,6 +176,8 @@
       "genre": {}
     }
   },
+  "newMovieSelected": "✅ New movie selected!",
+  "newMenuSelected": "✅ New menu selected!",
   "errorInitializingApp": "Error initializing app: {error}",
   "@errorInitializingApp": {
     "placeholders": {
@@ -496,6 +498,7 @@
   "questions": "questions",
   "interestingQuestions": "Interesting questions to get to know each other better",
   "conversationStarters": "Conversation Starters",
+  "movieGenreQuestion": "If your life were a movie, what would be the genre?",
   "dateNightGames": "Date Night Games",
   "makeNightFun": "Make the night more fun and memorable",
   "season": "season",

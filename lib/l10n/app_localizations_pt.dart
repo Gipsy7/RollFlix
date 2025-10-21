@@ -400,6 +400,12 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get newMovieSelected => '✅ Novo filme selecionado!';
+
+  @override
+  String get newMenuSelected => '✅ Novo menu selecionado!';
+
+  @override
   String errorInitializingApp(Object error) {
     return 'Erro ao inicializar app: $error';
   }
@@ -1077,6 +1083,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get conversationStarters => 'Iniciadores de Conversa';
+
+  @override
+  String get movieGenreQuestion => 'Se sua vida fosse um filme, qual seria o gênero?';
 
   @override
   String get dateNightGames => 'Jogos para o Encontro';

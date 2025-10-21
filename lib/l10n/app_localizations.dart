@@ -849,6 +849,18 @@ abstract class AppLocalizations {
   /// **'Initial genre selected: {genre}'**
   String initialGenreSelected(Object genre);
 
+  /// No description provided for @newMovieSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ New movie selected!'**
+  String get newMovieSelected;
+
+  /// No description provided for @newMenuSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ New menu selected!'**
+  String get newMenuSelected;
+
   /// No description provided for @errorInitializingApp.
   ///
   /// In en, this message translates to:
@@ -2126,6 +2138,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Conversation Starters'**
   String get conversationStarters;
+
+  /// No description provided for @movieGenreQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'If your life were a movie, what would be the genre?'**
+  String get movieGenreQuestion;
 
   /// No description provided for @dateNightGames.
   ///
