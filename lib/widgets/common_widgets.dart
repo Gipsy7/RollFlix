@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../constants/app_constants.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 class AppButton extends StatelessWidget {
   final String text;
@@ -445,7 +446,7 @@ class AppErrorWidget extends StatelessWidget {
             if (onRetry != null) ...[
               const SizedBox(height: AppConstants.spacingL),
               AppButton(
-                text: 'Tentar Novamente',
+                text: AppLocalizations.of(context)!.tryAgain,
                 onPressed: onRetry,
                 icon: Icons.refresh,
               ),

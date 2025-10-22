@@ -581,16 +581,25 @@
   "movieMimicRule3": "Time limit: 1 minute per movie",
   "series": "SERIES",
   "searchSeriesHint": "Enter series name...",
-  "noSeriesFound": "No series found for \"{query}\"",
-  "@noSeriesFound": {
-    "placeholders": {
-      "query": {}
-    }
-  },
   "searchSeriesPrompt": "Type something to search for series",
   "trending": "Trending",
   "topRated": "Top Rated",
-  "all": "All"
+  "all": "All",
+  "searchTVHint": "Search series...",
+  "rolls": "Rolls",
+  "watched": "Watched",
+  "dateNight": "Date Night 🚧",
+  "searchSeries": "Search Series",
+  "noSeriesFound": "No series found",
+  "noSeriesAvailable": "No series available",
+  "reloading": "Reloading",
+  "trendingTab": "Trending",
+  "topRatedTab": "Top Rated",
+  "tapForDetails": "Tap for details",
+  "tapForMoreDetails": "Tap for more details",
+  "tryAgain": "Try Again",
+  "recipeUnavailable": "Recipe Unavailable",
+  "newEpisodeAvailable": "New Episode Available!"
 }
 
 

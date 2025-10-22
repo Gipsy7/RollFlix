@@ -323,7 +323,7 @@ class ContentCard extends StatelessWidget {
               builder: (context, constraints) {
                 final useShortText = constraints.maxWidth < 120 || isMobile;
                 return SafeText(
-                  useShortText ? 'Toque para detalhes' : 'Toque para mais detalhes',
+                  useShortText ? AppLocalizations.of(context)!.tapForDetails : AppLocalizations.of(context)!.tapForMoreDetails,
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.backgroundDark,
                     fontWeight: FontWeight.w500,

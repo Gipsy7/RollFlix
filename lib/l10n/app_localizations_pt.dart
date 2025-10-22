@@ -276,9 +276,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get rollError => 'Não foi possível realizar o sorteio. Tente novamente.';
 
   @override
-  String noSeriesFound(Object query) {
-    return 'Nenhuma série encontrada para \"$query\"';
-  }
+  String get noSeriesFound => 'Nenhuma série encontrada';
 
   @override
   String get noMovieFound => 'Nenhum filme encontrado para esse filtro. Tente novamente.';
@@ -303,7 +301,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get favorites => 'Favoritos';
 
   @override
-  String get watched => 'Já Assisti';
+  String get watched => 'Assistidos';
 
   @override
   String get movies => 'Filmes';
@@ -545,7 +543,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get discoverAmazingSeries => 'Descubra séries incríveis';
 
   @override
-  String get dateNight => 'Date Night';
+  String get dateNight => 'Date Night 🚧';
 
   @override
   String get dateNightComingSoon => 'Date Night em desenvolvimento!\nEm breve disponível 🚀';
@@ -762,7 +760,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get logoutButton => 'Sair da Conta';
 
   @override
-  String get rolls => 'Sorteios';
+  String get rolls => 'Rolagens';
 
   @override
   String get searchHint => 'Digite o nome do filme ou série...';
@@ -1211,4 +1209,28 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get all => 'Todos';
+
+  @override
+  String get searchTVHint => 'Buscar séries...';
+
+  @override
+  String get noSeriesAvailable => 'Nenhuma série disponível';
+
+  @override
+  String get reloading => 'Recarregando';
+
+  @override
+  String get trendingTab => 'Em Alta';
+
+  @override
+  String get topRatedTab => 'Mais Votadas';
+
+  @override
+  String get tapForDetails => 'Toque para detalhes';
+
+  @override
+  String get tapForMoreDetails => 'Toque para mais detalhes';
+
+  @override
+  String get recipeUnavailable => 'Receita Indisponível';
 }

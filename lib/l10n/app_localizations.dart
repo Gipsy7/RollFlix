@@ -624,8 +624,8 @@ abstract class AppLocalizations {
   /// No description provided for @noSeriesFound.
   ///
   /// In en, this message translates to:
-  /// **'No series found for \"{query}\"'**
-  String noSeriesFound(Object query);
+  /// **'No series found'**
+  String get noSeriesFound;
 
   /// No description provided for @noMovieFound.
   ///
@@ -1122,7 +1122,7 @@ abstract class AppLocalizations {
   /// No description provided for @dateNight.
   ///
   /// In en, this message translates to:
-  /// **'Date Night'**
+  /// **'Date Night 🚧'**
   String get dateNight;
 
   /// No description provided for @dateNightComingSoon.
@@ -2366,6 +2366,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get all;
+
+  /// No description provided for @searchTVHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search series...'**
+  String get searchTVHint;
+
+  /// No description provided for @noSeriesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No series available'**
+  String get noSeriesAvailable;
+
+  /// No description provided for @reloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Reloading'**
+  String get reloading;
+
+  /// No description provided for @trendingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Trending'**
+  String get trendingTab;
+
+  /// No description provided for @topRatedTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Rated'**
+  String get topRatedTab;
+
+  /// No description provided for @tapForDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap for details'**
+  String get tapForDetails;
+
+  /// No description provided for @tapForMoreDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap for more details'**
+  String get tapForMoreDetails;
+
+  /// No description provided for @recipeUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipe Unavailable'**
+  String get recipeUnavailable;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

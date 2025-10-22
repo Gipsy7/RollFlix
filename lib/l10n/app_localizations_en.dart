@@ -276,9 +276,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rollError => 'Unable to perform roll. Please try again.';
 
   @override
-  String noSeriesFound(Object query) {
-    return 'No series found for \"$query\"';
-  }
+  String get noSeriesFound => 'No series found';
 
   @override
   String get noMovieFound => 'No movie found for this filter. Please try again.';
@@ -545,7 +543,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discoverAmazingSeries => 'Discover amazing series';
 
   @override
-  String get dateNight => 'Date Night';
+  String get dateNight => 'Date Night 🚧';
 
   @override
   String get dateNightComingSoon => 'Date Night in development!\nComing soon 🚀';
@@ -1211,4 +1209,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get all => 'All';
+
+  @override
+  String get searchTVHint => 'Search series...';
+
+  @override
+  String get noSeriesAvailable => 'No series available';
+
+  @override
+  String get reloading => 'Reloading';
+
+  @override
+  String get trendingTab => 'Trending';
+
+  @override
+  String get topRatedTab => 'Top Rated';
+
+  @override
+  String get tapForDetails => 'Tap for details';
+
+  @override
+  String get tapForMoreDetails => 'Tap for more details';
+
+  @override
+  String get recipeUnavailable => 'Recipe Unavailable';
 }

@@ -276,9 +276,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get rollError => 'Impossible d\'effectuer le tirage. Veuillez réessayer.';
 
   @override
-  String noSeriesFound(Object query) {
-    return 'Aucune série trouvée pour \"$query\"';
-  }
+  String get noSeriesFound => 'Aucune série trouvée';
 
   @override
   String get noMovieFound => 'Aucun film trouvé pour ce filtre. Veuillez réessayer.';
@@ -303,7 +301,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get favorites => 'Favoris';
 
   @override
-  String get watched => 'Regardé';
+  String get watched => 'Regardés';
 
   @override
   String get movies => 'Films';
@@ -373,7 +371,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get close => 'Fermer';
 
   @override
-  String get searchSeries => 'Rechercher Séries';
+  String get searchSeries => 'Rechercher des Séries';
 
   @override
   String get seriesMode => 'SÉRIES';
@@ -545,7 +543,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get discoverAmazingSeries => 'Découvrez des séries incroyables';
 
   @override
-  String get dateNight => 'Soirée en Amoureux';
+  String get dateNight => 'Soirée Romantique 🚧';
 
   @override
   String get dateNightComingSoon => 'Date Night en développement!\nBientôt disponible 🚀';
@@ -762,7 +760,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get logoutButton => 'Se Déconnecter du Compte';
 
   @override
-  String get rolls => 'Tirages';
+  String get rolls => 'Lancers';
 
   @override
   String get searchHint => 'Tapez le nom du film ou de la série...';
@@ -1210,5 +1208,29 @@ class AppLocalizationsFr extends AppLocalizations {
   String get topRated => 'Mieux Notées';
 
   @override
-  String get all => 'Tous';
+  String get all => 'Toutes';
+
+  @override
+  String get searchTVHint => 'Rechercher des séries...';
+
+  @override
+  String get noSeriesAvailable => 'Aucune série disponible';
+
+  @override
+  String get reloading => 'Rechargement';
+
+  @override
+  String get trendingTab => 'Tendances';
+
+  @override
+  String get topRatedTab => 'Mieux Notées';
+
+  @override
+  String get tapForDetails => 'Appuyez pour les détails';
+
+  @override
+  String get tapForMoreDetails => 'Appuyez pour plus de détails';
+
+  @override
+  String get recipeUnavailable => 'Recette Non Disponible';
 }

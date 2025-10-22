@@ -581,16 +581,25 @@
   "movieMimicRule3": "Temps limite : 1 minute par film",
   "series": "SÉRIES",
   "searchSeriesHint": "Entrez le nom de la série...",
-  "noSeriesFound": "Aucune série trouvée pour \"{query}\"",
-  "@noSeriesFound": {
-    "placeholders": {
-      "query": {}
-    }
-  },
   "searchSeriesPrompt": "Tapez quelque chose pour rechercher des séries",
   "trending": "Tendances",
   "topRated": "Mieux Notées",
-  "all": "Tous"
+  "all": "Toutes",
+  "searchTVHint": "Rechercher des séries...",
+  "rolls": "Lancers",
+  "watched": "Regardés",
+  "dateNight": "Soirée Romantique 🚧",
+  "searchSeries": "Rechercher des Séries",
+  "noSeriesFound": "Aucune série trouvée",
+  "noSeriesAvailable": "Aucune série disponible",
+  "reloading": "Rechargement",
+  "trendingTab": "Tendances",
+  "topRatedTab": "Mieux Notées",
+  "tapForDetails": "Appuyez pour les détails",
+  "tapForMoreDetails": "Appuyez pour plus de détails",
+  "tryAgain": "Réessayer",
+  "recipeUnavailable": "Recette Non Disponible",
+  "newEpisodeAvailable": "Nouvel Épisode Disponible !"
 }
 
 

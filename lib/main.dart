@@ -418,7 +418,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     if (_appModeController.isSeriesMode) {
       final tvShow = _tvShowController.selectedShow;
       if (tvShow == null) {
-        AppSnackBar.showInfo(context, AppLocalizations.of(context)!.noSeriesFound(''));
+        AppSnackBar.showInfo(context, AppLocalizations.of(context)!.noSeriesFound);
         return;
       }
 
@@ -1126,7 +1126,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             children: [
               _buildResourceItem(
                 icon: Icons.play_circle_filled,
-                label: 'Rolagens',
+                label: AppLocalizations.of(context)!.rolls,
                 resourceType: ResourceType.roll,
                 color: Colors.blue,
                 isMobile: isMobile,
@@ -1140,7 +1140,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               ),
               _buildResourceItem(
                 icon: Icons.check_circle,
-                label: 'Assistidos',
+                label: AppLocalizations.of(context)!.watched,
                 resourceType: ResourceType.watched,
                 color: Colors.green,
                 isMobile: isMobile,
@@ -1178,7 +1178,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       final minutes = cooldown.inMinutes.remainder(60);
       displayValue = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
       displayColor = Colors.grey;
-      subtitle = 'Recarregando';
+      subtitle = AppLocalizations.of(context)!.reloading;
     } else {
       displayValue = '0';
       displayColor = Colors.grey;

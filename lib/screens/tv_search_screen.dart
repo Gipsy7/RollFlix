@@ -285,7 +285,7 @@ class _TVSearchScreenState extends State<TVSearchScreen> with TickerProviderStat
           const SizedBox(width: 12),
           Expanded(
             child: SafeText(
-              'Pesquisar Séries',
+              AppLocalizations.of(context)!.searchSeries,
               style: AppTextStyles.headlineSmall.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
@@ -319,7 +319,7 @@ class _TVSearchScreenState extends State<TVSearchScreen> with TickerProviderStat
                   color: AppColors.textPrimary,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Buscar séries...',
+                  hintText: AppLocalizations.of(context)!.searchTVHint,
                   hintStyle: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -466,7 +466,7 @@ class _TVSearchScreenState extends State<TVSearchScreen> with TickerProviderStat
             ),
             const SizedBox(height: 16),
             SafeText(
-              'Nenhuma série encontrada',
+              AppLocalizations.of(context)!.noSeriesFound,
               style: AppTextStyles.headlineSmall.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -519,7 +519,7 @@ class _TVSearchScreenState extends State<TVSearchScreen> with TickerProviderStat
             ),
             const SizedBox(height: 16),
             SafeText(
-              'Nenhuma série disponível',
+              AppLocalizations.of(context)!.noSeriesAvailable,
               style: AppTextStyles.headlineSmall.copyWith(
                 color: AppColors.textSecondary,
               ),

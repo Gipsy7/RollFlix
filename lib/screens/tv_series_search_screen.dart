@@ -600,9 +600,9 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
         indicatorColor: const Color.fromARGB(255, 240, 43, 109),
         labelStyle: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
         unselectedLabelStyle: AppTextStyles.bodyLarge,
-        tabs: const [
-          Tab(text: 'Em Alta'),
-          Tab(text: 'Mais Votadas'),
+        tabs: [
+          Tab(text: AppLocalizations.of(context)!.trendingTab),
+          Tab(text: AppLocalizations.of(context)!.topRatedTab),
         ],
       ),
     );
@@ -648,7 +648,7 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
     }
 
     if (_searchResults.isEmpty && _currentSearchQuery.isNotEmpty) {
-      return _buildEmptyState(AppLocalizations.of(context)!.noSeriesFound(_currentSearchQuery));
+      return _buildEmptyState(AppLocalizations.of(context)!.noSeriesFound);
     }
 
     if (_searchResults.isEmpty) {
