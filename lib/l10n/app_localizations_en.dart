@@ -1407,4 +1407,163 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tvGenreAssistidos => 'Watched';
+
+  @override
+  String get memoriesAndExperiences => 'Memories and Experiences';
+
+  @override
+  String get tastesAndPreferences => 'Tastes and Preferences';
+
+  @override
+  String get funAndImagination => 'Fun and Imagination';
+
+  @override
+  String get philosophyAndValues => 'Philosophy and Values';
+
+  @override
+  String get relationship => 'Relationship';
+
+  @override
+  String get learnIn5YearsQuestion => 'What would you like to learn in the next 5 years?';
+
+  @override
+  String get superpowerQuestion => 'If you could have any superpower, what would it be?';
+
+  @override
+  String get idealLifeQuestion => 'What would your ideal life look like in 10 years?';
+
+  @override
+  String get bestChildhoodMemoryQuestion => 'What is your best childhood memory?';
+
+  @override
+  String get mostMemorableTripQuestion => 'What was the most memorable trip you\'ve ever taken?';
+
+  @override
+  String get mostEmbarrassingMomentQuestion => 'What was the most embarrassing moment of your life?';
+
+  @override
+  String get bestGiftReceivedQuestion => 'What was the best gift you\'ve ever received?';
+
+  @override
+  String get happiestDayQuestion => 'What was the happiest day of your life so far?';
+
+  @override
+  String get favoriteMovieQuestion => 'What is your all-time favorite movie?';
+
+  @override
+  String get dinnerWithAnyoneQuestion => 'If you could have dinner with anyone, living or dead, who would it be?';
+
+  @override
+  String get comfortFoodQuestion => 'What is your comfort food?';
+
+  @override
+  String get beachOrMountainQuestion => 'Beach or mountain? Why?';
+
+  @override
+  String get musicThatMakesAliveQuestion => 'What music makes you feel most alive?';
+
+  @override
+  String get superpowerNotWantedQuestion => 'What superpower would you NOT want to have?';
+
+  @override
+  String get invisibleDayQuestion => 'If you could be invisible for a day, what would you do?';
+
+  @override
+  String get movieStarNameQuestion => 'What would your movie star name be?';
+
+  @override
+  String get decadeToReturnQuestion => 'If you could go back to any decade, which would it be?';
+
+  @override
+  String get mostImportantInLifeQuestion => 'What do you consider most important in life?';
+
+  @override
+  String get adviceToYoungerSelfQuestion => 'What advice would you give to your 10-year-old self?';
+
+  @override
+  String get whatMakesGratefulQuestion => 'What makes you feel most grateful?';
+
+  @override
+  String get biggestFearQuestion => 'What is your biggest fear?';
+
+  @override
+  String get successMeaningQuestion => 'What does success mean to you?';
+
+  @override
+  String get mostValuedInRelationshipQuestion => 'What do you value most in a relationship?';
+
+  @override
+  String get bestMemoryTogetherQuestion => 'What was our best memory together?';
+
+  @override
+  String get doMoreFrequentlyQuestion => 'What would you like us to do more frequently?';
+
+  @override
+  String get feelMostLovedQuestion => 'How do you feel most loved?';
+
+  @override
+  String get whereWeSeeIn5YearsQuestion => 'Where do you see us in 5 years?';
+
+  @override
+  String get cookingBattleRule1 => 'Same ingredients, different dishes';
+
+  @override
+  String get cookingBattleRule2 => 'Time limit: 30 minutes';
+
+  @override
+  String get cookingBattleRule3 => 'Rate together';
+
+  @override
+  String get cookingBattleRule4 => 'Loser does the dishes!';
+
+  @override
+  String get guessTheMovie => 'Guess the Movie';
+
+  @override
+  String get guessTheMovieDesc => 'Charades of movie scenes';
+
+  @override
+  String get buildTheStory => 'Build the Story';
+
+  @override
+  String get buildTheStoryDesc => 'Create a story together';
+
+  @override
+  String get buildTheStoryRule1 => 'One starts the story';
+
+  @override
+  String get buildTheStoryRule2 => 'The other continues';
+
+  @override
+  String get buildTheStoryRule3 => 'Alternate every sentence';
+
+  @override
+  String get buildTheStoryRule4 => 'The more absurd, the better!';
+
+  @override
+  String get alternateQuestionsRule => 'Take turns asking questions';
+
+  @override
+  String get beHonestOpenRule => 'Be honest and open';
+
+  @override
+  String get noJudgmentsRule => 'No judgments';
+
+  @override
+  String get canSkipQuestionRule => 'You can skip a question if you want';
+
+  @override
+  String get chooseTruthOrDareRule => 'Choose truth or dare';
+
+  @override
+  String get truthsMustBeSincereRule => 'Truths must be sincere';
+
+  @override
+  String get daresMustBeCompletedRule => 'Dares must be completed';
+
+  @override
+  String get keepLightFunRule => 'Keep the mood light and fun';
+
+  @override
+  String get whoGetsMoreRightWinsRule => 'Whoever gets more right wins';
 }

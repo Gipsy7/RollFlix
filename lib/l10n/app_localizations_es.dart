@@ -1012,10 +1012,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get medium => 'Medio';
 
   @override
-  String get cookingBattle => 'Batalla de Cocina';
+  String get cookingBattle => 'Batalla Culinaria';
 
   @override
-  String get cookingBattleDesc => 'Competencia amistosa para preparar un plato';
+  String get cookingBattleDesc => 'Competencia amigable para preparar un plato';
 
   @override
   String get loserDoesDishes => '¡El perdedor lava los platos!';
@@ -1030,7 +1030,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get dreamsAndAspirations => 'Sueños y Aspiraciones';
 
   @override
-  String get dreamLocationQuestion => '¿Si pudieras vivir en cualquier lugar del mundo, dónde sería?';
+  String get dreamLocationQuestion => 'Si pudieras vivir en cualquier lugar del mundo, ¿dónde sería?';
 
   @override
   String get professionalDreamQuestion => '¿Cuál es tu mayor sueño profesional?';
@@ -1407,4 +1407,163 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tvGenreAssistidos => 'Vistos';
+
+  @override
+  String get memoriesAndExperiences => 'Recuerdos y Experiencias';
+
+  @override
+  String get tastesAndPreferences => 'Gustos y Preferencias';
+
+  @override
+  String get funAndImagination => 'Diversión e Imaginación';
+
+  @override
+  String get philosophyAndValues => 'Filosofía y Valores';
+
+  @override
+  String get relationship => 'Relación';
+
+  @override
+  String get learnIn5YearsQuestion => '¿Qué te gustaría aprender en los próximos 5 años?';
+
+  @override
+  String get superpowerQuestion => 'Si pudieras tener cualquier superpoder, ¿cuál sería?';
+
+  @override
+  String get idealLifeQuestion => '¿Cómo sería tu vida ideal en 10 años?';
+
+  @override
+  String get bestChildhoodMemoryQuestion => '¿Cuál es tu mejor recuerdo de infancia?';
+
+  @override
+  String get mostMemorableTripQuestion => '¿Cuál fue el viaje más memorable que has hecho?';
+
+  @override
+  String get mostEmbarrassingMomentQuestion => '¿Cuál fue el momento más vergonzoso de tu vida?';
+
+  @override
+  String get bestGiftReceivedQuestion => '¿Cuál fue el mejor regalo que has recibido?';
+
+  @override
+  String get happiestDayQuestion => '¿Cuál fue el día más feliz de tu vida hasta ahora?';
+
+  @override
+  String get favoriteMovieQuestion => '¿Cuál es tu película favorita de todos los tiempos?';
+
+  @override
+  String get dinnerWithAnyoneQuestion => 'Si pudieras cenar con cualquier persona, viva o muerta, ¿quién sería?';
+
+  @override
+  String get comfortFoodQuestion => '¿Cuál es tu comida reconfortante?';
+
+  @override
+  String get beachOrMountainQuestion => '¿Playa o montaña? ¿Por qué?';
+
+  @override
+  String get musicThatMakesAliveQuestion => '¿Qué música te hace sentir más vivo?';
+
+  @override
+  String get superpowerNotWantedQuestion => '¿Qué superpoder NO te gustaría tener?';
+
+  @override
+  String get invisibleDayQuestion => 'Si pudieras ser invisible por un día, ¿qué harías?';
+
+  @override
+  String get movieStarNameQuestion => '¿Cuál sería tu nombre de estrella de cine?';
+
+  @override
+  String get decadeToReturnQuestion => 'Si pudieras volver a cualquier década, ¿cuál sería?';
+
+  @override
+  String get mostImportantInLifeQuestion => '¿Qué consideras más importante en la vida?';
+
+  @override
+  String get adviceToYoungerSelfQuestion => '¿Qué consejo le darías a tu yo de 10 años?';
+
+  @override
+  String get whatMakesGratefulQuestion => '¿Qué te hace sentir más agradecido?';
+
+  @override
+  String get biggestFearQuestion => '¿Cuál es tu mayor miedo?';
+
+  @override
+  String get successMeaningQuestion => '¿Qué significa el éxito para ti?';
+
+  @override
+  String get mostValuedInRelationshipQuestion => '¿Qué valoras más en una relación?';
+
+  @override
+  String get bestMemoryTogetherQuestion => '¿Cuál fue nuestro mejor recuerdo juntos?';
+
+  @override
+  String get doMoreFrequentlyQuestion => '¿Qué te gustaría que hiciéramos más frecuentemente?';
+
+  @override
+  String get feelMostLovedQuestion => '¿Cómo te sientes más amado(a)?';
+
+  @override
+  String get whereWeSeeIn5YearsQuestion => '¿Dónde nos ves en 5 años?';
+
+  @override
+  String get cookingBattleRule1 => 'Mismos ingredientes, platos diferentes';
+
+  @override
+  String get cookingBattleRule2 => 'Tiempo límite: 30 minutos';
+
+  @override
+  String get cookingBattleRule3 => 'Evalúen juntos';
+
+  @override
+  String get cookingBattleRule4 => '¡El perdedor lava los platos!';
+
+  @override
+  String get guessTheMovie => 'Adivina la Película';
+
+  @override
+  String get guessTheMovieDesc => 'Mímica de escenas de películas';
+
+  @override
+  String get buildTheStory => 'Construyan la Historia';
+
+  @override
+  String get buildTheStoryDesc => 'Creen una historia juntos';
+
+  @override
+  String get buildTheStoryRule1 => 'Uno comienza la historia';
+
+  @override
+  String get buildTheStoryRule2 => 'El otro continúa';
+
+  @override
+  String get buildTheStoryRule3 => 'Alternen cada oración';
+
+  @override
+  String get buildTheStoryRule4 => '¡Cuanto más absurdo, mejor!';
+
+  @override
+  String get alternateQuestionsRule => 'Alternen entre hacer preguntas';
+
+  @override
+  String get beHonestOpenRule => 'Sean honestos y abiertos';
+
+  @override
+  String get noJudgmentsRule => 'Sin juicios';
+
+  @override
+  String get canSkipQuestionRule => 'Pueden pasar una pregunta si quieren';
+
+  @override
+  String get chooseTruthOrDareRule => 'Elige verdad o reto';
+
+  @override
+  String get truthsMustBeSincereRule => 'Las verdades deben ser sinceras';
+
+  @override
+  String get daresMustBeCompletedRule => 'Los retos deben cumplirse';
+
+  @override
+  String get keepLightFunRule => 'Mantengan el clima ligero y divertido';
+
+  @override
+  String get whoGetsMoreRightWinsRule => 'Quien acierte más gana';
 }

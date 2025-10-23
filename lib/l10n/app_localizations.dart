@@ -2762,6 +2762,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Watched'**
   String get tvGenreAssistidos;
+
+  /// No description provided for @memoriesAndExperiences.
+  ///
+  /// In en, this message translates to:
+  /// **'Memories and Experiences'**
+  String get memoriesAndExperiences;
+
+  /// No description provided for @tastesAndPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Tastes and Preferences'**
+  String get tastesAndPreferences;
+
+  /// No description provided for @funAndImagination.
+  ///
+  /// In en, this message translates to:
+  /// **'Fun and Imagination'**
+  String get funAndImagination;
+
+  /// No description provided for @philosophyAndValues.
+  ///
+  /// In en, this message translates to:
+  /// **'Philosophy and Values'**
+  String get philosophyAndValues;
+
+  /// No description provided for @relationship.
+  ///
+  /// In en, this message translates to:
+  /// **'Relationship'**
+  String get relationship;
+
+  /// No description provided for @learnIn5YearsQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to learn in the next 5 years?'**
+  String get learnIn5YearsQuestion;
+
+  /// No description provided for @superpowerQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'If you could have any superpower, what would it be?'**
+  String get superpowerQuestion;
+
+  /// No description provided for @idealLifeQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What would your ideal life look like in 10 years?'**
+  String get idealLifeQuestion;
+
+  /// No description provided for @bestChildhoodMemoryQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What is your best childhood memory?'**
+  String get bestChildhoodMemoryQuestion;
+
+  /// No description provided for @mostMemorableTripQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What was the most memorable trip you\'ve ever taken?'**
+  String get mostMemorableTripQuestion;
+
+  /// No description provided for @mostEmbarrassingMomentQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What was the most embarrassing moment of your life?'**
+  String get mostEmbarrassingMomentQuestion;
+
+  /// No description provided for @bestGiftReceivedQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What was the best gift you\'ve ever received?'**
+  String get bestGiftReceivedQuestion;
+
+  /// No description provided for @happiestDayQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What was the happiest day of your life so far?'**
+  String get happiestDayQuestion;
+
+  /// No description provided for @favoriteMovieQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What is your all-time favorite movie?'**
+  String get favoriteMovieQuestion;
+
+  /// No description provided for @dinnerWithAnyoneQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'If you could have dinner with anyone, living or dead, who would it be?'**
+  String get dinnerWithAnyoneQuestion;
+
+  /// No description provided for @comfortFoodQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What is your comfort food?'**
+  String get comfortFoodQuestion;
+
+  /// No description provided for @beachOrMountainQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Beach or mountain? Why?'**
+  String get beachOrMountainQuestion;
+
+  /// No description provided for @musicThatMakesAliveQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What music makes you feel most alive?'**
+  String get musicThatMakesAliveQuestion;
+
+  /// No description provided for @superpowerNotWantedQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What superpower would you NOT want to have?'**
+  String get superpowerNotWantedQuestion;
+
+  /// No description provided for @invisibleDayQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'If you could be invisible for a day, what would you do?'**
+  String get invisibleDayQuestion;
+
+  /// No description provided for @movieStarNameQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What would your movie star name be?'**
+  String get movieStarNameQuestion;
+
+  /// No description provided for @decadeToReturnQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'If you could go back to any decade, which would it be?'**
+  String get decadeToReturnQuestion;
+
+  /// No description provided for @mostImportantInLifeQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you consider most important in life?'**
+  String get mostImportantInLifeQuestion;
+
+  /// No description provided for @adviceToYoungerSelfQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What advice would you give to your 10-year-old self?'**
+  String get adviceToYoungerSelfQuestion;
+
+  /// No description provided for @whatMakesGratefulQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What makes you feel most grateful?'**
+  String get whatMakesGratefulQuestion;
+
+  /// No description provided for @biggestFearQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What is your biggest fear?'**
+  String get biggestFearQuestion;
+
+  /// No description provided for @successMeaningQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What does success mean to you?'**
+  String get successMeaningQuestion;
+
+  /// No description provided for @mostValuedInRelationshipQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you value most in a relationship?'**
+  String get mostValuedInRelationshipQuestion;
+
+  /// No description provided for @bestMemoryTogetherQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What was our best memory together?'**
+  String get bestMemoryTogetherQuestion;
+
+  /// No description provided for @doMoreFrequentlyQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like us to do more frequently?'**
+  String get doMoreFrequentlyQuestion;
+
+  /// No description provided for @feelMostLovedQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'How do you feel most loved?'**
+  String get feelMostLovedQuestion;
+
+  /// No description provided for @whereWeSeeIn5YearsQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do you see us in 5 years?'**
+  String get whereWeSeeIn5YearsQuestion;
+
+  /// No description provided for @cookingBattleRule1.
+  ///
+  /// In en, this message translates to:
+  /// **'Same ingredients, different dishes'**
+  String get cookingBattleRule1;
+
+  /// No description provided for @cookingBattleRule2.
+  ///
+  /// In en, this message translates to:
+  /// **'Time limit: 30 minutes'**
+  String get cookingBattleRule2;
+
+  /// No description provided for @cookingBattleRule3.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate together'**
+  String get cookingBattleRule3;
+
+  /// No description provided for @cookingBattleRule4.
+  ///
+  /// In en, this message translates to:
+  /// **'Loser does the dishes!'**
+  String get cookingBattleRule4;
+
+  /// No description provided for @guessTheMovie.
+  ///
+  /// In en, this message translates to:
+  /// **'Guess the Movie'**
+  String get guessTheMovie;
+
+  /// No description provided for @guessTheMovieDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Charades of movie scenes'**
+  String get guessTheMovieDesc;
+
+  /// No description provided for @buildTheStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Build the Story'**
+  String get buildTheStory;
+
+  /// No description provided for @buildTheStoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a story together'**
+  String get buildTheStoryDesc;
+
+  /// No description provided for @buildTheStoryRule1.
+  ///
+  /// In en, this message translates to:
+  /// **'One starts the story'**
+  String get buildTheStoryRule1;
+
+  /// No description provided for @buildTheStoryRule2.
+  ///
+  /// In en, this message translates to:
+  /// **'The other continues'**
+  String get buildTheStoryRule2;
+
+  /// No description provided for @buildTheStoryRule3.
+  ///
+  /// In en, this message translates to:
+  /// **'Alternate every sentence'**
+  String get buildTheStoryRule3;
+
+  /// No description provided for @buildTheStoryRule4.
+  ///
+  /// In en, this message translates to:
+  /// **'The more absurd, the better!'**
+  String get buildTheStoryRule4;
+
+  /// No description provided for @alternateQuestionsRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Take turns asking questions'**
+  String get alternateQuestionsRule;
+
+  /// No description provided for @beHonestOpenRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Be honest and open'**
+  String get beHonestOpenRule;
+
+  /// No description provided for @noJudgmentsRule.
+  ///
+  /// In en, this message translates to:
+  /// **'No judgments'**
+  String get noJudgmentsRule;
+
+  /// No description provided for @canSkipQuestionRule.
+  ///
+  /// In en, this message translates to:
+  /// **'You can skip a question if you want'**
+  String get canSkipQuestionRule;
+
+  /// No description provided for @chooseTruthOrDareRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose truth or dare'**
+  String get chooseTruthOrDareRule;
+
+  /// No description provided for @truthsMustBeSincereRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Truths must be sincere'**
+  String get truthsMustBeSincereRule;
+
+  /// No description provided for @daresMustBeCompletedRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Dares must be completed'**
+  String get daresMustBeCompletedRule;
+
+  /// No description provided for @keepLightFunRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the mood light and fun'**
+  String get keepLightFunRule;
+
+  /// No description provided for @whoGetsMoreRightWinsRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Whoever gets more right wins'**
+  String get whoGetsMoreRightWinsRule;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
