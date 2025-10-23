@@ -25,7 +25,7 @@ class DateNightGamesScreen extends StatelessWidget {
           'Sem julgamentos',
           'Podem passar uma pergunta se quiserem',
         ],
-        difficulty: 'Fácil',
+        difficulty: localizations.easy,
         players: 2,
         durationMinutes: 30,
       ),
@@ -38,7 +38,7 @@ class DateNightGamesScreen extends StatelessWidget {
           'Desafios devem ser cumpridos',
           'Mantenha o clima leve e divertido',
         ],
-        difficulty: 'Médio',
+        difficulty: localizations.medium,
         players: 2,
         durationMinutes: 45,
       ),
@@ -51,7 +51,7 @@ class DateNightGamesScreen extends StatelessWidget {
           'Avaliem juntos',
           'Quem perder faz a louça!',
         ],
-        difficulty: 'Avançado',
+        difficulty: localizations.advanced,
         players: 2,
         durationMinutes: 60,
       ),
@@ -64,7 +64,7 @@ class DateNightGamesScreen extends StatelessWidget {
           localizations.coupleQuizRule3,
           localizations.coupleQuizRule4,
         ],
-        difficulty: 'Fácil',
+        difficulty: localizations.easy,
         players: 2,
         durationMinutes: 20,
       ),
@@ -77,7 +77,7 @@ class DateNightGamesScreen extends StatelessWidget {
           localizations.movieMimicRule3,
           'Quem acertar mais ganha',
         ],
-        difficulty: 'Médio',
+        difficulty: localizations.medium,
         players: 2,
         durationMinutes: 30,
       ),
@@ -90,7 +90,7 @@ class DateNightGamesScreen extends StatelessWidget {
           'Alternem a cada frase',
           'Quanto mais absurdo, melhor!',
         ],
-        difficulty: 'Fácil',
+        difficulty: localizations.easy,
         players: 2,
         durationMinutes: 25,
       ),
@@ -322,16 +322,17 @@ class _GameCard extends StatelessWidget {
   static const Color _primaryRose = Color(0xFFE91E63);
   static const Color _secondaryGold = Color(0xFFFFD700);
 
-  Color get _difficultyColor {
-    switch (game.difficulty.toLowerCase()) {
-      case 'fácil':
-        return Colors.green;
-      case 'médio':
-        return Colors.orange;
-      case 'avançado':
-        return Colors.red;
-      default:
-        return Colors.blue;
+  Color getDifficultyColor(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final difficulty = game.difficulty.toLowerCase();
+    if (difficulty == l10n.easy.toLowerCase()) {
+      return Colors.green;
+    } else if (difficulty == l10n.medium.toLowerCase()) {
+      return Colors.orange;
+    } else if (difficulty == l10n.advanced.toLowerCase()) {
+      return Colors.red;
+    } else {
+      return Colors.blue;
     }
   }
 
@@ -391,7 +392,7 @@ class _GameCard extends StatelessWidget {
                 _InfoChip(
                   icon: Icons.speed,
                   label: game.difficulty,
-                  color: _difficultyColor,
+                  color: getDifficultyColor(context),
                 ),
               ],
             ),

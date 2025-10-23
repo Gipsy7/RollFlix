@@ -174,7 +174,7 @@ class AppDrawer extends StatelessWidget {
         _buildDrawerItem(
           context: context,
           icon: Icons.favorite_border,
-          title: 'Date Night 🚧',
+          title: AppLocalizations.of(context)!.dateNight,
           onTap: () {
             Navigator.pop(context);
             // Modo bloqueado - em desenvolvimento

@@ -2414,6 +2414,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recipe Unavailable'**
   String get recipeUnavailable;
+
+  /// No description provided for @calories.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories'**
+  String get calories;
+
+  /// No description provided for @carbohydrates.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbohydrates'**
+  String get carbohydrates;
+
+  /// No description provided for @fat.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat'**
+  String get fat;
+
+  /// No description provided for @quick.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick'**
+  String get quick;
+
+  /// No description provided for @mediumTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get mediumTime;
+
+  /// No description provided for @elaborate.
+  ///
+  /// In en, this message translates to:
+  /// **'Elaborate'**
+  String get elaborate;
+
+  /// No description provided for @gourmet.
+  ///
+  /// In en, this message translates to:
+  /// **'Gourmet'**
+  String get gourmet;
+
+  /// No description provided for @beginner.
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner'**
+  String get beginner;
+
+  /// No description provided for @intermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermediate'**
+  String get intermediate;
+
+  /// No description provided for @advancedSkill.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get advancedSkill;
+
+  /// No description provided for @expert.
+  ///
+  /// In en, this message translates to:
+  /// **'Expert'**
+  String get expert;
+
+  /// No description provided for @beginnerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Simple and straightforward recipes'**
+  String get beginnerDesc;
+
+  /// No description provided for @intermediateDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Some experience required'**
+  String get intermediateDesc;
+
+  /// No description provided for @advancedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'More complex techniques'**
+  String get advancedDesc;
+
+  /// No description provided for @expertDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'High gastronomy'**
+  String get expertDesc;
+
+  /// No description provided for @timeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get timeLabel;
+
+  /// No description provided for @difficultyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Difficulty'**
+  String get difficultyLabel;
+
+  /// No description provided for @preparationTimePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'⏱️ Preparation Time:'**
+  String get preparationTimePrefix;
+
+  /// No description provided for @difficultyPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'📊 Difficulty:'**
+  String get difficultyPrefix;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

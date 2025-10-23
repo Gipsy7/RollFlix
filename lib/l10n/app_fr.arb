@@ -599,7 +599,27 @@
   "tapForMoreDetails": "Appuyez pour plus de détails",
   "tryAgain": "Réessayer",
   "recipeUnavailable": "Recette Non Disponible",
-  "newEpisodeAvailable": "Nouvel Épisode Disponible !"
+  "newEpisodeAvailable": "Nouvel Épisode Disponible !",
+  "calories": "Calories",
+  "protein": "Protéines",
+  "carbohydrates": "Glucides",
+  "fat": "Lipides",
+  "quick": "Rapide",
+  "mediumTime": "Moyen",
+  "elaborate": "Élaboré",
+  "gourmet": "Gourmet",
+  "beginner": "Débutant",
+  "intermediate": "Intermédiaire",
+  "advancedSkill": "Avancé",
+  "expert": "Expert",
+  "beginnerDesc": "Recettes simples et directes",
+  "intermediateDesc": "Un peu d'expérience requise",
+  "advancedDesc": "Techniques plus complexes",
+  "expertDesc": "Haute gastronomie",
+  "timeLabel": "Temps",
+  "difficultyLabel": "Difficulté",
+  "preparationTimePrefix": "⏱️ Temps de Préparation:",
+  "difficultyPrefix": "📊 Difficulté:"
 }
 
 

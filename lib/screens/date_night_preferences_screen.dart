@@ -5,6 +5,7 @@ import '../models/date_night_preferences.dart';
 import '../services/preferences_service.dart';
 import '../utils/color_extensions.dart';
 import '../widgets/responsive_widgets.dart';
+import '../utils/localized_enums.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
 
 class DateNightPreferencesScreen extends StatefulWidget {
@@ -364,7 +365,7 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          time.label,
+                          LocalizedEnums.preparationTimeLabel(context, time.name),
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -428,14 +429,14 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          level.label,
+                          LocalizedEnums.cookingSkillLabel(context, level.name),
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           ),
                         ),
                         Text(
-                          level.description,
+                          LocalizedEnums.cookingSkillDescription(context, level.name),
                           style: TextStyle(
                             color: Colors.white70,
                             fontSize: 12,

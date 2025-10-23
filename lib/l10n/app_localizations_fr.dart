@@ -1042,7 +1042,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get nutritionalInfo => 'Informations Nutritionnelles';
 
   @override
-  String get protein => 'Protéine';
+  String get protein => 'Protéines';
 
   @override
   String get adultFilter => '🔞 Adulte uniquement';
@@ -1233,4 +1233,61 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get recipeUnavailable => 'Recette Non Disponible';
+
+  @override
+  String get calories => 'Calories';
+
+  @override
+  String get carbohydrates => 'Glucides';
+
+  @override
+  String get fat => 'Lipides';
+
+  @override
+  String get quick => 'Rapide';
+
+  @override
+  String get mediumTime => 'Moyen';
+
+  @override
+  String get elaborate => 'Élaboré';
+
+  @override
+  String get gourmet => 'Gourmet';
+
+  @override
+  String get beginner => 'Débutant';
+
+  @override
+  String get intermediate => 'Intermédiaire';
+
+  @override
+  String get advancedSkill => 'Avancé';
+
+  @override
+  String get expert => 'Expert';
+
+  @override
+  String get beginnerDesc => 'Recettes simples et directes';
+
+  @override
+  String get intermediateDesc => 'Un peu d\'expérience requise';
+
+  @override
+  String get advancedDesc => 'Techniques plus complexes';
+
+  @override
+  String get expertDesc => 'Haute gastronomie';
+
+  @override
+  String get timeLabel => 'Temps';
+
+  @override
+  String get difficultyLabel => 'Difficulté';
+
+  @override
+  String get preparationTimePrefix => '⏱️ Temps de Préparation:';
+
+  @override
+  String get difficultyPrefix => '📊 Difficulté:';
 }

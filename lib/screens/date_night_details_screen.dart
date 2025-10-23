@@ -8,6 +8,7 @@ import '../models/movie.dart';
 import '../services/recipe_service_firebase.dart';
 import '../services/movie_service.dart';
 import '../utils/app_logger.dart';
+import '../utils/localized_enums.dart';
 import '../utils/color_extensions.dart';
 import '../utils/page_transitions.dart';
 import '../widgets/responsive_widgets.dart';
@@ -1015,8 +1016,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
             ),
             if (showDetails) ...[
               const SizedBox(height: 12),
-              _buildInfoRow(Icons.access_time, 'Tempo', _currentCombo.preparationTime),
-              _buildInfoRow(Icons.star, 'Dificuldade', _currentCombo.difficulty),
+              _buildInfoRow(Icons.access_time, AppLocalizations.of(context)!.timeLabel, _currentCombo.preparationTime),
+              _buildInfoRow(Icons.star, AppLocalizations.of(context)!.difficultyLabel, LocalizedEnums.difficultyLabel(context, _currentCombo.difficulty)),
             ],
           ],
         ),
@@ -1225,7 +1226,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
         snacks: ['Petiscos variados'],
         atmosphere: 'Ambiente acolhedor',
         preparationTime: '${mainCourse.readyInMinutes} min',
-        difficulty: mainCourse.vegetarian == true ? 'Fácil' : 'Médio',
+        difficulty: mainCourse.vegetarian == true ? AppLocalizations.of(context)!.easy : AppLocalizations.of(context)!.medium,
         ingredients: mainCourse.extendedIngredients
             ?.map((i) => i.original)
             .take(8)
@@ -1328,8 +1329,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       }
       
       message.writeln('');
-      message.writeln('⏱️ Tempo de Preparo: ${_currentCombo.preparationTime}');
-      message.writeln('📊 Dificuldade: ${_currentCombo.difficulty}');
+      message.writeln('${AppLocalizations.of(context)!.preparationTimePrefix} ${_currentCombo.preparationTime}');
+      message.writeln('${AppLocalizations.of(context)!.difficultyPrefix} ${LocalizedEnums.difficultyLabel(context, _currentCombo.difficulty)}');
       
       message.writeln('');
       message.writeln('═══════════════════════════');

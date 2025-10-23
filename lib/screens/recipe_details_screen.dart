@@ -132,7 +132,7 @@ class RecipeDetailsScreen extends StatelessWidget {
 
             // Informações nutricionais
             if (recipe.nutrition != null) ...[
-              _buildNutritionInfo(),
+              _buildNutritionInfo(context),
               const SizedBox(height: 24),
             ],
 
@@ -302,7 +302,7 @@ class RecipeDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNutritionInfo() {
+  Widget _buildNutritionInfo(BuildContext context) {
     final nutrition = recipe.nutrition!;
 
     return AppCard(
@@ -328,28 +328,28 @@ class RecipeDetailsScreen extends StatelessWidget {
             children: [
               if (nutrition.calories != null)
                 _buildNutrientCard(
-                  'Calorias',
+                  AppLocalizations.of(context)!.calories,
                   nutrition.calories!.toStringAsFixed(0),
                   'kcal',
                   Icons.local_fire_department,
                 ),
               if (nutrition.protein != null)
                 _buildNutrientCard(
-                  'Proteína',
+                  AppLocalizations.of(context)!.protein,
                   nutrition.protein!.toStringAsFixed(1),
                   'g',
                   Icons.fitness_center,
                 ),
               if (nutrition.carbs != null)
                 _buildNutrientCard(
-                  'Carboidratos',
+                  AppLocalizations.of(context)!.carbohydrates,
                   nutrition.carbs!.toStringAsFixed(1),
                   'g',
                   Icons.grain,
                 ),
               if (nutrition.fat != null)
                 _buildNutrientCard(
-                  'Gordura',
+                  AppLocalizations.of(context)!.fat,
                   nutrition.fat!.toStringAsFixed(1),
                   'g',
                   Icons.opacity,

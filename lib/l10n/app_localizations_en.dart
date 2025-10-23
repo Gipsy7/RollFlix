@@ -1233,4 +1233,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recipeUnavailable => 'Recipe Unavailable';
+
+  @override
+  String get calories => 'Calories';
+
+  @override
+  String get carbohydrates => 'Carbohydrates';
+
+  @override
+  String get fat => 'Fat';
+
+  @override
+  String get quick => 'Quick';
+
+  @override
+  String get mediumTime => 'Medium';
+
+  @override
+  String get elaborate => 'Elaborate';
+
+  @override
+  String get gourmet => 'Gourmet';
+
+  @override
+  String get beginner => 'Beginner';
+
+  @override
+  String get intermediate => 'Intermediate';
+
+  @override
+  String get advancedSkill => 'Advanced';
+
+  @override
+  String get expert => 'Expert';
+
+  @override
+  String get beginnerDesc => 'Simple and straightforward recipes';
+
+  @override
+  String get intermediateDesc => 'Some experience required';
+
+  @override
+  String get advancedDesc => 'More complex techniques';
+
+  @override
+  String get expertDesc => 'High gastronomy';
+
+  @override
+  String get timeLabel => 'Time';
+
+  @override
+  String get difficultyLabel => 'Difficulty';
+
+  @override
+  String get preparationTimePrefix => '⏱️ Preparation Time:';
+
+  @override
+  String get difficultyPrefix => '📊 Difficulty:';
 }
