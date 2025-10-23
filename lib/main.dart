@@ -18,6 +18,7 @@ import 'utils/page_transitions.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/error_widgets.dart';
 import 'widgets/responsive_widgets.dart';
+import 'utils/localized_genres.dart';
 import 'widgets/app_drawer.dart';
 import 'widgets/content_widgets.dart';
 import 'widgets/roll_preferences_dialog.dart';
@@ -204,6 +205,29 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   List<String> get currentGenres => _appModeController.isSeriesMode 
       ? MovieService.getTVGenres() 
       : AppConstants.movieGenres;
+
+  // Gêneros localizados para exibição na UI
+  List<String> get localizedGenres => _appModeController.isSeriesMode
+      ? currentGenres.map((genre) => LocalizedGenres.getTVGenreName(context, genre)).toList()
+      : currentGenres.map((genre) => LocalizedGenres.getGenreName(context, genre)).toList();
+
+  // Mapeia gênero localizado de volta para original
+  String? getLocalizedSelectedGenre() {
+    if (_appModeController.selectedGenre == null) return null;
+    return _appModeController.isSeriesMode
+        ? LocalizedGenres.getTVGenreName(context, _appModeController.selectedGenre!)
+        : LocalizedGenres.getGenreName(context, _appModeController.selectedGenre!);
+  }
+
+  // Mapeia gênero localizado para original
+  String mapLocalizedToOriginal(String localizedGenre) {
+    for (int i = 0; i < localizedGenres.length; i++) {
+      if (localizedGenres[i] == localizedGenre) {
+        return currentGenres[i];
+      }
+    }
+    return localizedGenre; // fallback
+  }
 
   @override
   void initState() {
@@ -984,10 +1008,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           height: isMobile ? 350 : 400,
           width: double.infinity,
           child: GenreWheel(
-            genres: currentGenres,
-            selectedGenre: _appModeController.selectedGenre,
-            onGenreSelected: (genre) {
-              _appModeController.selectGenre(genre);
+            genres: localizedGenres,
+            selectedGenre: getLocalizedSelectedGenre(),
+            onGenreSelected: (localizedGenre) {
+              final originalGenre = mapLocalizedToOriginal(localizedGenre);
+              _appModeController.selectGenre(originalGenre);
             },
             onRandomSpin: () {},
             onRollContent: _handleRollContent,

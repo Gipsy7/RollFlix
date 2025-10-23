@@ -1290,4 +1290,121 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get difficultyPrefix => '📊 Difficulté:';
+
+  @override
+  String get genreNovidades => 'Nouveautés';
+
+  @override
+  String get genreAcao => 'Action';
+
+  @override
+  String get genreAventura => 'Aventure';
+
+  @override
+  String get genreAnimacao => 'Animation';
+
+  @override
+  String get genreComedia => 'Comédie';
+
+  @override
+  String get genreCrime => 'Crime';
+
+  @override
+  String get genreDocumentario => 'Documentaire';
+
+  @override
+  String get genreDrama => 'Drame';
+
+  @override
+  String get genreFamilia => 'Famille';
+
+  @override
+  String get genreFantasia => 'Fantaisie';
+
+  @override
+  String get genreHistoria => 'Histoire';
+
+  @override
+  String get genreTerror => 'Horreur';
+
+  @override
+  String get genreMusica => 'Musique';
+
+  @override
+  String get genreMisterio => 'Mystère';
+
+  @override
+  String get genreRomance => 'Romance';
+
+  @override
+  String get genreFiccaoCientifica => 'Science-Fiction';
+
+  @override
+  String get genreSuspense => 'Thriller';
+
+  @override
+  String get genreGuerra => 'Guerre';
+
+  @override
+  String get genreWestern => 'Western';
+
+  @override
+  String get genreFavoritos => 'Favoris';
+
+  @override
+  String get genreAssistidos => 'Regardés';
+
+  @override
+  String get tvGenreNovidades => 'Nouveautés';
+
+  @override
+  String get tvGenreAcaoAventura => 'Action et Aventure';
+
+  @override
+  String get tvGenreAnimacao => 'Animation';
+
+  @override
+  String get tvGenreComedia => 'Comédie';
+
+  @override
+  String get tvGenreCrime => 'Crime';
+
+  @override
+  String get tvGenreDocumentario => 'Documentaire';
+
+  @override
+  String get tvGenreDrama => 'Drame';
+
+  @override
+  String get tvGenreFamilia => 'Famille';
+
+  @override
+  String get tvGenreInfantil => 'Enfants';
+
+  @override
+  String get tvGenreMisterio => 'Mystère';
+
+  @override
+  String get tvGenreNovela => 'Feuilleton';
+
+  @override
+  String get tvGenreFiccaoCientificaFantasia => 'Science-Fiction et Fantastique';
+
+  @override
+  String get tvGenreTalkShow => 'Talk Show';
+
+  @override
+  String get tvGenreGuerraPolitica => 'Guerre et Politique';
+
+  @override
+  String get tvGenreWestern => 'Western';
+
+  @override
+  String get tvGenreReality => 'Télé-Réalité';
+
+  @override
+  String get tvGenreFavoritos => 'Favoris';
+
+  @override
+  String get tvGenreAssistidos => 'Regardés';
 }

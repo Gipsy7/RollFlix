@@ -449,7 +449,7 @@ class _GenreWheelState extends State<GenreWheel>
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Rolando...',
+                                AppLocalizations.of(context)!.rolling,
                                 style: TextStyle(
                                   color: AppColors.backgroundDark,
                                   fontSize: 16,

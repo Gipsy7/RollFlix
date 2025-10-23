@@ -10,6 +10,7 @@ import '../controllers/app_mode_controller.dart';
 import 'tv_show_details_screen.dart';
 import 'search_screen.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
+import '../utils/localized_genres.dart';
 
 class TVSeriesSearchScreen extends StatefulWidget {
   const TVSeriesSearchScreen({super.key});
@@ -498,8 +499,10 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
   }
 
   Widget _buildGenreFilter(bool isMobile) {
-    // Lista de gêneros de TV
+    // Lista de gêneros de TV localizados
     final tvGenres = MovieService.getTVGenres();
+    final localizedTVGenres = tvGenres.map((genre) =>
+        LocalizedGenres.getTVGenreName(context, genre)).toList();
     
     return Container(
       height: 60,
@@ -510,10 +513,10 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
         children: [
           _buildGenreChip(AppLocalizations.of(context)!.all, null, isMobile),
           const SizedBox(width: 8),
-          ...tvGenres.map((genre) => 
+          ...localizedTVGenres.map((localizedGenre) => 
             Padding(
               padding: const EdgeInsets.only(right: 8),
-              child: _buildGenreChip(genre, genre, isMobile),
+              child: _buildGenreChip(localizedGenre, tvGenres[localizedTVGenres.indexOf(localizedGenre)], isMobile),
             ),
           ),
         ],

@@ -2528,6 +2528,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'📊 Difficulty:'**
   String get difficultyPrefix;
+
+  /// No description provided for @genreNovidades.
+  ///
+  /// In en, this message translates to:
+  /// **'New Releases'**
+  String get genreNovidades;
+
+  /// No description provided for @genreAcao.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get genreAcao;
+
+  /// No description provided for @genreAventura.
+  ///
+  /// In en, this message translates to:
+  /// **'Adventure'**
+  String get genreAventura;
+
+  /// No description provided for @genreAnimacao.
+  ///
+  /// In en, this message translates to:
+  /// **'Animation'**
+  String get genreAnimacao;
+
+  /// No description provided for @genreComedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Comedy'**
+  String get genreComedia;
+
+  /// No description provided for @genreCrime.
+  ///
+  /// In en, this message translates to:
+  /// **'Crime'**
+  String get genreCrime;
+
+  /// No description provided for @genreDocumentario.
+  ///
+  /// In en, this message translates to:
+  /// **'Documentary'**
+  String get genreDocumentario;
+
+  /// No description provided for @genreDrama.
+  ///
+  /// In en, this message translates to:
+  /// **'Drama'**
+  String get genreDrama;
+
+  /// No description provided for @genreFamilia.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get genreFamilia;
+
+  /// No description provided for @genreFantasia.
+  ///
+  /// In en, this message translates to:
+  /// **'Fantasy'**
+  String get genreFantasia;
+
+  /// No description provided for @genreHistoria.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get genreHistoria;
+
+  /// No description provided for @genreTerror.
+  ///
+  /// In en, this message translates to:
+  /// **'Horror'**
+  String get genreTerror;
+
+  /// No description provided for @genreMusica.
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get genreMusica;
+
+  /// No description provided for @genreMisterio.
+  ///
+  /// In en, this message translates to:
+  /// **'Mystery'**
+  String get genreMisterio;
+
+  /// No description provided for @genreRomance.
+  ///
+  /// In en, this message translates to:
+  /// **'Romance'**
+  String get genreRomance;
+
+  /// No description provided for @genreFiccaoCientifica.
+  ///
+  /// In en, this message translates to:
+  /// **'Science Fiction'**
+  String get genreFiccaoCientifica;
+
+  /// No description provided for @genreSuspense.
+  ///
+  /// In en, this message translates to:
+  /// **'Thriller'**
+  String get genreSuspense;
+
+  /// No description provided for @genreGuerra.
+  ///
+  /// In en, this message translates to:
+  /// **'War'**
+  String get genreGuerra;
+
+  /// No description provided for @genreWestern.
+  ///
+  /// In en, this message translates to:
+  /// **'Western'**
+  String get genreWestern;
+
+  /// No description provided for @genreFavoritos.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get genreFavoritos;
+
+  /// No description provided for @genreAssistidos.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched'**
+  String get genreAssistidos;
+
+  /// No description provided for @tvGenreNovidades.
+  ///
+  /// In en, this message translates to:
+  /// **'New Releases'**
+  String get tvGenreNovidades;
+
+  /// No description provided for @tvGenreAcaoAventura.
+  ///
+  /// In en, this message translates to:
+  /// **'Action & Adventure'**
+  String get tvGenreAcaoAventura;
+
+  /// No description provided for @tvGenreAnimacao.
+  ///
+  /// In en, this message translates to:
+  /// **'Animation'**
+  String get tvGenreAnimacao;
+
+  /// No description provided for @tvGenreComedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Comedy'**
+  String get tvGenreComedia;
+
+  /// No description provided for @tvGenreCrime.
+  ///
+  /// In en, this message translates to:
+  /// **'Crime'**
+  String get tvGenreCrime;
+
+  /// No description provided for @tvGenreDocumentario.
+  ///
+  /// In en, this message translates to:
+  /// **'Documentary'**
+  String get tvGenreDocumentario;
+
+  /// No description provided for @tvGenreDrama.
+  ///
+  /// In en, this message translates to:
+  /// **'Drama'**
+  String get tvGenreDrama;
+
+  /// No description provided for @tvGenreFamilia.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get tvGenreFamilia;
+
+  /// No description provided for @tvGenreInfantil.
+  ///
+  /// In en, this message translates to:
+  /// **'Kids'**
+  String get tvGenreInfantil;
+
+  /// No description provided for @tvGenreMisterio.
+  ///
+  /// In en, this message translates to:
+  /// **'Mystery'**
+  String get tvGenreMisterio;
+
+  /// No description provided for @tvGenreNovela.
+  ///
+  /// In en, this message translates to:
+  /// **'Soap'**
+  String get tvGenreNovela;
+
+  /// No description provided for @tvGenreFiccaoCientificaFantasia.
+  ///
+  /// In en, this message translates to:
+  /// **'Sci-Fi & Fantasy'**
+  String get tvGenreFiccaoCientificaFantasia;
+
+  /// No description provided for @tvGenreTalkShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Talk Show'**
+  String get tvGenreTalkShow;
+
+  /// No description provided for @tvGenreGuerraPolitica.
+  ///
+  /// In en, this message translates to:
+  /// **'War & Politics'**
+  String get tvGenreGuerraPolitica;
+
+  /// No description provided for @tvGenreWestern.
+  ///
+  /// In en, this message translates to:
+  /// **'Western'**
+  String get tvGenreWestern;
+
+  /// No description provided for @tvGenreReality.
+  ///
+  /// In en, this message translates to:
+  /// **'Reality'**
+  String get tvGenreReality;
+
+  /// No description provided for @tvGenreFavoritos.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get tvGenreFavoritos;
+
+  /// No description provided for @tvGenreAssistidos.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched'**
+  String get tvGenreAssistidos;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

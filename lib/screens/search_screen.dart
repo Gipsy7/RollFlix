@@ -8,6 +8,7 @@ import '../utils/page_transitions.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/movie_widgets.dart';
 import '../widgets/optimized_widgets.dart';
+import '../utils/localized_genres.dart';
 import '../widgets/ux_components.dart';
 import '../controllers/app_mode_controller.dart';
 import 'movie_details_screen.dart';
@@ -518,8 +519,8 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   }
 
   Widget _buildGenreFilter(bool isMobile) {
-    // Lista de gêneros incluindo "Heróis"
-    final allGenres = [...AppConstants.movieGenres, AppLocalizations.of(context)!.heroes];
+    // Lista de gêneros incluindo "Heróis" (localizado)
+    final allGenres = [...AppConstants.movieGenres.map((genre) => LocalizedGenres.getGenreName(context, genre)), AppLocalizations.of(context)!.heroes];
     
     return Container(
       height: 60,
