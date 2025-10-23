@@ -195,6 +195,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
           productionCompanies: detailedMovie.productionCompanies,
           watchProviders: watchProviders,
           mealType: DateNightService.getMovieTypeKey(_selectedDateType!),
+          localizations: AppLocalizations.of(context),
         );
 
         // Atualizar combo com dados das receitas se disponível

@@ -1566,4 +1566,94 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get whoGetsMoreRightWinsRule => 'Celui qui a le plus juste gagne';
+
+  @override
+  String get jazzSmooth => 'Jazz doux';
+
+  @override
+  String get bossaNova => 'Bossa nova';
+
+  @override
+  String get romanticClassics => 'Classiques romantiques';
+
+  @override
+  String get romanticPop => 'Pop romantique';
+
+  @override
+  String get indieFolk => 'Indie folk';
+
+  @override
+  String get eightiesHits => 'Succès des années 80';
+
+  @override
+  String get classicalMusic => 'Musique classique';
+
+  @override
+  String get contemporaryJazz => 'Jazz contemporain';
+
+  @override
+  String get instrumental => 'Instrumental';
+
+  @override
+  String get spanishMusic => 'Musique espagnole';
+
+  @override
+  String get latinJazz => 'Latin jazz';
+
+  @override
+  String get musicalSoundtracks => 'Bandes originales musicales';
+
+  @override
+  String get softRock => 'Rock doux';
+
+  @override
+  String get romanticCountry => 'Country romantique';
+
+  @override
+  String get internationalPop => 'Pop international';
+
+  @override
+  String get classicRomance => 'Romance Classique';
+
+  @override
+  String get romanticComedy => 'Comédie Romantique';
+
+  @override
+  String get romanticDrama => 'Drame Romantique';
+
+  @override
+  String get musicalRomance => 'Romance Musical';
+
+  @override
+  String get adventureRomance => 'Romance d\'Aventure';
+
+  @override
+  String get thrillerRomance => 'Romance de Suspense';
+
+  @override
+  String get romanticFun => 'Fun Romantique';
+
+  @override
+  String get elegantRomance => 'Romance Élégant';
+
+  @override
+  String get spanishPassion => 'Passion Espagnole';
+
+  @override
+  String get mysteryJazz => 'Jazz Mystérieux';
+
+  @override
+  String get darkAmbient => 'Ambient Sombre';
+
+  @override
+  String get intenseClassical => 'Classique Intense';
+
+  @override
+  String get romanticMusic => 'Musique Romantique';
+
+  @override
+  String get bluesClassic => 'Blues classique';
+
+  @override
+  String get soulfulRhythms => 'Rythmes soul';
 }

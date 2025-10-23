@@ -1566,4 +1566,94 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get whoGetsMoreRightWinsRule => 'Whoever gets more right wins';
+
+  @override
+  String get jazzSmooth => 'Smooth jazz';
+
+  @override
+  String get bossaNova => 'Bossa nova';
+
+  @override
+  String get romanticClassics => 'Romantic classics';
+
+  @override
+  String get romanticPop => 'Romantic pop';
+
+  @override
+  String get indieFolk => 'Indie folk';
+
+  @override
+  String get eightiesHits => 'Eighties hits';
+
+  @override
+  String get classicalMusic => 'Classical music';
+
+  @override
+  String get contemporaryJazz => 'Contemporary jazz';
+
+  @override
+  String get instrumental => 'Instrumental';
+
+  @override
+  String get spanishMusic => 'Spanish music';
+
+  @override
+  String get latinJazz => 'Latin jazz';
+
+  @override
+  String get musicalSoundtracks => 'Musical soundtracks';
+
+  @override
+  String get softRock => 'Soft rock';
+
+  @override
+  String get romanticCountry => 'Romantic country';
+
+  @override
+  String get internationalPop => 'International pop';
+
+  @override
+  String get classicRomance => 'Classic Romance';
+
+  @override
+  String get romanticComedy => 'Romantic Comedy';
+
+  @override
+  String get romanticDrama => 'Romantic Drama';
+
+  @override
+  String get musicalRomance => 'Musical Romance';
+
+  @override
+  String get adventureRomance => 'Adventure Romance';
+
+  @override
+  String get thrillerRomance => 'Thriller Romance';
+
+  @override
+  String get romanticFun => 'Romantic Fun';
+
+  @override
+  String get elegantRomance => 'Elegant Romance';
+
+  @override
+  String get spanishPassion => 'Spanish Passion';
+
+  @override
+  String get mysteryJazz => 'Mystery Jazz';
+
+  @override
+  String get darkAmbient => 'Dark Ambient';
+
+  @override
+  String get intenseClassical => 'Intense Classical';
+
+  @override
+  String get romanticMusic => 'Romantic Music';
+
+  @override
+  String get bluesClassic => 'Classic blues';
+
+  @override
+  String get soulfulRhythms => 'Soulful rhythms';
 }

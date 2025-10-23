@@ -1,3 +1,5 @@
+import '../l10n/app_localizations.dart';
+
 class DateNightCombo {
   final String movieTitle;
   final String movieYear;
@@ -84,8 +86,9 @@ class DateNightCombo {
     List<String> productionCompanies = const [],
     List<Map<String, dynamic>> watchProviders = const [],
     required String mealType,
+    AppLocalizations? localizations,
   }) {
-    final mealData = DateNightService.getMealForMovieType(mealType);
+    final mealData = DateNightService.getMealForMovieType(mealType, localizations);
     
     return DateNightCombo(
       movieId: movieId,
@@ -140,7 +143,7 @@ class DateNightService {
       ],
       'cookingTips': 'Mexa o risotto constantemente para ficar cremoso',
       'theme': 'Romance Clássico',
-      'playlistSuggestions': ['Jazz suave', 'Bossa nova', 'Clássicos românticos'],
+      'playlistSuggestions': ['Jazz suave', 'Blues clássico', 'Ritmos soul'],
       'ambientLighting': 'Velas e luzes LED quentes',
       'estimatedCost': 'R\$ 80-120'
     },
@@ -232,11 +235,83 @@ class DateNightService {
       'playlistSuggestions': ['Rock suave', 'Country romântico', 'Pop internacional'],
       'ambientLighting': 'Ambiente ao ar livre ou luzes naturais',
       'estimatedCost': 'R\$ 70-100'
+    },
+    'thriller_romance': {
+      'mainDish': 'Risotto de cogumelos selvagens',
+      'drink': 'Vinho tinto encorpado',
+      'dessert': 'Torta de chocolate amargo',
+      'snacks': ['Queijos maturados', 'Pães rústicos', 'Azeitonas pretas'],
+      'atmosphere': 'Misterioso e intenso',
+      'preparationTime': '55 minutos',
+      'difficulty': 'Intermediário',
+      'ingredients': [
+        'Arroz arbóreo',
+        'Cogumelos selvagens',
+        'Vinho tinto',
+        'Caldo de legumes',
+        'Queijo parmesão',
+        'Chocolate 85%',
+        'Creme de leite'
+      ],
+      'cookingTips': 'Use cogumelos frescos para melhor sabor',
+      'theme': 'Suspense Romântico',
+      'playlistSuggestions': ['Jazz misterioso', 'Ambient sombrio', 'Clássico intenso'],
+      'ambientLighting': 'Luzes baixas e atmosfera dramática',
+      'estimatedCost': 'R\$ 85-125'
     }
   };
 
-  static Map<String, dynamic> getMealForMovieType(String movieType) {
-    return _mealCombinations[movieType] ?? _mealCombinations['romance_classic']!;
+  static Map<String, dynamic> getMealForMovieType(String movieType, [AppLocalizations? localizations]) {
+    final mealData = Map<String, dynamic>.from(_mealCombinations[movieType] ?? _mealCombinations['romance_classic']!);
+    
+    if (localizations != null) {
+      // Aplicar localizações às sugestões de playlist
+      final playlistSuggestions = mealData['playlistSuggestions'] as List<String>;
+      mealData['playlistSuggestions'] = playlistSuggestions.map((suggestion) {
+        switch (suggestion) {
+          case 'Jazz suave':
+            return localizations.jazzSmooth;
+          case 'Blues clássico':
+            return localizations.bluesClassic;
+          case 'Ritmos soul':
+            return localizations.soulfulRhythms;
+          case 'Pop romântico':
+            return localizations.romanticPop;
+          case 'Indie folk':
+            return localizations.indieFolk;
+          case 'Sucessos dos anos 80':
+            return localizations.eightiesHits;
+          case 'Música clássica':
+            return localizations.classicalMusic;
+          case 'Jazz contemporâneo':
+            return localizations.contemporaryJazz;
+          case 'Instrumental':
+            return localizations.instrumental;
+          case 'Música espanhola':
+            return localizations.spanishMusic;
+          case 'Latin jazz':
+            return localizations.latinJazz;
+          case 'Trilhas de musicais':
+            return localizations.musicalSoundtracks;
+          case 'Rock suave':
+            return localizations.softRock;
+          case 'Country romântico':
+            return localizations.romanticCountry;
+          case 'Pop internacional':
+            return localizations.internationalPop;
+          case 'Jazz misterioso':
+            return localizations.mysteryJazz;
+          case 'Ambient sombrio':
+            return localizations.darkAmbient;
+          case 'Clássico intenso':
+            return localizations.intenseClassical;
+          default:
+            return suggestion;
+        }
+      }).toList();
+    }
+    
+    return mealData;
   }
 
   static List<String> getAvailableDateTypes() {

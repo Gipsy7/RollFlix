@@ -1233,7 +1233,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
             .toList() ?? ['Ingredientes variados'],
         cookingTips: 'Siga as instruções da receita',
         theme: 'Noite romântica',
-        playlistSuggestions: ['Jazz', 'Bossa Nova', 'Música Romântica'],
+        playlistSuggestions: [AppLocalizations.of(context)!.jazzSmooth, AppLocalizations.of(context)!.bossaNova, AppLocalizations.of(context)!.romanticMusic],
         ambientLighting: 'Luzes suaves',
         estimatedCost: 'R\$ 80-120',
         mainCourseRecipeId: mainCourse.id,

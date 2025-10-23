@@ -3080,6 +3080,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Whoever gets more right wins'**
   String get whoGetsMoreRightWinsRule;
+
+  /// No description provided for @jazzSmooth.
+  ///
+  /// In en, this message translates to:
+  /// **'Smooth jazz'**
+  String get jazzSmooth;
+
+  /// No description provided for @bossaNova.
+  ///
+  /// In en, this message translates to:
+  /// **'Bossa nova'**
+  String get bossaNova;
+
+  /// No description provided for @romanticClassics.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic classics'**
+  String get romanticClassics;
+
+  /// No description provided for @romanticPop.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic pop'**
+  String get romanticPop;
+
+  /// No description provided for @indieFolk.
+  ///
+  /// In en, this message translates to:
+  /// **'Indie folk'**
+  String get indieFolk;
+
+  /// No description provided for @eightiesHits.
+  ///
+  /// In en, this message translates to:
+  /// **'Eighties hits'**
+  String get eightiesHits;
+
+  /// No description provided for @classicalMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Classical music'**
+  String get classicalMusic;
+
+  /// No description provided for @contemporaryJazz.
+  ///
+  /// In en, this message translates to:
+  /// **'Contemporary jazz'**
+  String get contemporaryJazz;
+
+  /// No description provided for @instrumental.
+  ///
+  /// In en, this message translates to:
+  /// **'Instrumental'**
+  String get instrumental;
+
+  /// No description provided for @spanishMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish music'**
+  String get spanishMusic;
+
+  /// No description provided for @latinJazz.
+  ///
+  /// In en, this message translates to:
+  /// **'Latin jazz'**
+  String get latinJazz;
+
+  /// No description provided for @musicalSoundtracks.
+  ///
+  /// In en, this message translates to:
+  /// **'Musical soundtracks'**
+  String get musicalSoundtracks;
+
+  /// No description provided for @softRock.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft rock'**
+  String get softRock;
+
+  /// No description provided for @romanticCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic country'**
+  String get romanticCountry;
+
+  /// No description provided for @internationalPop.
+  ///
+  /// In en, this message translates to:
+  /// **'International pop'**
+  String get internationalPop;
+
+  /// No description provided for @classicRomance.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Romance'**
+  String get classicRomance;
+
+  /// No description provided for @romanticComedy.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic Comedy'**
+  String get romanticComedy;
+
+  /// No description provided for @romanticDrama.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic Drama'**
+  String get romanticDrama;
+
+  /// No description provided for @musicalRomance.
+  ///
+  /// In en, this message translates to:
+  /// **'Musical Romance'**
+  String get musicalRomance;
+
+  /// No description provided for @adventureRomance.
+  ///
+  /// In en, this message translates to:
+  /// **'Adventure Romance'**
+  String get adventureRomance;
+
+  /// No description provided for @thrillerRomance.
+  ///
+  /// In en, this message translates to:
+  /// **'Thriller Romance'**
+  String get thrillerRomance;
+
+  /// No description provided for @romanticFun.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic Fun'**
+  String get romanticFun;
+
+  /// No description provided for @elegantRomance.
+  ///
+  /// In en, this message translates to:
+  /// **'Elegant Romance'**
+  String get elegantRomance;
+
+  /// No description provided for @spanishPassion.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish Passion'**
+  String get spanishPassion;
+
+  /// No description provided for @mysteryJazz.
+  ///
+  /// In en, this message translates to:
+  /// **'Mystery Jazz'**
+  String get mysteryJazz;
+
+  /// No description provided for @darkAmbient.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Ambient'**
+  String get darkAmbient;
+
+  /// No description provided for @intenseClassical.
+  ///
+  /// In en, this message translates to:
+  /// **'Intense Classical'**
+  String get intenseClassical;
+
+  /// No description provided for @romanticMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic Music'**
+  String get romanticMusic;
+
+  /// No description provided for @bluesClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic blues'**
+  String get bluesClassic;
+
+  /// No description provided for @soulfulRhythms.
+  ///
+  /// In en, this message translates to:
+  /// **'Soulful rhythms'**
+  String get soulfulRhythms;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
