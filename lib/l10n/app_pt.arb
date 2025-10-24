@@ -759,7 +759,16 @@
   "musicalSoundtracks": "Trilhas de musicais",
   "softRock": "Rock suave",
   "romanticCountry": "Country romântico",
-  "internationalPop": "Pop internacional"
+  "internationalPop": "Pop internacional",
+  "chooseStyle": "Escolha o Estilo",
+  "preparing": "Preparando...",
+  "createPerfectDate": "💕 Criar Encontro Perfeito",
+  "classicRomance": "Romance Clássico",
+  "romanticComedy": "Comédia Romântica",
+  "romanticDrama": "Drama Romântico",
+  "musicalRomance": "Musical Romântico",
+  "adventureRomance": "Romance Aventureiro",
+  "thrillerRomance": "Suspense Romântico"
 }
 
 

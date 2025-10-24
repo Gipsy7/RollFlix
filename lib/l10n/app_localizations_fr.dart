@@ -1622,7 +1622,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get romanticDrama => 'Drame Romantique';
 
   @override
-  String get musicalRomance => 'Romance Musical';
+  String get musicalRomance => 'Romance Musicale';
 
   @override
   String get adventureRomance => 'Romance d\'Aventure';
@@ -1656,4 +1656,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get soulfulRhythms => 'Rythmes soul';
+
+  @override
+  String get chooseStyle => 'Choisissez le Style';
+
+  @override
+  String get preparing => 'Préparation...';
+
+  @override
+  String get createPerfectDate => '💕 Créer un Rendez-vous Parfait';
 }

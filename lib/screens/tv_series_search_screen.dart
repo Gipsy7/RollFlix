@@ -318,7 +318,7 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
         onPressed: () => Navigator.pop(context),
       ),
       title: SafeText(
-        'Pesquisar Séries',
+        AppLocalizations.of(context)!.searchSeries,
         style: AppTextStyles.headlineSmall.copyWith(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,

@@ -314,18 +314,40 @@ class DateNightService {
     return mealData;
   }
 
-  static List<String> getAvailableDateTypes() {
+  static List<String> getAvailableDateTypes(AppLocalizations? localizations) {
+    if (localizations == null) {
+      return [
+        'Romance Clássico',
+        'Comédia Romântica', 
+        'Drama Romântico',
+        'Musical Romântico',
+        'Romance Aventureiro',
+        'Suspense Romântico'
+      ];
+    }
+    
     return [
-      'Romance Clássico',
-      'Comédia Romântica', 
-      'Drama Romântico',
-      'Musical Romântico',
-      'Romance Aventureiro',
-      'Suspense Romântico'
+      localizations.classicRomance,
+      localizations.romanticComedy,
+      localizations.romanticDrama,
+      localizations.musicalRomance,
+      localizations.adventureRomance,
+      localizations.thrillerRomance,
     ];
   }
 
-  static String getMovieTypeKey(String dateType) {
+  static String getMovieTypeKey(String dateType, AppLocalizations? localizations) {
+    // First try to match with localized strings
+    if (localizations != null) {
+      if (dateType == localizations.classicRomance) return 'romance_classic';
+      if (dateType == localizations.romanticComedy) return 'romantic_comedy';
+      if (dateType == localizations.romanticDrama) return 'drama_romantic';
+      if (dateType == localizations.musicalRomance) return 'musical_romance';
+      if (dateType == localizations.adventureRomance) return 'adventure_romance';
+      if (dateType == localizations.thrillerRomance) return 'thriller_romance';
+    }
+    
+    // Fallback to Portuguese hardcoded strings for backward compatibility
     switch (dateType) {
       case 'Romance Clássico':
         return 'romance_classic';

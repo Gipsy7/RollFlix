@@ -3260,6 +3260,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Soulful rhythms'**
   String get soulfulRhythms;
+
+  /// No description provided for @chooseStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the Style'**
+  String get chooseStyle;
+
+  /// No description provided for @preparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing...'**
+  String get preparing;
+
+  /// No description provided for @createPerfectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'💕 Create Perfect Date'**
+  String get createPerfectDate;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

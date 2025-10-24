@@ -35,7 +35,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
     super.initState();
 
     // Seleciona automaticamente o primeiro tipo
-    final dateTypes = DateNightService.getAvailableDateTypes();
+    final dateTypes = DateNightService.getAvailableDateTypes(AppLocalizations.of(context));
     if (dateTypes.isNotEmpty) {
       _selectedDateType = dateTypes.first;
     }
@@ -83,21 +83,22 @@ class _DateNightScreenState extends State<DateNightScreen> {
 
     try {
       // Buscar filmes românticos baseado no tipo selecionado
+      final movieTypeKey = DateNightService.getMovieTypeKey(_selectedDateType!, AppLocalizations.of(context));
       List<Movie> movies = [];
       
-      switch (_selectedDateType) {
-        case 'Romance Clássico':
+      switch (movieTypeKey) {
+        case 'romance_classic':
           movies = await MovieService.getMoviesByGenre('Romance');
           break;
-        case 'Comédia Romântica':
+        case 'romantic_comedy':
           final comedyRomanceMovies = await MovieService.getMoviesByGenres([35, 10749]); // Comedy + Romance
           movies = comedyRomanceMovies ?? [];
           break;
-        case 'Drama Romântico':
+        case 'drama_romantic':
           final dramaRomanceMovies = await MovieService.getMoviesByGenres([18, 10749]); // Drama + Romance
           movies = dramaRomanceMovies ?? [];
           break;
-        case 'Musical Romântico':
+        case 'musical_romance':
           final musicalRomanceMovies = await MovieService.getMoviesByGenres([10402, 10749]); // Music + Romance
           movies = musicalRomanceMovies ?? [];
           break;
@@ -194,7 +195,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
           originalLanguage: detailedMovie.originalLanguage,
           productionCompanies: detailedMovie.productionCompanies,
           watchProviders: watchProviders,
-          mealType: DateNightService.getMovieTypeKey(_selectedDateType!),
+          mealType: DateNightService.getMovieTypeKey(_selectedDateType!, AppLocalizations.of(context)),
           localizations: AppLocalizations.of(context),
         );
 
@@ -446,7 +447,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
   }
 
   Widget _buildDateTypeSelection(bool isMobile) {
-    final dateTypes = DateNightService.getAvailableDateTypes();
+    final dateTypes = DateNightService.getAvailableDateTypes(AppLocalizations.of(context));
     
     return AppCard(
       child: Column(
@@ -468,7 +469,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
               ),
               const SizedBox(width: 8),
               SafeText(
-                'Escolha o Estilo',
+                AppLocalizations.of(context)!.chooseStyle,
                 style: AppTextStyles.headlineSmall.copyWith(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w600,
@@ -579,6 +580,17 @@ class _DateNightScreenState extends State<DateNightScreen> {
   }
 
   IconData _getIconForDateType(String dateType) {
+    final localizations = AppLocalizations.of(context);
+    if (localizations != null) {
+      if (dateType == localizations.classicRomance) return Icons.local_florist;
+      if (dateType == localizations.romanticComedy) return Icons.emoji_emotions;
+      if (dateType == localizations.romanticDrama) return Icons.theater_comedy;
+      if (dateType == localizations.musicalRomance) return Icons.music_note;
+      if (dateType == localizations.adventureRomance) return Icons.explore;
+      if (dateType == localizations.thrillerRomance) return Icons.visibility;
+    }
+    
+    // Fallback to Portuguese hardcoded strings
     switch (dateType) {
       case 'Romance Clássico':
         return Icons.local_florist;
@@ -600,7 +612,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
   Widget _buildGenerateButton(bool isMobile) {
     return AppButton(
       onPressed: _selectedDateType != null && !_isLoading ? _generateDateNight : null,
-      text: _isLoading ? 'Preparando...' : '💕 Criar Encontro Perfeito',
+      text: _isLoading ? AppLocalizations.of(context)!.preparing : AppLocalizations.of(context)!.createPerfectDate,
       isLoading: _isLoading,
       icon: _isLoading ? null : Icons.auto_awesome,
       backgroundColor: _primaryRose,

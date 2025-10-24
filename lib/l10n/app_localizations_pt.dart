@@ -1656,4 +1656,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get soulfulRhythms => 'Ritmos soul';
+
+  @override
+  String get chooseStyle => 'Escolha o Estilo';
+
+  @override
+  String get preparing => 'Preparando...';
+
+  @override
+  String get createPerfectDate => '💕 Criar Encontro Perfeito';
 }

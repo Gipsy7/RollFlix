@@ -59,7 +59,7 @@ class AppDrawer extends StatelessWidget {
     
   final headerSubtitle = appModeController.isSeriesMode
     ? AppLocalizations.of(context)!.discoverAmazingSeries
-    : 'Roll and chill';
+    : AppLocalizations.of(context)!.rollAndChill;
     
     // Cor adaptativa para o subtítulo
     final subtitleColor = appModeController.isSeriesMode 
