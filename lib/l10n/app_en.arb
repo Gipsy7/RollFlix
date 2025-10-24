@@ -768,7 +768,21 @@
   "romanticDrama": "Romantic Drama",
   "musicalRomance": "Musical Romance",
   "adventureRomance": "Adventure Romance",
-  "thrillerRomance": "Thriller Romance"
+  "thrillerRomance": "Thriller Romance",
+  "ready": "Ready!",
+  "restart": "Restart",
+  "pause": "Pause",
+  "start": "Start",
+  "add5Min": "+5 min",
+  "ingredientsList": "Ingredients List",
+  "mainCourse": "Main Course",
+  "dessert": "Dessert",
+  "appetizers": "Appetizers",
+  "sideDishes": "Side Dishes",
+  "allIngredientsReady": "All ingredients ready! 🎉",
+  "item": "item",
+  "items": "items",
+  "dateNightSchedule": "Date Night Schedule"
 }
 
 

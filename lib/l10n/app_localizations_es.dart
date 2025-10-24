@@ -1665,4 +1665,46 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get createPerfectDate => '💕 Crear Cita Perfecta';
+
+  @override
+  String get ready => '¡Listo!';
+
+  @override
+  String get restart => 'Reiniciar';
+
+  @override
+  String get pause => 'Pausar';
+
+  @override
+  String get start => 'Iniciar';
+
+  @override
+  String get add5Min => '+5 min';
+
+  @override
+  String get ingredientsList => 'Lista de Ingredientes';
+
+  @override
+  String get mainCourse => 'Plato Principal';
+
+  @override
+  String get dessert => 'Postre';
+
+  @override
+  String get appetizers => 'Entrantes';
+
+  @override
+  String get sideDishes => 'Acompañamientos';
+
+  @override
+  String get allIngredientsReady => '¡Todos los ingredientes listos! 🎉';
+
+  @override
+  String get item => 'elemento';
+
+  @override
+  String get items => 'elementos';
+
+  @override
+  String get dateNightSchedule => 'Cronograma de la Cita';
 }

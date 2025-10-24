@@ -3278,6 +3278,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'💕 Create Perfect Date'**
   String get createPerfectDate;
+
+  /// No description provided for @ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready!'**
+  String get ready;
+
+  /// No description provided for @restart.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart'**
+  String get restart;
+
+  /// No description provided for @pause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pause;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @add5Min.
+  ///
+  /// In en, this message translates to:
+  /// **'+5 min'**
+  String get add5Min;
+
+  /// No description provided for @ingredientsList.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients List'**
+  String get ingredientsList;
+
+  /// No description provided for @mainCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Course'**
+  String get mainCourse;
+
+  /// No description provided for @dessert.
+  ///
+  /// In en, this message translates to:
+  /// **'Dessert'**
+  String get dessert;
+
+  /// No description provided for @appetizers.
+  ///
+  /// In en, this message translates to:
+  /// **'Appetizers'**
+  String get appetizers;
+
+  /// No description provided for @sideDishes.
+  ///
+  /// In en, this message translates to:
+  /// **'Side Dishes'**
+  String get sideDishes;
+
+  /// No description provided for @allIngredientsReady.
+  ///
+  /// In en, this message translates to:
+  /// **'All ingredients ready! 🎉'**
+  String get allIngredientsReady;
+
+  /// No description provided for @item.
+  ///
+  /// In en, this message translates to:
+  /// **'item'**
+  String get item;
+
+  /// No description provided for @items.
+  ///
+  /// In en, this message translates to:
+  /// **'items'**
+  String get items;
+
+  /// No description provided for @dateNightSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Night Schedule'**
+  String get dateNightSchedule;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

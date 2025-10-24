@@ -768,7 +768,21 @@
   "romanticDrama": "Drama Romântico",
   "musicalRomance": "Musical Romântico",
   "adventureRomance": "Romance Aventureiro",
-  "thrillerRomance": "Suspense Romântico"
+  "thrillerRomance": "Suspense Romântico",
+  "ready": "Pronto!",
+  "restart": "Reiniciar",
+  "pause": "Pausar",
+  "start": "Iniciar",
+  "add5Min": "+5 min",
+  "ingredientsList": "Lista de Ingredientes",
+  "mainCourse": "Prato Principal",
+  "dessert": "Sobremesa",
+  "appetizers": "Petiscos",
+  "sideDishes": "Acompanhamentos",
+  "allIngredientsReady": "Todos os ingredientes prontos! 🎉",
+  "item": "item",
+  "items": "itens",
+  "dateNightSchedule": "Cronograma do Date Night"
 }
 
 

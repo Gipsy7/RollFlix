@@ -1665,4 +1665,46 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get createPerfectDate => '💕 Criar Encontro Perfeito';
+
+  @override
+  String get ready => 'Pronto!';
+
+  @override
+  String get restart => 'Reiniciar';
+
+  @override
+  String get pause => 'Pausar';
+
+  @override
+  String get start => 'Iniciar';
+
+  @override
+  String get add5Min => '+5 min';
+
+  @override
+  String get ingredientsList => 'Lista de Ingredientes';
+
+  @override
+  String get mainCourse => 'Prato Principal';
+
+  @override
+  String get dessert => 'Sobremesa';
+
+  @override
+  String get appetizers => 'Petiscos';
+
+  @override
+  String get sideDishes => 'Acompanhamentos';
+
+  @override
+  String get allIngredientsReady => 'Todos os ingredientes prontos! 🎉';
+
+  @override
+  String get item => 'item';
+
+  @override
+  String get items => 'itens';
+
+  @override
+  String get dateNightSchedule => 'Cronograma do Date Night';
 }

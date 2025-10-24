@@ -1665,4 +1665,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createPerfectDate => '💕 Create Perfect Date';
+
+  @override
+  String get ready => 'Ready!';
+
+  @override
+  String get restart => 'Restart';
+
+  @override
+  String get pause => 'Pause';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get add5Min => '+5 min';
+
+  @override
+  String get ingredientsList => 'Ingredients List';
+
+  @override
+  String get mainCourse => 'Main Course';
+
+  @override
+  String get dessert => 'Dessert';
+
+  @override
+  String get appetizers => 'Appetizers';
+
+  @override
+  String get sideDishes => 'Side Dishes';
+
+  @override
+  String get allIngredientsReady => 'All ingredients ready! 🎉';
+
+  @override
+  String get item => 'item';
+
+  @override
+  String get items => 'items';
+
+  @override
+  String get dateNightSchedule => 'Date Night Schedule';
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 import '../utils/color_extensions.dart';
 
@@ -137,9 +138,9 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
                     ),
                   ),
                   if (_isCompleted)
-                    const Text(
-                      'Pronto!',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.ready,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: Colors.white70,
@@ -162,7 +163,7 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
                 icon: const Icon(Icons.refresh),
                 color: Colors.white70,
                 iconSize: 28,
-                tooltip: 'Reiniciar',
+                tooltip: AppLocalizations.of(context)!.restart,
               ),
 
               // Botão Play/Pause
@@ -178,7 +179,7 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
                   icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow),
                   color: Colors.white,
                   iconSize: 36,
-                  tooltip: _isRunning ? 'Pausar' : 'Iniciar',
+                  tooltip: _isRunning ? AppLocalizations.of(context)!.pause : AppLocalizations.of(context)!.start,
                 ),
               ),
 
@@ -192,7 +193,7 @@ class _CookingTimerWidgetState extends State<CookingTimerWidget> {
                 icon: const Icon(Icons.add),
                 color: Colors.white70,
                 iconSize: 28,
-                tooltip: '+5 min',
+                tooltip: AppLocalizations.of(context)!.add5Min,
               ),
             ],
           ),
@@ -268,9 +269,9 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Lista de Ingredientes',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.ingredientsList,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -313,7 +314,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
             // Layout categorizado
             if (widget.mainCourseIngredients != null && widget.mainCourseIngredients!.isNotEmpty)
               _buildCategorySection(
-                'Prato Principal',
+                AppLocalizations.of(context)!.mainCourse,
                 Icons.restaurant,
                 widget.mainCourseIngredients!,
                 0,
@@ -322,7 +323,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
             if (widget.dessertIngredients != null && widget.dessertIngredients!.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildCategorySection(
-                'Sobremesa',
+                AppLocalizations.of(context)!.dessert,
                 Icons.cake,
                 widget.dessertIngredients!,
                 (widget.mainCourseIngredients?.length ?? 0),
@@ -332,7 +333,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
             if (widget.appetizerIngredients != null && widget.appetizerIngredients!.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildCategorySection(
-                'Petiscos',
+                AppLocalizations.of(context)!.appetizers,
                 Icons.tapas,
                 widget.appetizerIngredients!,
                 (widget.mainCourseIngredients?.length ?? 0) + 
@@ -343,7 +344,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
             if (widget.sideDishIngredients != null && widget.sideDishIngredients!.isNotEmpty) ...[
               const SizedBox(height: 16),
               _buildCategorySection(
-                'Acompanhamentos',
+                AppLocalizations.of(context)!.sideDishes,
                 Icons.rice_bowl,
                 widget.sideDishIngredients!,
                 (widget.mainCourseIngredients?.length ?? 0) + 
@@ -366,14 +367,14 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
                 color: Colors.green.withOpacitySafe(0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.celebration, color: Colors.green),
-                  SizedBox(width: 12),
+                  const Icon(Icons.celebration, color: Colors.green),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Todos os ingredientes prontos! 🎉',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.allIngredientsReady,
+                      style: const TextStyle(
                         color: Colors.green,
                         fontWeight: FontWeight.bold,
                       ),
@@ -417,7 +418,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                '${ingredients.length} ${ingredients.length == 1 ? 'item' : 'itens'}',
+                '${ingredients.length} ${ingredients.length == 1 ? AppLocalizations.of(context)!.item : AppLocalizations.of(context)!.items}',
                 style: const TextStyle(
                   color: _primaryRose,
                   fontSize: 12,
@@ -520,9 +521,9 @@ class DateNightScheduleWidget extends StatelessWidget {
             children: [
               const Icon(Icons.schedule, color: _secondaryGold),
               const SizedBox(width: 12),
-              const Text(
-                'Cronograma do Date Night',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.dateNightSchedule,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

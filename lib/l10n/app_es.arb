@@ -768,7 +768,21 @@
   "romanticDrama": "Drama Romántico",
   "musicalRomance": "Romance Musical",
   "adventureRomance": "Romance de Aventura",
-  "thrillerRomance": "Romance de Suspenso"
+  "thrillerRomance": "Romance de Suspenso",
+  "ready": "¡Listo!",
+  "restart": "Reiniciar",
+  "pause": "Pausar",
+  "start": "Iniciar",
+  "add5Min": "+5 min",
+  "ingredientsList": "Lista de Ingredientes",
+  "mainCourse": "Plato Principal",
+  "dessert": "Postre",
+  "appetizers": "Entrantes",
+  "sideDishes": "Acompañamientos",
+  "allIngredientsReady": "¡Todos los ingredientes listos! 🎉",
+  "item": "elemento",
+  "items": "elementos",
+  "dateNightSchedule": "Cronograma de la Cita"
 }
 
 
