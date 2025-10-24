@@ -1707,4 +1707,349 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dateNightSchedule => 'Cronograma de la Cita';
+
+  @override
+  String get shrimpRisotto => 'Risotto de camarones';
+
+  @override
+  String get homemadeMargheritaPizza => 'Pizza margarita casera';
+
+  @override
+  String get grilledSalmonWithAsparagus => 'Salmón a la parrilla con espárragos';
+
+  @override
+  String get valencianPaella => 'Paella valenciana';
+
+  @override
+  String get gourmetBarbecue => 'Barbacoa gourmet';
+
+  @override
+  String get wildMushroomRisotto => 'Risotto de champiñones silvestres';
+
+  @override
+  String get roseWine => 'Vino rosado';
+
+  @override
+  String get prosecco => 'Prosecco';
+
+  @override
+  String get softRedWine => 'Vino tinto suave';
+
+  @override
+  String get sangria => 'Sangría';
+
+  @override
+  String get redBerryCaipirinha => 'Caipirinha de frutas rojas';
+
+  @override
+  String get fullBodiedRedWine => 'Vino tinto corpulento';
+
+  @override
+  String get strawberriesWithChocolate => 'Fresas con chocolate';
+
+  @override
+  String get brownieWithIceCream => 'Brownie con helado';
+
+  @override
+  String get tiramisu => 'Tiramisú';
+
+  @override
+  String get cremeBrulee => 'Crème brûlée';
+
+  @override
+  String get fruitPavlova => 'Pavlova de frutas';
+
+  @override
+  String get darkChocolateCake => 'Torta de chocolate negro';
+
+  @override
+  String get specialCheeses => 'Quesos especiales';
+
+  @override
+  String get grapes => 'Uvas';
+
+  @override
+  String get nuts => 'Nueces';
+
+  @override
+  String get gourmetPopcorn => 'Palomitas gourmet';
+
+  @override
+  String get olives => 'Aceitunas';
+
+  @override
+  String get garlicBread => 'Pan de ajo';
+
+  @override
+  String get cheeseBoard => 'Tabla de quesos';
+
+  @override
+  String get artisanBreads => 'Panes artesanales';
+
+  @override
+  String get varietyTapas => 'Tapas variadas';
+
+  @override
+  String get roastedPeppers => 'Pimientos asados';
+
+  @override
+  String get cheeseSkewers => 'Pinchos de queso';
+
+  @override
+  String get sweetPotatoChips => 'Chips de batata dulce';
+
+  @override
+  String get guacamole => 'Guacamole';
+
+  @override
+  String get agedCheeses => 'Quesos curados';
+
+  @override
+  String get rusticBreads => 'Panes rústicos';
+
+  @override
+  String get blackOlives => 'Aceitunas negras';
+
+  @override
+  String get lowLightsAromaticCandles => 'Luces bajas y velas aromáticas';
+
+  @override
+  String get relaxedFunAtmosphere => 'Ambiente relajado y divertido';
+
+  @override
+  String get sophisticatedIntimate => 'Sofisticado e íntimo';
+
+  @override
+  String get vibrantMusical => 'Vibrante y musical';
+
+  @override
+  String get adventurousRelaxed => 'Aventurero y relajado';
+
+  @override
+  String get mysteriousIntense => 'Misterioso e intenso';
+
+  @override
+  String get fortyFiveMinutes => '45 minutos';
+
+  @override
+  String get thirtyMinutes => '30 minutos';
+
+  @override
+  String get fiftyMinutes => '50 minutos';
+
+  @override
+  String get sixtyMinutes => '60 minutos';
+
+  @override
+  String get fortyMinutes => '40 minutos';
+
+  @override
+  String get fiftyFiveMinutes => '55 minutos';
+
+  @override
+  String get arborioRice => 'Arroz arborio';
+
+  @override
+  String get freshShrimp => 'Camarones frescos';
+
+  @override
+  String get whiteWine => 'Vino blanco';
+
+  @override
+  String get fishBroth => 'Caldo de pescado';
+
+  @override
+  String get parmesanCheese => 'Queso parmesano';
+
+  @override
+  String get strawberries => 'Fresas';
+
+  @override
+  String get seventyPercentChocolate => 'Chocolate 70%';
+
+  @override
+  String get pizzaDough => 'Masa de pizza lista';
+
+  @override
+  String get tomatoSauce => 'Salsa de tomate';
+
+  @override
+  String get buffaloMozzarella => 'Mozzarella de búfala';
+
+  @override
+  String get freshBasil => 'Albahaca fresca';
+
+  @override
+  String get brownieMix => 'Mezcla para brownie';
+
+  @override
+  String get vanillaIceCream => 'Helado de vainilla';
+
+  @override
+  String get salmonFillet => 'Filete de salmón';
+
+  @override
+  String get freshAsparagus => 'Espárragos frescos';
+
+  @override
+  String get sicilianLemon => 'Limón siciliano';
+
+  @override
+  String get extraVirginOliveOil => 'Aceite de oliva extra virgen';
+
+  @override
+  String get tiramisuIngredients => 'Ingredientes para tiramisú';
+
+  @override
+  String get espressoCoffee => 'Café expreso';
+
+  @override
+  String get bombaRice => 'Arroz bomba';
+
+  @override
+  String get seafood => 'Mariscos';
+
+  @override
+  String get chicken => 'Pollo';
+
+  @override
+  String get saffron => 'Azafrán';
+
+  @override
+  String get peppers => 'Pimientos';
+
+  @override
+  String get redWine => 'Vino tinto';
+
+  @override
+  String get fruitsForSangria => 'Frutas para sangría';
+
+  @override
+  String get nobleMeatForBarbecue => 'Carne noble para barbacoa';
+
+  @override
+  String get specialSeasonings => 'Condimentos especiales';
+
+  @override
+  String get cachaca => 'Cachaça';
+
+  @override
+  String get redBerries => 'Frutas rojas';
+
+  @override
+  String get readyMeringue => 'Merengue listo';
+
+  @override
+  String get seasonalFruits => 'Frutas de temporada';
+
+  @override
+  String get wildMushrooms => 'Champiñones silvestres';
+
+  @override
+  String get vegetableBroth => 'Caldo de verduras';
+
+  @override
+  String get eightyFivePercentChocolate => 'Chocolate 85%';
+
+  @override
+  String get heavyCream => 'Crema espesa';
+
+  @override
+  String get stirRisottoConstantly => 'Revuelve el risotto constantemente para que quede cremoso';
+
+  @override
+  String get useFreshIngredients => 'Usa ingredientes frescos para un sabor auténtico';
+
+  @override
+  String get dontOvercookSalmon => 'No cocines demasiado el salmón para mantener la textura';
+
+  @override
+  String get useTraditionalPaellaPan => 'Usa paellera tradicional si es posible';
+
+  @override
+  String get marinateMeatForHours => 'Deja la carne marinando por varias horas';
+
+  @override
+  String get useFreshMushrooms => 'Usa champiñones frescos para mejor sabor';
+
+  @override
+  String get classicRomanceTheme => 'Romance Clásico';
+
+  @override
+  String get romanticFunTheme => 'Diversión Romántica';
+
+  @override
+  String get elegantRomanceTheme => 'Romance Elegante';
+
+  @override
+  String get spanishPassionTheme => 'Pasión Española';
+
+  @override
+  String get adventureRomanceTheme => 'Romance de Aventura';
+
+  @override
+  String get thrillerRomanceTheme => 'Romance de Suspenso';
+
+  @override
+  String get candlesWarmLED => 'Velas y luces LED cálidas';
+
+  @override
+  String get colorfulLightsCheerful => 'Luces coloridas y ambiente alegre';
+
+  @override
+  String get softLightingElegant => 'Iluminación suave y ambiente elegante';
+
+  @override
+  String get warmLightsFestive => 'Luces cálidas y atmósfera festiva';
+
+  @override
+  String get outdoorNaturalLight => 'Ambiente al aire libre o luces naturales';
+
+  @override
+  String get lowLightsDramatic => 'Luces bajas y atmósfera dramática';
+
+  @override
+  String get cost80120 => '€80-120';
+
+  @override
+  String get cost4060 => '€40-60';
+
+  @override
+  String get cost100150 => '€100-150';
+
+  @override
+  String get cost90130 => '€90-130';
+
+  @override
+  String get cost70100 => '€70-100';
+
+  @override
+  String get cost85125 => '€85-125';
+
+  @override
+  String get mushrooms => 'Champiñones';
+
+  @override
+  String get onion => 'Cebolla';
+
+  @override
+  String get garlic => 'Ajo';
+
+  @override
+  String get bellPepper => 'Pimiento';
+
+  @override
+  String get strongCheeses => 'Quesos fuertes';
+
+  @override
+  String get fish => 'Pescado';
+
+  @override
+  String get redMeat => 'Carne roja';
+
+  @override
+  String get milk => 'Leche';
+
+  @override
+  String get eggs => 'Huevos';
 }

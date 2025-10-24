@@ -1707,4 +1707,349 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dateNightSchedule => 'Date Night Schedule';
+
+  @override
+  String get shrimpRisotto => 'Shrimp risotto';
+
+  @override
+  String get homemadeMargheritaPizza => 'Homemade margherita pizza';
+
+  @override
+  String get grilledSalmonWithAsparagus => 'Grilled salmon with asparagus';
+
+  @override
+  String get valencianPaella => 'Valencian paella';
+
+  @override
+  String get gourmetBarbecue => 'Gourmet barbecue';
+
+  @override
+  String get wildMushroomRisotto => 'Wild mushroom risotto';
+
+  @override
+  String get roseWine => 'Rosé wine';
+
+  @override
+  String get prosecco => 'Prosecco';
+
+  @override
+  String get softRedWine => 'Soft red wine';
+
+  @override
+  String get sangria => 'Sangria';
+
+  @override
+  String get redBerryCaipirinha => 'Red berry caipirinha';
+
+  @override
+  String get fullBodiedRedWine => 'Full-bodied red wine';
+
+  @override
+  String get strawberriesWithChocolate => 'Strawberries with chocolate';
+
+  @override
+  String get brownieWithIceCream => 'Brownie with ice cream';
+
+  @override
+  String get tiramisu => 'Tiramisu';
+
+  @override
+  String get cremeBrulee => 'Crème brûlée';
+
+  @override
+  String get fruitPavlova => 'Fruit pavlova';
+
+  @override
+  String get darkChocolateCake => 'Dark chocolate cake';
+
+  @override
+  String get specialCheeses => 'Special cheeses';
+
+  @override
+  String get grapes => 'Grapes';
+
+  @override
+  String get nuts => 'Nuts';
+
+  @override
+  String get gourmetPopcorn => 'Gourmet popcorn';
+
+  @override
+  String get olives => 'Olives';
+
+  @override
+  String get garlicBread => 'Garlic bread';
+
+  @override
+  String get cheeseBoard => 'Cheese board';
+
+  @override
+  String get artisanBreads => 'Artisan breads';
+
+  @override
+  String get varietyTapas => 'Variety tapas';
+
+  @override
+  String get roastedPeppers => 'Roasted peppers';
+
+  @override
+  String get cheeseSkewers => 'Cheese skewers';
+
+  @override
+  String get sweetPotatoChips => 'Sweet potato chips';
+
+  @override
+  String get guacamole => 'Guacamole';
+
+  @override
+  String get agedCheeses => 'Aged cheeses';
+
+  @override
+  String get rusticBreads => 'Rustic breads';
+
+  @override
+  String get blackOlives => 'Black olives';
+
+  @override
+  String get lowLightsAromaticCandles => 'Low lights and aromatic candles';
+
+  @override
+  String get relaxedFunAtmosphere => 'Relaxed and fun atmosphere';
+
+  @override
+  String get sophisticatedIntimate => 'Sophisticated and intimate';
+
+  @override
+  String get vibrantMusical => 'Vibrant and musical';
+
+  @override
+  String get adventurousRelaxed => 'Adventurous and relaxed';
+
+  @override
+  String get mysteriousIntense => 'Mysterious and intense';
+
+  @override
+  String get fortyFiveMinutes => '45 minutes';
+
+  @override
+  String get thirtyMinutes => '30 minutes';
+
+  @override
+  String get fiftyMinutes => '50 minutes';
+
+  @override
+  String get sixtyMinutes => '60 minutes';
+
+  @override
+  String get fortyMinutes => '40 minutes';
+
+  @override
+  String get fiftyFiveMinutes => '55 minutes';
+
+  @override
+  String get arborioRice => 'Arborio rice';
+
+  @override
+  String get freshShrimp => 'Fresh shrimp';
+
+  @override
+  String get whiteWine => 'White wine';
+
+  @override
+  String get fishBroth => 'Fish broth';
+
+  @override
+  String get parmesanCheese => 'Parmesan cheese';
+
+  @override
+  String get strawberries => 'Strawberries';
+
+  @override
+  String get seventyPercentChocolate => '70% chocolate';
+
+  @override
+  String get pizzaDough => 'Ready pizza dough';
+
+  @override
+  String get tomatoSauce => 'Tomato sauce';
+
+  @override
+  String get buffaloMozzarella => 'Buffalo mozzarella';
+
+  @override
+  String get freshBasil => 'Fresh basil';
+
+  @override
+  String get brownieMix => 'Brownie mix';
+
+  @override
+  String get vanillaIceCream => 'Vanilla ice cream';
+
+  @override
+  String get salmonFillet => 'Salmon fillet';
+
+  @override
+  String get freshAsparagus => 'Fresh asparagus';
+
+  @override
+  String get sicilianLemon => 'Sicilian lemon';
+
+  @override
+  String get extraVirginOliveOil => 'Extra virgin olive oil';
+
+  @override
+  String get tiramisuIngredients => 'Tiramisu ingredients';
+
+  @override
+  String get espressoCoffee => 'Espresso coffee';
+
+  @override
+  String get bombaRice => 'Bomba rice';
+
+  @override
+  String get seafood => 'Seafood';
+
+  @override
+  String get chicken => 'Chicken';
+
+  @override
+  String get saffron => 'Saffron';
+
+  @override
+  String get peppers => 'Peppers';
+
+  @override
+  String get redWine => 'Red wine';
+
+  @override
+  String get fruitsForSangria => 'Fruits for sangria';
+
+  @override
+  String get nobleMeatForBarbecue => 'Noble meat for barbecue';
+
+  @override
+  String get specialSeasonings => 'Special seasonings';
+
+  @override
+  String get cachaca => 'Cachaça';
+
+  @override
+  String get redBerries => 'Red berries';
+
+  @override
+  String get readyMeringue => 'Ready meringue';
+
+  @override
+  String get seasonalFruits => 'Seasonal fruits';
+
+  @override
+  String get wildMushrooms => 'Wild mushrooms';
+
+  @override
+  String get vegetableBroth => 'Vegetable broth';
+
+  @override
+  String get eightyFivePercentChocolate => '85% chocolate';
+
+  @override
+  String get heavyCream => 'Heavy cream';
+
+  @override
+  String get stirRisottoConstantly => 'Stir the risotto constantly to make it creamy';
+
+  @override
+  String get useFreshIngredients => 'Use fresh ingredients for authentic flavor';
+
+  @override
+  String get dontOvercookSalmon => 'Don\'t overcook the salmon to maintain texture';
+
+  @override
+  String get useTraditionalPaellaPan => 'Use traditional paella pan if possible';
+
+  @override
+  String get marinateMeatForHours => 'Let the meat marinate for several hours';
+
+  @override
+  String get useFreshMushrooms => 'Use fresh mushrooms for better flavor';
+
+  @override
+  String get classicRomanceTheme => 'Classic Romance';
+
+  @override
+  String get romanticFunTheme => 'Romantic Fun';
+
+  @override
+  String get elegantRomanceTheme => 'Elegant Romance';
+
+  @override
+  String get spanishPassionTheme => 'Spanish Passion';
+
+  @override
+  String get adventureRomanceTheme => 'Adventure Romance';
+
+  @override
+  String get thrillerRomanceTheme => 'Thriller Romance';
+
+  @override
+  String get candlesWarmLED => 'Candles and warm LED lights';
+
+  @override
+  String get colorfulLightsCheerful => 'Colorful lights and cheerful atmosphere';
+
+  @override
+  String get softLightingElegant => 'Soft lighting and elegant atmosphere';
+
+  @override
+  String get warmLightsFestive => 'Warm lights and festive atmosphere';
+
+  @override
+  String get outdoorNaturalLight => 'Outdoor or natural lighting';
+
+  @override
+  String get lowLightsDramatic => 'Low lights and dramatic atmosphere';
+
+  @override
+  String get cost80120 => '\$80-120';
+
+  @override
+  String get cost4060 => '\$40-60';
+
+  @override
+  String get cost100150 => '\$100-150';
+
+  @override
+  String get cost90130 => '\$90-130';
+
+  @override
+  String get cost70100 => '\$70-100';
+
+  @override
+  String get cost85125 => '\$85-125';
+
+  @override
+  String get mushrooms => 'Mushrooms';
+
+  @override
+  String get onion => 'Onion';
+
+  @override
+  String get garlic => 'Garlic';
+
+  @override
+  String get bellPepper => 'Bell pepper';
+
+  @override
+  String get strongCheeses => 'Strong cheeses';
+
+  @override
+  String get fish => 'Fish';
+
+  @override
+  String get redMeat => 'Red meat';
+
+  @override
+  String get milk => 'Milk';
+
+  @override
+  String get eggs => 'Eggs';
 }

@@ -3362,6 +3362,696 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Date Night Schedule'**
   String get dateNightSchedule;
+
+  /// No description provided for @shrimpRisotto.
+  ///
+  /// In en, this message translates to:
+  /// **'Shrimp risotto'**
+  String get shrimpRisotto;
+
+  /// No description provided for @homemadeMargheritaPizza.
+  ///
+  /// In en, this message translates to:
+  /// **'Homemade margherita pizza'**
+  String get homemadeMargheritaPizza;
+
+  /// No description provided for @grilledSalmonWithAsparagus.
+  ///
+  /// In en, this message translates to:
+  /// **'Grilled salmon with asparagus'**
+  String get grilledSalmonWithAsparagus;
+
+  /// No description provided for @valencianPaella.
+  ///
+  /// In en, this message translates to:
+  /// **'Valencian paella'**
+  String get valencianPaella;
+
+  /// No description provided for @gourmetBarbecue.
+  ///
+  /// In en, this message translates to:
+  /// **'Gourmet barbecue'**
+  String get gourmetBarbecue;
+
+  /// No description provided for @wildMushroomRisotto.
+  ///
+  /// In en, this message translates to:
+  /// **'Wild mushroom risotto'**
+  String get wildMushroomRisotto;
+
+  /// No description provided for @roseWine.
+  ///
+  /// In en, this message translates to:
+  /// **'Rosé wine'**
+  String get roseWine;
+
+  /// No description provided for @prosecco.
+  ///
+  /// In en, this message translates to:
+  /// **'Prosecco'**
+  String get prosecco;
+
+  /// No description provided for @softRedWine.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft red wine'**
+  String get softRedWine;
+
+  /// No description provided for @sangria.
+  ///
+  /// In en, this message translates to:
+  /// **'Sangria'**
+  String get sangria;
+
+  /// No description provided for @redBerryCaipirinha.
+  ///
+  /// In en, this message translates to:
+  /// **'Red berry caipirinha'**
+  String get redBerryCaipirinha;
+
+  /// No description provided for @fullBodiedRedWine.
+  ///
+  /// In en, this message translates to:
+  /// **'Full-bodied red wine'**
+  String get fullBodiedRedWine;
+
+  /// No description provided for @strawberriesWithChocolate.
+  ///
+  /// In en, this message translates to:
+  /// **'Strawberries with chocolate'**
+  String get strawberriesWithChocolate;
+
+  /// No description provided for @brownieWithIceCream.
+  ///
+  /// In en, this message translates to:
+  /// **'Brownie with ice cream'**
+  String get brownieWithIceCream;
+
+  /// No description provided for @tiramisu.
+  ///
+  /// In en, this message translates to:
+  /// **'Tiramisu'**
+  String get tiramisu;
+
+  /// No description provided for @cremeBrulee.
+  ///
+  /// In en, this message translates to:
+  /// **'Crème brûlée'**
+  String get cremeBrulee;
+
+  /// No description provided for @fruitPavlova.
+  ///
+  /// In en, this message translates to:
+  /// **'Fruit pavlova'**
+  String get fruitPavlova;
+
+  /// No description provided for @darkChocolateCake.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark chocolate cake'**
+  String get darkChocolateCake;
+
+  /// No description provided for @specialCheeses.
+  ///
+  /// In en, this message translates to:
+  /// **'Special cheeses'**
+  String get specialCheeses;
+
+  /// No description provided for @grapes.
+  ///
+  /// In en, this message translates to:
+  /// **'Grapes'**
+  String get grapes;
+
+  /// No description provided for @nuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Nuts'**
+  String get nuts;
+
+  /// No description provided for @gourmetPopcorn.
+  ///
+  /// In en, this message translates to:
+  /// **'Gourmet popcorn'**
+  String get gourmetPopcorn;
+
+  /// No description provided for @olives.
+  ///
+  /// In en, this message translates to:
+  /// **'Olives'**
+  String get olives;
+
+  /// No description provided for @garlicBread.
+  ///
+  /// In en, this message translates to:
+  /// **'Garlic bread'**
+  String get garlicBread;
+
+  /// No description provided for @cheeseBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Cheese board'**
+  String get cheeseBoard;
+
+  /// No description provided for @artisanBreads.
+  ///
+  /// In en, this message translates to:
+  /// **'Artisan breads'**
+  String get artisanBreads;
+
+  /// No description provided for @varietyTapas.
+  ///
+  /// In en, this message translates to:
+  /// **'Variety tapas'**
+  String get varietyTapas;
+
+  /// No description provided for @roastedPeppers.
+  ///
+  /// In en, this message translates to:
+  /// **'Roasted peppers'**
+  String get roastedPeppers;
+
+  /// No description provided for @cheeseSkewers.
+  ///
+  /// In en, this message translates to:
+  /// **'Cheese skewers'**
+  String get cheeseSkewers;
+
+  /// No description provided for @sweetPotatoChips.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweet potato chips'**
+  String get sweetPotatoChips;
+
+  /// No description provided for @guacamole.
+  ///
+  /// In en, this message translates to:
+  /// **'Guacamole'**
+  String get guacamole;
+
+  /// No description provided for @agedCheeses.
+  ///
+  /// In en, this message translates to:
+  /// **'Aged cheeses'**
+  String get agedCheeses;
+
+  /// No description provided for @rusticBreads.
+  ///
+  /// In en, this message translates to:
+  /// **'Rustic breads'**
+  String get rusticBreads;
+
+  /// No description provided for @blackOlives.
+  ///
+  /// In en, this message translates to:
+  /// **'Black olives'**
+  String get blackOlives;
+
+  /// No description provided for @lowLightsAromaticCandles.
+  ///
+  /// In en, this message translates to:
+  /// **'Low lights and aromatic candles'**
+  String get lowLightsAromaticCandles;
+
+  /// No description provided for @relaxedFunAtmosphere.
+  ///
+  /// In en, this message translates to:
+  /// **'Relaxed and fun atmosphere'**
+  String get relaxedFunAtmosphere;
+
+  /// No description provided for @sophisticatedIntimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Sophisticated and intimate'**
+  String get sophisticatedIntimate;
+
+  /// No description provided for @vibrantMusical.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibrant and musical'**
+  String get vibrantMusical;
+
+  /// No description provided for @adventurousRelaxed.
+  ///
+  /// In en, this message translates to:
+  /// **'Adventurous and relaxed'**
+  String get adventurousRelaxed;
+
+  /// No description provided for @mysteriousIntense.
+  ///
+  /// In en, this message translates to:
+  /// **'Mysterious and intense'**
+  String get mysteriousIntense;
+
+  /// No description provided for @fortyFiveMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'45 minutes'**
+  String get fortyFiveMinutes;
+
+  /// No description provided for @thirtyMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'30 minutes'**
+  String get thirtyMinutes;
+
+  /// No description provided for @fiftyMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'50 minutes'**
+  String get fiftyMinutes;
+
+  /// No description provided for @sixtyMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'60 minutes'**
+  String get sixtyMinutes;
+
+  /// No description provided for @fortyMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'40 minutes'**
+  String get fortyMinutes;
+
+  /// No description provided for @fiftyFiveMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'55 minutes'**
+  String get fiftyFiveMinutes;
+
+  /// No description provided for @arborioRice.
+  ///
+  /// In en, this message translates to:
+  /// **'Arborio rice'**
+  String get arborioRice;
+
+  /// No description provided for @freshShrimp.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh shrimp'**
+  String get freshShrimp;
+
+  /// No description provided for @whiteWine.
+  ///
+  /// In en, this message translates to:
+  /// **'White wine'**
+  String get whiteWine;
+
+  /// No description provided for @fishBroth.
+  ///
+  /// In en, this message translates to:
+  /// **'Fish broth'**
+  String get fishBroth;
+
+  /// No description provided for @parmesanCheese.
+  ///
+  /// In en, this message translates to:
+  /// **'Parmesan cheese'**
+  String get parmesanCheese;
+
+  /// No description provided for @strawberries.
+  ///
+  /// In en, this message translates to:
+  /// **'Strawberries'**
+  String get strawberries;
+
+  /// No description provided for @seventyPercentChocolate.
+  ///
+  /// In en, this message translates to:
+  /// **'70% chocolate'**
+  String get seventyPercentChocolate;
+
+  /// No description provided for @pizzaDough.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready pizza dough'**
+  String get pizzaDough;
+
+  /// No description provided for @tomatoSauce.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomato sauce'**
+  String get tomatoSauce;
+
+  /// No description provided for @buffaloMozzarella.
+  ///
+  /// In en, this message translates to:
+  /// **'Buffalo mozzarella'**
+  String get buffaloMozzarella;
+
+  /// No description provided for @freshBasil.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh basil'**
+  String get freshBasil;
+
+  /// No description provided for @brownieMix.
+  ///
+  /// In en, this message translates to:
+  /// **'Brownie mix'**
+  String get brownieMix;
+
+  /// No description provided for @vanillaIceCream.
+  ///
+  /// In en, this message translates to:
+  /// **'Vanilla ice cream'**
+  String get vanillaIceCream;
+
+  /// No description provided for @salmonFillet.
+  ///
+  /// In en, this message translates to:
+  /// **'Salmon fillet'**
+  String get salmonFillet;
+
+  /// No description provided for @freshAsparagus.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh asparagus'**
+  String get freshAsparagus;
+
+  /// No description provided for @sicilianLemon.
+  ///
+  /// In en, this message translates to:
+  /// **'Sicilian lemon'**
+  String get sicilianLemon;
+
+  /// No description provided for @extraVirginOliveOil.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra virgin olive oil'**
+  String get extraVirginOliveOil;
+
+  /// No description provided for @tiramisuIngredients.
+  ///
+  /// In en, this message translates to:
+  /// **'Tiramisu ingredients'**
+  String get tiramisuIngredients;
+
+  /// No description provided for @espressoCoffee.
+  ///
+  /// In en, this message translates to:
+  /// **'Espresso coffee'**
+  String get espressoCoffee;
+
+  /// No description provided for @bombaRice.
+  ///
+  /// In en, this message translates to:
+  /// **'Bomba rice'**
+  String get bombaRice;
+
+  /// No description provided for @seafood.
+  ///
+  /// In en, this message translates to:
+  /// **'Seafood'**
+  String get seafood;
+
+  /// No description provided for @chicken.
+  ///
+  /// In en, this message translates to:
+  /// **'Chicken'**
+  String get chicken;
+
+  /// No description provided for @saffron.
+  ///
+  /// In en, this message translates to:
+  /// **'Saffron'**
+  String get saffron;
+
+  /// No description provided for @peppers.
+  ///
+  /// In en, this message translates to:
+  /// **'Peppers'**
+  String get peppers;
+
+  /// No description provided for @redWine.
+  ///
+  /// In en, this message translates to:
+  /// **'Red wine'**
+  String get redWine;
+
+  /// No description provided for @fruitsForSangria.
+  ///
+  /// In en, this message translates to:
+  /// **'Fruits for sangria'**
+  String get fruitsForSangria;
+
+  /// No description provided for @nobleMeatForBarbecue.
+  ///
+  /// In en, this message translates to:
+  /// **'Noble meat for barbecue'**
+  String get nobleMeatForBarbecue;
+
+  /// No description provided for @specialSeasonings.
+  ///
+  /// In en, this message translates to:
+  /// **'Special seasonings'**
+  String get specialSeasonings;
+
+  /// No description provided for @cachaca.
+  ///
+  /// In en, this message translates to:
+  /// **'Cachaça'**
+  String get cachaca;
+
+  /// No description provided for @redBerries.
+  ///
+  /// In en, this message translates to:
+  /// **'Red berries'**
+  String get redBerries;
+
+  /// No description provided for @readyMeringue.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready meringue'**
+  String get readyMeringue;
+
+  /// No description provided for @seasonalFruits.
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal fruits'**
+  String get seasonalFruits;
+
+  /// No description provided for @wildMushrooms.
+  ///
+  /// In en, this message translates to:
+  /// **'Wild mushrooms'**
+  String get wildMushrooms;
+
+  /// No description provided for @vegetableBroth.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegetable broth'**
+  String get vegetableBroth;
+
+  /// No description provided for @eightyFivePercentChocolate.
+  ///
+  /// In en, this message translates to:
+  /// **'85% chocolate'**
+  String get eightyFivePercentChocolate;
+
+  /// No description provided for @heavyCream.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy cream'**
+  String get heavyCream;
+
+  /// No description provided for @stirRisottoConstantly.
+  ///
+  /// In en, this message translates to:
+  /// **'Stir the risotto constantly to make it creamy'**
+  String get stirRisottoConstantly;
+
+  /// No description provided for @useFreshIngredients.
+  ///
+  /// In en, this message translates to:
+  /// **'Use fresh ingredients for authentic flavor'**
+  String get useFreshIngredients;
+
+  /// No description provided for @dontOvercookSalmon.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t overcook the salmon to maintain texture'**
+  String get dontOvercookSalmon;
+
+  /// No description provided for @useTraditionalPaellaPan.
+  ///
+  /// In en, this message translates to:
+  /// **'Use traditional paella pan if possible'**
+  String get useTraditionalPaellaPan;
+
+  /// No description provided for @marinateMeatForHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Let the meat marinate for several hours'**
+  String get marinateMeatForHours;
+
+  /// No description provided for @useFreshMushrooms.
+  ///
+  /// In en, this message translates to:
+  /// **'Use fresh mushrooms for better flavor'**
+  String get useFreshMushrooms;
+
+  /// No description provided for @classicRomanceTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Romance'**
+  String get classicRomanceTheme;
+
+  /// No description provided for @romanticFunTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic Fun'**
+  String get romanticFunTheme;
+
+  /// No description provided for @elegantRomanceTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Elegant Romance'**
+  String get elegantRomanceTheme;
+
+  /// No description provided for @spanishPassionTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish Passion'**
+  String get spanishPassionTheme;
+
+  /// No description provided for @adventureRomanceTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Adventure Romance'**
+  String get adventureRomanceTheme;
+
+  /// No description provided for @thrillerRomanceTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Thriller Romance'**
+  String get thrillerRomanceTheme;
+
+  /// No description provided for @candlesWarmLED.
+  ///
+  /// In en, this message translates to:
+  /// **'Candles and warm LED lights'**
+  String get candlesWarmLED;
+
+  /// No description provided for @colorfulLightsCheerful.
+  ///
+  /// In en, this message translates to:
+  /// **'Colorful lights and cheerful atmosphere'**
+  String get colorfulLightsCheerful;
+
+  /// No description provided for @softLightingElegant.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft lighting and elegant atmosphere'**
+  String get softLightingElegant;
+
+  /// No description provided for @warmLightsFestive.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm lights and festive atmosphere'**
+  String get warmLightsFestive;
+
+  /// No description provided for @outdoorNaturalLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Outdoor or natural lighting'**
+  String get outdoorNaturalLight;
+
+  /// No description provided for @lowLightsDramatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Low lights and dramatic atmosphere'**
+  String get lowLightsDramatic;
+
+  /// No description provided for @cost80120.
+  ///
+  /// In en, this message translates to:
+  /// **'\$80-120'**
+  String get cost80120;
+
+  /// No description provided for @cost4060.
+  ///
+  /// In en, this message translates to:
+  /// **'\$40-60'**
+  String get cost4060;
+
+  /// No description provided for @cost100150.
+  ///
+  /// In en, this message translates to:
+  /// **'\$100-150'**
+  String get cost100150;
+
+  /// No description provided for @cost90130.
+  ///
+  /// In en, this message translates to:
+  /// **'\$90-130'**
+  String get cost90130;
+
+  /// No description provided for @cost70100.
+  ///
+  /// In en, this message translates to:
+  /// **'\$70-100'**
+  String get cost70100;
+
+  /// No description provided for @cost85125.
+  ///
+  /// In en, this message translates to:
+  /// **'\$85-125'**
+  String get cost85125;
+
+  /// No description provided for @mushrooms.
+  ///
+  /// In en, this message translates to:
+  /// **'Mushrooms'**
+  String get mushrooms;
+
+  /// No description provided for @onion.
+  ///
+  /// In en, this message translates to:
+  /// **'Onion'**
+  String get onion;
+
+  /// No description provided for @garlic.
+  ///
+  /// In en, this message translates to:
+  /// **'Garlic'**
+  String get garlic;
+
+  /// No description provided for @bellPepper.
+  ///
+  /// In en, this message translates to:
+  /// **'Bell pepper'**
+  String get bellPepper;
+
+  /// No description provided for @strongCheeses.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong cheeses'**
+  String get strongCheeses;
+
+  /// No description provided for @fish.
+  ///
+  /// In en, this message translates to:
+  /// **'Fish'**
+  String get fish;
+
+  /// No description provided for @redMeat.
+  ///
+  /// In en, this message translates to:
+  /// **'Red meat'**
+  String get redMeat;
+
+  /// No description provided for @milk.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk'**
+  String get milk;
+
+  /// No description provided for @eggs.
+  ///
+  /// In en, this message translates to:
+  /// **'Eggs'**
+  String get eggs;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

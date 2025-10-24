@@ -481,18 +481,18 @@ class _DateNightPreferencesScreenState extends State<DateNightPreferencesScreen>
 
   Widget _buildDislikedIngredients() {
     final commonIngredients = [
-      'Frutos do mar',
-      'Cogumelos',
-      'Cebola',
-      'Alho',
-      'Pimentão',
-      'Azeitonas',
-      'Queijos fortes',
-      'Peixe',
-      'Carne vermelha',
-      'Leite',
-      'Ovos',
-      'Nozes',
+      AppLocalizations.of(context)!.seafood,
+      AppLocalizations.of(context)!.mushrooms,
+      AppLocalizations.of(context)!.onion,
+      AppLocalizations.of(context)!.garlic,
+      AppLocalizations.of(context)!.bellPepper,
+      AppLocalizations.of(context)!.olives,
+      AppLocalizations.of(context)!.strongCheeses,
+      AppLocalizations.of(context)!.fish,
+      AppLocalizations.of(context)!.redMeat,
+      AppLocalizations.of(context)!.milk,
+      AppLocalizations.of(context)!.eggs,
+      AppLocalizations.of(context)!.nuts,
     ];
 
     return Column(
