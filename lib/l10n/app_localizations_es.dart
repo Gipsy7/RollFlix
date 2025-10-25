@@ -41,6 +41,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get rollAndChill => 'Roll and Chill';
 
   @override
+  String rollAndChillWithMode(Object mode) {
+    return 'Roll and Chill • $mode';
+  }
+
+  @override
   String get welcome => '¡Bienvenido!';
 
   @override
@@ -393,6 +398,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get typeToSearchSeries => 'Escribe algo para buscar series';
+
+  @override
+  String get findYourNextFavoriteSeries => 'Encuentra tu próxima serie favorita';
+
+  @override
+  String get noPopularSeriesFound => 'No se encontraron series populares';
 
   @override
   String initialGenreSelected(Object genre) {

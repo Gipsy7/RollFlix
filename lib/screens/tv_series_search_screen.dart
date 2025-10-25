@@ -433,7 +433,7 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SafeText(
-            'Encontre sua próxima série favorita',
+            AppLocalizations.of(context)!.findYourNextFavoriteSeries,
             style: AppTextStyles.bodyLarge.copyWith(
               color: AppColors.textSecondary,
               fontStyle: FontStyle.italic,
@@ -627,7 +627,7 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
     }
 
     if (_popularTVShows.isEmpty) {
-      return _buildEmptyState('Nenhuma série popular encontrada');
+      return _buildEmptyState(AppLocalizations.of(context)!.noPopularSeriesFound);
     }
 
     return _buildTVShowGrid(_popularTVShows, isMobile);
@@ -639,7 +639,7 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
     }
 
     if (_topRatedTVShows.isEmpty) {
-      return _buildEmptyState('Nenhuma série encontrada');
+      return _buildEmptyState(AppLocalizations.of(context)!.noSeriesFound);
     }
 
     return _buildTVShowGrid(_topRatedTVShows, isMobile);

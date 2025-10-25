@@ -159,6 +159,12 @@ abstract class AppLocalizations {
   /// **'Roll and Chill'**
   String get rollAndChill;
 
+  /// No description provided for @rollAndChillWithMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Roll and Chill • {mode}'**
+  String rollAndChillWithMode(Object mode);
+
   /// No description provided for @welcome.
   ///
   /// In en, this message translates to:
@@ -842,6 +848,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Type something to search series'**
   String get typeToSearchSeries;
+
+  /// No description provided for @findYourNextFavoriteSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your next favorite series'**
+  String get findYourNextFavoriteSeries;
+
+  /// No description provided for @noPopularSeriesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No popular series found'**
+  String get noPopularSeriesFound;
 
   /// No description provided for @initialGenreSelected.
   ///

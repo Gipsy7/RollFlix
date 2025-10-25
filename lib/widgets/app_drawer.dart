@@ -83,7 +83,7 @@ class AppDrawer extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               SafeText(
-                'RollFlix',
+                AppConstants.appName,
                 style: AppTextStyles.headlineMedium.copyWith(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.bold,

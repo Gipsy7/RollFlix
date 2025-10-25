@@ -17,6 +17,12 @@
   },
   "testNotification": "Notification de test",
   "rollAndChill": "Roll and Chill",
+  "rollAndChillWithMode": "Roll and Chill • {mode}",
+  "@rollAndChillWithMode": {
+    "placeholders": {
+      "mode": {}
+    }
+  },
   "welcome": "Bienvenue !",
   "loginToAccess": "Connectez-vous pour accéder à l'application",
   "connectingGoogle": "Connexion avec Google...",
@@ -170,6 +176,8 @@
   "removedFromFavorites": "{title} retiré des favoris",
   "shareSeriesText": "🍿 Découvrez plus de séries incroyables sur RollFlix !",
   "typeToSearchSeries": "Tapez quelque chose pour rechercher des séries",
+  "findYourNextFavoriteSeries": "Trouvez votre prochaine série favorite",
+  "noPopularSeriesFound": "Aucune série populaire trouvée",
   "initialGenreSelected": "Genre initial sélectionné : {genre}",
   "@initialGenreSelected": {
     "placeholders": {

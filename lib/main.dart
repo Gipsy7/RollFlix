@@ -347,7 +347,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       if (result.hasFilters) {
         final filterParts = <String>[];
         if (!result.allowAdult) {
-          filterParts.add('🔞 Apenas não adulto');
+          filterParts.add(AppLocalizations.of(context)!.adultFilter);
         }
         if (result.minYear != null || result.maxYear != null) {
           filterParts.add('📅 ${result.minYear ?? "..."}-${result.maxYear ?? "..."}');
@@ -355,7 +355,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         
         AppSnackBar.showSuccess(
           context, 
-          'Preferências aplicadas! ${filterParts.isNotEmpty ? filterParts.join(" • ") : ""}',
+          '${AppLocalizations.of(context)!.preferencesApplied}${filterParts.isNotEmpty ? " ${filterParts.join(" • ")}" : ""}',
         );
       } else {
         AppSnackBar.showInfo(context, AppLocalizations.of(context)!.preferencesCleared);
@@ -930,7 +930,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         ),
         const SizedBox(height: 8),
         SafeText(
-          'Roll and Chill • $currentModeLabel',
+          AppLocalizations.of(context)!.rollAndChillWithMode(currentModeLabel),
           style: AppTextStyles.bodyLarge.copyWith(
             color: AppColors.textPrimary.withValues(alpha: 0.9),
             fontWeight: FontWeight.w400,
