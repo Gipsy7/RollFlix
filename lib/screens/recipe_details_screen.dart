@@ -96,7 +96,7 @@ class RecipeDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Informações rápidas
-            _buildQuickInfo(),
+            _buildQuickInfo(context),
             const SizedBox(height: 24),
 
             // Timer de Preparo
@@ -173,7 +173,7 @@ class RecipeDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickInfo() {
+  Widget _buildQuickInfo(BuildContext context) {
     return AppCard(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -190,7 +190,7 @@ class RecipeDetailsScreen extends StatelessWidget {
           ),
           _buildInfoItem(
             Icons.people,
-            '${recipe.servings} porções',
+            AppLocalizations.of(context)!.servingsText(recipe.servings.toString()),
             'Serve',
           ),
         ],
@@ -314,7 +314,7 @@ class RecipeDetailsScreen extends StatelessWidget {
               Icon(Icons.local_fire_department, color: _secondaryGold, size: 24),
               const SizedBox(width: 12),
               SafeText(
-                'Informações Nutricionais',
+                AppLocalizations.of(context)!.nutritionalInfo,
                 style: AppTextStyles.headlineSmall.copyWith(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w600,

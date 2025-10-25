@@ -23,6 +23,7 @@
       "mode": {}
     }
   },
+  "menu": "Menu",
   "welcome": "Welcome!",
   "loginToAccess": "Sign in to access the app",
   "connectingGoogle": "Connecting with Google...",
@@ -911,7 +912,13 @@
   "redMeat": "Red meat",
   "milk": "Milk",
   "eggs": "Eggs",
-  "nuts": "Nuts"
+  "nuts": "Nuts",
+  "director": "Director",
+  "actor": "Actor",
+  "selectedMovie": "🎬 Selected Movie",
+  "changeMovie": "Change movie",
+  "servingsText": "{count} servings",
+  "nutritionalInfo": "Nutritional Information"
 }
 
 

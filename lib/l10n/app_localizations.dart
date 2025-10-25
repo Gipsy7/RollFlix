@@ -165,6 +165,12 @@ abstract class AppLocalizations {
   /// **'Roll and Chill • {mode}'**
   String rollAndChillWithMode(Object mode);
 
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
   /// No description provided for @welcome.
   ///
   /// In en, this message translates to:
@@ -4070,6 +4076,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Eggs'**
   String get eggs;
+
+  /// No description provided for @director.
+  ///
+  /// In en, this message translates to:
+  /// **'Director'**
+  String get director;
+
+  /// No description provided for @actor.
+  ///
+  /// In en, this message translates to:
+  /// **'Actor'**
+  String get actor;
+
+  /// No description provided for @selectedMovie.
+  ///
+  /// In en, this message translates to:
+  /// **'🎬 Selected Movie'**
+  String get selectedMovie;
+
+  /// No description provided for @changeMovie.
+  ///
+  /// In en, this message translates to:
+  /// **'Change movie'**
+  String get changeMovie;
+
+  /// No description provided for @servingsText.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} servings'**
+  String servingsText(Object count);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

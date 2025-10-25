@@ -345,7 +345,7 @@ class _DateNightScreenState extends State<DateNightScreen> {
         onPressed: () => Navigator.pop(context),
       ),
       title: SafeText(
-        'Date Night',
+        AppLocalizations.of(context)!.dateNight,
         style: AppTextStyles.headlineSmall.copyWith(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,

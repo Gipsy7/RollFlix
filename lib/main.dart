@@ -600,7 +600,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             size: 28,
           ),
           onPressed: () => Scaffold.of(context).openDrawer(),
-          tooltip: 'Menu',
+          tooltip: AppLocalizations.of(context)!.menu,
         ),
       ),
       actions: [

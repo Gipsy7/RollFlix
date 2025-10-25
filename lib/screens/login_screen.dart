@@ -6,6 +6,7 @@ import '../widgets/ux_components.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
 import '../controllers/user_preferences_controller.dart';
+import '../constants/app_constants.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -79,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   
                   // Título
                   SafeText(
-                    'RollFlix',
+                    AppConstants.appName,
                     style: (isMobile 
                         ? AppTextStyles.displaySmall
                         : AppTextStyles.displayMedium).copyWith(

@@ -262,7 +262,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SafeText(
-                      '🎬 Filme Selecionado',
+                      AppLocalizations.of(context)!.selectedMovie,
                       style: AppTextStyles.headlineSmall.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.bold,
@@ -277,7 +277,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                         : IconButton(
                             icon: Icon(Icons.refresh, color: _primaryRose),
                             onPressed: _changeMovie,
-                            tooltip: 'Trocar filme',
+                            tooltip: AppLocalizations.of(context)!.changeMovie,
                           ),
                   ],
                 ),

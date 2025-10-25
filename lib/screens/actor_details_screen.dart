@@ -202,7 +202,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                               const SizedBox(height: 12),
                               if (actorDetails!.knownForDepartment != null) ...[
                                 Text(
-                                  '${widget.isDirector ? 'Diretor' : 'Ator'}: ${actorDetails!.knownForDepartment}',
+                                  '${widget.isDirector ? AppLocalizations.of(context)!.director : AppLocalizations.of(context)!.actor}: ${actorDetails!.knownForDepartment}',
                                   style: TextStyle(
                                     fontSize: 16, 
                                     color: AppColors.textPrimary

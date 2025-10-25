@@ -23,6 +23,7 @@
       "mode": {}
     }
   },
+  "menu": "Menu",
   "welcome": "Bem-vindo!",
   "loginToAccess": "Faça login para acessar o aplicativo",
   "connectingGoogle": "Conectando com Google...",
@@ -911,7 +912,13 @@
   "redMeat": "Carne vermelha",
   "milk": "Leite",
   "eggs": "Ovos",
-  "nuts": "Nozes"
+  "nuts": "Nozes",
+  "director": "Diretor",
+  "actor": "Ator",
+  "selectedMovie": "🎬 Filme Selecionado",
+  "changeMovie": "Trocar filme",
+  "servingsText": "{count} porções",
+  "nutritionalInfo": "Informações Nutricionais"
 }
 
 

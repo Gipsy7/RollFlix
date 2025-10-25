@@ -329,7 +329,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 icon: const Icon(Icons.delete_outline),
                 color: AppColors.error,
                 onPressed: () => _removeFavorite(favorite),
-                tooltip: 'Remover dos favoritos',
+                tooltip: AppLocalizations.of(context)!.removeFromFavoritesTooltip,
               ),
             ],
           ),

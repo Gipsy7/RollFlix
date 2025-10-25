@@ -46,6 +46,9 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get menu => 'Menu';
+
+  @override
   String get welcome => 'Bem-vindo!';
 
   @override
@@ -2063,4 +2066,21 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get eggs => 'Ovos';
+
+  @override
+  String get director => 'Diretor';
+
+  @override
+  String get actor => 'Ator';
+
+  @override
+  String get selectedMovie => '🎬 Filme Selecionado';
+
+  @override
+  String get changeMovie => 'Trocar filme';
+
+  @override
+  String servingsText(Object count) {
+    return '$count porções';
+  }
 }

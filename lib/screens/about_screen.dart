@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
 import '../controllers/app_mode_controller.dart';
 import '../controllers/locale_controller.dart';
+import '../constants/app_constants.dart';
 
 /// Tela "Sobre o App" com informações detalhadas do aplicativo
 class AboutScreen extends StatefulWidget {
@@ -112,9 +113,9 @@ class _AboutScreenState extends State<AboutScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Rollflix',
-                        style: TextStyle(
+                      Text(
+                        AppConstants.appName,
+                        style: const TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
