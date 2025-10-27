@@ -9,6 +9,7 @@ import '../services/auth_service.dart';
 import '../services/ad_service.dart';
 import '../theme/app_theme.dart';
 import 'app_mode_controller.dart';
+import 'locale_controller.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
 
 /// Controller para gerenciar preferências do usuário
@@ -252,6 +253,7 @@ class UserPreferencesController extends ChangeNotifier {
         _loadDateNightPreferencesFromCloud(),
         _loadRollStatsFromCloud(),
         _loadUserResourcesFromCloud(), // ← FIX: Adiciona reload de recursos
+        _loadAppSettingsFromCloud(), // ← Adiciona carregamento das configurações do app
       ]);
 
       notifyListeners();
@@ -366,6 +368,59 @@ class UserPreferencesController extends ChangeNotifier {
   /// Obtém o tempo restante para recarga de um recurso (em segundos)
   Duration? getResourceCooldown(ResourceType type) {
     return _userResources.getCooldownTime(type);
+  }
+
+  // ==================== APP SETTINGS ====================
+
+  Future<void> _loadAppSettingsFromCloud() async {
+    try {
+      final settings = await UserDataService.loadAppSettings();
+      if (settings != null) {
+        // Aplica as configurações carregadas nos controllers respectivos
+        final localeCode = settings['localeCode'] as String?;
+        final isSeriesMode = settings['isSeriesMode'] as bool? ?? false;
+        final selectedGenre = settings['selectedGenre'] as String?;
+
+        if (localeCode != null) {
+          // Atualiza o LocaleController
+          await LocaleController.instance.setLocale(localeCode);
+        }
+
+        // Atualiza o AppModeController
+        AppModeController.instance.setSeriesMode(isSeriesMode);
+        if (selectedGenre != null) {
+          AppModeController.instance.selectGenre(selectedGenre);
+        }
+
+        debugPrint('✅ App settings aplicadas do Firebase: locale=$localeCode, isSeriesMode=$isSeriesMode, selectedGenre=$selectedGenre');
+      }
+    } catch (e) {
+      debugPrint('❌ Erro ao carregar app settings do Firebase: $e');
+    }
+  }
+
+  /// Salva configurações do app (chamado pelos controllers específicos)
+  Future<void> saveAppSettings({
+    String? localeCode,
+    bool? isSeriesMode,
+    String? selectedGenre,
+  }) async {
+    try {
+      if (AuthService.isUserLoggedIn()) {
+        await UserDataService.saveAppSettings(
+          localeCode: localeCode,
+          isSeriesMode: isSeriesMode ?? false,
+          selectedGenre: selectedGenre,
+        );
+        debugPrint('✅ App settings salvas no Firebase');
+      } else {
+        // Se não estiver logado, as configurações são salvas localmente pelos controllers individuais
+        debugPrint('ℹ️ Usuário não logado - app settings serão salvas localmente pelos controllers');
+      }
+    } catch (e) {
+      debugPrint('❌ Erro ao salvar app settings: $e');
+      rethrow;
+    }
   }
 
   /// Tenta recarregar recursos se o cooldown expirou

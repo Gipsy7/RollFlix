@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'user_preferences_controller.dart';
 
 /// Simple singleton controller to manage app Locale and persist user choice.
 class LocaleController extends ValueNotifier<Locale?> {
@@ -29,6 +30,13 @@ class LocaleController extends ValueNotifier<Locale?> {
     await prefs.setString(_kLocaleKey, languageCode);
     value = Locale(languageCode);
     debugPrint('🌍 LocaleController: setLocale called with $languageCode, new locale: $value');
+
+    // Salva também no Firebase se usuário estiver logado
+    try {
+      await UserPreferencesController.instance.saveAppSettings(localeCode: languageCode);
+    } catch (e) {
+      debugPrint('❌ Erro ao salvar locale no Firebase: $e');
+    }
   }
 
   Future<void> clearLocale() async {

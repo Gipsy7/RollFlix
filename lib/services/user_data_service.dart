@@ -427,9 +427,58 @@ class UserDataService {
         'lastUpdated': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
       
-      debugPrint('🗑️ Dados do usuário limpos no Firebase');
+      debugPrint('✅ Dados do usuário limpos no Firebase');
     } catch (e) {
-      debugPrint('❌ Erro ao limpar dados do usuário: $e');
+      debugPrint('❌ Erro ao limpar dados do usuário no Firebase: $e');
+      rethrow;
+    }
+  }
+
+  /// Salva configurações do app (locale e modo) no Firestore
+  static Future<void> saveAppSettings({
+    required String? localeCode,
+    required bool isSeriesMode,
+    required String? selectedGenre,
+  }) async {
+    try {
+      final userDoc = _currentUserDoc;
+      if (userDoc == null) {
+        debugPrint('⚠️ Usuário não logado - configurações do app não serão salvas no Firebase');
+        return;
+      }
+
+      await userDoc.set({
+        'appSettings': {
+          'localeCode': localeCode,
+          'isSeriesMode': isSeriesMode,
+          'selectedGenre': selectedGenre,
+        },
+        'lastUpdated': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      debugPrint('✅ Configurações do app salvas no Firebase');
+    } catch (e) {
+      debugPrint('❌ Erro ao salvar configurações do app no Firebase: $e');
+      rethrow;
+    }
+  }
+
+  /// Carrega configurações do app do Firestore
+  static Future<Map<String, dynamic>?> loadAppSettings() async {
+    try {
+      final userDoc = _currentUserDoc;
+      if (userDoc == null) return null;
+
+      final doc = await userDoc.get();
+      if (!doc.exists) return null;
+
+      final data = doc.data() as Map<String, dynamic>?;
+      if (data == null || !data.containsKey('appSettings')) return null;
+
+      return data['appSettings'] as Map<String, dynamic>;
+    } catch (e) {
+      debugPrint('❌ Erro ao carregar configurações do app do Firebase: $e');
+      return null;
     }
   }
 }
