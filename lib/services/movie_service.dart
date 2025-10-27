@@ -11,11 +11,29 @@ import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
 import '../models/actor_details.dart';
 import '../utils/app_logger.dart';
+import '../controllers/locale_controller.dart';
 
 class MovieService {
   // Use constants from AppConstants - agora via getter
   static String get _apiKey => AppConstants.tmdbApiKey;
   static const String _baseUrl = AppConstants.tmdbBaseUrl;
+
+  // Mapeamento de códigos de idioma do app para códigos TMDB
+  static String get _getCurrentLanguageCode {
+    final locale = LocaleController.instance.locale;
+    switch (locale?.languageCode) {
+      case 'pt':
+        return 'pt-BR';
+      case 'en':
+        return 'en-US';
+      case 'es':
+        return 'es-ES';
+      case 'fr':
+        return 'fr-FR';
+      default:
+        return 'en-US'; // Fallback para inglês
+    }
+  }
 
   // Use genre mapping from constants
   static const Map<String, List<int>> _genreMap = {
@@ -60,7 +78,8 @@ class MovieService {
     'Reality': [10764], // Reality
   };
 
-  static Future<List<Movie>> getMoviesByGenre(String genre, {
+  static Future<List<Movie>> getMoviesByGenre(
+    String genre, {
     int? minYear,
     int? maxYear,
     bool? allowAdult,
@@ -84,44 +103,54 @@ class MovieService {
       List<Movie> validMovies = [];
       int attempts = 0;
       const maxAttempts = 3;
-      
+
       while (validMovies.isEmpty && attempts < maxAttempts) {
         attempts++;
-        final randomPage = Random().nextInt(5) + attempts; // Varia entre páginas diferentes
-        
+        final randomPage =
+            Random().nextInt(5) + attempts; // Varia entre páginas diferentes
+
         // Constrói a URL base
-        var urlString = '$_baseUrl/discover/movie?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=pt-BR&sort_by=popularity.desc&page=$randomPage';
-        
+        var urlString =
+            '$_baseUrl/discover/movie?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=\$_getCurrentLanguageCode&sort_by=popularity.desc&page=$randomPage';
+
         // Adiciona filtro de classificação indicativa
         // Se NÃO permite adulto (allowAdult=false), exclui conteúdo adulto
         if (allowAdult != null && !allowAdult) {
           urlString += '&include_adult=false';
-          AppLogger.debug('🔞 Filtro aplicado: Apenas conteúdo não adulto (include_adult=false)');
+          AppLogger.debug(
+            '🔞 Filtro aplicado: Apenas conteúdo não adulto (include_adult=false)',
+          );
         }
-        
+
         // Adiciona filtros de preferências
         if (minYear != null) {
           urlString += '&primary_release_date.gte=$minYear-01-01';
         }
-        
+
         if (maxYear != null) {
           urlString += '&primary_release_date.lte=$maxYear-12-31';
         }
-        
+
         final url = Uri.parse(urlString);
         final response = await http.get(url);
 
         if (response.statusCode == 200) {
           final jsonData = json.decode(response.body);
           final moviesResponse = MoviesResponse.fromJson(jsonData);
-          
+
           // Filtra filmes que tenham título em português ou pelo menos um título válido
           validMovies = moviesResponse.results
-              .where((movie) => movie.title.isNotEmpty && movie.title != 'Título não disponível')
+              .where(
+                (movie) =>
+                    movie.title.isNotEmpty &&
+                    movie.title != 'Título não disponível',
+              )
               .toList();
-          
+
           if (validMovies.isEmpty && attempts < maxAttempts) {
-            AppLogger.debug('Tentativa $attempts: Nenhum filme encontrado, tentando outra página...');
+            AppLogger.debug(
+              'Tentativa $attempts: Nenhum filme encontrado, tentando outra página...',
+            );
           }
         } else {
           throw Exception('Erro ao buscar filmes: ${response.statusCode}');
@@ -147,45 +176,56 @@ class MovieService {
       List<Movie> validMovies = [];
       int attempts = 0;
       const maxAttempts = 3;
-      
+
       while (validMovies.isEmpty && attempts < maxAttempts) {
         attempts++;
         final randomPage = attempts; // Páginas 1, 2, 3
-        
+
         // Usa now_playing sem filtros (mais rápido)
-        var urlString = '$_baseUrl/movie/now_playing?api_key=$_apiKey&language=pt-BR&page=$randomPage&region=BR';
-        
+        var urlString =
+            '$_baseUrl/movie/now_playing?api_key=$_apiKey&language=\$_getCurrentLanguageCode&page=$randomPage&region=BR';
+
         // Adiciona filtro de classificação indicativa
         if (allowAdult != null && !allowAdult) {
           urlString += '&include_adult=false';
-          AppLogger.debug('🔞 Filtro aplicado (Novidades): Apenas conteúdo não adulto (include_adult=false)');
+          AppLogger.debug(
+            '🔞 Filtro aplicado (Novidades): Apenas conteúdo não adulto (include_adult=false)',
+          );
         }
-        
+
         if (minYear != null) {
           urlString += '&primary_release_date.gte=$minYear-01-01';
         }
-        
+
         if (maxYear != null) {
           urlString += '&primary_release_date.lte=$maxYear-12-31';
         }
-        
+
         final url = Uri.parse(urlString);
         final response = await http.get(url);
 
         if (response.statusCode == 200) {
           final jsonData = json.decode(response.body);
           final moviesResponse = MoviesResponse.fromJson(jsonData);
-          
+
           // Filtra filmes que tenham título em português ou pelo menos um título válido
           validMovies = moviesResponse.results
-              .where((movie) => movie.title.isNotEmpty && movie.title != 'Título não disponível')
+              .where(
+                (movie) =>
+                    movie.title.isNotEmpty &&
+                    movie.title != 'Título não disponível',
+              )
               .toList();
-          
+
           if (validMovies.isEmpty && attempts < maxAttempts) {
-            AppLogger.debug('Tentativa $attempts (Novidades): Nenhum filme encontrado, tentando outra página...');
+            AppLogger.debug(
+              'Tentativa $attempts (Novidades): Nenhum filme encontrado, tentando outra página...',
+            );
           }
         } else {
-          throw Exception('Erro ao buscar filmes em cartaz: ${response.statusCode}');
+          throw Exception(
+            'Erro ao buscar filmes em cartaz: ${response.statusCode}',
+          );
         }
       }
 
@@ -195,15 +235,15 @@ class MovieService {
       return await _getRecentPopularMovies();
     }
   }
-  
+
   // Função auxiliar para buscar filmes populares recentes
   static Future<List<Movie>> _getRecentPopularMovies() async {
     try {
       final currentYear = DateTime.now().year;
       final randomPage = Random().nextInt(3) + 1;
-      
+
       final url = Uri.parse(
-        '$_baseUrl/discover/movie?api_key=$_apiKey&language=pt-BR&sort_by=popularity.desc&primary_release_year=$currentYear&page=$randomPage'
+        '$_baseUrl/discover/movie?api_key=$_apiKey&language=\$_getCurrentLanguageCode&sort_by=popularity.desc&primary_release_year=$currentYear&page=$randomPage',
       );
 
       final response = await http.get(url);
@@ -211,9 +251,13 @@ class MovieService {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         final moviesResponse = MoviesResponse.fromJson(jsonData);
-        
+
         final validMovies = moviesResponse.results
-            .where((movie) => movie.title.isNotEmpty && movie.title != 'Título não disponível')
+            .where(
+              (movie) =>
+                  movie.title.isNotEmpty &&
+                  movie.title != 'Título não disponível',
+            )
             .toList();
 
         return validMovies;
@@ -221,7 +265,11 @@ class MovieService {
         return [];
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar filmes populares recentes', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar filmes populares recentes',
+        error: e,
+        stackTrace: stack,
+      );
       return [];
     }
   }
@@ -231,7 +279,7 @@ class MovieService {
     if (movies.isEmpty) {
       throw Exception('Nenhum filme encontrado para o gênero $genre');
     }
-    
+
     final randomIndex = Random().nextInt(movies.length);
     return movies[randomIndex];
   }
@@ -239,7 +287,7 @@ class MovieService {
   static Future<Movie> getMovieDetails(int movieId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/$movieId?api_key=$_apiKey&language=pt-BR'
+        '$_baseUrl/movie/$movieId?api_key=$_apiKey&language=\$_getCurrentLanguageCode',
       );
 
       final response = await http.get(url);
@@ -248,10 +296,16 @@ class MovieService {
         final jsonData = json.decode(response.body);
         return Movie.fromJson(jsonData);
       } else {
-        throw Exception('Erro ao buscar detalhes do filme: ${response.statusCode}');
+        throw Exception(
+          'Erro ao buscar detalhes do filme: ${response.statusCode}',
+        );
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar detalhes do filme $movieId', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar detalhes do filme $movieId',
+        error: e,
+        stackTrace: stack,
+      );
       rethrow;
     }
   }
@@ -259,7 +313,7 @@ class MovieService {
   static Future<MovieCredits> getMovieCredits(int movieId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/$movieId/credits?api_key=$_apiKey'
+        '$_baseUrl/movie/$movieId/credits?api_key=$_apiKey',
       );
 
       final response = await http.get(url);
@@ -271,7 +325,11 @@ class MovieService {
         throw Exception('Erro ao buscar elenco: ${response.statusCode}');
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar elenco do filme $movieId', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar elenco do filme $movieId',
+        error: e,
+        stackTrace: stack,
+      );
       return MovieCredits(cast: [], crew: []);
     }
   }
@@ -279,7 +337,7 @@ class MovieService {
   static Future<WatchProviders?> getWatchProviders(int movieId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/$movieId/watch/providers?api_key=$_apiKey'
+        '$_baseUrl/movie/$movieId/watch/providers?api_key=$_apiKey',
       );
 
       final response = await http.get(url);
@@ -287,7 +345,7 @@ class MovieService {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         final results = jsonData['results'] as Map<String, dynamic>?;
-        
+
         // Verifica primeiro BR (Brasil), depois US (Estados Unidos)
         if (results?['BR'] != null) {
           return WatchProviders.fromJson(results!['BR']);
@@ -299,7 +357,11 @@ class MovieService {
         return null;
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar provedores do filme $movieId', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar provedores do filme $movieId',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
@@ -307,7 +369,7 @@ class MovieService {
   static Future<MovieVideos?> getMovieVideos(int movieId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/$movieId/videos?api_key=$_apiKey&language=pt-BR'
+        '$_baseUrl/movie/$movieId/videos?api_key=$_apiKey&language=\$_getCurrentLanguageCode',
       );
 
       final response = await http.get(url);
@@ -315,26 +377,30 @@ class MovieService {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         final movieVideos = MovieVideos.fromJson(jsonData);
-        
+
         // Se não encontrar vídeos em português, tenta em inglês
         if (movieVideos.results.isEmpty) {
           final urlEn = Uri.parse(
-            '$_baseUrl/movie/$movieId/videos?api_key=$_apiKey&language=en-US'
+            '$_baseUrl/movie/$movieId/videos?api_key=$_apiKey&language=en-US',
           );
-          
+
           final responseEn = await http.get(urlEn);
           if (responseEn.statusCode == 200) {
             final jsonDataEn = json.decode(responseEn.body);
             return MovieVideos.fromJson(jsonDataEn);
           }
         }
-        
+
         return movieVideos;
       } else {
         throw Exception('Erro ao buscar vídeos: ${response.statusCode}');
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar vídeos do filme $movieId', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar vídeos do filme $movieId',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
@@ -346,7 +412,10 @@ class MovieService {
         {'title': 'Oppenheimer', 'year': '2023'},
         {'title': 'Barbie', 'year': '2023'},
         {'title': 'Guardiões da Galáxia Vol. 3', 'year': '2023'},
-        {'title': 'Missão: Impossível - Acerto de Contas Parte 1', 'year': '2023'},
+        {
+          'title': 'Missão: Impossível - Acerto de Contas Parte 1',
+          'year': '2023',
+        },
         {'title': 'Elementos', 'year': '2023'},
       ],
       'Ação': [
@@ -478,17 +547,21 @@ class MovieService {
     };
 
     final movieData = fallbackData[genre] ?? [];
-    return movieData.map((data) => Movie(
-      id: 0,
-      title: data['title']!,
-      overview: 'Filme clássico do gênero $genre',
-      posterPath: '',
-      backdropPath: '',
-      voteAverage: 8.0,
-      voteCount: 1000,
-      releaseDate: data['year']!,
-      genreIds: [],
-    )).toList();
+    return movieData
+        .map(
+          (data) => Movie(
+            id: 0,
+            title: data['title']!,
+            overview: 'Filme clássico do gênero $genre',
+            posterPath: '',
+            backdropPath: '',
+            voteAverage: 8.0,
+            voteCount: 1000,
+            releaseDate: data['year']!,
+            genreIds: [],
+          ),
+        )
+        .toList();
   }
 
   // Método para obter informações da trilha sonora
@@ -552,7 +625,7 @@ class MovieService {
     };
 
     final soundtrackData = knownSoundtracks[movie.title];
-    
+
     return SoundtrackInfo(
       movieTitle: movie.title,
       spotifyPlaylistId: soundtrackData?['spotifyPlaylistId'],
@@ -568,7 +641,7 @@ class MovieService {
   static Future<ActorDetails> getActorDetails(int actorId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/person/$actorId?api_key=$_apiKey&language=pt-BR'
+        '$_baseUrl/person/$actorId?api_key=$_apiKey&language=\$_getCurrentLanguageCode',
       );
 
       final response = await http.get(url);
@@ -576,10 +649,10 @@ class MovieService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final actorDetails = ActorDetails.fromJson(data);
-        
+
         // Buscar filmes conhecidos do ator
         final knownForMovies = await getActorMovies(actorId);
-        
+
         return ActorDetails(
           id: actorDetails.id,
           name: actorDetails.name,
@@ -604,7 +677,7 @@ class MovieService {
   static Future<List<ActorMovie>> getActorMovies(int actorId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/person/$actorId/movie_credits?api_key=$_apiKey&language=pt-BR'
+        '$_baseUrl/person/$actorId/movie_credits?api_key=$_apiKey&language=\$_getCurrentLanguageCode',
       );
 
       final response = await http.get(url);
@@ -612,21 +685,25 @@ class MovieService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final List<dynamic> castList = data['cast'] ?? [];
-        
+
         // Ordenar por popularidade e data de lançamento
         final movies = castList
             .map((movieData) => ActorMovie.fromJson(movieData))
-            .where((movie) => movie.posterPath != null && movie.releaseDate != null)
+            .where(
+              (movie) => movie.posterPath != null && movie.releaseDate != null,
+            )
             .toList();
-            
+
         movies.sort((a, b) {
           // Primeiro por data de lançamento (mais recente primeiro)
-          final dateComparison = (b.releaseDate ?? '').compareTo(a.releaseDate ?? '');
+          final dateComparison = (b.releaseDate ?? '').compareTo(
+            a.releaseDate ?? '',
+          );
           if (dateComparison != 0) return dateComparison;
           // Depois por avaliação
           return b.voteAverage.compareTo(a.voteAverage);
         });
-        
+
         // Retornar os 20 filmes mais relevantes
         return movies.take(20).toList();
       } else {
@@ -641,7 +718,7 @@ class MovieService {
   static Future<List<ActorMovie>> getDirectorMovies(int directorId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/person/$directorId/movie_credits?api_key=$_apiKey&language=pt-BR'
+        '$_baseUrl/person/$directorId/movie_credits?api_key=$_apiKey&language=\$_getCurrentLanguageCode',
       );
 
       final response = await http.get(url);
@@ -649,22 +726,26 @@ class MovieService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final List<dynamic> crewList = data['crew'] ?? [];
-        
+
         // Filtrar apenas filmes onde a pessoa foi diretora
         final directorMovies = crewList
             .where((movieData) => movieData['job'] == 'Director')
             .map((movieData) => ActorMovie.fromJson(movieData))
-            .where((movie) => movie.posterPath != null && movie.releaseDate != null)
+            .where(
+              (movie) => movie.posterPath != null && movie.releaseDate != null,
+            )
             .toList();
-            
+
         directorMovies.sort((a, b) {
           // Primeiro por data de lançamento (mais recente primeiro)
-          final dateComparison = (b.releaseDate ?? '').compareTo(a.releaseDate ?? '');
+          final dateComparison = (b.releaseDate ?? '').compareTo(
+            a.releaseDate ?? '',
+          );
           if (dateComparison != 0) return dateComparison;
           // Depois por avaliação
           return b.voteAverage.compareTo(a.voteAverage);
         });
-        
+
         // Retornar os 20 filmes mais relevantes
         return directorMovies.take(20).toList();
       } else {
@@ -679,7 +760,7 @@ class MovieService {
   static Future<List<Movie>?> getPopularMovies({int page = 1}) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/popular?api_key=$_apiKey&language=pt-BR&page=$page'
+        '$_baseUrl/movie/popular?api_key=$_apiKey&language=\$_getCurrentLanguageCode&page=$page',
       );
 
       final response = await http.get(url);
@@ -689,10 +770,16 @@ class MovieService {
         final moviesResponse = MoviesResponse.fromJson(jsonData);
         return moviesResponse.results;
       } else {
-        throw Exception('Erro ao buscar filmes populares: ${response.statusCode}');
+        throw Exception(
+          'Erro ao buscar filmes populares: ${response.statusCode}',
+        );
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar filmes populares (page: $page)', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar filmes populares (page: $page)',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
@@ -700,7 +787,7 @@ class MovieService {
   static Future<List<Movie>?> getTopRatedMovies({int page = 1}) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/top_rated?api_key=$_apiKey&language=pt-BR&page=$page'
+        '$_baseUrl/movie/top_rated?api_key=$_apiKey&language=\$_getCurrentLanguageCode&page=$page',
       );
 
       final response = await http.get(url);
@@ -710,10 +797,16 @@ class MovieService {
         final moviesResponse = MoviesResponse.fromJson(jsonData);
         return moviesResponse.results;
       } else {
-        throw Exception('Erro ao buscar filmes mais votados: ${response.statusCode}');
+        throw Exception(
+          'Erro ao buscar filmes mais votados: ${response.statusCode}',
+        );
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar filmes mais votados (page: $page)', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar filmes mais votados (page: $page)',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
@@ -721,7 +814,7 @@ class MovieService {
   static Future<List<Movie>?> getUpcomingMovies({int page = 1}) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/upcoming?api_key=$_apiKey&language=pt-BR&page=$page'
+        '$_baseUrl/movie/upcoming?api_key=$_apiKey&language=\$_getCurrentLanguageCode&page=$page',
       );
 
       final response = await http.get(url);
@@ -734,15 +827,22 @@ class MovieService {
         throw Exception('Erro ao buscar novidades: ${response.statusCode}');
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar novidades de filmes (page: $page)', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar novidades de filmes (page: $page)',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
 
-  static Future<List<Movie>?> getMoviesByGenres(List<int> genreIds, {int page = 1}) async {
+  static Future<List<Movie>?> getMoviesByGenres(
+    List<int> genreIds, {
+    int page = 1,
+  }) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/discover/movie?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=pt-BR&sort_by=popularity.desc&page=$page'
+        '$_baseUrl/discover/movie?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=\$_getCurrentLanguageCode&sort_by=popularity.desc&page=$page',
       );
 
       final response = await http.get(url);
@@ -752,20 +852,26 @@ class MovieService {
         final moviesResponse = MoviesResponse.fromJson(jsonData);
         return moviesResponse.results;
       } else {
-        throw Exception('Erro ao buscar filmes por gêneros: ${response.statusCode}');
+        throw Exception(
+          'Erro ao buscar filmes por gêneros: ${response.statusCode}',
+        );
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar filmes por gêneros $genreIds (page: $page)', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar filmes por gêneros $genreIds (page: $page)',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
 
   static Future<List<Movie>?> searchMovies(String query, {int page = 1}) async {
     if (query.trim().isEmpty) return [];
-    
+
     try {
       final url = Uri.parse(
-        '$_baseUrl/search/movie?api_key=$_apiKey&language=pt-BR&query=${Uri.encodeComponent(query)}&page=$page'
+        '$_baseUrl/search/movie?api_key=$_apiKey&language=\$_getCurrentLanguageCode&query=${Uri.encodeComponent(query)}&page=$page',
       );
 
       final response = await http.get(url);
@@ -778,14 +884,19 @@ class MovieService {
         throw Exception('Erro na pesquisa: ${response.statusCode}');
       }
     } catch (e, stack) {
-      AppLogger.error('Erro na pesquisa de filmes: $query (page: $page)', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro na pesquisa de filmes: $query (page: $page)',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
 
   // Métodos para Séries de TV
 
-  static Future<List<TVShow>> getTVShowsByGenre(String genre, {
+  static Future<List<TVShow>> getTVShowsByGenre(
+    String genre, {
     int? minYear,
     int? maxYear,
     bool? allowAdult,
@@ -809,43 +920,52 @@ class MovieService {
       List<TVShow> validTVShows = [];
       int attempts = 0;
       const maxAttempts = 3;
-      
+
       while (validTVShows.isEmpty && attempts < maxAttempts) {
         attempts++;
         final randomPage = Random().nextInt(5) + attempts;
-        
+
         // Constrói a URL base
-        var urlString = '$_baseUrl/discover/tv?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=pt-BR&sort_by=popularity.desc&page=$randomPage';
-        
+        var urlString =
+            '$_baseUrl/discover/tv?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=\$_getCurrentLanguageCode&sort_by=popularity.desc&page=$randomPage';
+
         // Adiciona filtro de classificação indicativa
         if (allowAdult != null && !allowAdult) {
           urlString += '&include_adult=false';
-          AppLogger.debug('🔞 Filtro aplicado (TV): Apenas conteúdo não adulto (include_adult=false)');
+          AppLogger.debug(
+            '🔞 Filtro aplicado (TV): Apenas conteúdo não adulto (include_adult=false)',
+          );
         }
-        
+
         // Adiciona filtros de preferências
         if (minYear != null) {
           urlString += '&first_air_date.gte=$minYear-01-01';
         }
-        
+
         if (maxYear != null) {
           urlString += '&first_air_date.lte=$maxYear-12-31';
         }
-        
+
         final url = Uri.parse(urlString);
         final response = await http.get(url);
 
         if (response.statusCode == 200) {
           final jsonData = json.decode(response.body);
           final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
-          
+
           // Filtra séries que tenham título em português ou pelo menos um título válido
           validTVShows = tvShowsResponse.results
-              .where((tvshow) => tvshow.name.isNotEmpty && tvshow.name != 'Título não disponível')
+              .where(
+                (tvshow) =>
+                    tvshow.name.isNotEmpty &&
+                    tvshow.name != 'Título não disponível',
+              )
               .toList();
-          
+
           if (validTVShows.isEmpty && attempts < maxAttempts) {
-            AppLogger.debug('Tentativa $attempts: Nenhuma série encontrada, tentando outra página...');
+            AppLogger.debug(
+              'Tentativa $attempts: Nenhuma série encontrada, tentando outra página...',
+            );
           }
         } else {
           throw Exception('Erro ao buscar séries: ${response.statusCode}');
@@ -868,57 +988,72 @@ class MovieService {
     try {
       final currentYear = DateTime.now().year;
       final lastYear = currentYear - 1;
-      
+
       // Tenta até 3 páginas diferentes se não encontrar resultados
       List<TVShow> validTVShows = [];
       int attempts = 0;
       const maxAttempts = 3;
-      
+
       while (validTVShows.isEmpty && attempts < maxAttempts) {
         attempts++;
         final randomPage = attempts;
-        
+
         // Constrói a URL base com discover (suporta filtros de nota)
-        var urlString = '$_baseUrl/discover/tv?api_key=$_apiKey&language=pt-BR&sort_by=popularity.desc&first_air_date.gte=$lastYear-01-01&page=$randomPage';
-        
+        var urlString =
+            '$_baseUrl/discover/tv?api_key=$_apiKey&language=\$_getCurrentLanguageCode&sort_by=popularity.desc&first_air_date.gte=$lastYear-01-01&page=$randomPage';
+
         // Adiciona filtro de classificação indicativa
         if (allowAdult != null && !allowAdult) {
           urlString += '&include_adult=false';
-          AppLogger.debug('🔞 Filtro aplicado (TV Novidades): Apenas conteúdo não adulto (include_adult=false)');
+          AppLogger.debug(
+            '🔞 Filtro aplicado (TV Novidades): Apenas conteúdo não adulto (include_adult=false)',
+          );
         }
-        
+
         // Adiciona filtros de preferências
         if (minYear != null) {
           urlString += '&first_air_date.gte=$minYear-01-01';
         }
-        
+
         if (maxYear != null) {
           urlString += '&first_air_date.lte=$maxYear-12-31';
         }
-        
+
         final url = Uri.parse(urlString);
         final response = await http.get(url);
 
         if (response.statusCode == 200) {
           final jsonData = json.decode(response.body);
           final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
-          
+
           // Filtra séries que tenham título em português ou pelo menos um título válido
           validTVShows = tvShowsResponse.results
-              .where((tvshow) => tvshow.name.isNotEmpty && tvshow.name != 'Título não disponível')
+              .where(
+                (tvshow) =>
+                    tvshow.name.isNotEmpty &&
+                    tvshow.name != 'Título não disponível',
+              )
               .toList();
-          
+
           if (validTVShows.isEmpty && attempts < maxAttempts) {
-            AppLogger.debug('Tentativa $attempts (Novidades TV): Nenhuma série encontrada, tentando outra página...');
+            AppLogger.debug(
+              'Tentativa $attempts (Novidades TV): Nenhuma série encontrada, tentando outra página...',
+            );
           }
         } else {
-          throw Exception('Erro ao buscar séries no ar: ${response.statusCode}');
+          throw Exception(
+            'Erro ao buscar séries no ar: ${response.statusCode}',
+          );
         }
       }
 
       return validTVShows;
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar novidades de séries', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar novidades de séries',
+        error: e,
+        stackTrace: stack,
+      );
       return await _getRecentPopularTVShows();
     }
   }
@@ -929,10 +1064,10 @@ class MovieService {
       final currentYear = DateTime.now().year;
       final lastYear = currentYear - 1;
       final randomPage = Random().nextInt(2) + 1;
-      
+
       // Busca séries que estrearam nos últimos 2 anos
       final url = Uri.parse(
-        '$_baseUrl/discover/tv?api_key=$_apiKey&language=pt-BR&sort_by=popularity.desc&first_air_date.gte=$lastYear-01-01&vote_count.gte=10&page=$randomPage'
+        '$_baseUrl/discover/tv?api_key=$_apiKey&language=\$_getCurrentLanguageCode&sort_by=popularity.desc&first_air_date.gte=$lastYear-01-01&vote_count.gte=10&page=$randomPage',
       );
 
       final response = await http.get(url);
@@ -940,25 +1075,35 @@ class MovieService {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
-        
+
         final validTVShows = tvShowsResponse.results
-            .where((tvshow) => tvshow.name.isNotEmpty && tvshow.name != 'Título não disponível')
+            .where(
+              (tvshow) =>
+                  tvshow.name.isNotEmpty &&
+                  tvshow.name != 'Título não disponível',
+            )
             .toList();
 
         // Se não encontrou séries dos últimos 2 anos, tenta apenas o ano atual
         if (validTVShows.isEmpty) {
           final urlCurrentYear = Uri.parse(
-            '$_baseUrl/discover/tv?api_key=$_apiKey&language=pt-BR&sort_by=popularity.desc&first_air_date_year=$currentYear&page=1'
+            '$_baseUrl/discover/tv?api_key=$_apiKey&language=\$_getCurrentLanguageCode&sort_by=popularity.desc&first_air_date_year=$currentYear&page=1',
           );
-          
+
           final responseCurrentYear = await http.get(urlCurrentYear);
-          
+
           if (responseCurrentYear.statusCode == 200) {
             final jsonDataCurrentYear = json.decode(responseCurrentYear.body);
-            final tvShowsResponseCurrentYear = TVShowsResponse.fromJson(jsonDataCurrentYear);
-            
+            final tvShowsResponseCurrentYear = TVShowsResponse.fromJson(
+              jsonDataCurrentYear,
+            );
+
             return tvShowsResponseCurrentYear.results
-                .where((tvshow) => tvshow.name.isNotEmpty && tvshow.name != 'Título não disponível')
+                .where(
+                  (tvshow) =>
+                      tvshow.name.isNotEmpty &&
+                      tvshow.name != 'Título não disponível',
+                )
                 .toList();
           }
         }
@@ -968,7 +1113,11 @@ class MovieService {
         return [];
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar séries populares recentes', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar séries populares recentes',
+        error: e,
+        stackTrace: stack,
+      );
       return [];
     }
   }
@@ -977,33 +1126,33 @@ class MovieService {
     try {
       final genres = _tvGenreMap.keys.toList();
       final randomGenre = genres[Random().nextInt(genres.length)];
-      
+
       final tvShows = await getTVShowsByGenre(randomGenre);
-      
+
       if (tvShows.isNotEmpty) {
         final randomIndex = Random().nextInt(tvShows.length);
         return tvShows[randomIndex];
       }
-      
+
       return null;
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar série aleatória', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar série aleatória',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
 
   static List<String> getTVGenres() {
-    return [
-      ..._tvGenreMap.keys,
-      'Favoritos',
-      'Assistidos',
-    ];
+    return [..._tvGenreMap.keys, 'Favoritos', 'Assistidos'];
   }
 
   static Future<List<TVShow>?> getPopularTVShows({int page = 1}) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/tv/popular?api_key=$_apiKey&language=pt-BR&page=$page'
+        '$_baseUrl/tv/popular?api_key=$_apiKey&language=\$_getCurrentLanguageCode&page=$page',
       );
 
       final response = await http.get(url);
@@ -1013,10 +1162,16 @@ class MovieService {
         final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
         return tvShowsResponse.results;
       } else {
-        throw Exception('Erro ao buscar séries populares: ${response.statusCode}');
+        throw Exception(
+          'Erro ao buscar séries populares: ${response.statusCode}',
+        );
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar séries populares (page: $page)', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar séries populares (page: $page)',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
@@ -1024,7 +1179,7 @@ class MovieService {
   static Future<List<TVShow>?> getTopRatedTVShows({int page = 1}) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/tv/top_rated?api_key=$_apiKey&language=pt-BR&page=$page'
+        '$_baseUrl/tv/top_rated?api_key=$_apiKey&language=\$_getCurrentLanguageCode&page=$page',
       );
 
       final response = await http.get(url);
@@ -1034,10 +1189,16 @@ class MovieService {
         final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
         return tvShowsResponse.results;
       } else {
-        throw Exception('Erro ao buscar séries mais bem avaliadas: ${response.statusCode}');
+        throw Exception(
+          'Erro ao buscar séries mais bem avaliadas: ${response.statusCode}',
+        );
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar séries mais bem avaliadas (page: $page)', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar séries mais bem avaliadas (page: $page)',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
@@ -1045,7 +1206,7 @@ class MovieService {
   static Future<List<TVShow>?> getOnTheAirTVShows({int page = 1}) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/tv/on_the_air?api_key=$_apiKey&language=pt-BR&page=$page'
+        '$_baseUrl/tv/on_the_air?api_key=$_apiKey&language=\$_getCurrentLanguageCode&page=$page',
       );
 
       final response = await http.get(url);
@@ -1058,17 +1219,24 @@ class MovieService {
         throw Exception('Erro ao buscar séries no ar: ${response.statusCode}');
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar séries no ar (page: $page)', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar séries no ar (page: $page)',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
 
-  static Future<List<TVShow>?> searchTVShows(String query, {int page = 1}) async {
+  static Future<List<TVShow>?> searchTVShows(
+    String query, {
+    int page = 1,
+  }) async {
     if (query.trim().isEmpty) return [];
-    
+
     try {
       final url = Uri.parse(
-        '$_baseUrl/search/tv?api_key=$_apiKey&language=pt-BR&query=${Uri.encodeComponent(query)}&page=$page'
+        '$_baseUrl/search/tv?api_key=$_apiKey&language=\$_getCurrentLanguageCode&query=${Uri.encodeComponent(query)}&page=$page',
       );
 
       final response = await http.get(url);
@@ -1081,7 +1249,11 @@ class MovieService {
         throw Exception('Erro na pesquisa de séries: ${response.statusCode}');
       }
     } catch (e, stack) {
-      AppLogger.error('Erro na pesquisa de séries: $query (page: $page)', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro na pesquisa de séries: $query (page: $page)',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
@@ -1090,7 +1262,7 @@ class MovieService {
   static Future<TVShow> getTVShowDetails(int tvShowId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/tv/$tvShowId?api_key=$_apiKey&language=pt-BR'
+        '$_baseUrl/tv/$tvShowId?api_key=$_apiKey&language=\$_getCurrentLanguageCode',
       );
 
       final response = await http.get(url);
@@ -1099,19 +1271,23 @@ class MovieService {
         final jsonData = json.decode(response.body);
         return TVShow.fromJson(jsonData);
       } else {
-        throw Exception('Erro ao buscar detalhes da série: ${response.statusCode}');
+        throw Exception(
+          'Erro ao buscar detalhes da série: ${response.statusCode}',
+        );
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar detalhes da série $tvShowId', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar detalhes da série $tvShowId',
+        error: e,
+        stackTrace: stack,
+      );
       rethrow;
     }
   }
 
   static Future<MovieCredits> getTVShowCredits(int tvShowId) async {
     try {
-      final url = Uri.parse(
-        '$_baseUrl/tv/$tvShowId/credits?api_key=$_apiKey'
-      );
+      final url = Uri.parse('$_baseUrl/tv/$tvShowId/credits?api_key=$_apiKey');
 
       final response = await http.get(url);
 
@@ -1119,10 +1295,16 @@ class MovieService {
         final jsonData = json.decode(response.body);
         return MovieCredits.fromJson(jsonData);
       } else {
-        throw Exception('Erro ao buscar elenco da série: ${response.statusCode}');
+        throw Exception(
+          'Erro ao buscar elenco da série: ${response.statusCode}',
+        );
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar elenco da série $tvShowId', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar elenco da série $tvShowId',
+        error: e,
+        stackTrace: stack,
+      );
       return MovieCredits(cast: [], crew: []);
     }
   }
@@ -1130,7 +1312,7 @@ class MovieService {
   static Future<WatchProviders?> getTVShowWatchProviders(int tvShowId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/tv/$tvShowId/watch/providers?api_key=$_apiKey'
+        '$_baseUrl/tv/$tvShowId/watch/providers?api_key=$_apiKey',
       );
 
       final response = await http.get(url);
@@ -1138,7 +1320,7 @@ class MovieService {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         final results = jsonData['results'] as Map<String, dynamic>?;
-        
+
         // Verifica primeiro BR (Brasil), depois US (Estados Unidos)
         if (results?['BR'] != null) {
           return WatchProviders.fromJson(results!['BR']);
@@ -1150,7 +1332,11 @@ class MovieService {
         return null;
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar provedores da série $tvShowId', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar provedores da série $tvShowId',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
@@ -1158,7 +1344,7 @@ class MovieService {
   static Future<MovieVideos?> getTVShowVideos(int tvShowId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/tv/$tvShowId/videos?api_key=$_apiKey&language=pt-BR'
+        '$_baseUrl/tv/$tvShowId/videos?api_key=$_apiKey&language=\$_getCurrentLanguageCode',
       );
 
       final response = await http.get(url);
@@ -1166,26 +1352,32 @@ class MovieService {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         final tvShowVideos = MovieVideos.fromJson(jsonData);
-        
+
         // Se não encontrar vídeos em português, tenta em inglês
         if (tvShowVideos.results.isEmpty) {
           final urlEn = Uri.parse(
-            '$_baseUrl/tv/$tvShowId/videos?api_key=$_apiKey&language=en-US'
+            '$_baseUrl/tv/$tvShowId/videos?api_key=$_apiKey&language=en-US',
           );
-          
+
           final responseEn = await http.get(urlEn);
           if (responseEn.statusCode == 200) {
             final jsonDataEn = json.decode(responseEn.body);
             return MovieVideos.fromJson(jsonDataEn);
           }
         }
-        
+
         return tvShowVideos;
       } else {
-        throw Exception('Erro ao buscar vídeos da série: ${response.statusCode}');
+        throw Exception(
+          'Erro ao buscar vídeos da série: ${response.statusCode}',
+        );
       }
     } catch (e, stack) {
-      AppLogger.error('Erro ao buscar vídeos da série $tvShowId', error: e, stackTrace: stack);
+      AppLogger.error(
+        'Erro ao buscar vídeos da série $tvShowId',
+        error: e,
+        stackTrace: stack,
+      );
       return null;
     }
   }
@@ -1245,7 +1437,7 @@ class MovieService {
     };
 
     final soundtrackData = knownTVSoundtracks[tvShow.name];
-    
+
     return SoundtrackInfo(
       movieTitle: tvShow.name,
       spotifyPlaylistId: soundtrackData?['spotifyPlaylistId'],
