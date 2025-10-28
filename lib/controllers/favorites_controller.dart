@@ -6,6 +6,7 @@ import '../models/movie.dart';
 import '../models/tv_show.dart';
 import '../services/user_data_service.dart';
 import '../services/auth_service.dart';
+import '../services/session_service.dart';
 
 /// Controller para gerenciar lista de favoritos
 /// Singleton pattern para garantir instância única
@@ -101,7 +102,7 @@ class FavoritesController extends ChangeNotifier {
   }
 
   /// Salva favoritos (Firebase se logado, SharedPreferences sempre)
-  Future<void> _saveFavorites() async {
+  Future<void> _saveFavorites({bool allowEmpty = false}) async {
     try {
       // Sempre salva local (backup)
       final prefs = await SharedPreferences.getInstance();
@@ -110,14 +111,19 @@ class FavoritesController extends ChangeNotifier {
       );
       await prefs.setString(_favoritesKey, favoritesJson);
       
-      // Se usuário está logado, também salva no Firebase
+      // Se usuário está logado, também salva no Firebase — mas só após
+      // a sincronização inicial com a nuvem para evitar sobrescritas.
       if (AuthService.isUserLoggedIn()) {
-        try {
-          await UserDataService.saveFavorites(_favorites);
-          debugPrint('✅ Favoritos salvos (local + Firebase): ${_favorites.length}');
-        } catch (e) {
-          debugPrint('⚠️ Erro ao salvar no Firebase, mas dados locais estão seguros: $e');
-          // Não lança erro - dados locais estão salvos
+        if (!SessionService.initialCloudSyncCompleted) {
+          debugPrint('⏳ Sincronização inicial não concluída - adiando gravação no Firebase para favoritos');
+        } else {
+          try {
+            await UserDataService.saveFavorites(_favorites, allowEmpty: allowEmpty);
+            debugPrint('✅ Favoritos salvos (local + Firebase): ${_favorites.length}');
+          } catch (e) {
+            debugPrint('⚠️ Erro ao salvar no Firebase, mas dados locais estão seguros: $e');
+            // Não lança erro - dados locais estão salvos
+          }
         }
       } else {
         debugPrint('✅ Favoritos salvos (apenas local): ${_favorites.length}');
@@ -185,7 +191,8 @@ class FavoritesController extends ChangeNotifier {
     
     _recentlyRemoved.addAll(removed); // Rastreia itens removidos
     notifyListeners();
-    await _saveFavorites();
+    // Allow empty writes so removing the last favorite propagates to cloud
+    await _saveFavorites(allowEmpty: true);
     debugPrint('🗑️ Filme removido dos favoritos: ${movie.title}');
   }
 
@@ -201,7 +208,7 @@ class FavoritesController extends ChangeNotifier {
     
     _recentlyRemoved.addAll(removed); // Rastreia itens removidos
     notifyListeners();
-    await _saveFavorites();
+    await _saveFavorites(allowEmpty: true);
     debugPrint('🗑️ Série removida dos favoritos: ${show.name}');
   }
 
@@ -211,7 +218,7 @@ class FavoritesController extends ChangeNotifier {
     _favorites.removeWhere((fav) => fav.id == id);
     _recentlyRemoved.addAll(removed); // Rastreia itens removidos
     notifyListeners();
-    await _saveFavorites();
+    await _saveFavorites(allowEmpty: true);
     debugPrint('🗑️ Favorito removido: $id');
   }
 
@@ -237,7 +244,8 @@ class FavoritesController extends ChangeNotifier {
   Future<void> clearAll() async {
     _favorites.clear();
     notifyListeners();
-    await _saveFavorites();
+    // Explicit clear: allow writing empty list to cloud
+    await _saveFavorites(allowEmpty: true);
     debugPrint('🗑️ Todos os favoritos foram limpos');
   }
 
@@ -299,11 +307,15 @@ class FavoritesController extends ChangeNotifier {
         debugPrint('ℹ️ Nenhum dado de favoritos no Firebase (document/field ausente) - preservando cache local e subindo para nuvem');
         await _saveFavorites();
         if (AuthService.isUserLoggedIn()) {
-          try {
-            await UserDataService.saveFavorites(_favorites);
-            debugPrint('✅ Favoritos locais enviados para o Firebase (criação de documento)');
-          } catch (e) {
-            debugPrint('⚠️ Erro ao criar favoritos no Firebase após sync: $e');
+          if (!SessionService.initialCloudSyncCompleted) {
+            debugPrint('⏳ Sincronização inicial não concluída - adiando criação de documento de favoritos na nuvem');
+          } else {
+            try {
+              await UserDataService.saveFavorites(_favorites);
+              debugPrint('✅ Favoritos locais enviados para o Firebase (criação de documento)');
+            } catch (e) {
+              debugPrint('⚠️ Erro ao criar favoritos no Firebase após sync: $e');
+            }
           }
         }
       }
@@ -346,7 +358,11 @@ class FavoritesController extends ChangeNotifier {
 
       if (missingInCloud.isNotEmpty) {
         debugPrint('⚠️ ${missingInCloud.length} itens locais não encontrados na nuvem, sincronizando');
-        await UserDataService.saveFavorites(_favorites);
+        if (!SessionService.initialCloudSyncCompleted) {
+          debugPrint('⏳ Sincronização inicial não concluída - adiando envio de favoritos ausentes para a nuvem');
+        } else {
+          await UserDataService.saveFavorites(_favorites);
+        }
       }
 
       debugPrint('✅ Integridade dos dados verificada');

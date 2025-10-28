@@ -6,6 +6,7 @@ import '../models/movie.dart';
 import '../models/tv_show.dart';
 import '../services/user_data_service.dart';
 import '../services/auth_service.dart';
+import '../services/session_service.dart';
 
 /// Controller para gerenciar lista de assistidos
 /// Singleton pattern para garantir instância única
@@ -83,7 +84,7 @@ class WatchedController extends ChangeNotifier {
   }
 
   /// Salva assistidos (Firebase se logado, SharedPreferences sempre)
-  Future<void> _saveWatchedItems() async {
+  Future<void> _saveWatchedItems({bool allowEmpty = false}) async {
     try {
       // Sempre salva local (backup)
       final prefs = await SharedPreferences.getInstance();
@@ -94,12 +95,16 @@ class WatchedController extends ChangeNotifier {
       
       // Se usuário está logado, também salva no Firebase
       if (AuthService.isUserLoggedIn()) {
-        try {
-          await UserDataService.saveWatched(_watchedItems);
-          debugPrint('✅ Assistidos salvos (local + Firebase): ${_watchedItems.length}');
-        } catch (e) {
-          debugPrint('⚠️ Erro ao salvar no Firebase, mas dados locais estão seguros: $e');
-          // Não lança erro - dados locais estão salvos
+        if (!SessionService.initialCloudSyncCompleted) {
+          debugPrint('⏳ Sincronização inicial não concluída - adiando gravação no Firebase para assistidos');
+        } else {
+          try {
+            await UserDataService.saveWatched(_watchedItems, allowEmpty: allowEmpty);
+            debugPrint('✅ Assistidos salvos (local + Firebase): ${_watchedItems.length}');
+          } catch (e) {
+            debugPrint('⚠️ Erro ao salvar no Firebase, mas dados locais estão seguros: $e');
+            // Não lança erro - dados locais estão salvos
+          }
         }
       } else {
         debugPrint('✅ Assistidos salvos (apenas local): ${_watchedItems.length}');
@@ -159,7 +164,8 @@ class WatchedController extends ChangeNotifier {
       (item) => item.id == movie.id.toString() && !item.isTVShow,
     );
     notifyListeners();
-    await _saveWatchedItems();
+    // Allow empty writes when removing items so cloud reflects the change
+    await _saveWatchedItems(allowEmpty: true);
     debugPrint('🗑️ Filme removido dos assistidos: ${movie.title}');
   }
 
@@ -169,7 +175,7 @@ class WatchedController extends ChangeNotifier {
       (item) => item.id == show.id.toString() && item.isTVShow,
     );
     notifyListeners();
-    await _saveWatchedItems();
+    await _saveWatchedItems(allowEmpty: true);
     debugPrint('🗑️ Série removida dos assistidos: ${show.name}');
   }
 
@@ -177,7 +183,7 @@ class WatchedController extends ChangeNotifier {
   Future<void> removeWatchedItem(String id) async {
     _watchedItems.removeWhere((item) => item.id == id);
     notifyListeners();
-    await _saveWatchedItems();
+    await _saveWatchedItems(allowEmpty: true);
     debugPrint('🗑️ Assistido removido: $id');
   }
 
@@ -203,7 +209,8 @@ class WatchedController extends ChangeNotifier {
   Future<void> clearAll() async {
     _watchedItems.clear();
     notifyListeners();
-    await _saveWatchedItems();
+    // Explicit clear: allow writing empty list to cloud
+    await _saveWatchedItems(allowEmpty: true);
     debugPrint('🗑️ Todos os assistidos foram removidos');
   }
 
@@ -272,11 +279,15 @@ class WatchedController extends ChangeNotifier {
         debugPrint('ℹ️ Nenhum dado de assistidos no Firebase (document/field ausente) - preservando cache local e subindo para nuvem');
         await _saveWatchedItems();
         if (AuthService.isUserLoggedIn()) {
-          try {
-            await UserDataService.saveWatched(_watchedItems);
-            debugPrint('✅ Assistidos locais enviados para o Firebase (criação de documento)');
-          } catch (e) {
-            debugPrint('⚠️ Erro ao criar assistidos no Firebase após sync: $e');
+          if (!SessionService.initialCloudSyncCompleted) {
+            debugPrint('⏳ Sincronização inicial não concluída - adiando criação de documento de assistidos na nuvem');
+          } else {
+            try {
+              await UserDataService.saveWatched(_watchedItems);
+              debugPrint('✅ Assistidos locais enviados para o Firebase (criação de documento)');
+            } catch (e) {
+              debugPrint('⚠️ Erro ao criar assistidos no Firebase após sync: $e');
+            }
           }
         }
       }
@@ -319,7 +330,11 @@ class WatchedController extends ChangeNotifier {
 
       if (missingInCloud.isNotEmpty) {
         debugPrint('⚠️ ${missingInCloud.length} itens locais não encontrados na nuvem, sincronizando');
-        await UserDataService.saveWatched(_watchedItems);
+        if (!SessionService.initialCloudSyncCompleted) {
+          debugPrint('⏳ Sincronização inicial não concluída - adiando envio de assistidos ausentes para a nuvem');
+        } else {
+          await UserDataService.saveWatched(_watchedItems);
+        }
       }
 
       debugPrint('✅ Integridade dos dados verificada');

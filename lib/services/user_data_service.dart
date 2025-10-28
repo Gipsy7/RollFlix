@@ -47,21 +47,28 @@ class UserDataService {
   // ==================== FAVORITOS ====================
   
   /// Salva lista de favoritos no Firestore
-  static Future<void> saveFavorites(List<FavoriteItem> favorites) async {
+  static Future<void> saveFavorites(List<FavoriteItem> favorites, {bool allowEmpty = false}) async {
     await _executeWithRetry(() async {
       final userDoc = _currentUserDoc;
       if (userDoc == null) {
         debugPrint('⚠️ Usuário não logado - favoritos não serão salvos no Firebase');
         return;
       }
-      
+
+      // Prevent accidental overwrite with an empty list. Only write an
+      // empty list if explicitly allowed (for actions like Clear All).
+      if (favorites.isEmpty && !allowEmpty) {
+        debugPrint('ℹ️ saveFavorites called with empty list and allowEmpty=false - skipping cloud write');
+        return;
+      }
+
       final favoritesJson = favorites.map((item) => item.toJson()).toList();
-      
+
       await userDoc.set({
         'favorites': favoritesJson,
         'lastUpdated': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-      
+
       debugPrint('✅ ${favorites.length} favoritos salvos no Firebase');
     });
   }
@@ -134,21 +141,28 @@ class UserDataService {
   // ==================== ASSISTIDOS ====================
   
   /// Salva lista de assistidos no Firestore
-  static Future<void> saveWatched(List<WatchedItem> watched) async {
+  static Future<void> saveWatched(List<WatchedItem> watched, {bool allowEmpty = false}) async {
     await _executeWithRetry(() async {
       final userDoc = _currentUserDoc;
       if (userDoc == null) {
         debugPrint('⚠️ Usuário não logado - assistidos não serão salvos no Firebase');
         return;
       }
-      
+
+      // Same guard as favorites: avoid creating an empty 'watched' field
+      // unintentionally. Allow explicit clearing via allowEmpty=true.
+      if (watched.isEmpty && !allowEmpty) {
+        debugPrint('ℹ️ saveWatched called with empty list and allowEmpty=false - skipping cloud write');
+        return;
+      }
+
       final watchedJson = watched.map((item) => item.toJson()).toList();
-      
+
       await userDoc.set({
         'watched': watchedJson,
         'lastUpdated': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-      
+
       debugPrint('✅ ${watched.length} assistidos salvos no Firebase');
     });
   }
@@ -487,12 +501,20 @@ class UserDataService {
         return;
       }
 
+      final Map<String, dynamic> appSettingsMap = {
+        'isSeriesMode': isSeriesMode,
+        'selectedGenre': selectedGenre,
+      };
+
+      // Only include localeCode when explicitly provided. This avoids
+      // overwriting the user's language in Firestore when other parts of
+      // the app update mode/genre without intending to change locale.
+      if (localeCode != null) {
+        appSettingsMap['localeCode'] = localeCode;
+      }
+
       await userDoc.set({
-        'appSettings': {
-          'localeCode': localeCode,
-          'isSeriesMode': isSeriesMode,
-          'selectedGenre': selectedGenre,
-        },
+        'appSettings': appSettingsMap,
         'lastUpdated': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 

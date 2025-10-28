@@ -10,6 +10,10 @@ import '../controllers/tv_show_controller.dart';
 
 /// Serviço para agrupar operações de sessão (logout e limpeza de cache local)
 class SessionService {
+  /// Flag que indica se a sincronização inicial com a nuvem foi concluída
+  /// para a sessão atual. Enquanto for `false`, gravar no Firestore deve
+  /// ser evitado para impedir sobrescritas acidentais.
+  static bool initialCloudSyncCompleted = false;
   /// Faz logout do usuário (Firebase + Google) e limpa caches locais.
   static Future<void> signOutAndClearCache() async {
     try {
@@ -21,6 +25,8 @@ class SessionService {
     }
 
     // Depois que o usuário foi desconectado, limpe caches locais e prefs
+    // Reset flag to ensure next login performs central sync
+    initialCloudSyncCompleted = false;
     await clearLocalCaches();
   }
 

@@ -6,6 +6,8 @@ import 'theme/app_theme.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
 import 'constants/app_constants.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'config/secure_config.dart'; // ⬅️ NOVO: Configuração segura
 import 'models/movie.dart';
 import 'models/tv_show.dart';
@@ -28,6 +30,9 @@ import 'controllers/app_mode_controller.dart';
 import 'controllers/user_preferences_controller.dart';
 import 'controllers/favorites_controller.dart';
 import 'controllers/watched_controller.dart';
+import 'models/favorite_item.dart';
+import 'models/watched_item.dart';
+import 'services/user_data_service.dart';
 import 'controllers/notification_controller.dart';
 import 'repositories/tv_show_repository.dart';
 import 'mixins/animation_mixin.dart';
@@ -278,6 +283,55 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         // Timeout defensivo para não travar UI indefinidamente
         const syncTimeout = Duration(seconds: 12);
 
+        // Primeiro: execute um sync central que mescla os caches locais
+        // com o Firebase. Isso garante que um login em outro dispositivo
+        // respeite os dados presentes na nuvem quando existirem.
+        try {
+          // Import SharedPreferences and json decoding locally to avoid
+          // depending on controller state. Use the same keys used by
+          // controllers for backward compatibility.
+          final prefs = await SharedPreferences.getInstance();
+          final localFavJson = prefs.getString('rollflix_favorites');
+          final localWatchedJson = prefs.getString('rollflix_watched');
+
+          final localFavorites = <FavoriteItem>[];
+          final localWatched = <WatchedItem>[];
+
+          if (localFavJson != null) {
+            try {
+              final decoded = jsonDecode(localFavJson) as List<dynamic>;
+              localFavorites.addAll(decoded.map((j) => FavoriteItem.fromJson(j as Map<String, dynamic>)).toList());
+            } catch (e) {
+              debugPrint('⚠️ Erro ao decodificar favoritos locais para sync central: $e');
+            }
+          }
+
+          if (localWatchedJson != null) {
+            try {
+              final decoded = jsonDecode(localWatchedJson) as List<dynamic>;
+              localWatched.addAll(decoded.map((j) => WatchedItem.fromJson(j as Map<String, dynamic>)).toList());
+            } catch (e) {
+              debugPrint('⚠️ Erro ao decodificar assistidos locais para sync central: $e');
+            }
+          }
+
+          // Chama o sync central do UserDataService para mesclar e garantir
+          // que a nuvem tenha prioridade quando apropriado.
+          await UserDataService.syncAfterLogin(
+            localFavorites: localFavorites,
+            localWatched: localWatched,
+          );
+
+          // Marca que a sincronização inicial foi concluída — a partir daqui
+          // os controllers podem gravar no Firestore. Antes disso, qualquer
+          // gravação na nuvem será potencialmente perigosa (pode sobrescrever).
+          SessionService.initialCloudSyncCompleted = true;
+        } catch (e) {
+          debugPrint('⚠️ Sync central falhou (continuando com sync individual): $e');
+        }
+
+        // Em seguida, solicita que cada controller recarregue/sincronize sua
+        // visão interna — eles irão preferir os dados da nuvem quando presentes.
         await Future.any([
           Future.wait([
             FavoritesController.instance.syncAfterLogin(),
