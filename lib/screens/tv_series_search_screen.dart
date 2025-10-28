@@ -271,7 +271,8 @@ class _TVSeriesSearchScreenState extends State<TVSeriesSearchScreen> with Ticker
     setState(() => _isSearching = true);
     
     try {
-      final tvShows = await MovieService.getTVShowsByGenre(genre);
+  final internalGenre = LocalizedGenres.getTVGenreKeyFromLocalizedName(context, genre) ?? genre;
+  final tvShows = await MovieService.getTVShowsByGenre(internalGenre);
       
       if (mounted) {
         setState(() {

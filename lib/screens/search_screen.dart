@@ -276,10 +276,11 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       List<Movie> movies;
       
       // Tratamento especial para "Heróis"
-      if (genre == AppLocalizations.of(context)!.heroes) {
+      final internalGenre = LocalizedGenres.getGenreKeyFromLocalizedName(context, genre) ?? genre;
+      if (internalGenre == AppLocalizations.of(context)!.heroes) {
         movies = await _getHeroMovies();
       } else {
-        movies = await MovieService.getMoviesByGenre(genre);
+        movies = await MovieService.getMoviesByGenre(internalGenre);
       }
       
       if (mounted) {

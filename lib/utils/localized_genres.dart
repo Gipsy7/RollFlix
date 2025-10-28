@@ -125,6 +125,23 @@ class LocalizedGenres {
     ].map((genre) => getGenreName(context, genre)).toList();
   }
 
+  /// Given a localized genre name (as shown in UI), return the internal
+  /// genre key used by `MovieService` (or null if not found).
+  static String? getGenreKeyFromLocalizedName(BuildContext context, String localizedName) {
+    // Try all known keys and compare their localized presentation
+    final keys = [
+      'Novidades', 'Ação', 'Aventura', 'Animação', 'Comédia', 'Crime', 'Documentário',
+      'Drama', 'Família', 'Fantasia', 'História', 'Terror', 'Música', 'Mistério', 'Romance',
+      'Ficção Científica', 'Suspense', 'Guerra', 'Western', 'Favoritos', 'Assistidos',
+    ];
+
+    for (final k in keys) {
+      if (getGenreName(context, k) == localizedName) return k;
+    }
+
+    return null;
+  }
+
   static List<String> getLocalizedTVGenres(BuildContext context) {
     return [
       'Novidades',
@@ -146,5 +163,19 @@ class LocalizedGenres {
       'Favoritos',
       'Assistidos',
     ].map((genre) => getTVGenreName(context, genre)).toList();
+  }
+
+  static String? getTVGenreKeyFromLocalizedName(BuildContext context, String localizedName) {
+    final keys = [
+      'Novidades', 'Ação & Aventura', 'Animação', 'Comédia', 'Crime', 'Documentário',
+      'Drama', 'Família', 'Infantil', 'Mistério', 'Novela', 'Ficção Científica & Fantasia',
+      'Talk Show', 'Guerra & Política', 'Western', 'Reality', 'Favoritos', 'Assistidos',
+    ];
+
+    for (final k in keys) {
+      if (getTVGenreName(context, k) == localizedName) return k;
+    }
+
+    return null;
   }
 }
