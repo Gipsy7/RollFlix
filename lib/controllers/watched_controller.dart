@@ -36,10 +36,30 @@ class WatchedController extends ChangeNotifier {
 
       // Se usuário está logado, carrega do Firebase
       if (AuthService.isUserLoggedIn()) {
+        // Use local cache fast, then prefer cloud when available
+        final prefs = await SharedPreferences.getInstance();
+        final localJson = prefs.getString(_watchedKey);
+        if (localJson != null) {
+          try {
+            final List<dynamic> decoded = jsonDecode(localJson);
+            _watchedItems.clear();
+            _watchedItems.addAll(
+              decoded.map((json) => WatchedItem.fromJson(json)).toList(),
+            );
+            debugPrint('⚡ Assistidos carregados do cache local (preliminar): ${_watchedItems.length}');
+            notifyListeners();
+          } catch (_) {}
+        }
+
         final cloudWatched = await UserDataService.loadWatched();
-        _watchedItems.clear();
-        _watchedItems.addAll(cloudWatched);
-        debugPrint('✅ ${_watchedItems.length} assistidos carregados do Firebase');
+        if (cloudWatched != null) {
+          _watchedItems.clear();
+          _watchedItems.addAll(cloudWatched);
+          debugPrint('✅ Assistidos carregados do Firebase e aplicados (uid=${AuthService.currentUser?.uid}): ${_watchedItems.length}');
+          await _saveWatchedItems();
+        } else {
+          debugPrint('ℹ️ Nenhum dado de assistidos no Firebase (document/field ausente) - mantendo cache local');
+        }
       } else {
         // Senão, carrega do SharedPreferences
         final prefs = await SharedPreferences.getInstance();
@@ -232,41 +252,32 @@ class WatchedController extends ChangeNotifier {
         }
       }
       
-      // Carrega dados do Firebase com retry
-      List<WatchedItem> cloudWatched = [];
+      // Carrega dados do Firebase (prioridade) — null indica doc/field ausente
+      List<WatchedItem>? cloudWatched;
       try {
         cloudWatched = await UserDataService.loadWatched();
       } catch (e) {
         debugPrint('⚠️ Erro ao carregar assistidos do Firebase, usando apenas dados locais: $e');
+        cloudWatched = null;
       }
-      
-      // Mescla (remove duplicatas, mantém mais recentes)
-      final Map<String, WatchedItem> merged = {};
-      
-      // Adiciona dados locais
-      for (final item in localWatched) {
-        merged[item.id] = item;
-      }
-      
-      // Adiciona/sobrescreve com dados da nuvem (mais recentes)
-      for (final item in cloudWatched) {
-        merged[item.id] = item;
-      }
-      
-      _watchedItems.clear();
-      _watchedItems.addAll(merged.values.toList()
-        ..sort((a, b) => b.watchedAt.compareTo(a.watchedAt)));
-      
-      // Salva dados mesclados localmente
-      await _saveWatchedItems();
-      
-      // Tenta sincronizar com Firebase se houver diferenças
-      if (AuthService.isUserLoggedIn()) {
-        try {
-          await UserDataService.saveWatched(_watchedItems);
-          debugPrint('✅ Assistidos sincronizados com Firebase');
-        } catch (e) {
-          debugPrint('⚠️ Erro ao salvar assistidos no Firebase após sync, mas dados locais estão ok: $e');
+
+      if (cloudWatched != null) {
+        // Cloud authoritative data (may be empty) — prefer it
+        _watchedItems.clear();
+        _watchedItems.addAll(cloudWatched);
+        debugPrint('✅ Assistidos substituídos pelos dados da nuvem (count=${_watchedItems.length})');
+        await _saveWatchedItems();
+      } else {
+        // No cloud data present — keep local and push to cloud to create doc
+        debugPrint('ℹ️ Nenhum dado de assistidos no Firebase (document/field ausente) - preservando cache local e subindo para nuvem');
+        await _saveWatchedItems();
+        if (AuthService.isUserLoggedIn()) {
+          try {
+            await UserDataService.saveWatched(_watchedItems);
+            debugPrint('✅ Assistidos locais enviados para o Firebase (criação de documento)');
+          } catch (e) {
+            debugPrint('⚠️ Erro ao criar assistidos no Firebase após sync: $e');
+          }
         }
       }
       
@@ -288,9 +299,9 @@ class WatchedController extends ChangeNotifier {
         return true;
       }
 
-      final cloudWatched = await UserDataService.loadWatched();
-      final localCount = _watchedItems.length;
-      final cloudCount = cloudWatched.length;
+  final cloudWatched = await UserDataService.loadWatched();
+  final localCount = _watchedItems.length;
+  final cloudCount = cloudWatched?.length ?? 0;
 
       debugPrint('🔍 Verificando integridade: local=$localCount, cloud=$cloudCount');
 
@@ -303,7 +314,7 @@ class WatchedController extends ChangeNotifier {
 
       // Verifica se todos os itens locais existem na nuvem
       final localIds = _watchedItems.map((w) => w.id).toSet();
-      final cloudIds = cloudWatched.map((w) => w.id).toSet();
+      final cloudIds = cloudWatched != null ? cloudWatched.map((w) => w.id).toSet() : <String>{};
       final missingInCloud = localIds.difference(cloudIds);
 
       if (missingInCloud.isNotEmpty) {

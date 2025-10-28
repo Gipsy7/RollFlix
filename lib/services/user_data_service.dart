@@ -66,35 +66,46 @@ class UserDataService {
     });
   }
   
-  /// Carrega lista de favoritos do Firestore
-  static Future<List<FavoriteItem>> loadFavorites() async {
+  /// Carrega lista de favoritos do Firestore.
+  /// Retorna `null` se o documento do usuário ou o campo 'favorites' não existir.
+  /// Retorna lista vazia se o campo existir mas estiver vazio.
+  static Future<List<FavoriteItem>?> loadFavorites() async {
     return await _executeWithRetry(() async {
       final userDoc = _currentUserDoc;
+      final uid = AuthService.currentUser?.uid;
       if (userDoc == null) {
-        debugPrint('⚠️ Usuário não logado - retornando favoritos vazios');
-        return [];
+        debugPrint('⚠️ Usuário não logado - loadFavorites -> returning null (uid=$uid)');
+        return null;
       }
-      
+
+      debugPrint('🔎 loadFavorites -> uid=$uid, doc=${userDoc.path}');
       final snapshot = await userDoc.get();
-      
+
       if (!snapshot.exists) {
-        debugPrint('📄 Documento do usuário não existe - retornando favoritos vazios');
-        return [];
+        debugPrint('📄 Documento do usuário não existe - loadFavorites -> returning null (uid=$uid)');
+        return null;
       }
-      
+
       final data = snapshot.data() as Map<String, dynamic>?;
-      final favoritesList = data?['favorites'] as List<dynamic>?;
-      
-      if (favoritesList == null || favoritesList.isEmpty) {
-        debugPrint('📋 Nenhum favorito encontrado no Firebase');
-        return [];
+      debugPrint('🔁 loadFavorites snapshot data keys: ${data?.keys.toList() ?? 'null'}');
+
+      if (data == null || !data.containsKey('favorites')) {
+        debugPrint('📋 Campo "favorites" não encontrado no documento (uid=$uid) - returning null');
+        return null;
       }
-      
+
+      final favoritesList = data['favorites'] as List<dynamic>?;
+
+      if (favoritesList == null || favoritesList.isEmpty) {
+        debugPrint('📋 Campo "favorites" presente mas vazio no Firebase (uid=$uid)');
+        return <FavoriteItem>[];
+      }
+
       final favorites = favoritesList
           .map((json) => FavoriteItem.fromJson(json as Map<String, dynamic>))
           .toList();
-      
-      debugPrint('✅ ${favorites.length} favoritos carregados do Firebase');
+
+      debugPrint('✅ ${favorites.length} favoritos carregados do Firebase (uid=$uid)');
       return favorites;
     }, maxRetries: 2); // Menos retries para operações de leitura
   }
@@ -142,35 +153,46 @@ class UserDataService {
     });
   }
   
-  /// Carrega lista de assistidos do Firestore
-  static Future<List<WatchedItem>> loadWatched() async {
+  /// Carrega lista de assistidos do Firestore.
+  /// Retorna `null` se o documento do usuário ou o campo 'watched' não existir.
+  /// Retorna lista vazia se o campo existir mas estiver vazio.
+  static Future<List<WatchedItem>?> loadWatched() async {
     return await _executeWithRetry(() async {
       final userDoc = _currentUserDoc;
+      final uid = AuthService.currentUser?.uid;
       if (userDoc == null) {
-        debugPrint('⚠️ Usuário não logado - retornando assistidos vazios');
-        return [];
+        debugPrint('⚠️ Usuário não logado - loadWatched -> returning null (uid=$uid)');
+        return null;
       }
-      
+
+      debugPrint('🔎 loadWatched -> uid=$uid, doc=${userDoc.path}');
       final snapshot = await userDoc.get();
-      
+
       if (!snapshot.exists) {
-        debugPrint('📄 Documento do usuário não existe - retornando assistidos vazios');
-        return [];
+        debugPrint('📄 Documento do usuário não existe - loadWatched -> returning null (uid=$uid)');
+        return null;
       }
-      
+
       final data = snapshot.data() as Map<String, dynamic>?;
-      final watchedList = data?['watched'] as List<dynamic>?;
-      
-      if (watchedList == null || watchedList.isEmpty) {
-        debugPrint('📋 Nenhum assistido encontrado no Firebase');
-        return [];
+      debugPrint('🔁 loadWatched snapshot data keys: ${data?.keys.toList() ?? 'null'}');
+
+      if (data == null || !data.containsKey('watched')) {
+        debugPrint('📋 Campo "watched" não encontrado no documento (uid=$uid) - returning null');
+        return null;
       }
-      
+
+      final watchedList = data['watched'] as List<dynamic>?;
+
+      if (watchedList == null || watchedList.isEmpty) {
+        debugPrint('📋 Campo "watched" presente mas vazio no Firebase (uid=$uid)');
+        return <WatchedItem>[];
+      }
+
       final watched = watchedList
           .map((json) => WatchedItem.fromJson(json as Map<String, dynamic>))
           .toList();
-      
-      debugPrint('✅ ${watched.length} assistidos carregados do Firebase');
+
+      debugPrint('✅ ${watched.length} assistidos carregados do Firebase (uid=$uid)');
       return watched;
     }, maxRetries: 2); // Menos retries para operações de leitura
   }
@@ -206,13 +228,20 @@ class UserDataService {
     try {
       debugPrint('🔄 Iniciando sincronização após login...');
       
-      // Carrega dados do Firebase
-      final cloudFavorites = await loadFavorites();
-      final cloudWatched = await loadWatched();
-      
-      // Mescla dados (prioriza dados da nuvem, adiciona dados locais que não existem)
-      final mergedFavorites = _mergeFavorites(cloudFavorites, localFavorites);
-      final mergedWatched = _mergeWatched(cloudWatched, localWatched);
+    // Carrega dados do Firebase (nullable): null => doc/field ausente
+    final cloudFavorites = await loadFavorites();
+    final cloudWatched = await loadWatched();
+
+    // Mescla dados: quando a nuvem possui dados (incluindo lista vazia),
+    // ela tem prioridade. Se a nuvem não possui o campo/doc (null),
+    // preservamos os dados locais e os subimos para a nuvem.
+    final mergedFavorites = cloudFavorites != null
+      ? _mergeFavorites(cloudFavorites, localFavorites)
+      : localFavorites;
+
+    final mergedWatched = cloudWatched != null
+      ? _mergeWatched(cloudWatched, localWatched)
+      : localWatched;
       
       // Salva dados mesclados no Firebase
       await saveFavorites(mergedFavorites);
@@ -484,15 +513,26 @@ class UserDataService {
   static Future<Map<String, dynamic>?> loadAppSettings() async {
     try {
       final userDoc = _currentUserDoc;
-      if (userDoc == null) return null;
+      final uid = AuthService.currentUser?.uid;
+      if (userDoc == null) {
+        debugPrint('⚠️ loadAppSettings -> usuário não logado (uid=$uid)');
+        return null;
+      }
 
+      debugPrint('🔎 loadAppSettings -> uid=$uid, doc=${userDoc.path}');
       final doc = await userDoc.get();
-      if (!doc.exists) return null;
+      if (!doc.exists) {
+        debugPrint('📄 loadAppSettings -> documento não existe (uid=$uid)');
+        return null;
+      }
 
       final data = doc.data() as Map<String, dynamic>?;
+      debugPrint('🔁 loadAppSettings snapshot data keys: ${data?.keys.toList() ?? 'null'}');
       if (data == null || !data.containsKey('appSettings')) return null;
 
-      return data['appSettings'] as Map<String, dynamic>;
+      final appSettings = data['appSettings'] as Map<String, dynamic>;
+      debugPrint('✅ loadAppSettings -> appSettings: $appSettings (uid=$uid)');
+      return appSettings;
     } catch (e) {
       debugPrint('❌ Erro ao carregar configurações do app do Firebase: $e');
       return null;

@@ -35,6 +35,7 @@ import 'screens/movie_details_screen.dart';
 import 'screens/tv_show_details_screen.dart';
 import 'screens/login_screen.dart';
 import 'controllers/locale_controller.dart';
+import 'services/session_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -181,7 +182,7 @@ class MovieSorterApp extends StatefulWidget {
   State<MovieSorterApp> createState() => _MovieSorterAppState();
 }
 
-class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStateMixin, AnimationMixin {
+class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStateMixin, AnimationMixin, WidgetsBindingObserver {
   late final MovieController _movieController;
   late final TVShowController _tvShowController;
   late final TVShowRepository _tvShowRepository;
@@ -236,6 +237,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   @override
   void initState() {
     super.initState();
+    // Observe app lifecycle to clear cache on app termination
+    WidgetsBinding.instance.addObserver(this);
     _movieController = MovieController.instance;
     _tvShowController = TVShowController.instance;
     _tvShowRepository = TVShowRepository();
@@ -260,6 +263,18 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       });
 
       try {
+        // Defensive: sometimes auth state may still be settling even though
+        // AuthWrapper showed the app. Wait briefly for currentUser to be
+        // available before attempting cloud reads.
+        int waitAttempts = 0;
+        String? uid = AuthService.currentUser?.uid;
+        while (uid == null && waitAttempts < 10) {
+          await Future.delayed(const Duration(milliseconds: 200));
+          uid = AuthService.currentUser?.uid;
+          waitAttempts++;
+          debugPrint('⏳ Waiting for Auth currentUser... attempt=$waitAttempts, uid=$uid');
+        }
+        debugPrint('🔄 _reloadPreferencesFromCloud -> starting sync (uid=$uid, waited=$waitAttempts)');
         // Timeout defensivo para não travar UI indefinidamente
         const syncTimeout = Duration(seconds: 12);
 
@@ -326,12 +341,25 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     // Não dispose singletons - apenas reseta para estado inicial
     _movieController.reset();
     _tvShowController.reset();
     _userPreferencesController.reset();
     _tvShowRepository.cleanExpiredCache();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Quando o app for finalizado/descartado, limpamos o cache local
+    // para atender ao requisito: "Ao fechar o aplicativo o cache deve ser limpo".
+    if (state == AppLifecycleState.detached) {
+      debugPrint('⚠️ AppLifecycleState.detached detectado - limpando caches locais');
+      // Não aguardamos, apenas disparamos a limpeza assíncrona
+      SessionService.clearLocalCaches();
+    }
   }
 
   /// Método para alternar entre filmes e séries

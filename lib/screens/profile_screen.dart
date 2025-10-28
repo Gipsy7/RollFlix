@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
+import '../services/session_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/ux_components.dart';
@@ -106,9 +107,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (confirm == true) {
       setState(() => _isLoading = true);
       
-      try {
-        await AuthService.signOut();
-        
+        try {
+        // Use the session service which signs out and clears local cache
+        await SessionService.signOutAndClearCache();
+
         // Navega de volta para a raiz (MaterialApp) removendo todas as rotas
         // Isso força o AuthWrapper a rebuildar e detectar que não há usuário
         if (mounted) {

@@ -52,10 +52,32 @@ class FavoritesController extends ChangeNotifier {
 
       // Se usuário está logado, carrega do Firebase
       if (AuthService.isUserLoggedIn()) {
+        // Use local cache as a fast fallback, but prefer cloud when available.
+        final prefs = await SharedPreferences.getInstance();
+        final localJson = prefs.getString(_favoritesKey);
+        if (localJson != null) {
+          try {
+            final List<dynamic> decoded = jsonDecode(localJson);
+            _favorites.clear();
+            _favorites.addAll(
+              decoded.map((json) => FavoriteItem.fromJson(json)).toList(),
+            );
+            debugPrint('⚡ Favoritos carregados do cache local (preliminar): ${_favorites.length}');
+            notifyListeners();
+          } catch (_) {}
+        }
+
         final cloudFavorites = await UserDataService.loadFavorites();
-        _favorites.clear();
-        _favorites.addAll(cloudFavorites);
-        debugPrint('✅ ${_favorites.length} favoritos carregados do Firebase');
+        if (cloudFavorites != null) {
+          // Cloud has explicit data (could be empty list) — prefer it.
+          _favorites.clear();
+          _favorites.addAll(cloudFavorites);
+          debugPrint('✅ Favoritos carregados do Firebase e aplicados (uid=${AuthService.currentUser?.uid}): ${_favorites.length}');
+          // Update local cache to reflect authoritative cloud data
+          await _saveFavorites();
+        } else {
+          debugPrint('ℹ️ Nenhum dado de favoritos no Firebase (document/field ausente) - mantendo cache local');
+        }
       } else {
         // Senão, carrega do SharedPreferences
         final prefs = await SharedPreferences.getInstance();
@@ -256,41 +278,33 @@ class FavoritesController extends ChangeNotifier {
         }
       }
       
-      // Carrega dados do Firebase com retry
-      List<FavoriteItem> cloudFavorites = [];
+      // Carrega dados do Firebase (prioridade) — null indica doc/field ausente
+      List<FavoriteItem>? cloudFavorites;
       try {
         cloudFavorites = await UserDataService.loadFavorites();
       } catch (e) {
         debugPrint('⚠️ Erro ao carregar favoritos do Firebase, usando apenas dados locais: $e');
+        cloudFavorites = null;
       }
-      
-      // Mescla (remove duplicatas, mantém mais recentes)
-      final Map<String, FavoriteItem> merged = {};
-      
-      // Adiciona dados locais
-      for (final item in localFavorites) {
-        merged[item.id] = item;
-      }
-      
-      // Adiciona/sobrescreve com dados da nuvem (mais recentes)
-      for (final item in cloudFavorites) {
-        merged[item.id] = item;
-      }
-      
-      _favorites.clear();
-      _favorites.addAll(merged.values.toList()
-        ..sort((a, b) => b.addedAt.compareTo(a.addedAt)));
-      
-      // Salva dados mesclados localmente
-      await _saveFavorites();
-      
-      // Tenta sincronizar com Firebase se houver diferenças
-      if (AuthService.isUserLoggedIn()) {
-        try {
-          await UserDataService.saveFavorites(_favorites);
-          debugPrint('✅ Favoritos sincronizados com Firebase');
-        } catch (e) {
-          debugPrint('⚠️ Erro ao salvar favoritos no Firebase após sync, mas dados locais estão ok: $e');
+
+      if (cloudFavorites != null) {
+        // Cloud has authoritative data (may be empty) — prefer it.
+        _favorites.clear();
+        _favorites.addAll(cloudFavorites);
+        debugPrint('✅ Favoritos substituídos pelos dados da nuvem (count=${_favorites.length})');
+        // Persist authoritative cloud content locally
+        await _saveFavorites();
+      } else {
+        // No cloud data present — keep local and push to cloud to create doc
+        debugPrint('ℹ️ Nenhum dado de favoritos no Firebase (document/field ausente) - preservando cache local e subindo para nuvem');
+        await _saveFavorites();
+        if (AuthService.isUserLoggedIn()) {
+          try {
+            await UserDataService.saveFavorites(_favorites);
+            debugPrint('✅ Favoritos locais enviados para o Firebase (criação de documento)');
+          } catch (e) {
+            debugPrint('⚠️ Erro ao criar favoritos no Firebase após sync: $e');
+          }
         }
       }
       
@@ -314,7 +328,7 @@ class FavoritesController extends ChangeNotifier {
 
       final cloudFavorites = await UserDataService.loadFavorites();
       final localCount = _favorites.length;
-      final cloudCount = cloudFavorites.length;
+      final cloudCount = cloudFavorites?.length ?? 0;
 
       debugPrint('🔍 Verificando integridade: local=$localCount, cloud=$cloudCount');
 
@@ -327,7 +341,7 @@ class FavoritesController extends ChangeNotifier {
 
       // Verifica se todos os itens locais existem na nuvem
       final localIds = _favorites.map((f) => f.id).toSet();
-      final cloudIds = cloudFavorites.map((f) => f.id).toSet();
+      final cloudIds = cloudFavorites != null ? cloudFavorites.map((f) => f.id).toSet() : <String>{};
       final missingInCloud = localIds.difference(cloudIds);
 
       if (missingInCloud.isNotEmpty) {
