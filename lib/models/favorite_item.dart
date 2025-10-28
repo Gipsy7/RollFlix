@@ -1,5 +1,8 @@
+import 'package:flutter/widgets.dart';
+
 import 'movie.dart';
 import 'tv_show.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 
 /// Modelo unificado para itens favoritos (filmes e séries)
 class FavoriteItem {
@@ -108,27 +111,46 @@ class FavoriteItem {
     );
   }
 
-  /// Retorna o ano de lançamento
+  /// Retorna o ano de lançamento (não-localizado — curto)
   String get year {
     try {
       return releaseDate.split('-')[0];
     } catch (e) {
-      return 'N/A';
+      return '-';
     }
   }
 
-  /// Retorna uma descrição curta
-  String get typeDescription {
+  /// Retorna o ano de lançamento de forma localizada (curta). Usa BuildContext
+  /// para obter strings como 'N/A' a partir das localizações.
+  String yearDescription(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    try {
+      final y = releaseDate.split('-')[0];
+      if (y.isEmpty) return loc.notAvailableShort;
+      return y;
+    } catch (e) {
+      return loc.notAvailableShort;
+    }
+  }
+
+  /// Retorna uma descrição curta (localizada) — precisa do BuildContext
+  String typeDescription(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     if (isTVShow) {
       if (numberOfSeasons != null) {
-        return '$numberOfSeasons temporada${numberOfSeasons! > 1 ? 's' : ''}';
+        // Usa chave de pluralização simples já presente no arb (season / seasons)
+        final seasonsLabel = numberOfSeasons == 1 ? loc.season : loc.seasons;
+        return '$numberOfSeasons $seasonsLabel';
       }
-      return 'Série';
+      return loc.series;
     } else {
       if (runtime != null && runtime! > 0) {
-        return '$runtime min';
+        // 'minutes' chave existe nas localizações
+        return '$runtime ${loc.minutes}';
       }
-      return 'Filme';
+      // usa a chave singular já presente nas localizações
+      return loc.movieLabel;
     }
   }
 

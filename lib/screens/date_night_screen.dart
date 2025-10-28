@@ -180,11 +180,11 @@ class _DateNightScreenState extends State<DateNightScreen> {
         
         // Criar combo de encontro com informações completas
         final combo = DateNightCombo.fromMovie(
-          movieId: detailedMovie.id,
-          title: detailedMovie.title,
-          year: detailedMovie.releaseDate.isNotEmpty 
-              ? detailedMovie.releaseDate.split('-')[0] 
-              : 'N/A',
+      movieId: detailedMovie.id,
+      title: detailedMovie.title,
+      year: detailedMovie.releaseDate.isNotEmpty 
+        ? detailedMovie.releaseDate.split('-')[0] 
+        : AppLocalizations.of(context)!.notAvailableShort,
           posterPath: detailedMovie.posterPath,
           backdropPath: detailedMovie.backdropPath,
           rating: detailedMovie.voteAverage,

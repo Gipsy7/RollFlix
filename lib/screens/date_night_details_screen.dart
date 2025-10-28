@@ -838,7 +838,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
           
           // Prato Principal
           _buildRecipeCard(
-            title: 'Prato Principal',
+            title: AppLocalizations.of(context)!.labelMainDish,
             recipeName: _currentCombo.mainDish,
             icon: Icons.restaurant_menu,
             recipeId: _currentCombo.mainCourseRecipeId,
@@ -850,7 +850,7 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
           
           // Sobremesa
           _buildRecipeCard(
-            title: 'Sobremesa',
+            title: AppLocalizations.of(context)!.labelDessert,
             recipeName: _currentCombo.dessert,
             icon: Icons.cake,
             recipeId: _currentCombo.dessertRecipeId,
@@ -863,8 +863,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
           if (_currentCombo.snacks.isNotEmpty) ...[
             if (_currentCombo.appetizerRecipeId != null)
               _buildRecipeCard(
-                title: 'Petisco',
-                recipeName: _currentCombo.snacks.isNotEmpty ? _currentCombo.snacks[0] : 'Petisco',
+                title: AppLocalizations.of(context)!.labelAppetizer,
+                recipeName: _currentCombo.snacks.isNotEmpty ? _currentCombo.snacks[0] : AppLocalizations.of(context)!.labelAppetizer,
                 icon: Icons.emoji_food_beverage,
                 recipeId: _currentCombo.appetizerRecipeId,
                 isMobile: isMobile,
@@ -875,8 +875,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
             
             if (_currentCombo.sideDishRecipeId != null)
               _buildRecipeCard(
-                title: 'Acompanhamento',
-                recipeName: _currentCombo.snacks.length > 1 ? _currentCombo.snacks[1] : 'Acompanhamento',
+                title: AppLocalizations.of(context)!.labelSideDish,
+                recipeName: _currentCombo.snacks.length > 1 ? _currentCombo.snacks[1] : AppLocalizations.of(context)!.labelSideDish,
                 icon: Icons.restaurant,
                 recipeId: _currentCombo.sideDishRecipeId,
                 isMobile: isMobile,
@@ -1123,19 +1123,19 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       final movieDetails = await MovieService.getMovieDetails(newMovie.id);
       
       // Atualizar combo com novo filme mantendo os dados da refeição
-      _currentCombo = DateNightCombo(
+  _currentCombo = DateNightCombo(
         // Dados do novo filme
         movieId: movieDetails.id,
         movieTitle: movieDetails.title,
-        movieYear: movieDetails.releaseDate.isNotEmpty 
-            ? movieDetails.releaseDate.split('-')[0] 
-            : 'N/A',
+    movieYear: movieDetails.releaseDate.isNotEmpty 
+      ? movieDetails.releaseDate.split('-')[0] 
+      : AppLocalizations.of(context)!.notAvailableShort,
         moviePosterPath: movieDetails.posterPath,
         movieBackdropPath: movieDetails.backdropPath,
         movieRating: movieDetails.voteAverage,
         movieOverview: movieDetails.overview,
         movieGenres: movieDetails.genres.map((g) => g.name).toList(),
-        movieRuntime: movieDetails.runtime > 0 ? '${movieDetails.runtime} min' : 'N/A',
+  movieRuntime: movieDetails.runtime > 0 ? '${movieDetails.runtime} ${AppLocalizations.of(context)!.minutes}' : AppLocalizations.of(context)!.notAvailableShort,
         movieReleaseDate: movieDetails.releaseDate,
         movieOriginalLanguage: movieDetails.originalLanguage,
         movieProductionCompanies: movieDetails.productionCompanies,
@@ -1287,21 +1287,22 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       // Criar texto formatado com os detalhes do encontro
       final StringBuffer message = StringBuffer();
       
-      message.writeln('🎬✨ PLANO DE ENCONTRO PERFEITO ✨🍽️');
+      final loc = AppLocalizations.of(context)!;
+      message.writeln(loc.dateNightShareHeader);
       message.writeln('');
       message.writeln('═══════════════════════════');
-      message.writeln('🎬 FILME');
+      message.writeln(loc.dateNightShareSectionMovie);
       message.writeln('═══════════════════════════');
-      message.writeln('Título: ${_currentCombo.movieTitle}');
-      message.writeln('Ano: ${_currentCombo.movieYear}');
-      message.writeln('⭐ Avaliação: ${_currentCombo.movieRating.toStringAsFixed(1)}/10');
-      
+      message.writeln('${loc.labelTitle}: ${_currentCombo.movieTitle}');
+      message.writeln('${loc.labelYear}: ${_currentCombo.movieYear}');
+      message.writeln('${loc.labelRating}: ${_currentCombo.movieRating.toStringAsFixed(1)}/10');
+
       if (_currentCombo.movieGenres.isNotEmpty) {
-        message.writeln('Gêneros: ${_currentCombo.movieGenres.join(", ")}');
+        message.writeln('${loc.labelGenres}: ${_currentCombo.movieGenres.join(", ")}');
       }
-      
-      if (_currentCombo.movieRuntime.isNotEmpty && _currentCombo.movieRuntime != 'N/A') {
-        message.writeln('Duração: ${_currentCombo.movieRuntime}');
+
+      if (_currentCombo.movieRuntime.isNotEmpty && _currentCombo.movieRuntime != loc.notAvailableShort) {
+        message.writeln('${loc.labelDuration}: ${_currentCombo.movieRuntime}');
       }
       
       // Adicionar poster do filme
@@ -1318,29 +1319,28 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       
       message.writeln('');
       message.writeln('═══════════════════════════');
-      message.writeln('🍽️ MENU');
+      message.writeln(loc.dateNightShareSectionMenu);
       message.writeln('═══════════════════════════');
-      message.writeln('Prato Principal: ${_currentCombo.mainDish}');
-      message.writeln('Sobremesa: ${_currentCombo.dessert}');
-      message.writeln('Bebida: ${_currentCombo.drink}');
-      
+      message.writeln('${loc.labelMainDish}: ${_currentCombo.mainDish}');
+      message.writeln('${loc.labelDessert}: ${_currentCombo.dessert}');
+      message.writeln('${loc.labelDrink}: ${_currentCombo.drink}');
+
       if (_currentCombo.snacks.isNotEmpty) {
-        message.writeln('Petiscos: ${_currentCombo.snacks.join(", ")}');
+        message.writeln('${loc.labelSnacks}: ${_currentCombo.snacks.join(", ")}');
       }
-      
+
       message.writeln('');
-      message.writeln('${AppLocalizations.of(context)!.preparationTimePrefix} ${_currentCombo.preparationTime}');
-      message.writeln('${AppLocalizations.of(context)!.difficultyPrefix} ${LocalizedEnums.difficultyLabel(context, _currentCombo.difficulty)}');
-      
+      message.writeln('${loc.preparationTimePrefix} ${_currentCombo.preparationTime}');
+      message.writeln('${loc.difficultyPrefix} ${LocalizedEnums.difficultyLabel(context, _currentCombo.difficulty)}');
+
       message.writeln('');
-      message.writeln('═══════════════════════════');
-      message.writeln('Criado com Rollflix 🎬🍿');
+      message.writeln(loc.createdWithRollflix);
       
       // Compartilhar o texto
       await SharePlus.instance.share(
         ShareParams(
           text: message.toString(),
-          subject: '🎬 Plano de Encontro Perfeito',
+          subject: AppLocalizations.of(context)!.dateNightShareHeader,
         ),
       );
     } catch (e) {

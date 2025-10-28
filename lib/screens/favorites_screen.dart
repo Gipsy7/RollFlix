@@ -295,14 +295,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         ),
                         const SizedBox(width: 12),
                         SafeText(
-                          favorite.year,
+                          favorite.yearDescription(context),
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.textSecondary,
                           ),
                         ),
                         const SizedBox(width: 12),
                         SafeText(
-                          favorite.typeDescription,
+                          favorite.typeDescription(context),
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.textSecondary,
                           ),

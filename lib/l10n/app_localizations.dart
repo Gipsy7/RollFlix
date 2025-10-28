@@ -459,6 +459,46 @@ abstract class AppLocalizations {
   /// **'Synopsis not available.'**
   String get synopsisNotAvailable;
 
+  /// No description provided for @notAvailableShort.
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get notAvailableShort;
+
+  /// No description provided for @dateNightShareHeader.
+  String get dateNightShareHeader;
+
+  String get dateNightShareSectionMovie;
+
+  String get labelTitle;
+
+  String get labelYear;
+
+  String get labelRating;
+
+  String get labelGenres;
+
+  String get labelDuration;
+
+  String get labelPoster;
+
+  String get labelTrailer;
+
+  String get dateNightShareSectionMenu;
+
+  String get labelMainDish;
+
+  String get labelDessert;
+
+  String get labelDrink;
+
+  String get labelSnacks;
+
+  String get createdWithRollflix;
+
+  String get labelAppetizer;
+
+  String get labelSideDish;
   /// No description provided for @direction.
   ///
   /// In en, this message translates to:

@@ -197,6 +197,60 @@ class AppLocalizationsFr extends AppLocalizations {
   String get synopsisNotAvailable => 'Synopsis non disponible.';
 
   @override
+  String get notAvailableShort => 'N/D';
+
+  @override
+  String get dateNightShareHeader => '🎬✨ PLAN DE RENDEZ-VOUS PARFAIT ✨🍽️';
+
+  @override
+  String get dateNightShareSectionMovie => 'FILM';
+
+  @override
+  String get labelTitle => 'Titre';
+
+  @override
+  String get labelYear => 'Année';
+
+  @override
+  String get labelRating => 'Note';
+
+  @override
+  String get labelGenres => 'Genres';
+
+  @override
+  String get labelDuration => 'Durée';
+
+  @override
+  String get labelPoster => 'Affiche';
+
+  @override
+  String get labelTrailer => 'Bande-annonce';
+
+  @override
+  String get dateNightShareSectionMenu => 'MENU';
+
+  @override
+  String get labelMainDish => 'Plat Principal';
+
+  @override
+  String get labelDessert => 'Dessert';
+
+  @override
+  String get labelDrink => 'Boisson';
+
+  @override
+  String get labelSnacks => 'Snacks';
+
+  @override
+  String get createdWithRollflix => 'Créé avec Rollflix 🎬🍿';
+
+  @override
+  String get labelAppetizer => 'Apéritif';
+
+  @override
+  String get labelSideDish => 'Accompagnement';
+
+  @override
   String get direction => 'Réalisation :';
 
   @override

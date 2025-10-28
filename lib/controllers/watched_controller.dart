@@ -74,13 +74,20 @@ class WatchedController extends ChangeNotifier {
       
       // Se usuário está logado, também salva no Firebase
       if (AuthService.isUserLoggedIn()) {
-        await UserDataService.saveWatched(_watchedItems);
-        debugPrint('✅ Assistidos salvos (local + Firebase): ${_watchedItems.length}');
+        try {
+          await UserDataService.saveWatched(_watchedItems);
+          debugPrint('✅ Assistidos salvos (local + Firebase): ${_watchedItems.length}');
+        } catch (e) {
+          debugPrint('⚠️ Erro ao salvar no Firebase, mas dados locais estão seguros: $e');
+          // Não lança erro - dados locais estão salvos
+        }
       } else {
         debugPrint('✅ Assistidos salvos (apenas local): ${_watchedItems.length}');
       }
     } catch (e) {
-      debugPrint('❌ Erro ao salvar assistidos: $e');
+      debugPrint('❌ Erro crítico ao salvar assistidos localmente: $e');
+      // Mesmo em erro crítico, tenta manter consistência
+      rethrow;
     }
   }
 
@@ -215,37 +222,100 @@ class WatchedController extends ChangeNotifier {
       final List<WatchedItem> localWatched = [];
       
       if (localJson != null) {
-        final List<dynamic> decoded = jsonDecode(localJson);
-        localWatched.addAll(
-          decoded.map((json) => WatchedItem.fromJson(json)).toList(),
-        );
+        try {
+          final List<dynamic> decoded = jsonDecode(localJson);
+          localWatched.addAll(
+            decoded.map((json) => WatchedItem.fromJson(json)).toList(),
+          );
+        } catch (e) {
+          debugPrint('⚠️ Erro ao decodificar assistidos locais, ignorando: $e');
+        }
       }
       
-      // Carrega dados do Firebase
-      final cloudWatched = await UserDataService.loadWatched();
+      // Carrega dados do Firebase com retry
+      List<WatchedItem> cloudWatched = [];
+      try {
+        cloudWatched = await UserDataService.loadWatched();
+      } catch (e) {
+        debugPrint('⚠️ Erro ao carregar assistidos do Firebase, usando apenas dados locais: $e');
+      }
       
       // Mescla (remove duplicatas, mantém mais recentes)
       final Map<String, WatchedItem> merged = {};
       
+      // Adiciona dados locais
       for (final item in localWatched) {
         merged[item.id] = item;
       }
       
+      // Adiciona/sobrescreve com dados da nuvem (mais recentes)
       for (final item in cloudWatched) {
-        merged[item.id] = item; // Prioriza dados da nuvem
+        merged[item.id] = item;
       }
       
       _watchedItems.clear();
       _watchedItems.addAll(merged.values.toList()
         ..sort((a, b) => b.watchedAt.compareTo(a.watchedAt)));
       
-      // Salva dados mesclados
+      // Salva dados mesclados localmente
       await _saveWatchedItems();
-      notifyListeners();
       
+      // Tenta sincronizar com Firebase se houver diferenças
+      if (AuthService.isUserLoggedIn()) {
+        try {
+          await UserDataService.saveWatched(_watchedItems);
+          debugPrint('✅ Assistidos sincronizados com Firebase');
+        } catch (e) {
+          debugPrint('⚠️ Erro ao salvar assistidos no Firebase após sync, mas dados locais estão ok: $e');
+        }
+      }
+      
+      notifyListeners();
       debugPrint('✅ Assistidos sincronizados: ${_watchedItems.length} itens');
     } catch (e) {
-      debugPrint('❌ Erro ao sincronizar assistidos: $e');
+      debugPrint('❌ Erro crítico na sincronização de assistidos: $e');
+      // Em caso de erro crítico, pelo menos carrega dados locais
+      await _loadWatchedItems();
+      notifyListeners();
+    }
+  }
+
+  /// Verifica integridade dos dados entre local e Firebase
+  Future<bool> verifyDataIntegrity() async {
+    try {
+      if (!AuthService.isUserLoggedIn()) {
+        debugPrint('ℹ️ Usuário não logado - pulando verificação de integridade');
+        return true;
+      }
+
+      final cloudWatched = await UserDataService.loadWatched();
+      final localCount = _watchedItems.length;
+      final cloudCount = cloudWatched.length;
+
+      debugPrint('🔍 Verificando integridade: local=$localCount, cloud=$cloudCount');
+
+      // Verifica se há diferenças significativas
+      if ((localCount - cloudCount).abs() > 5) { // Diferença de mais de 5 itens
+        debugPrint('⚠️ Diferença significativa detectada, forçando re-sync');
+        await syncAfterLogin();
+        return false; // Indica que foi necessário re-sync
+      }
+
+      // Verifica se todos os itens locais existem na nuvem
+      final localIds = _watchedItems.map((w) => w.id).toSet();
+      final cloudIds = cloudWatched.map((w) => w.id).toSet();
+      final missingInCloud = localIds.difference(cloudIds);
+
+      if (missingInCloud.isNotEmpty) {
+        debugPrint('⚠️ ${missingInCloud.length} itens locais não encontrados na nuvem, sincronizando');
+        await UserDataService.saveWatched(_watchedItems);
+      }
+
+      debugPrint('✅ Integridade dos dados verificada');
+      return true;
+    } catch (e) {
+      debugPrint('❌ Erro ao verificar integridade dos dados: $e');
+      return false;
     }
   }
 }

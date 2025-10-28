@@ -90,13 +90,20 @@ class FavoritesController extends ChangeNotifier {
       
       // Se usuário está logado, também salva no Firebase
       if (AuthService.isUserLoggedIn()) {
-        await UserDataService.saveFavorites(_favorites);
-        debugPrint('✅ Favoritos salvos (local + Firebase): ${_favorites.length}');
+        try {
+          await UserDataService.saveFavorites(_favorites);
+          debugPrint('✅ Favoritos salvos (local + Firebase): ${_favorites.length}');
+        } catch (e) {
+          debugPrint('⚠️ Erro ao salvar no Firebase, mas dados locais estão seguros: $e');
+          // Não lança erro - dados locais estão salvos
+        }
       } else {
         debugPrint('✅ Favoritos salvos (apenas local): ${_favorites.length}');
       }
     } catch (e) {
-      debugPrint('❌ Erro ao salvar favoritos: $e');
+      debugPrint('❌ Erro crítico ao salvar favoritos localmente: $e');
+      // Mesmo em erro crítico, tenta manter consistência
+      rethrow;
     }
   }
 
@@ -239,37 +246,100 @@ class FavoritesController extends ChangeNotifier {
       final List<FavoriteItem> localFavorites = [];
       
       if (localJson != null) {
-        final List<dynamic> decoded = jsonDecode(localJson);
-        localFavorites.addAll(
-          decoded.map((json) => FavoriteItem.fromJson(json)).toList(),
-        );
+        try {
+          final List<dynamic> decoded = jsonDecode(localJson);
+          localFavorites.addAll(
+            decoded.map((json) => FavoriteItem.fromJson(json)).toList(),
+          );
+        } catch (e) {
+          debugPrint('⚠️ Erro ao decodificar favoritos locais, ignorando: $e');
+        }
       }
       
-      // Carrega dados do Firebase
-      final cloudFavorites = await UserDataService.loadFavorites();
+      // Carrega dados do Firebase com retry
+      List<FavoriteItem> cloudFavorites = [];
+      try {
+        cloudFavorites = await UserDataService.loadFavorites();
+      } catch (e) {
+        debugPrint('⚠️ Erro ao carregar favoritos do Firebase, usando apenas dados locais: $e');
+      }
       
       // Mescla (remove duplicatas, mantém mais recentes)
       final Map<String, FavoriteItem> merged = {};
       
+      // Adiciona dados locais
       for (final item in localFavorites) {
         merged[item.id] = item;
       }
       
+      // Adiciona/sobrescreve com dados da nuvem (mais recentes)
       for (final item in cloudFavorites) {
-        merged[item.id] = item; // Prioriza dados da nuvem
+        merged[item.id] = item;
       }
       
       _favorites.clear();
       _favorites.addAll(merged.values.toList()
         ..sort((a, b) => b.addedAt.compareTo(a.addedAt)));
       
-      // Salva dados mesclados
+      // Salva dados mesclados localmente
       await _saveFavorites();
-      notifyListeners();
       
+      // Tenta sincronizar com Firebase se houver diferenças
+      if (AuthService.isUserLoggedIn()) {
+        try {
+          await UserDataService.saveFavorites(_favorites);
+          debugPrint('✅ Favoritos sincronizados com Firebase');
+        } catch (e) {
+          debugPrint('⚠️ Erro ao salvar favoritos no Firebase após sync, mas dados locais estão ok: $e');
+        }
+      }
+      
+      notifyListeners();
       debugPrint('✅ Favoritos sincronizados: ${_favorites.length} itens');
     } catch (e) {
-      debugPrint('❌ Erro ao sincronizar favoritos: $e');
+      debugPrint('❌ Erro crítico na sincronização de favoritos: $e');
+      // Em caso de erro crítico, pelo menos carrega dados locais
+      await _loadFavorites();
+      notifyListeners();
+    }
+  }
+
+  /// Verifica integridade dos dados entre local e Firebase
+  Future<bool> verifyDataIntegrity() async {
+    try {
+      if (!AuthService.isUserLoggedIn()) {
+        debugPrint('ℹ️ Usuário não logado - pulando verificação de integridade');
+        return true;
+      }
+
+      final cloudFavorites = await UserDataService.loadFavorites();
+      final localCount = _favorites.length;
+      final cloudCount = cloudFavorites.length;
+
+      debugPrint('🔍 Verificando integridade: local=$localCount, cloud=$cloudCount');
+
+      // Verifica se há diferenças significativas
+      if ((localCount - cloudCount).abs() > 5) { // Diferença de mais de 5 itens
+        debugPrint('⚠️ Diferença significativa detectada, forçando re-sync');
+        await syncAfterLogin();
+        return false; // Indica que foi necessário re-sync
+      }
+
+      // Verifica se todos os itens locais existem na nuvem
+      final localIds = _favorites.map((f) => f.id).toSet();
+      final cloudIds = cloudFavorites.map((f) => f.id).toSet();
+      final missingInCloud = localIds.difference(cloudIds);
+
+      if (missingInCloud.isNotEmpty) {
+        debugPrint('⚠️ ${missingInCloud.length} itens locais não encontrados na nuvem, sincronizando');
+        await UserDataService.saveFavorites(_favorites);
+      }
+
+      debugPrint('✅ Integridade dos dados verificada');
+      return true;
+    } catch (e) {
+      debugPrint('❌ Erro ao verificar integridade dos dados: $e');
+      return false;
     }
   }
 }

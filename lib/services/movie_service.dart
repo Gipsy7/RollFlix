@@ -139,13 +139,14 @@ class MovieService {
           final moviesResponse = MoviesResponse.fromJson(jsonData);
 
           // Filtra filmes que tenham título em português ou pelo menos um título válido
-          validMovies = moviesResponse.results
-              .where(
-                (movie) =>
-                    movie.title.isNotEmpty &&
-                    movie.title != 'Título não disponível',
-              )
-              .toList();
+      validMovies = moviesResponse.results
+        .where(
+        (movie) =>
+          movie.title.trim().isNotEmpty &&
+          !RegExp(r'(not available|não disponível|title not available|título não disponível)', caseSensitive: false)
+            .hasMatch(movie.title),
+        )
+        .toList();
 
           if (validMovies.isEmpty && attempts < maxAttempts) {
             AppLogger.debug(
@@ -208,12 +209,13 @@ class MovieService {
           final jsonData = json.decode(response.body);
           final moviesResponse = MoviesResponse.fromJson(jsonData);
 
-          // Filtra filmes que tenham título em português ou pelo menos um título válido
+          // Filtra filmes que tenham título válido (evita placeholders como 'not available' em qualquer idioma)
           validMovies = moviesResponse.results
               .where(
                 (movie) =>
-                    movie.title.isNotEmpty &&
-                    movie.title != 'Título não disponível',
+                    movie.title.trim().isNotEmpty &&
+                    !RegExp(r'(not available|não disponível|title not available|título não disponível)', caseSensitive: false)
+                        .hasMatch(movie.title),
               )
               .toList();
 
@@ -248,19 +250,20 @@ class MovieService {
 
       final response = await http.get(url);
 
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        final moviesResponse = MoviesResponse.fromJson(jsonData);
+    if (response.statusCode == 200) {
+    final jsonData = json.decode(response.body);
+    final moviesResponse = MoviesResponse.fromJson(jsonData);
 
-        final validMovies = moviesResponse.results
-            .where(
-              (movie) =>
-                  movie.title.isNotEmpty &&
-                  movie.title != 'Título não disponível',
-            )
-            .toList();
+    final validMovies = moviesResponse.results
+      .where(
+        (movie) =>
+          movie.title.trim().isNotEmpty &&
+          !RegExp(r'(not available|não disponível|title not available|título não disponível)', caseSensitive: false)
+            .hasMatch(movie.title),
+      )
+      .toList();
 
-        return validMovies;
+    return validMovies;
       } else {
         return [];
       }
@@ -954,13 +957,14 @@ class MovieService {
           final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
 
           // Filtra séries que tenham título em português ou pelo menos um título válido
-          validTVShows = tvShowsResponse.results
-              .where(
-                (tvshow) =>
-                    tvshow.name.isNotEmpty &&
-                    tvshow.name != 'Título não disponível',
-              )
-              .toList();
+      validTVShows = tvShowsResponse.results
+        .where(
+        (tvshow) =>
+          tvshow.name.trim().isNotEmpty &&
+          !RegExp(r'(not available|não disponível|title not available|título não disponível)', caseSensitive: false)
+            .hasMatch(tvshow.name),
+        )
+        .toList();
 
           if (validTVShows.isEmpty && attempts < maxAttempts) {
             AppLogger.debug(
@@ -1027,13 +1031,14 @@ class MovieService {
           final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
 
           // Filtra séries que tenham título em português ou pelo menos um título válido
-          validTVShows = tvShowsResponse.results
-              .where(
-                (tvshow) =>
-                    tvshow.name.isNotEmpty &&
-                    tvshow.name != 'Título não disponível',
-              )
-              .toList();
+      validTVShows = tvShowsResponse.results
+        .where(
+        (tvshow) =>
+          tvshow.name.trim().isNotEmpty &&
+          !RegExp(r'(not available|não disponível|title not available|título não disponível)', caseSensitive: false)
+            .hasMatch(tvshow.name),
+        )
+        .toList();
 
           if (validTVShows.isEmpty && attempts < maxAttempts) {
             AppLogger.debug(
@@ -1076,13 +1081,14 @@ class MovieService {
         final jsonData = json.decode(response.body);
         final tvShowsResponse = TVShowsResponse.fromJson(jsonData);
 
-        final validTVShows = tvShowsResponse.results
-            .where(
-              (tvshow) =>
-                  tvshow.name.isNotEmpty &&
-                  tvshow.name != 'Título não disponível',
-            )
-            .toList();
+    final validTVShows = tvShowsResponse.results
+      .where(
+        (tvshow) =>
+          tvshow.name.trim().isNotEmpty &&
+          !RegExp(r'(not available|não disponível|title not available|título não disponível)', caseSensitive: false)
+            .hasMatch(tvshow.name),
+      )
+      .toList();
 
         // Se não encontrou séries dos últimos 2 anos, tenta apenas o ano atual
         if (validTVShows.isEmpty) {

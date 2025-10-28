@@ -20,12 +20,35 @@ class UserDataService {
     if (uid == null) return null;
     return _usersCollection.doc(uid);
   }
+
+  /// Executa uma operação com retry automático em caso de falha
+  static Future<T> _executeWithRetry<T>(
+    Future<T> Function() operation, {
+    int maxRetries = 3,
+    Duration delay = const Duration(seconds: 1),
+  }) async {
+    int attempts = 0;
+    while (attempts < maxRetries) {
+      try {
+        return await operation();
+      } catch (e) {
+        attempts++;
+        if (attempts >= maxRetries) {
+          debugPrint('❌ Operação falhou após $maxRetries tentativas: $e');
+          rethrow;
+        }
+        debugPrint('⚠️ Tentativa $attempts falhou, tentando novamente em ${delay.inSeconds}s: $e');
+        await Future.delayed(delay * attempts); // Backoff exponencial
+      }
+    }
+    throw Exception('Operação falhou após $maxRetries tentativas');
+  }
   
   // ==================== FAVORITOS ====================
   
   /// Salva lista de favoritos no Firestore
   static Future<void> saveFavorites(List<FavoriteItem> favorites) async {
-    try {
+    await _executeWithRetry(() async {
       final userDoc = _currentUserDoc;
       if (userDoc == null) {
         debugPrint('⚠️ Usuário não logado - favoritos não serão salvos no Firebase');
@@ -40,15 +63,12 @@ class UserDataService {
       }, SetOptions(merge: true));
       
       debugPrint('✅ ${favorites.length} favoritos salvos no Firebase');
-    } catch (e) {
-      debugPrint('❌ Erro ao salvar favoritos no Firebase: $e');
-      rethrow;
-    }
+    });
   }
   
   /// Carrega lista de favoritos do Firestore
   static Future<List<FavoriteItem>> loadFavorites() async {
-    try {
+    return await _executeWithRetry(() async {
       final userDoc = _currentUserDoc;
       if (userDoc == null) {
         debugPrint('⚠️ Usuário não logado - retornando favoritos vazios');
@@ -76,10 +96,7 @@ class UserDataService {
       
       debugPrint('✅ ${favorites.length} favoritos carregados do Firebase');
       return favorites;
-    } catch (e) {
-      debugPrint('❌ Erro ao carregar favoritos do Firebase: $e');
-      return [];
-    }
+    }, maxRetries: 2); // Menos retries para operações de leitura
   }
   
   /// Stream de favoritos em tempo real
@@ -107,7 +124,7 @@ class UserDataService {
   
   /// Salva lista de assistidos no Firestore
   static Future<void> saveWatched(List<WatchedItem> watched) async {
-    try {
+    await _executeWithRetry(() async {
       final userDoc = _currentUserDoc;
       if (userDoc == null) {
         debugPrint('⚠️ Usuário não logado - assistidos não serão salvos no Firebase');
@@ -122,15 +139,12 @@ class UserDataService {
       }, SetOptions(merge: true));
       
       debugPrint('✅ ${watched.length} assistidos salvos no Firebase');
-    } catch (e) {
-      debugPrint('❌ Erro ao salvar assistidos no Firebase: $e');
-      rethrow;
-    }
+    });
   }
   
   /// Carrega lista de assistidos do Firestore
   static Future<List<WatchedItem>> loadWatched() async {
-    try {
+    return await _executeWithRetry(() async {
       final userDoc = _currentUserDoc;
       if (userDoc == null) {
         debugPrint('⚠️ Usuário não logado - retornando assistidos vazios');
@@ -158,10 +172,7 @@ class UserDataService {
       
       debugPrint('✅ ${watched.length} assistidos carregados do Firebase');
       return watched;
-    } catch (e) {
-      debugPrint('❌ Erro ao carregar assistidos do Firebase: $e');
-      return [];
-    }
+    }, maxRetries: 2); // Menos retries para operações de leitura
   }
   
   /// Stream de assistidos em tempo real
