@@ -187,6 +187,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   late final TVShowRepository _tvShowRepository;
   late final AppModeController _appModeController;
   late final UserPreferencesController _userPreferencesController;
+  // Flag que indica se o app está sincronizando dados do Firebase após login
+  bool _isSyncing = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   
   // Flag para controlar quando a animação deve disparar
@@ -240,26 +242,47 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     _appModeController = AppModeController.instance;
     _userPreferencesController = UserPreferencesController.instance;
     
-    _setupListeners();
-    _reloadPreferencesFromCloud(); // ← Recarrega preferências do Firebase
+  _setupListeners();
+  _reloadPreferencesFromCloud(); // ← Recarrega preferências do Firebase (torna a UI aguardando enquanto sincroniza)
     _initializeApp();
     // _tryReloadResources(); ← REMOVIDO! Causava reset indevido ao voltar para a tela
   }
   
   /// Recarrega preferências do Firebase (para evitar usar dados antigos do singleton)
   void _reloadPreferencesFromCloud() {
+    // Executa a sincronização logo após o frame atual. Mantemos uma flag
+    // `_isSyncing` para bloquear interações até que a carga inicial do
+    // usuário a partir do Firebase seja concluída ou após timeout.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
+      setState(() {
+        _isSyncing = true;
+      });
+
       try {
-        // Sincroniza preferências, favoritos e assistidos após autenticação
-        await Future.wait([
-          FavoritesController.instance.syncAfterLogin(),
-          WatchedController.instance.syncAfterLogin(),
-          _userPreferencesController.syncAfterLogin(),
+        // Timeout defensivo para não travar UI indefinidamente
+        const syncTimeout = Duration(seconds: 12);
+
+        await Future.any([
+          Future.wait([
+            FavoritesController.instance.syncAfterLogin(),
+            WatchedController.instance.syncAfterLogin(),
+            _userPreferencesController.syncAfterLogin(),
+          ]),
+          Future.delayed(syncTimeout),
         ]);
-        debugPrint('✅ Preferências, favoritos e assistidos recarregados do Firebase no initState');
+
+        debugPrint('✅ Preferências, favoritos e assistidos recarregados do Firebase no initState (ou timeout atingido)');
       } catch (e) {
         debugPrint('❌ Erro ao recarregar preferências: $e');
+      } finally {
+        // Evita usar 'return' dentro de finally (lint). Apenas atualiza o estado
+        // se o widget ainda estiver montado.
+        if (mounted) {
+          setState(() {
+            _isSyncing = false;
+          });
+        }
       }
     });
   }
@@ -554,6 +577,26 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           }
         });
         
+        // Se estamos sincronizando dados do Firebase, mostra uma tela de loading
+        if (_isSyncing) {
+          return Scaffold(
+            backgroundColor: AppColors.backgroundDark,
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppLocalizations.of(context)!.reloading,
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
         return Scaffold(
           key: _scaffoldKey,
           drawer: _buildDrawer(context, isMobile),
