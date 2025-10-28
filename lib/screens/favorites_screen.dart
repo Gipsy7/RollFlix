@@ -11,6 +11,7 @@ import '../widgets/ux_components.dart';
 import 'movie_details_screen.dart';
 import 'tv_show_details_screen.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
+import '../controllers/locale_controller.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -34,73 +35,72 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   Widget build(BuildContext context) {
     final isMobile = ResponsiveUtils.isMobile(context);
     
-    return ListenableBuilder(
-      listenable: Listenable.merge([
-        _favoritesController,
-        _appModeController,
-      ]),
-      builder: (context, _) {
-        // Obtém os favoritos baseado no modo atual
-        final currentFavorites = _appModeController.isSeriesMode
-            ? _favoritesController.favoriteTVShows
-            : _favoritesController.favoriteMovies;
-        
-        // Gradiente baseado no modo
-        final currentGradient = _appModeController.isSeriesMode 
-            ? const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color.fromARGB(255, 0, 0, 0),
-                  Color.fromARGB(255, 45, 3, 56),
-                  Color.fromARGB(255, 255, 0, 128),
-                ],
-              )
-            : AppColors.cinemaGradient;
-        
-        final accentColor = _appModeController.isSeriesMode 
-            ? const Color(0xFFBB86FC)
-            : AppColors.primary;
-        
-        return Scaffold(
-          backgroundColor: AppColors.backgroundDark,
-          appBar: AppBar(
-            title: LayoutBuilder(
-              builder: (context, constraints) {
-                // Se a largura disponível for menor que 300, mostra apenas "Favoritos"
-                final showFullTitle = constraints.maxWidth > 300;
-                return SafeText(
-                  showFullTitle ? AppLocalizations.of(context)!.myFavorites : AppLocalizations.of(context)!.favorites,
+    return ValueListenableBuilder<Locale?>(
+      valueListenable: LocaleController.instance,
+      builder: (context, locale, _) {
+        return ListenableBuilder(
+          listenable: Listenable.merge([
+            _favoritesController,
+            _appModeController,
+          ]),
+          builder: (context, _) {
+            // Obtém os favoritos baseado no modo atual
+            final currentFavorites = _appModeController.isSeriesMode
+                ? _favoritesController.favoriteTVShows
+                : _favoritesController.favoriteMovies;
+            
+            // Gradiente baseado no modo
+            final currentGradient = _appModeController.isSeriesMode 
+                ? const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color.fromARGB(255, 0, 0, 0),
+                      Color.fromARGB(255, 45, 3, 56),
+                      Color.fromARGB(255, 255, 0, 128),
+                    ],
+                  )
+                : AppColors.cinemaGradient;
+            
+            final accentColor = _appModeController.isSeriesMode 
+                ? const Color(0xFFBB86FC)
+                : AppColors.primary;
+            
+            return Scaffold(
+              backgroundColor: AppColors.backgroundDark,
+              appBar: AppBar(
+                title: SafeText(
+                  AppLocalizations.of(context)!.favorites,
                   style: AppTextStyles.headlineSmall.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
                   ),
-                );
-              },
-            ),
-            backgroundColor: Colors.transparent,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                gradient: currentGradient,
+                ),
+                backgroundColor: Colors.transparent,
+                flexibleSpace: Container(
+                  decoration: BoxDecoration(
+                    gradient: currentGradient,
+                  ),
+                ),
+                iconTheme: IconThemeData(color: accentColor),
+                elevation: 0,
+                actions: [
+                  // Botão de Swap Filme/Série
+                  _buildSwapButton(isMobile, accentColor),
+                  const SizedBox(width: 8),
+                  // Botão de limpar
+                  IconButton(
+                    icon: const Icon(Icons.delete_sweep),
+                    tooltip: AppLocalizations.of(context)!.clearAll,
+                    color: accentColor,
+                    onPressed: currentFavorites.isEmpty ? null : _showClearAllDialog,
+                  ),
+                  const SizedBox(width: 8),
+                ],
               ),
-            ),
-            iconTheme: IconThemeData(color: accentColor),
-            elevation: 0,
-            actions: [
-              // Botão de Swap Filme/Série
-              _buildSwapButton(isMobile, accentColor),
-              const SizedBox(width: 8),
-              // Botão de limpar
-              IconButton(
-                icon: const Icon(Icons.delete_sweep),
-                tooltip: AppLocalizations.of(context)!.clearAll,
-                color: accentColor,
-                onPressed: currentFavorites.isEmpty ? null : _showClearAllDialog,
-              ),
-              const SizedBox(width: 8),
-            ],
-          ),
-          body: _buildBody(currentFavorites, isMobile, accentColor),
+              body: _buildBody(currentFavorites, isMobile, accentColor),
+            );
+          },
         );
       },
     );
@@ -177,20 +177,15 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   Widget _buildBody(List<FavoriteItem> favorites, bool isMobile, Color accentColor) {
     if (_favoritesController.isLoading) {
-      return UXComponents.loadingWithText(
-        text: AppLocalizations.of(context)!.loadingFavorites,
+      return Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(accentColor),
+        ),
       );
     }
 
     if (favorites.isEmpty) {
-      final contentType = _appModeController.isSeriesMode 
-          ? AppLocalizations.of(context)!.seriesLower 
-          : AppLocalizations.of(context)!.moviesLower;
-      return UXComponents.emptyState(
-        title: AppLocalizations.of(context)!.noFavoritesYet,
-        message: AppLocalizations.of(context)!.addToFavoritesHint(contentType),
-        icon: _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
-      );
+      return _buildEmptyState(accentColor);
     }
 
     return ListView.builder(
@@ -203,17 +198,46 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
+  Widget _buildEmptyState(Color accentColor) {
+    final contentType = _appModeController.isSeriesMode ? AppLocalizations.of(context)!.seriesLower : AppLocalizations.of(context)!.moviesLower;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            _appModeController.isSeriesMode ? Icons.tv_off : Icons.movie_filter,
+            size: 80,
+            color: accentColor.withValues(alpha: 0.3),
+          ),
+          const SizedBox(height: 24),
+          SafeText(
+            AppLocalizations.of(context)!.noFavoritesYet,
+            style: AppTextStyles.headlineSmall.copyWith(
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: SafeText(
+              AppLocalizations.of(context)!.addToFavoritesHint(contentType),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildFavoriteCard(FavoriteItem favorite, bool isMobile, Color accentColor) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       color: AppColors.surfaceDark,
-      elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: accentColor.withValues(alpha: 0.3),
-          width: 1,
-        ),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -238,108 +262,16 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Poster
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: favorite.posterPath != null
-                    ? Image.network(
-                        '${AppConstants.tmdbImageBaseUrl}${favorite.posterPath}',
-                        width: isMobile ? 80 : 100,
-                        height: isMobile ? 120 : 150,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => _buildPosterPlaceholder(isMobile),
-                      )
-                    : _buildPosterPlaceholder(isMobile),
-              ),
+              _buildPoster(favorite, isMobile),
               const SizedBox(width: 16),
-              
-              // Informações
+              // Info
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
-                          size: 16,
-                          color: accentColor,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: SafeText(
-                            favorite.title,
-                            style: AppTextStyles.bodyLarge.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.star,
-                          size: 16,
-                          color: accentColor,
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: SafeText(
-                            favorite.voteAverage.toStringAsFixed(1),
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Flexible(
-                          child: SafeText(
-                            favorite.yearDescription(context),
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Flexible(
-                          child: SafeText(
-                            favorite.typeDescription(context),
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (favorite.overview != null && favorite.overview!.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      SafeText(
-                        favorite.overview!,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textTertiary,
-                        ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ],
-                ),
+                child: _buildInfo(favorite, isMobile, accentColor),
               ),
-              
-              // Botão remover
+              // Remove button (visual parity with Watched screen)
               IconButton(
-                icon: const Icon(Icons.delete_outline),
-                color: AppColors.error,
+                icon: const Icon(Icons.check_circle),
+                color: accentColor,
                 onPressed: () => _removeFavorite(favorite),
                 tooltip: AppLocalizations.of(context)!.removeFromFavoritesTooltip,
               ),
@@ -347,6 +279,100 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPoster(FavoriteItem favorite, bool isMobile) {
+    final width = isMobile ? 80.0 : 100.0;
+    final height = isMobile ? 120.0 : 150.0;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: favorite.posterPath != null && favorite.posterPath!.isNotEmpty
+          ? Image.network(
+              '${AppConstants.tmdbImageBaseUrl}${favorite.posterPath}',
+              width: width,
+              height: height,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => _buildPosterPlaceholder(isMobile),
+            )
+          : _buildPosterPlaceholder(isMobile),
+    );
+  }
+
+  Widget _buildInfo(FavoriteItem favorite, bool isMobile, Color accentColor) {
+  final year = favorite.releaseDate.isNotEmpty
+    ? favorite.releaseDate.split('-')[0]
+    : '';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Title
+        SafeText(
+          favorite.title,
+          style: (isMobile ? AppTextStyles.bodyLarge : AppTextStyles.headlineSmall).copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 4),
+
+        // Year and type row (matches WatchedScreen)
+        Row(
+          children: [
+            if (year.isNotEmpty) ...[
+              Icon(
+                Icons.calendar_today,
+                size: 14,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(width: 4),
+              SafeText(
+                year,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+            Icon(
+              favorite.isTVShow ? Icons.tv : Icons.movie,
+              size: 14,
+              color: accentColor,
+            ),
+            const SizedBox(width: 4),
+            SafeText(
+              favorite.isTVShow ? AppLocalizations.of(context)!.seriesLabel : AppLocalizations.of(context)!.movieLabel,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: accentColor,
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 8),
+
+        // Rating row (matches WatchedScreen)
+        Row(
+          children: [
+            Icon(
+              Icons.star,
+              size: 16,
+              color: AppColors.accent,
+            ),
+            const SizedBox(width: 4),
+            SafeText(
+              favorite.voteAverage.toStringAsFixed(1),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
