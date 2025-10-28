@@ -7,7 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
 import 'constants/app_constants.dart';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+// SharedPreferences is accessed via PrefsService which is initialized in main()
 import 'config/secure_config.dart'; // ⬅️ NOVO: Configuração segura
 import 'models/movie.dart';
 import 'models/tv_show.dart';
@@ -16,6 +16,7 @@ import 'services/movie_service.dart';
 import 'services/ad_service.dart';
 import 'services/auth_service.dart';
 import 'services/background_service.dart';
+import 'services/prefs_service.dart';
 import 'utils/page_transitions.dart';
 import 'widgets/genre_wheel.dart';
 import 'widgets/error_widgets.dart';
@@ -52,6 +53,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Initialize cached SharedPreferences early to avoid repeated async calls
+  await PrefsService.init();
 
   // Inicializar AdMob
   await AdService.initialize();
@@ -286,11 +290,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         // Primeiro: execute um sync central que mescla os caches locais
         // com o Firebase. Isso garante que um login em outro dispositivo
         // respeite os dados presentes na nuvem quando existirem.
-        try {
-          // Import SharedPreferences and json decoding locally to avoid
-          // depending on controller state. Use the same keys used by
-          // controllers for backward compatibility.
-          final prefs = await SharedPreferences.getInstance();
+          try {
+          // Use cached PrefsService instance (initialized in main)
+          final prefs = PrefsService.prefs;
           final localFavJson = prefs.getString('rollflix_favorites');
           final localWatchedJson = prefs.getString('rollflix_watched');
 
@@ -385,9 +387,14 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           debugPrint(AppLocalizations.of(context)!.initialGenreSelected(currentGenres.first));
         }
       } catch (e) {
-        debugPrint(AppLocalizations.of(context)!.errorInitializingApp(e.toString()));
+        // Avoid using BuildContext across async gaps. Only access
+        // AppLocalizations when the widget is still mounted.
         if (mounted) {
+          final msg = AppLocalizations.of(context)!.errorInitializingApp(e.toString());
+          debugPrint(msg);
           AppSnackBar.showError(context, AppLocalizations.of(context)!.errorLoadingInitialData);
+        } else {
+          debugPrint('❌ Erro ao inicializar app (widget não montado): $e');
         }
       }
     });

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../services/prefs_service.dart';
 import '../models/favorite_item.dart';
 import '../models/movie.dart';
 import '../models/tv_show.dart';
@@ -54,8 +54,8 @@ class FavoritesController extends ChangeNotifier {
       // Se usuário está logado, carrega do Firebase
       if (AuthService.isUserLoggedIn()) {
         // Use local cache as a fast fallback, but prefer cloud when available.
-        final prefs = await SharedPreferences.getInstance();
-        final localJson = prefs.getString(_favoritesKey);
+  final prefs = PrefsService.prefs;
+  final localJson = prefs.getString(_favoritesKey);
         if (localJson != null) {
           try {
             final List<dynamic> decoded = jsonDecode(localJson);
@@ -80,9 +80,9 @@ class FavoritesController extends ChangeNotifier {
           debugPrint('ℹ️ Nenhum dado de favoritos no Firebase (document/field ausente) - mantendo cache local');
         }
       } else {
-        // Senão, carrega do SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        final favoritesJson = prefs.getString(_favoritesKey);
+  // Senão, carrega do PrefsService cached SharedPreferences
+  final prefs = PrefsService.prefs;
+  final favoritesJson = prefs.getString(_favoritesKey);
 
         if (favoritesJson != null) {
           final List<dynamic> decoded = jsonDecode(favoritesJson);
@@ -105,7 +105,7 @@ class FavoritesController extends ChangeNotifier {
   Future<void> _saveFavorites({bool allowEmpty = false}) async {
     try {
       // Sempre salva local (backup)
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = PrefsService.prefs;
       final favoritesJson = jsonEncode(
         _favorites.map((fav) => fav.toJson()).toList(),
       );
@@ -271,8 +271,8 @@ class FavoritesController extends ChangeNotifier {
       debugPrint('🔄 Sincronizando favoritos após login...');
       
       // Carrega dados locais atuais
-      final prefs = await SharedPreferences.getInstance();
-      final localJson = prefs.getString(_favoritesKey);
+  final prefs = PrefsService.prefs;
+  final localJson = prefs.getString(_favoritesKey);
       final List<FavoriteItem> localFavorites = [];
       
       if (localJson != null) {

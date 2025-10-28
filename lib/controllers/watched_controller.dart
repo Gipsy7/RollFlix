@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../services/prefs_service.dart';
 import '../models/watched_item.dart';
 import '../models/movie.dart';
 import '../models/tv_show.dart';
@@ -37,9 +37,9 @@ class WatchedController extends ChangeNotifier {
 
       // Se usuário está logado, carrega do Firebase
       if (AuthService.isUserLoggedIn()) {
-        // Use local cache fast, then prefer cloud when available
-        final prefs = await SharedPreferences.getInstance();
-        final localJson = prefs.getString(_watchedKey);
+  // Use local cached prefs fast, then prefer cloud when available
+  final prefs = PrefsService.prefs;
+  final localJson = prefs.getString(_watchedKey);
         if (localJson != null) {
           try {
             final List<dynamic> decoded = jsonDecode(localJson);
@@ -62,9 +62,9 @@ class WatchedController extends ChangeNotifier {
           debugPrint('ℹ️ Nenhum dado de assistidos no Firebase (document/field ausente) - mantendo cache local');
         }
       } else {
-        // Senão, carrega do SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        final watchedJson = prefs.getString(_watchedKey);
+  // Senão, carrega do PrefsService cached SharedPreferences
+  final prefs = PrefsService.prefs;
+  final watchedJson = prefs.getString(_watchedKey);
 
         if (watchedJson != null) {
           final List<dynamic> decoded = jsonDecode(watchedJson);
@@ -87,7 +87,7 @@ class WatchedController extends ChangeNotifier {
   Future<void> _saveWatchedItems({bool allowEmpty = false}) async {
     try {
       // Sempre salva local (backup)
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = PrefsService.prefs;
       final watchedJson = jsonEncode(
         _watchedItems.map((item) => item.toJson()).toList(),
       );
@@ -243,9 +243,9 @@ class WatchedController extends ChangeNotifier {
     try {
       debugPrint('🔄 Sincronizando assistidos após login...');
       
-      // Carrega dados locais atuais
-      final prefs = await SharedPreferences.getInstance();
-      final localJson = prefs.getString(_watchedKey);
+  // Carrega dados locais atuais
+  final prefs = PrefsService.prefs;
+  final localJson = prefs.getString(_watchedKey);
       final List<WatchedItem> localWatched = [];
       
       if (localJson != null) {
