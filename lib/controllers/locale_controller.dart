@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'user_preferences_controller.dart';
 import 'app_mode_controller.dart';
@@ -17,11 +18,22 @@ class LocaleController extends ValueNotifier<Locale?> {
     final prefs = await SharedPreferences.getInstance();
     final code = prefs.getString(_kLocaleKey);
     if (code != null && code.isNotEmpty) {
-      value = Locale(code);
-      debugPrint('🌍 LocaleController: init loaded locale: $value');
+      // If we have a saved code, ensure it's supported; otherwise fallback to English
+      final supported = AppLocalizations.supportedLocales.map((l) => l.languageCode).toSet();
+      final chosen = supported.contains(code) ? code : 'en';
+      value = Locale(chosen);
+      debugPrint('🌍 LocaleController: init loaded locale from prefs: $value (raw=$code)');
+      // Persist normalized choice
+      await prefs.setString(_kLocaleKey, chosen);
     } else {
-      value = const Locale('pt'); // Default to Portuguese
-      debugPrint('🌍 LocaleController: init set default locale: $value');
+      // No saved preference: try device locale, fallback to English if unsupported
+      final deviceLocale = PlatformDispatcher.instance.locale;
+      final deviceCode = deviceLocale.languageCode;
+      final supported = AppLocalizations.supportedLocales.map((l) => l.languageCode).toSet();
+      final chosen = supported.contains(deviceCode) ? deviceCode : 'en';
+      value = Locale(chosen);
+      await prefs.setString(_kLocaleKey, chosen);
+      debugPrint('🌍 LocaleController: init set locale from device: $value (device=$deviceLocale)');
     }
   }
 
@@ -32,8 +44,11 @@ class LocaleController extends ValueNotifier<Locale?> {
   Future<void> setLocale(String? languageCode, {bool saveToCloud = true}) async {
     if (languageCode == null) return;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kLocaleKey, languageCode);
-    value = Locale(languageCode);
+    // Normalize to supported locales; fallback to English
+    final supported = AppLocalizations.supportedLocales.map((l) => l.languageCode).toSet();
+    final chosen = supported.contains(languageCode) ? languageCode : 'en';
+    await prefs.setString(_kLocaleKey, chosen);
+    value = Locale(chosen);
     debugPrint('🌍 LocaleController: setLocale called with $languageCode, new locale: $value (saveToCloud=$saveToCloud)');
 
     if (!saveToCloud) return;
