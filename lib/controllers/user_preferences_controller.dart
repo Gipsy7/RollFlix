@@ -382,8 +382,10 @@ class UserPreferencesController extends ChangeNotifier {
         final selectedGenre = settings['selectedGenre'] as String?;
 
         if (localeCode != null) {
-          // Atualiza o LocaleController
-          await LocaleController.instance.setLocale(localeCode);
+          // Atualiza o LocaleController, mas NÃO re-salva no Firebase para
+          // evitar sobrescrever outras configurações carregadas nesta mesma
+          // operação de sincronização.
+          await LocaleController.instance.setLocale(localeCode, saveToCloud: false);
         }
 
         // Atualiza o AppModeController

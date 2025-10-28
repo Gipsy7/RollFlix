@@ -163,7 +163,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (selected != null && selected != _selectedLanguage) {
       setState(() => _selectedLanguage = selected);
       // Save the language preference using LocaleController
-      await LocaleController.instance.setLocale(selected);
+  await LocaleController.instance.setLocale(selected);
       // The app will automatically update due to the listener in main.dart
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

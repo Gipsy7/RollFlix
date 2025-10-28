@@ -468,6 +468,12 @@ class UserDataService {
       }, SetOptions(merge: true));
 
       debugPrint('✅ Configurações do app salvas no Firebase');
+      final uid = AuthService.currentUser?.uid;
+      debugPrint('🔁 user_data_service.saveAppSettings -> uid=$uid, payload=${{
+        'localeCode': localeCode,
+        'isSeriesMode': isSeriesMode,
+        'selectedGenre': selectedGenre,
+      }}');
     } catch (e) {
       debugPrint('❌ Erro ao salvar configurações do app no Firebase: $e');
       rethrow;
