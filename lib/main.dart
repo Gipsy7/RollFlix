@@ -1260,70 +1260,90 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       subtitle = AppLocalizations.of(context)!.unavailable;
     }
 
-    // Widget base
-    final content = Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: displayColor, size: isMobile ? 20 : 24),
-        const SizedBox(height: 4),
-        Text(
-          displayValue,
-          style: (isMobile ? AppTextStyles.labelLarge : AppTextStyles.headlineSmall).copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          subtitle,
-          style: AppTextStyles.bodySmall.copyWith(
-            color: canUse ? Colors.white.withOpacity(0.7) : Colors.red.withOpacity(0.7),
-            fontSize: isMobile ? 10 : 12,
-          ),
-        ),
-        // Indicador visual de que pode assistir anúncio
-        if (canWatchAd)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.videocam,
-                  size: isMobile ? 10 : 12,
-                  color: AppColors.primary.withOpacity(0.8),
+    // Widget base: usa constraints para manter boa responsividade e área de toque
+    final minWidth = isMobile ? 72.0 : 110.0;
+    final minHeight = isMobile ? 64.0 : 80.0;
+
+    final content = ConstrainedBox(
+      constraints: BoxConstraints(minWidth: minWidth, minHeight: minHeight),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: displayColor, size: isMobile ? 20 : 24),
+            const SizedBox(height: 6),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                displayValue,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: (isMobile ? AppTextStyles.labelLarge : AppTextStyles.headlineSmall).copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(width: 2),
-                Text(
-                  AppLocalizations.of(context)!.tapPlusOne,
-                  style: TextStyle(
-                    fontSize: isMobile ? 8 : 10,
-                    color: AppColors.primary.withOpacity(0.8),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-      ],
+            const SizedBox(height: 2),
+            Flexible(
+              child: Text(
+                subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: canUse ? Colors.white.withOpacity(0.7) : Colors.red.withOpacity(0.7),
+                  fontSize: isMobile ? 10 : 12,
+                ),
+              ),
+            ),
+            // Indicador visual de que pode assistir anúncio
+            if (canWatchAd)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.videocam,
+                      size: isMobile ? 12 : 14,
+                      color: AppColors.primary.withOpacity(0.9),
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        AppLocalizations.of(context)!.tapPlusOne,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: isMobile ? 10 : 12,
+                          color: AppColors.primary.withOpacity(0.9),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
     );
 
-    // Se pode assistir anúncio, torna clicável
-    if (canWatchAd) {
-      return InkWell(
-        onTap: () => _showAdToRechargeResource(resourceType, label),
+    // Envolve num Material para garantir efeito ripple correto e área de toque maior
+    final wrapped = Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: canWatchAd ? () => _showAdToRechargeResource(resourceType, label) : null,
         borderRadius: BorderRadius.circular(12),
+        splashFactory: InkRipple.splashFactory,
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: content,
         ),
-      );
-    }
-
-    // Se não pode assistir anúncio (já tem 5), apenas exibe
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: content,
+      ),
     );
+
+    return wrapped;
   }
 
   /// Mostra anúncio para recarregar recurso

@@ -502,12 +502,7 @@ class UserPreferencesController extends ChangeNotifier {
         ? const Color.fromARGB(255, 240, 43, 109) // Roxo/Rosa vibrante para séries
         : AppColors.primary; // Dourado para filmes
     
-    String cooldownText = '';
-    if (cooldown != null) {
-      final hours = cooldown.inHours;
-      final minutes = cooldown.inMinutes.remainder(60);
-      cooldownText = '\n\nRecarga automática em: ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}h';
-    }
+    // cooldown handled below in the content section
 
     final result = await showDialog<bool>(
       context: context,
@@ -520,46 +515,72 @@ class UserPreferencesController extends ChangeNotifier {
           children: [
             Icon(Icons.videocam, color: accentColor, size: 28),
             const SizedBox(width: 12),
-            Text(
-              AppLocalizations.of(context)!.earnExtraResource,
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            // Protege título longo com Expanded para evitar overflow
+            Expanded(
+              child: Text(
+                AppLocalizations.of(context)!.earnExtraResource,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context)!.noResourceAvailable(resourceName) + cooldownText,
-              style: const TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: accentColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: accentColor, width: 1),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 120, maxWidth: 560),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Main message - usa Flexible para truncar corretamente em telas pequenas
+              Flexible(
+                child: Text(
+                  AppLocalizations.of(context)!.noResourceAvailable(resourceName),
+                  style: const TextStyle(color: Colors.white70, fontSize: 16),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              child: Row(
-                children: [
-                  Icon(Icons.card_giftcard, color: accentColor, size: 24),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context)!.watchAdForExtraResource(resourceName),
-                      style: TextStyle(
-                        color: accentColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+              // Mostra cooldown em linha separada, se houver
+              if (cooldown != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  '⏱️ ${cooldown.inHours.toString().padLeft(2, '0')}:${cooldown.inMinutes.remainder(60).toString().padLeft(2, '0')}h ${AppLocalizations.of(context)!.reloading}',
+                  style: const TextStyle(color: Colors.white54, fontSize: 13),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: accentColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: accentColor, width: 1),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.card_giftcard, color: accentColor, size: 24),
+                    const SizedBox(width: 12),
+                    // Usa Flexible para evitar overflow do texto localizado
+                    Flexible(
+                      child: Text(
+                        AppLocalizations.of(context)!.watchAdForExtraResource(resourceName),
+                        style: TextStyle(
+                          color: accentColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -616,40 +637,46 @@ class UserPreferencesController extends ChangeNotifier {
       context: context,
       barrierDismissible: false,
       builder: (context) => Center(
-        child: Container(
-          padding: const EdgeInsets.all(40),
-          decoration: BoxDecoration(
-            color: AppColors.backgroundDark,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: accentColor.withOpacity(0.3),
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: accentColor.withOpacity(0.2),
-                blurRadius: 20,
-                spreadRadius: 2,
-              ),
-            ],
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+            minWidth: 120,
           ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                width: 60,
-                height: 60,
-                child: CircularProgressIndicator(
-                  color: accentColor,
-                  strokeWidth: 3,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            decoration: BoxDecoration(
+              color: AppColors.backgroundDark,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: accentColor.withOpacity(0.3),
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: accentColor.withOpacity(0.2),
+                  blurRadius: 20,
+                  spreadRadius: 2,
                 ),
-              ),
-              Icon(
-                Icons.play_circle_filled,
-                color: accentColor,
-                size: 32,
-              ),
-            ],
+              ],
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  width: 56,
+                  height: 56,
+                  child: CircularProgressIndicator(
+                    color: accentColor,
+                    strokeWidth: 3,
+                  ),
+                ),
+                Icon(
+                  Icons.play_circle_filled,
+                  color: accentColor,
+                  size: 36,
+                ),
+              ],
+            ),
           ),
         ),
       ),
