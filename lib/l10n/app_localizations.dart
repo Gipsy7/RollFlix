@@ -499,6 +499,8 @@ abstract class AppLocalizations {
   String get labelAppetizer;
 
   String get labelSideDish;
+
+  String get viewRecipe;
   /// No description provided for @direction.
   ///
   /// In en, this message translates to:

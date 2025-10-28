@@ -251,6 +251,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get labelSideDish => 'Accompagnement';
 
   @override
+  String get viewRecipe => 'Voir la recette';
+
+  @override
   String get direction => 'Réalisation :';
 
   @override

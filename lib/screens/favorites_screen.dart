@@ -287,24 +287,36 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           color: accentColor,
                         ),
                         const SizedBox(width: 4),
-                        SafeText(
-                          favorite.voteAverage.toStringAsFixed(1),
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
+                        Flexible(
+                          child: SafeText(
+                            favorite.voteAverage.toStringAsFixed(1),
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 12),
-                        SafeText(
-                          favorite.yearDescription(context),
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
+                        Flexible(
+                          child: SafeText(
+                            favorite.yearDescription(context),
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 12),
-                        SafeText(
-                          favorite.typeDescription(context),
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
+                        Flexible(
+                          child: SafeText(
+                            favorite.typeDescription(context),
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],

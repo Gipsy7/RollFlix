@@ -1298,9 +1298,14 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           children: [
             Icon(Icons.videocam, color: accentColor, size: 28),
             const SizedBox(width: 12),
-            Text(
-              AppLocalizations.of(context)!.watchAdConfirmTitle,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            // Constrain the title text so it can't force the Row to overflow.
+            Expanded(
+              child: Text(
+                AppLocalizations.of(context)!.watchAdConfirmTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),

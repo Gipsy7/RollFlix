@@ -251,6 +251,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get labelSideDish => 'Acompanhamento';
 
   @override
+  String get viewRecipe => 'Ver receita';
+
+  @override
   String get direction => 'Direção:';
 
   @override

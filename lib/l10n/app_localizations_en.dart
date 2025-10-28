@@ -251,6 +251,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelSideDish => 'Side Dish';
 
   @override
+  String get viewRecipe => 'View recipe';
+
+  @override
   String get direction => 'Direction:';
 
   @override

@@ -980,6 +980,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 if (hasRecipe)
@@ -993,11 +995,13 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         SafeText(
-                          'Ver receita',
+                          AppLocalizations.of(context)!.viewRecipe,
                           style: AppTextStyles.bodySmall.copyWith(
                             color: _primaryRose,
                             fontWeight: FontWeight.w600,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(width: 4),
                         Icon(Icons.arrow_forward_ios, color: _primaryRose, size: 12),
@@ -1013,6 +1017,8 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             if (showDetails) ...[
               const SizedBox(height: 12),
