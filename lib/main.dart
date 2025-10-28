@@ -26,6 +26,8 @@ import 'controllers/movie_controller.dart';
 import 'controllers/tv_show_controller.dart';
 import 'controllers/app_mode_controller.dart';
 import 'controllers/user_preferences_controller.dart';
+import 'controllers/favorites_controller.dart';
+import 'controllers/watched_controller.dart';
 import 'controllers/notification_controller.dart';
 import 'repositories/tv_show_repository.dart';
 import 'mixins/animation_mixin.dart';
@@ -249,8 +251,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       try {
-        await _userPreferencesController.syncAfterLogin();
-        debugPrint('✅ Preferências recarregadas do Firebase no initState');
+        // Sincroniza preferências, favoritos e assistidos após autenticação
+        await Future.wait([
+          FavoritesController.instance.syncAfterLogin(),
+          WatchedController.instance.syncAfterLogin(),
+          _userPreferencesController.syncAfterLogin(),
+        ]);
+        debugPrint('✅ Preferências, favoritos e assistidos recarregados do Firebase no initState');
       } catch (e) {
         debugPrint('❌ Erro ao recarregar preferências: $e');
       }
