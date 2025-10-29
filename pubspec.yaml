@@ -128,6 +128,7 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
+  # Use the RollFlix icon file; replace this file with your new png if you want a different icon
   image_path: "assets/images/app_icon.png"
   # Desabilita ícones adaptativos temporariamente para evitar corte
   adaptive_icon_background: "#000000"
