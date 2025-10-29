@@ -451,6 +451,13 @@ class UserPreferencesController extends ChangeNotifier {
     // Primeiro tenta recarregar recursos expirados
     await tryReloadResources();
 
+    // Because we awaited above, ensure the passed BuildContext is still
+    // valid before using it (prevents use_build_context_synchronously lints).
+    if (!context.mounted) {
+      debugPrint('⚠️ Context no longer mounted after tryReloadResources - aborting ad flow');
+      return false;
+    }
+
     // Verifica se pode usar o recurso normalmente
     if (canUseResource(type)) {
       debugPrint('✅ Recurso disponível - consumindo...');
@@ -555,7 +562,7 @@ class UserPreferencesController extends ChangeNotifier {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.1),
+                  color: accentColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: accentColor, width: 1),
                 ),
@@ -648,12 +655,12 @@ class UserPreferencesController extends ChangeNotifier {
               color: AppColors.backgroundDark,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: accentColor.withOpacity(0.3),
+                color: accentColor.withValues(alpha: 0.3),
                 width: 2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: accentColor.withOpacity(0.2),
+                  color: accentColor.withValues(alpha: 0.2),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),

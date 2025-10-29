@@ -1529,6 +1529,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     if (confirm != true) return;
 
     // Mostra anúncio e concede recompensa
+    if (!mounted) return;
     final success = await _userPreferencesController.watchAdForResource(
       resourceType,
       context,
