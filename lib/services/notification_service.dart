@@ -51,6 +51,17 @@ class NotificationService {
       // Configurar Firebase Messaging
       await _initializeFirebaseMessaging();
 
+      // Garantir que a verificação periódica em background esteja registrada
+      // se as notificações estiverem habilitadas.
+      if (_notificationsEnabled) {
+        try {
+          await BackgroundService.registerPeriodicTask();
+          debugPrint('✅ Background periodic task registered from NotificationService.initialize');
+        } catch (e) {
+          debugPrint('⚠️ Could not register background periodic task: $e');
+        }
+      }
+
       debugPrint('✅ Serviço de notificações inicializado');
     } catch (e) {
       debugPrint('❌ Erro ao inicializar notificações: $e');

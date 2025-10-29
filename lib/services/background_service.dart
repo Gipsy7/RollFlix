@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'dart:convert';
 import 'package:workmanager/workmanager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../controllers/favorites_controller.dart';
@@ -101,8 +102,19 @@ void callbackDispatcher() {
     try {
       // Verificar se notificações estão habilitadas
       final prefs = await SharedPreferences.getInstance();
-      final notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
-      
+      // Compatível com NotificationService: as configurações são salvas
+      // como JSON na chave 'notification_settings'. Ler e extrair flag.
+      bool notificationsEnabled = true;
+      final settingsJson = prefs.getString('notification_settings');
+      if (settingsJson != null) {
+        try {
+          final settings = jsonDecode(settingsJson) as Map<String, dynamic>;
+          notificationsEnabled = settings['notificationsEnabled'] ?? true;
+        } catch (e) {
+          debugPrint('⚠️ Erro ao parsear notification_settings: $e');
+        }
+      }
+
       if (!notificationsEnabled) {
         debugPrint('⏭️ Notificações desabilitadas, pulando verificação');
         return Future.value(true);
