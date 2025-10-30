@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "532332079577-vgt5ko0ncuiuq1omlfv361qtq2o7aav5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rollflix.app",
+            "certificate_hash": "25bf9952739afc651c269cadb5a17e191bec33dd"
+          }
+        },
+        {
           "client_id": "532332079577-pl49gm35erc77st380johfojttu6uafr.apps.googleusercontent.com",
           "client_type": 3
         }

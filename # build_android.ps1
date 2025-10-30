@@ -13,3 +13,10 @@ flutter build apk --release `
   --dart-define=ADMOB_IOS_APP_ID=$AdmobIosAppId `
   --dart-define=ADMOB_ANDROID_REWARDED_ID=$AdmobAndroidRewardedId `
   --dart-define=ADMOB_IOS_REWARDED_ID=$AdmobIosRewardedId
+
+  flutter build appbundle --release `
+  --dart-define=TMDB_API_KEY=$TmdbApiKey `
+  --dart-define=ADMOB_ANDROID_APP_ID=$AdmobAndroidAppId `
+  --dart-define=ADMOB_IOS_APP_ID=$AdmobIosAppId `
+  --dart-define=ADMOB_ANDROID_REWARDED_ID=$AdmobAndroidRewardedId `
+  --dart-define=ADMOB_IOS_REWARDED_ID=$AdmobIosRewardedId

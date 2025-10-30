@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -26,6 +29,14 @@ android {
     // Suprimir avisos de compilação
     tasks.withType<JavaCompile> {
         options.compilerArgs.addAll(listOf("-Xlint:-options"))
+    }
+
+    // Carrega key.properties (crie android/key.properties)
+    val keystorePropertiesFile = rootProject.file("key.properties")
+    val keystoreProperties = Properties().apply {
+        if (keystorePropertiesFile.exists()) {
+            FileInputStream(keystorePropertiesFile).use { this.load(it) }
+        }
     }
 
     defaultConfig {
