@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../config/admob_config.dart';
+import 'subscription_service.dart';
 
 /// Tipo de recompensa de anúncio
 enum AdRewardType {
@@ -170,6 +171,12 @@ class AdService {
   /// Mostra o anúncio recompensado
   /// Retorna true se o usuário assistiu completamente e ganhou a recompensa
   Future<bool> showRewardedAd(AdRewardType rewardType) async {
+    // Se o usuário tem assinatura ativa, não mostramos anúncios
+    if (SubscriptionService.isSubscribedCached) {
+      debugPrint('🔕 Usuário assinante - anúncios desativados (sem necessidade de assistir)');
+      // For subscribed users we don't need the ad; treat as no ad shown.
+      return false;
+    }
     if (!_isAdReady || _rewardedAd == null) {
       debugPrint('⚠️ Anúncio não está pronto para exibição');
       
@@ -187,28 +194,90 @@ class AdService {
     final completer = Completer<bool>();
 
     try {
+      // Keep a reference to any existing fullScreenContentCallback so we can
+      // call it as part of our temporary wrapper.
+      final previousCallback = _rewardedAd!.fullScreenContentCallback;
+
+      // Install a temporary full screen callback that forwards calls to the
+      // previous callback and also completes the completer when the ad is
+      // dismissed (with whether a reward was earned).
+      _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+        onAdShowedFullScreenContent: (ad) {
+          previousCallback?.onAdShowedFullScreenContent?.call(ad);
+        },
+        onAdDismissedFullScreenContent: (ad) {
+          debugPrint('📱 Anúncio fechado (onAdDismissedFullScreenContent)');
+          // Forward to previous callback
+          previousCallback?.onAdDismissedFullScreenContent?.call(ad);
+          try {
+            if (!completer.isCompleted) completer.complete(rewardEarned);
+          } catch (_) {}
+          // Clean up
+          try {
+            ad.dispose();
+          } catch (_) {}
+          _rewardedAd = null;
+          _isAdReady = false;
+          // Preload next ad
+          loadRewardedAd();
+        },
+        onAdFailedToShowFullScreenContent: (ad, error) {
+          debugPrint('❌ Erro ao exibir anúncio: ${error.message}');
+          previousCallback?.onAdFailedToShowFullScreenContent?.call(ad, error);
+          try {
+            if (!completer.isCompleted) completer.complete(false);
+          } catch (_) {}
+          try {
+            ad.dispose();
+          } catch (_) {}
+          _rewardedAd = null;
+          _isAdReady = false;
+          loadRewardedAd();
+        },
+        onAdImpression: (ad) {
+          previousCallback?.onAdImpression?.call(ad);
+        },
+      );
+
+      // Show the ad. When the user earns a reward the onUserEarnedReward
+      // callback will be invoked and we complete the completer with true.
       await _rewardedAd!.show(
         onUserEarnedReward: (ad, reward) {
           debugPrint('🎁 Recompensa ganha!');
           debugPrint('   Tipo: ${reward.type}');
           debugPrint('   Quantidade: ${reward.amount}');
-          
+
           rewardEarned = true;
-          
+
           // Notifica o callback
           onAdWatched?.call(rewardType);
+
+          try {
+            if (!completer.isCompleted) completer.complete(true);
+          } catch (_) {}
         },
       );
-      
-      // Aguarda um pouco para garantir que o callback seja chamado
-      await Future.delayed(const Duration(milliseconds: 500));
-      completer.complete(rewardEarned);
+
+      // As a safety, ensure the future completes after a timeout if something
+      // unexpected happens (ad SDK bug). We wait up to 15s.
+      return completer.future.timeout(const Duration(seconds: 15), onTimeout: () {
+        debugPrint('⏳ showRewardedAd timed out waiting for reward/dismiss');
+        if (!completer.isCompleted) {
+          try {
+            completer.complete(rewardEarned);
+          } catch (_) {}
+        }
+        return rewardEarned;
+      });
     } catch (e) {
       debugPrint('❌ Erro ao mostrar anúncio: $e');
-      completer.complete(false);
+      if (!completer.isCompleted) {
+        try {
+          completer.complete(false);
+        } catch (_) {}
+      }
+      return completer.future;
     }
-
-    return completer.future;
   }
 
   /// Verifica se há anúncio pronto para exibir

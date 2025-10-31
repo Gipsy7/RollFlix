@@ -212,24 +212,42 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                 
                 // Se está marcando, tenta usar recurso
                 final userPrefsController = UserPreferencesController.instance;
+                bool actionDone = false;
                 final consumed = await userPrefsController.tryUseResourceWithAd(
                   ResourceType.watched,
                   context,
+                  onSuccessAfterAd: () async {
+                    _watchedController.toggleTVShowWatched(widget.tvShow);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.markedAsWatched),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                    actionDone = true;
+                  },
                 );
-                
+
                 if (!consumed) {
                   // Usuário cancelou ou anúncio não disponível
                   return;
                 }
 
-                _watchedController.toggleTVShowWatched(widget.tvShow);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(AppLocalizations.of(context)!.markedAsWatched),
-                    duration: Duration(seconds: 2),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+                if (!actionDone) {
+                  _watchedController.toggleTVShowWatched(widget.tvShow);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(AppLocalizations.of(context)!.markedAsWatched),
+                        duration: const Duration(seconds: 2),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                }
               },
             );
           },
@@ -261,24 +279,42 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                 
                 // Se está marcando, tenta usar recurso
                 final userPrefsController = UserPreferencesController.instance;
-                final consumed = await userPrefsController.tryUseResourceWithAd(
+                bool actionDoneFav = false;
+                final consumedFav = await userPrefsController.tryUseResourceWithAd(
                   ResourceType.favorite,
                   context,
+                  onSuccessAfterAd: () async {
+                    _favoritesController.toggleTVShowFavorite(widget.tvShow);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.addedToFavorites(widget.tvShow.name)),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                    actionDoneFav = true;
+                  },
                 );
-                
-                if (!consumed) {
+
+                if (!consumedFav) {
                   // Usuário cancelou ou anúncio não disponível
                   return;
                 }
 
-                _favoritesController.toggleTVShowFavorite(widget.tvShow);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(AppLocalizations.of(context)!.addedToFavorites(widget.tvShow.name)),
-                    duration: Duration(seconds: 2),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+                if (!actionDoneFav) {
+                  _favoritesController.toggleTVShowFavorite(widget.tvShow);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(AppLocalizations.of(context)!.addedToFavorites(widget.tvShow.name)),
+                        duration: const Duration(seconds: 2),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                }
               },
             );
           },

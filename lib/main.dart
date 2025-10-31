@@ -42,6 +42,7 @@ import 'screens/tv_show_details_screen.dart';
 import 'screens/login_screen.dart';
 import 'controllers/locale_controller.dart';
 import 'services/session_service.dart';
+import 'services/subscription_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,6 +71,9 @@ void main() async {
   // Inicializar serviço de background
   await BackgroundService.initialize();
   await BackgroundService.registerPeriodicTask();
+
+  // Inicializa subscription service (escuta mudanças de auth)
+  SubscriptionService.init();
 
   // Inicializar controlador de locale (carrega preferência salva)
   await LocaleController.instance.init();
@@ -502,56 +506,72 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     }
 
     // Tenta usar recurso de rolagem (com opção de assistir anúncio se necessário)
+    bool actionExecuted = false;
+
+    Future<void> performRoll() async {
+      // Ativa a flag para permitir animação após o sorteio
+      if (mounted) {
+        setState(() {
+          _shouldAnimateCard = false;
+          _showResultCard = false;
+        });
+      }
+
+      try {
+        var rollExecuted = false;
+        if (_appModeController.isSeriesMode) {
+          debugPrint('Chamando rollShow para série...');
+          // Usa o controller para séries
+          if (_tvShowController.canRollShow || selectedGenre != _tvShowController.selectedGenre) {
+            _tvShowController.selectGenre(selectedGenre);
+            await _tvShowController.rollShow(preferences: _userPreferencesController.rollPreferences);
+            if (!mounted) return;
+            debugPrint('rollShow concluído. selectedShow: ${_tvShowController.selectedShow?.name}');
+            rollExecuted = true;
+          }
+        } else {
+          debugPrint('Chamando rollMovie para filme...');
+          // Usa o controller para filmes
+          if (_movieController.canRollMovie || selectedGenre != _movieController.selectedGenre) {
+            debugPrint('Preferências ANTES de chamar rollMovie: ${_userPreferencesController.rollPreferences.toJson()}');
+            _movieController.selectGenre(selectedGenre);
+            await _movieController.rollMovie(preferences: _userPreferencesController.rollPreferences);
+            if (!mounted) return;
+            debugPrint('rollMovie concluído. selectedMovie: ${_movieController.selectedMovie?.title}');
+            rollExecuted = true;
+          }
+        }
+
+        if (rollExecuted) {
+          // Incrementa estatísticas de sorteio
+          await _userPreferencesController.incrementRollCount(_appModeController.isSeriesMode);
+          await _openRolledContentDetails();
+        }
+      } catch (e) {
+        debugPrint('Erro em _handleRollContent: $e');
+        if (!mounted) return;
+        AppSnackBar.showError(context, AppLocalizations.of(context)!.rollError);
+      }
+
+      actionExecuted = true;
+    }
+
     final consumed = await _userPreferencesController.tryUseResourceWithAd(
       ResourceType.roll,
       context,
+      onSuccessAfterAd: () async {
+        await performRoll();
+      },
     );
-    
+
     if (!consumed) {
       // Usuário cancelou ou anúncio não disponível
       return;
     }
 
-    // Ativa a flag para permitir animação após o sorteio
-    setState(() {
-      _shouldAnimateCard = false;
-      _showResultCard = false;
-    });
-
-    try {
-      var rollExecuted = false;
-      if (_appModeController.isSeriesMode) {
-        debugPrint('Chamando rollShow para série...');
-        // Usa o controller para séries
-        if (_tvShowController.canRollShow || selectedGenre != _tvShowController.selectedGenre) {
-          _tvShowController.selectGenre(selectedGenre);
-          await _tvShowController.rollShow(preferences: _userPreferencesController.rollPreferences);
-          if (!mounted) return;
-          debugPrint('rollShow concluído. selectedShow: ${_tvShowController.selectedShow?.name}');
-          rollExecuted = true;
-        }
-      } else {
-        debugPrint('Chamando rollMovie para filme...');
-        // Usa o controller para filmes
-        if (_movieController.canRollMovie || selectedGenre != _movieController.selectedGenre) {
-          debugPrint('Preferências ANTES de chamar rollMovie: ${_userPreferencesController.rollPreferences.toJson()}');
-          _movieController.selectGenre(selectedGenre);
-          await _movieController.rollMovie(preferences: _userPreferencesController.rollPreferences);
-          if (!mounted) return;
-          debugPrint('rollMovie concluído. selectedMovie: ${_movieController.selectedMovie?.title}');
-          rollExecuted = true;
-        }
-      }
-
-      if (rollExecuted) {
-        // Incrementa estatísticas de sorteio
-        await _userPreferencesController.incrementRollCount(_appModeController.isSeriesMode);
-        await _openRolledContentDetails();
-      }
-    } catch (e) {
-      debugPrint('Erro em _handleRollContent: $e');
-      if (!mounted) return;
-      AppSnackBar.showError(context, AppLocalizations.of(context)!.rollError);
+    // Se o recurso foi consumido sem precisar do anúncio, execute a ação aqui
+    if (!actionExecuted) {
+      await performRoll();
     }
   }
 
@@ -1323,8 +1343,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     required Color color,
     required bool isMobile,
   }) {
-    final uses = _userPreferencesController.userResources.getUses(resourceType);
-    final canUse = _userPreferencesController.canUseResource(resourceType);
+  final uses = _userPreferencesController.userResources.getUses(resourceType);
+  final canUse = _userPreferencesController.canUseResource(resourceType);
+  final isSubscribed = SubscriptionService.isSubscribedCached;
     final cooldown = _userPreferencesController.getResourceCooldown(resourceType);
     final maxUses = UserResources.maxUses;
 
@@ -1333,20 +1354,28 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     String? subtitle;
     bool canWatchAd = uses < maxUses; // Pode assistir anúncio se tiver menos de 5
 
-    if (canUse) {
-      displayValue = uses.toString();
-      subtitle = AppLocalizations.of(context)!.available;
-    } else if (cooldown != null) {
-      // Formatar tempo restante
-      final hours = cooldown.inHours;
-      final minutes = cooldown.inMinutes.remainder(60);
-      displayValue = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
-      displayColor = Colors.grey;
-      subtitle = AppLocalizations.of(context)!.reloading;
+    if (isSubscribed) {
+      // Usuário assinante: exibe infinito e não permite ver anúncios para recarregar
+      displayValue = '∞';
+      subtitle = 'Ilimitado';
+      canWatchAd = false;
+      displayColor = color;
     } else {
-      displayValue = '0';
-      displayColor = Colors.grey;
-      subtitle = AppLocalizations.of(context)!.unavailable;
+      if (canUse) {
+        displayValue = uses.toString();
+        subtitle = AppLocalizations.of(context)!.available;
+      } else if (cooldown != null) {
+        // Formatar tempo restante
+        final hours = cooldown.inHours;
+        final minutes = cooldown.inMinutes.remainder(60);
+        displayValue = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+        displayColor = Colors.grey;
+        subtitle = AppLocalizations.of(context)!.reloading;
+      } else {
+        displayValue = '0';
+        displayColor = Colors.grey;
+        subtitle = AppLocalizations.of(context)!.unavailable;
+      }
     }
 
     // Widget base: usa constraints para manter boa responsividade e área de toque
@@ -1439,6 +1468,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   Future<void> _showAdToRechargeResource(ResourceType resourceType, String resourceName) async {
   final uses = _userPreferencesController.userResources.getUses(resourceType);
   final maxUses = UserResources.maxUses;
+  final isSubscribed = SubscriptionService.isSubscribedCached;
 
     // Define cores baseadas no modo
     final accentColor = _appModeController.isSeriesMode 
@@ -1473,8 +1503,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              // Use localized string with placeholders
-              AppLocalizations.of(context)!.resourceCount(uses, maxUses, resourceName),
+              // Use localized string with placeholders (or infinity when subscribed)
+              isSubscribed ? '∞ ${resourceName}' : AppLocalizations.of(context)!.resourceCount(uses, maxUses, resourceName),
               style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
             const SizedBox(height: 16),

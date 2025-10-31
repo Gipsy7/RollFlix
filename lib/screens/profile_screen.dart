@@ -12,6 +12,7 @@ import '../controllers/tv_show_controller.dart';
 import '../controllers/user_preferences_controller.dart';
 import '../controllers/app_mode_controller.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
+import '../services/subscription_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -29,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late final TVShowController _tvShowController;
   late final UserPreferencesController _userPreferencesController;
   late final AppModeController _appModeController;
+  bool _isProcessingPurchase = false;
 
   @override
   void initState() {
@@ -61,7 +63,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _movieController.removeListener(_onDataChanged);
     _tvShowController.removeListener(_onDataChanged);
     _userPreferencesController.removeListener(_onDataChanged);
+    // no listeners here for subscription because we use ValueListenableBuilder
     super.dispose();
+  }
+
+  Future<void> _purchasePlan(Plan plan) async {
+    if (_isProcessingPurchase) return;
+    setState(() => _isProcessingPurchase = true);
+    try {
+      if (plan == Plan.monthly) {
+        await SubscriptionService.purchaseMonthly();
+      } else if (plan == Plan.annual) {
+        await SubscriptionService.purchaseAnnual();
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Assinatura ativada: ${SubscriptionService.planLabel(plan)}')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.logoutError(e.toString()))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessingPurchase = false);
+    }
   }
 
   Future<void> _handleLogout() async {
@@ -310,6 +339,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
               'Email verificado',
               _user?.emailVerified == true ? AppLocalizations.of(context)!.yes : AppLocalizations.of(context)!.no,
               primaryColor,
+            ),
+            Divider(color: AppColors.textSecondary.withAlpha(80)),
+
+            // Status de assinatura
+            ValueListenableBuilder<bool>(
+              valueListenable: SubscriptionService.isActive,
+              builder: (context, active, _) {
+                final plan = SubscriptionService.currentPlan.value;
+                final planLabel = SubscriptionService.planLabel(plan);
+                final statusText = active ? '$planLabel (ativo)' : planLabel == 'Free' ? 'Free' : '$planLabel (inativo)';
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildInfoRow(
+                      Icons.workspace_premium,
+                      'Plano',
+                      statusText,
+                      primaryColor,
+                    ),
+                    const SizedBox(height: 8),
+                    if (!active)
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: _isProcessingPurchase ? null : () => _purchasePlan(Plan.monthly),
+                            style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
+                            child: SafeText('Assinar Mensal (R\$1)'),
+                          ),
+                          const SizedBox(width: 12),
+                          ElevatedButton(
+                            onPressed: _isProcessingPurchase ? null : () => _purchasePlan(Plan.annual),
+                            style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
+                            child: SafeText('Assinar Anual (R\$7)'),
+                          ),
+                        ],
+                      ),
+                  ],
+                );
+              },
             ),
           ],
         ),

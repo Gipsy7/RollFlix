@@ -7,6 +7,7 @@ import '../models/date_night_preferences.dart';
 import '../services/user_data_service.dart';
 import '../services/auth_service.dart';
 import '../services/ad_service.dart';
+import '../services/subscription_service.dart';
 import '../theme/app_theme.dart';
 import 'app_mode_controller.dart';
 import 'locale_controller.dart';
@@ -71,6 +72,8 @@ class UserPreferencesController extends ChangeNotifier {
           _loadUserResourcesFromCloud(),
         ]);
         debugPrint('✅ Preferências carregadas do Firebase');
+          // Após carregar recursos, tenta recarregar recursos expirados (caso passaram 24h)
+          await tryReloadResources();
       } else {
         // Senão, carrega do SharedPreferences
         await Future.wait([
@@ -80,6 +83,8 @@ class UserPreferencesController extends ChangeNotifier {
           _loadUserResourcesFromLocal(),
         ]);
         debugPrint('✅ Preferências carregadas do SharedPreferences');
+        // Após carregar recursos locais, tenta recarregar recursos expirados
+        await tryReloadResources();
       }
     } catch (e) {
       debugPrint('❌ Erro ao carregar preferências: $e');
@@ -429,7 +434,12 @@ class UserPreferencesController extends ChangeNotifier {
   Future<void> tryReloadResources() async {
     debugPrint('🔄 tryReloadResources - Recursos atuais: roll=${_userResources.rollUses}, favorite=${_userResources.favoriteUses}, watched=${_userResources.watchedUses}');
     debugPrint('   Cooldowns: roll=${_userResources.rollCooldownEnd}, favorite=${_userResources.favoriteCooldownEnd}, watched=${_userResources.watchedCooldownEnd}');
-    
+    // Apenas recarregar recursos para contas FREE. Usuários assinantes têm recursos ilimitados.
+    if (SubscriptionService.isSubscribedCached) {
+      debugPrint('🔒 tryReloadResources - Usuário assinante; pulando recarga de recursos');
+      return;
+    }
+
     final newResources = _userResources.tryReloadExpired();
     if (newResources != _userResources) {
       debugPrint('⚡ Cooldown expirado! Recarregando recursos...');
@@ -442,10 +452,15 @@ class UserPreferencesController extends ChangeNotifier {
   // ==================== INTEGRAÇÃO COM ANÚNCIOS ====================
 
   /// Tenta usar recurso - se não tiver disponível, oferece assistir anúncio
+  /// Tenta usar recurso - se não tiver disponível, oferece assistir anúncio.
+  ///
+  /// Se [onSuccessAfterAd] for fornecido, ele será executado automaticamente
+  /// após o usuário assistir o anúncio e o recurso ser concedido/consumido.
   Future<bool> tryUseResourceWithAd(
     ResourceType type,
-    BuildContext context,
-  ) async {
+    BuildContext context, {
+    Future<void> Function()? onSuccessAfterAd,
+  }) async {
     debugPrint('🎯 tryUseResourceWithAd: ${type.name} - Recursos atuais: ${_userResources.getUses(type)}');
     
     // Primeiro tenta recarregar recursos expirados
@@ -476,6 +491,16 @@ class UserPreferencesController extends ChangeNotifier {
       debugPrint('🎁 Anúncio assistido - consumindo recurso ganho...');
       final consumed = await consumeResource(type);
       debugPrint('📊 Após consumo do recurso ganho: ${_userResources.getUses(type)} recursos restantes');
+
+      // Se um callback foi fornecido para executar a ação imediatamente
+      if (consumed && onSuccessAfterAd != null) {
+        try {
+          await onSuccessAfterAd();
+        } catch (e) {
+          debugPrint('❌ Erro ao executar ação pós-anúncio: $e');
+        }
+      }
+
       return consumed;
     }
     
@@ -639,6 +664,13 @@ class UserPreferencesController extends ChangeNotifier {
       }
     };
 
+    // Se o usuário tem assinatura ativa, conceda a recompensa sem mostrar anúncios
+    if (SubscriptionService.isSubscribedCached) {
+      debugPrint('🔁 Usuário assinante - concedendo recompensa sem ad');
+      _grantAdReward(type);
+      return true;
+    }
+
     // Mostra loading personalizado
     showDialog(
       context: context,
@@ -722,9 +754,8 @@ class UserPreferencesController extends ChangeNotifier {
       return false;
     }
 
-    // Aguarda um momento para o callback ser chamado
-    await Future.delayed(const Duration(milliseconds: 800));
-
+    // The AdService now completes only after the reward/dismiss events,
+    // so when this line runs the rewardGranted flag is already accurate.
     if (rewardGranted && context.mounted) {
       final resourceName = _getResourceName(type);
       
@@ -843,6 +874,9 @@ class UserResources {
   final DateTime? rollCooldownEnd;
   final DateTime? favoriteCooldownEnd;
   final DateTime? watchedCooldownEnd;
+  final DateTime? lastUsedRoll;
+  final DateTime? lastUsedFavorite;
+  final DateTime? lastUsedWatched;
 
   static const int maxUses = 5;
   static const Duration cooldownDuration = Duration(hours: 24);
@@ -854,6 +888,9 @@ class UserResources {
     this.rollCooldownEnd,
     this.favoriteCooldownEnd,
     this.watchedCooldownEnd,
+    this.lastUsedRoll,
+    this.lastUsedFavorite,
+    this.lastUsedWatched,
   });
 
   UserResources copyWith({
@@ -863,6 +900,9 @@ class UserResources {
     DateTime? rollCooldownEnd,
     DateTime? favoriteCooldownEnd,
     DateTime? watchedCooldownEnd,
+    DateTime? lastUsedRoll,
+    DateTime? lastUsedFavorite,
+    DateTime? lastUsedWatched,
     bool clearRollCooldown = false,      // ← FIX: Flag para limpar cooldown explicitamente
     bool clearFavoriteCooldown = false,  // ← FIX: Flag para limpar cooldown explicitamente
     bool clearWatchedCooldown = false,   // ← FIX: Flag para limpar cooldown explicitamente
@@ -874,11 +914,17 @@ class UserResources {
       rollCooldownEnd: clearRollCooldown ? null : (rollCooldownEnd ?? this.rollCooldownEnd),
       favoriteCooldownEnd: clearFavoriteCooldown ? null : (favoriteCooldownEnd ?? this.favoriteCooldownEnd),
       watchedCooldownEnd: clearWatchedCooldown ? null : (watchedCooldownEnd ?? this.watchedCooldownEnd),
+      lastUsedRoll: lastUsedRoll ?? this.lastUsedRoll,
+      lastUsedFavorite: lastUsedFavorite ?? this.lastUsedFavorite,
+      lastUsedWatched: lastUsedWatched ?? this.lastUsedWatched,
     );
   }
 
   /// Verifica se um recurso pode ser usado
   bool canUseResource(ResourceType type) {
+    // Se o usuário é assinante, sempre pode usar recursos (ilimitado)
+    if (SubscriptionService.isSubscribedCached) return true;
+
     switch (type) {
       case ResourceType.roll:
         return rollUses > 0;
@@ -891,6 +937,9 @@ class UserResources {
 
   /// Consome um recurso e inicia cooldown se necessário
   UserResources consumeResource(ResourceType type) {
+    // Se o usuário é assinante, não consome recursos (ilimitado)
+    if (SubscriptionService.isSubscribedCached) return this;
+
     switch (type) {
       case ResourceType.roll:
         if (rollUses <= 0) return this;
@@ -899,6 +948,7 @@ class UserResources {
           rollUses: newUses,
           rollCooldownEnd: newUses == 0 ? DateTime.now().add(cooldownDuration) : null,
           clearRollCooldown: newUses > 0, // ← FIX: Limpa cooldown quando ainda tem recursos
+          lastUsedRoll: DateTime.now(),
         );
       case ResourceType.favorite:
         if (favoriteUses <= 0) return this;
@@ -907,6 +957,7 @@ class UserResources {
           favoriteUses: newUses,
           favoriteCooldownEnd: newUses == 0 ? DateTime.now().add(cooldownDuration) : null,
           clearFavoriteCooldown: newUses > 0, // ← FIX: Limpa cooldown quando ainda tem recursos
+          lastUsedFavorite: DateTime.now(),
         );
       case ResourceType.watched:
         if (watchedUses <= 0) return this;
@@ -915,6 +966,7 @@ class UserResources {
           watchedUses: newUses,
           watchedCooldownEnd: newUses == 0 ? DateTime.now().add(cooldownDuration) : null,
           clearWatchedCooldown: newUses > 0, // ← FIX: Limpa cooldown quando ainda tem recursos
+          lastUsedWatched: DateTime.now(),
         );
     }
   }
@@ -952,17 +1004,31 @@ class UserResources {
     debugPrint('   favorite: $favoriteUses (cooldown: $favoriteCooldownEnd)');
     debugPrint('   watched: $watchedUses (cooldown: $watchedCooldownEnd)');
 
-    if (rollCooldownEnd != null && rollCooldownEnd!.isBefore(now)) {
-      debugPrint('   ⚡ Recarregando ROLL: $rollUses → $maxUses');
-      updated = updated.copyWith(rollUses: maxUses, clearRollCooldown: true);
+    // New behavior: For free accounts, if 24h passed since last use of a resource,
+    // reload it to maxUses. If the user never used the resource (lastUsed == null),
+    // we keep the current value.
+    if (lastUsedRoll != null) {
+      final diff = now.difference(lastUsedRoll!);
+      if (diff >= cooldownDuration) {
+        debugPrint('   ⚡ Recarregando ROLL via lastUsed (diff=${diff.inHours}h): $rollUses → $maxUses');
+        updated = updated.copyWith(rollUses: maxUses, clearRollCooldown: true, lastUsedRoll: null);
+      }
     }
-    if (favoriteCooldownEnd != null && favoriteCooldownEnd!.isBefore(now)) {
-      debugPrint('   ⚡ Recarregando FAVORITE: $favoriteUses → $maxUses');
-      updated = updated.copyWith(favoriteUses: maxUses, clearFavoriteCooldown: true);
+
+    if (lastUsedFavorite != null) {
+      final diff = now.difference(lastUsedFavorite!);
+      if (diff >= cooldownDuration) {
+        debugPrint('   ⚡ Recarregando FAVORITE via lastUsed (diff=${diff.inHours}h): $favoriteUses → $maxUses');
+        updated = updated.copyWith(favoriteUses: maxUses, clearFavoriteCooldown: true, lastUsedFavorite: null);
+      }
     }
-    if (watchedCooldownEnd != null && watchedCooldownEnd!.isBefore(now)) {
-      debugPrint('   ⚡ Recarregando WATCHED: $watchedUses → $maxUses');
-      updated = updated.copyWith(watchedUses: maxUses, clearWatchedCooldown: true);
+
+    if (lastUsedWatched != null) {
+      final diff = now.difference(lastUsedWatched!);
+      if (diff >= cooldownDuration) {
+        debugPrint('   ⚡ Recarregando WATCHED via lastUsed (diff=${diff.inHours}h): $watchedUses → $maxUses');
+        updated = updated.copyWith(watchedUses: maxUses, clearWatchedCooldown: true, lastUsedWatched: null);
+      }
     }
 
     debugPrint('🔍 tryReloadExpired - Estado final:');
@@ -991,6 +1057,9 @@ class UserResources {
       'rollCooldownEnd': rollCooldownEnd?.toIso8601String(),
       'favoriteCooldownEnd': favoriteCooldownEnd?.toIso8601String(),
       'watchedCooldownEnd': watchedCooldownEnd?.toIso8601String(),
+      'lastUsedRoll': lastUsedRoll?.toIso8601String(),
+      'lastUsedFavorite': lastUsedFavorite?.toIso8601String(),
+      'lastUsedWatched': lastUsedWatched?.toIso8601String(),
     };
   }
 
@@ -1008,6 +1077,9 @@ class UserResources {
       watchedCooldownEnd: json['watchedCooldownEnd'] != null
           ? DateTime.parse(json['watchedCooldownEnd'])
           : null,
+      lastUsedRoll: json['lastUsedRoll'] != null ? DateTime.parse(json['lastUsedRoll']) : null,
+      lastUsedFavorite: json['lastUsedFavorite'] != null ? DateTime.parse(json['lastUsedFavorite']) : null,
+      lastUsedWatched: json['lastUsedWatched'] != null ? DateTime.parse(json['lastUsedWatched']) : null,
     );
   }
 }
