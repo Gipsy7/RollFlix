@@ -13,6 +13,8 @@ import '../controllers/user_preferences_controller.dart';
 import '../controllers/app_mode_controller.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
 import '../services/subscription_service.dart';
+import '../services/revenuecat_service.dart';
+import '../config/revenuecat_config.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -31,6 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late final UserPreferencesController _userPreferencesController;
   late final AppModeController _appModeController;
   bool _isProcessingPurchase = false;
+  dynamic _offerings;
 
   @override
   void initState() {
@@ -48,6 +51,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _movieController.addListener(_onDataChanged);
     _tvShowController.addListener(_onDataChanged);
     _userPreferencesController.addListener(_onDataChanged);
+
+    // Load RevenueCat offerings (if configured) to show dynamic price labels
+    RevenueCatService.instance.getOfferings().then((o) {
+      if (mounted) setState(() => _offerings = o);
+    }).catchError((e) {
+      debugPrint('⚠️ Could not load RevenueCat offerings: $e');
+    });
+  }
+
+  Future<void> _restorePurchases() async {
+    if (_isProcessingPurchase) return;
+    setState(() => _isProcessingPurchase = true);
+    try {
+      final ok = await RevenueCatService.instance.restorePurchases();
+      // Refresh subscription info from RevenueCat/Firestore
+      await SubscriptionService.loadSubscription();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(ok ? 'Compras restauradas' : 'Nenhuma compra encontrada')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao restaurar compras: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessingPurchase = false);
+    }
   }
 
   void _onDataChanged() {
@@ -91,6 +125,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } finally {
       if (mounted) setState(() => _isProcessingPurchase = false);
     }
+  }
+
+  String _getPriceLabel(String productId, String defaultLabel) {
+    try {
+      if (_offerings == null) return defaultLabel;
+      final current = _offerings!.current;
+      if (current == null) return defaultLabel;
+      for (final pack in current.availablePackages) {
+        try {
+          final storeProduct = pack.storeProduct;
+          // priceString is available on StoreProduct
+          if (storeProduct.productIdentifier == productId) {
+            final price = storeProduct.priceString ?? '';
+            return '${defaultLabel.split(' (').first} ($price)';
+          }
+        } catch (_) {
+          // ignore package-specific issues
+        }
+      }
+    } catch (_) {}
+    return defaultLabel;
   }
 
   Future<void> _handleLogout() async {
@@ -361,21 +416,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 8),
                     if (!active)
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: _isProcessingPurchase ? null : () => _purchasePlan(Plan.monthly),
-                            style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-                            child: SafeText('Assinar Mensal (R\$1)'),
-                          ),
-                          const SizedBox(width: 12),
-                          ElevatedButton(
-                            onPressed: _isProcessingPurchase ? null : () => _purchasePlan(Plan.annual),
-                            style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-                            child: SafeText('Assinar Anual (R\$7)'),
-                          ),
-                        ],
-                      ),
+                                      Wrap(
+                                        spacing: 12,
+                                        runSpacing: 8,
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: _isProcessingPurchase ? null : () => _purchasePlan(Plan.monthly),
+                                            style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
+                                            child: SafeText(_getPriceLabel(RevenueCatConfig.monthlyProductId, 'Assinar Mensal (R\$1)')),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: _isProcessingPurchase ? null : () => _purchasePlan(Plan.annual),
+                                            style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
+                                            child: SafeText(_getPriceLabel(RevenueCatConfig.annualProductId, 'Assinar Anual (R\$7)')),
+                                          ),
+                                          OutlinedButton(
+                                            onPressed: _isProcessingPurchase ? null : () async => await _restorePurchases(),
+                                            child: SafeText('Restaurar compras'),
+                                          ),
+                                        ],
+                                      ),
                   ],
                 );
               },

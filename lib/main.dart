@@ -43,6 +43,7 @@ import 'screens/login_screen.dart';
 import 'controllers/locale_controller.dart';
 import 'services/session_service.dart';
 import 'services/subscription_service.dart';
+import 'services/revenuecat_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,6 +74,12 @@ void main() async {
   await BackgroundService.registerPeriodicTask();
 
   // Inicializa subscription service (escuta mudanças de auth)
+  // Inicializa RevenueCat (opcional - configure keys in lib/config/revenuecat_config.dart)
+  try {
+    await RevenueCatService.instance.init();
+  } catch (e) {
+    debugPrint('⚠️ RevenueCat init failed (continuing): $e');
+  }
   SubscriptionService.init();
 
   // Inicializar controlador de locale (carrega preferência salva)

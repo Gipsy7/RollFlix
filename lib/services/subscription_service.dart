@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
+import 'revenuecat_service.dart';
+import '../config/revenuecat_config.dart';
 
 /// Serviço para gerenciar assinaturas do usuário (mensal / anual)
 class SubscriptionService {
@@ -123,18 +125,93 @@ class SubscriptionService {
   /// Método que simula compra de plano mensal (1 BRL)
   /// Observação: implementar integração real com Google Play / App Store ou gateway de pagamento em produção.
   static Future<void> purchaseMonthly() async {
-    // Aqui é onde deveria ocorrer o fluxo real de pagamento.
-    // Por enquanto simulamos sucesso imediato.
-    final now = DateTime.now().toUtc();
-    final expiry = now.add(const Duration(days: 30));
-    await setSubscription(Plan.monthly, now, expiry);
+    // Real purchase flow using RevenueCat. Product IDs must be configured in
+    // lib/config/revenuecat_config.dart and in your RevenueCat dashboard.
+    try {
+      final ok = await RevenueCatService.instance.purchaseProduct(RevenueCatConfig.monthlyProductId);
+      if (!ok) throw Exception('purchase failed or entitlement not active');
+
+      // Get latest customer info to determine expiration (best-effort)
+      final info = await RevenueCatService.instance.getCustomerInfo();
+      DateTime now = DateTime.now().toUtc();
+      DateTime expiry = now.add(const Duration(days: 30));
+
+      if (info != null) {
+        final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
+        if (ent != null) {
+          DateTime? parsedExp;
+          DateTime? parsedLatest;
+          final expVal = ent.expirationDate;
+          final latestVal = ent.latestPurchaseDate;
+          DateTime? _tryParse(dynamic v) {
+            if (v == null) return null;
+            if (v is DateTime) return v.toUtc();
+            if (v is String) {
+              try {
+                return DateTime.parse(v).toUtc();
+              } catch (_) {
+                return null;
+              }
+            }
+            return null;
+          }
+
+          parsedExp = _tryParse(expVal);
+          parsedLatest = _tryParse(latestVal);
+          if (parsedExp != null) expiry = parsedExp;
+          if (parsedLatest != null) now = parsedLatest;
+        }
+      }
+
+      await setSubscription(Plan.monthly, now, expiry);
+    } catch (e) {
+      debugPrint('❌ purchaseMonthly failed: $e');
+      rethrow;
+    }
   }
 
   /// Método que simula compra de plano anual (7 BRL)
   static Future<void> purchaseAnnual() async {
-    final now = DateTime.now().toUtc();
-    final expiry = now.add(const Duration(days: 365));
-    await setSubscription(Plan.annual, now, expiry);
+    try {
+      final ok = await RevenueCatService.instance.purchaseProduct(RevenueCatConfig.annualProductId);
+      if (!ok) throw Exception('purchase failed or entitlement not active');
+
+      final info = await RevenueCatService.instance.getCustomerInfo();
+      DateTime now = DateTime.now().toUtc();
+      DateTime expiry = now.add(const Duration(days: 365));
+
+      if (info != null) {
+        final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
+        if (ent != null) {
+          DateTime? parsedExp;
+          DateTime? parsedLatest;
+          final expVal = ent.expirationDate;
+          final latestVal = ent.latestPurchaseDate;
+          DateTime? _tryParse(dynamic v) {
+            if (v == null) return null;
+            if (v is DateTime) return v.toUtc();
+            if (v is String) {
+              try {
+                return DateTime.parse(v).toUtc();
+              } catch (_) {
+                return null;
+              }
+            }
+            return null;
+          }
+
+          parsedExp = _tryParse(expVal);
+          parsedLatest = _tryParse(latestVal);
+          if (parsedExp != null) expiry = parsedExp;
+          if (parsedLatest != null) now = parsedLatest;
+        }
+      }
+
+      await setSubscription(Plan.annual, now, expiry);
+    } catch (e) {
+      debugPrint('❌ purchaseAnnual failed: $e');
+      rethrow;
+    }
   }
 
   /// Verifica se o usuário tem assinatura ativa (async)
