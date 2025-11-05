@@ -54,13 +54,72 @@ class RevenueCatService {
     }
 
     try {
-      // Direct product purchase. After the purchase, fetch the latest
-      // customer info from RevenueCat to inspect entitlements.
-      await Purchases.purchaseProduct(productIdentifier);
-  final info = await Purchases.getCustomerInfo();
-  return _isPremiumActive(info);
+      debugPrint('🛒 Starting purchase for: $productIdentifier');
+      
+      // NOVA ABORDAGEM: Buscar o package da offering ao invés de comprar direto
+      debugPrint('📡 Fetching offerings to find package...');
+      final offerings = await Purchases.getOfferings();
+      
+      if (offerings.current == null) {
+        debugPrint('❌ No current offering found in RevenueCat');
+        return false;
+      }
+      
+      // Procurar o package que corresponde ao produto
+      Package? targetPackage;
+      for (var package in offerings.current!.availablePackages) {
+        final storeProductId = package.storeProduct.identifier;
+        debugPrint('   - Checking package: ${package.identifier} (product: $storeProductId)');
+        
+        // Comparar: pode ser exato ou com base plan (rollflix_monthly:monthly)
+        if (storeProductId == productIdentifier || 
+            storeProductId.startsWith('$productIdentifier:')) {
+          targetPackage = package;
+          debugPrint('   ✅ Found matching package: ${package.identifier}');
+          break;
+        }
+      }
+      
+      if (targetPackage == null) {
+        debugPrint('❌ Product $productIdentifier not found in current offering');
+        debugPrint('   Available products: ${offerings.current!.availablePackages.map((p) => p.storeProduct.identifier).toList()}');
+        return false;
+      }
+      
+      // Comprar usando o Package (método recomendado pelo RevenueCat)
+      debugPrint('💳 Purchasing package: ${targetPackage.identifier}');
+      await Purchases.purchasePackage(targetPackage);
+      
+      debugPrint('✅ Purchase API call completed for $productIdentifier');
+      debugPrint('📡 Fetching customer info to check entitlements...');
+      
+      final info = await Purchases.getCustomerInfo();
+      
+      debugPrint('📦 Customer Info received:');
+      debugPrint('   - All entitlements: ${info.entitlements.all.keys.toList()}');
+      debugPrint('   - Active entitlements: ${info.entitlements.active.keys.toList()}');
+      debugPrint('   - Looking for entitlement: ${RevenueCatConfig.premiumEntitlementId}');
+      
+      final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
+      if (ent != null) {
+        debugPrint('   - Premium entitlement found!');
+        debugPrint('   - isActive: ${ent.isActive}');
+        debugPrint('   - willRenew: ${ent.willRenew}');
+        debugPrint('   - expirationDate: ${ent.expirationDate}');
+        debugPrint('   - latestPurchaseDate: ${ent.latestPurchaseDate}');
+        debugPrint('   - productIdentifier: ${ent.productIdentifier}');
+      } else {
+        debugPrint('   - ❌ Premium entitlement NOT FOUND');
+        debugPrint('   - Expected entitlement: ${RevenueCatConfig.premiumEntitlementId}');
+      }
+      
+      final isActive = _isPremiumActive(info);
+      debugPrint('🎯 Final result: isPremiumActive = $isActive');
+      
+      return isActive;
     } catch (e) {
       debugPrint('❌ Purchase error for $productIdentifier: $e');
+      debugPrint('   Error type: ${e.runtimeType}');
       return false;
     }
   }
@@ -99,6 +158,139 @@ class RevenueCatService {
     } catch (e) {
       debugPrint('⚠️ Error fetching customer info: $e');
       return null;
+    }
+  }
+
+  /// Cancela assinatura. Se estiver dentro de 5 dias da compra, solicita reembolso.
+  /// Retorna: { 'cancelled': bool, 'refundEligible': bool, 'daysFromPurchase': int }
+  Future<Map<String, dynamic>> cancelSubscription() async {
+    if (!_initialized) {
+      return {'cancelled': false, 'refundEligible': false, 'daysFromPurchase': 0, 'error': 'Not initialized'};
+    }
+
+    try {
+      debugPrint('🔄 Checking subscription status for cancellation...');
+      final info = await Purchases.getCustomerInfo();
+      
+      final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
+      if (ent == null || !ent.isActive) {
+        debugPrint('⚠️ No active subscription found');
+        return {'cancelled': false, 'refundEligible': false, 'daysFromPurchase': 0, 'error': 'No active subscription'};
+      }
+
+      // Calcular dias desde a compra
+      DateTime? purchaseDate;
+      final latestPurchase = ent.latestPurchaseDate;
+      try {
+        purchaseDate = DateTime.parse(latestPurchase).toUtc();
+      } catch (_) {
+        debugPrint('⚠️ Could not parse purchase date: $latestPurchase');
+      }
+
+      final now = DateTime.now().toUtc();
+      final daysFromPurchase = purchaseDate != null ? now.difference(purchaseDate).inDays : 999;
+      final refundEligible = daysFromPurchase <= 5;
+
+      debugPrint('📅 Purchase date: $purchaseDate');
+      debugPrint('📊 Days from purchase: $daysFromPurchase');
+      debugPrint('💰 Refund eligible: $refundEligible');
+
+      // Obter identificadores únicos para gerenciamento
+      final appUserId = info.originalAppUserId;
+      final originalPurchaseDate = ent.originalPurchaseDate;
+      
+      debugPrint('👤 User ID (RevenueCat): $appUserId');
+      debugPrint('📦 Product ID: ${ent.productIdentifier}');
+      debugPrint('📅 Original Purchase: $originalPurchaseDate');
+
+      // IMPORTANTE: RevenueCat SDK não tem API nativa para cancelar.
+      // No Google Play, o usuário precisa cancelar via Play Store.
+      // Aqui retornamos as informações para redirecionar o usuário.
+      
+      return {
+        'cancelled': false, // API não cancela diretamente
+        'refundEligible': refundEligible,
+        'daysFromPurchase': daysFromPurchase,
+        'productId': ent.productIdentifier,
+        'expirationDate': ent.expirationDate,
+        'willRenew': ent.willRenew,
+        'appUserId': appUserId, // ID único do usuário no RevenueCat
+        'purchaseDate': latestPurchase,
+        'originalPurchaseDate': originalPurchaseDate,
+      };
+    } catch (e) {
+      debugPrint('❌ Error checking cancellation: $e');
+      return {'cancelled': false, 'refundEligible': false, 'daysFromPurchase': 0, 'error': e.toString()};
+    }
+  }
+
+  /// Obtém informações de assinatura de um usuário específico para gerenciamento admin
+  /// Útil para suporte ao cliente e estornos manuais
+  Future<Map<String, dynamic>> getUserSubscriptionInfo() async {
+    if (!_initialized) {
+      return {'error': 'Not initialized'};
+    }
+
+    try {
+      final info = await Purchases.getCustomerInfo();
+      
+      final result = {
+        'appUserId': info.originalAppUserId, // ID único no RevenueCat
+        'activeSubscriptions': <String>[],
+        'allPurchasedProductIds': info.allPurchasedProductIdentifiers.toList(),
+        'latestExpirationDate': null as String?,
+        'entitlements': <Map<String, dynamic>>[],
+      };
+
+      // Listar todos os entitlements
+      for (var entry in info.entitlements.all.entries) {
+        final entId = entry.key;
+        final ent = entry.value;
+        
+        final entInfo = {
+          'identifier': entId,
+          'isActive': ent.isActive,
+          'willRenew': ent.willRenew,
+          'productIdentifier': ent.productIdentifier,
+          'purchaseDate': ent.latestPurchaseDate,
+          'originalPurchaseDate': ent.originalPurchaseDate,
+          'expirationDate': ent.expirationDate,
+          'periodType': ent.periodType.toString(),
+          'store': ent.store.toString(),
+        };
+        
+        (result['entitlements'] as List).add(entInfo);
+        
+        if (ent.isActive) {
+          (result['activeSubscriptions'] as List).add(ent.productIdentifier);
+          
+          // Encontrar data de expiração mais recente
+          if (ent.expirationDate != null) {
+            final currentLatest = result['latestExpirationDate'] as String?;
+            if (currentLatest == null) {
+              result['latestExpirationDate'] = ent.expirationDate;
+            } else {
+              try {
+                final currentLatestDate = DateTime.parse(currentLatest);
+                final thisExpiry = DateTime.parse(ent.expirationDate!);
+                if (thisExpiry.isAfter(currentLatestDate)) {
+                  result['latestExpirationDate'] = ent.expirationDate;
+                }
+              } catch (_) {}
+            }
+          }
+        }
+      }
+
+      debugPrint('📋 User Subscription Info:');
+      debugPrint('   User ID: ${result['appUserId']}');
+      debugPrint('   Active Subscriptions: ${result['activeSubscriptions']}');
+      debugPrint('   All Purchased: ${result['allPurchasedProductIds']}');
+      
+      return result;
+    } catch (e) {
+      debugPrint('❌ Error getting user subscription info: $e');
+      return {'error': e.toString()};
     }
   }
 }

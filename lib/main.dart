@@ -44,6 +44,7 @@ import 'controllers/locale_controller.dart';
 import 'services/session_service.dart';
 import 'services/subscription_service.dart';
 import 'services/revenuecat_service.dart';
+import 'widgets/subscription_offer_dialog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -375,6 +376,45 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     // que escuta LocaleController.instance diretamente
   }
   
+  /// Mostra oferta de assinatura se usuário não tiver plano premium
+  void _showSubscriptionOfferIfNeeded() {
+    // Aguardar um pouco para garantir que o app carregou completamente
+    Future.delayed(const Duration(seconds: 2), () async {
+      if (!mounted) return;
+      
+      // Verificar se usuário está logado
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return; // Não mostrar se não estiver logado
+      
+      // Verificar se tem plano ativo
+      final isActive = await SubscriptionService.isSubscriptionActive();
+      if (isActive) return; // Não mostrar se já tem plano
+      
+      // Verificar se já mostrou recentemente (evitar spam)
+      final lastShownStr = PrefsService.getString('subscription_offer_last_shown');
+      final now = DateTime.now().millisecondsSinceEpoch;
+      if (lastShownStr != null) {
+        try {
+          final lastShown = int.parse(lastShownStr);
+          final daysSinceLastShown = (now - lastShown) ~/ (1000 * 60 * 60 * 24);
+          if (daysSinceLastShown < 3) return; // Mostrar apenas a cada 3 dias
+        } catch (_) {}
+      }
+      
+      // Mostrar dialog
+      if (mounted) {
+        await showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (context) => const SubscriptionOfferDialog(),
+        );
+        
+        // Salvar timestamp
+        await PrefsService.setString('subscription_offer_last_shown', now.toString());
+      }
+    });
+  }
+  
   /// Inicialização assíncrona da aplicação
   void _initializeApp() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -386,6 +426,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           _movieController.preloadData(),
           _tvShowController.preloadData(),
         ]);
+        
+        // Mostrar oferta de assinatura se usuário não tiver plano premium
+        _showSubscriptionOfferIfNeeded();
         
         // Seleciona automaticamente o primeiro gênero do modo atual
         if (mounted && currentGenres.isNotEmpty) {

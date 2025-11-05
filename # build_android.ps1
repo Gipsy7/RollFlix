@@ -7,6 +7,7 @@ param(
     [string]$AdmobIosRewardedId = "ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx"
 )
 
+
 flutter build apk --release `
   --dart-define=TMDB_API_KEY=$TmdbApiKey `
   --dart-define=ADMOB_ANDROID_APP_ID=$AdmobAndroidAppId `
@@ -14,7 +15,9 @@ flutter build apk --release `
   --dart-define=ADMOB_ANDROID_REWARDED_ID=$AdmobAndroidRewardedId `
   --dart-define=ADMOB_IOS_REWARDED_ID=$AdmobIosRewardedId
 
+  $env:VERSION_CODE = '1001'
   flutter build appbundle --release `
+  --build-number=1001 `
   --dart-define=TMDB_API_KEY=$TmdbApiKey `
   --dart-define=ADMOB_ANDROID_APP_ID=$AdmobAndroidAppId `
   --dart-define=ADMOB_IOS_APP_ID=$AdmobIosAppId `

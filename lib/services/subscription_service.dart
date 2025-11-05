@@ -97,7 +97,12 @@ class SubscriptionService {
   }
 
   /// Seta a assinatura no Firestore (escreve o documento do usuário)
-  static Future<void> setSubscription(Plan plan, DateTime start, DateTime expiry) async {
+  static Future<void> setSubscription(
+    Plan plan, 
+    DateTime start, 
+    DateTime expiry, {
+    Map<String, dynamic>? purchaseInfo,
+  }) async {
     final userDoc = _currentUserDoc;
     if (userDoc == null) throw Exception('Usuário não logado');
 
@@ -106,6 +111,8 @@ class SubscriptionService {
         'plan': plan == Plan.monthly ? 'monthly' : plan == Plan.annual ? 'annual' : 'free',
         'startDate': start.toUtc().toIso8601String(),
         'expiryDate': expiry.toUtc().toIso8601String(),
+        // Armazenar informações de compra para estorno
+        if (purchaseInfo != null) 'purchaseInfo': purchaseInfo,
       },
       'lastUpdated': FieldValue.serverTimestamp(),
     };
@@ -120,6 +127,9 @@ class SubscriptionService {
     _cachedIsActive = active;
 
     debugPrint('✅ Subscription set -> plan=$plan, active=$active');
+    if (purchaseInfo != null) {
+      debugPrint('📋 Purchase info stored: ${purchaseInfo['appUserId']}');
+    }
   }
 
   /// Método que simula compra de plano mensal (1 BRL)
@@ -136,6 +146,9 @@ class SubscriptionService {
       DateTime now = DateTime.now().toUtc();
       DateTime expiry = now.add(const Duration(days: 30));
 
+      // Coletar informações de compra para armazenar
+      Map<String, dynamic>? purchaseInfo;
+      
       if (info != null) {
         final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
         if (ent != null) {
@@ -143,6 +156,8 @@ class SubscriptionService {
           DateTime? parsedLatest;
           final expVal = ent.expirationDate;
           final latestVal = ent.latestPurchaseDate;
+          final originalPurchaseVal = ent.originalPurchaseDate;
+          
           DateTime? _tryParse(dynamic v) {
             if (v == null) return null;
             if (v is DateTime) return v.toUtc();
@@ -160,10 +175,23 @@ class SubscriptionService {
           parsedLatest = _tryParse(latestVal);
           if (parsedExp != null) expiry = parsedExp;
           if (parsedLatest != null) now = parsedLatest;
+          
+          // Armazenar informações para estorno
+          purchaseInfo = {
+            'appUserId': info.originalAppUserId,
+            'productId': ent.productIdentifier,
+            'purchaseDate': latestVal,
+            'originalPurchaseDate': originalPurchaseVal,
+            'expirationDate': expVal,
+            'willRenew': ent.willRenew,
+            'store': ent.store.toString(),
+            'periodType': ent.periodType.toString(),
+            'timestamp': DateTime.now().toUtc().toIso8601String(),
+          };
         }
       }
 
-      await setSubscription(Plan.monthly, now, expiry);
+      await setSubscription(Plan.monthly, now, expiry, purchaseInfo: purchaseInfo);
     } catch (e) {
       debugPrint('❌ purchaseMonthly failed: $e');
       rethrow;
@@ -180,6 +208,9 @@ class SubscriptionService {
       DateTime now = DateTime.now().toUtc();
       DateTime expiry = now.add(const Duration(days: 365));
 
+      // Coletar informações de compra para armazenar
+      Map<String, dynamic>? purchaseInfo;
+
       if (info != null) {
         final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
         if (ent != null) {
@@ -187,6 +218,8 @@ class SubscriptionService {
           DateTime? parsedLatest;
           final expVal = ent.expirationDate;
           final latestVal = ent.latestPurchaseDate;
+          final originalPurchaseVal = ent.originalPurchaseDate;
+          
           DateTime? _tryParse(dynamic v) {
             if (v == null) return null;
             if (v is DateTime) return v.toUtc();
@@ -204,10 +237,23 @@ class SubscriptionService {
           parsedLatest = _tryParse(latestVal);
           if (parsedExp != null) expiry = parsedExp;
           if (parsedLatest != null) now = parsedLatest;
+          
+          // Armazenar informações para estorno
+          purchaseInfo = {
+            'appUserId': info.originalAppUserId,
+            'productId': ent.productIdentifier,
+            'purchaseDate': latestVal,
+            'originalPurchaseDate': originalPurchaseVal,
+            'expirationDate': expVal,
+            'willRenew': ent.willRenew,
+            'store': ent.store.toString(),
+            'periodType': ent.periodType.toString(),
+            'timestamp': DateTime.now().toUtc().toIso8601String(),
+          };
         }
       }
 
-      await setSubscription(Plan.annual, now, expiry);
+      await setSubscription(Plan.annual, now, expiry, purchaseInfo: purchaseInfo);
     } catch (e) {
       debugPrint('❌ purchaseAnnual failed: $e');
       rethrow;

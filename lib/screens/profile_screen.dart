@@ -127,6 +127,120 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _cancelSubscription() async {
+    if (_isProcessingPurchase) return;
+    
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surfaceDark,
+        title: SafeText('Cancelar Assinatura', style: AppTextStyles.headlineSmall),
+        content: SafeText(
+          'Deseja cancelar sua assinatura? Se a compra foi há menos de 5 dias, você poderá solicitar reembolso.',
+          style: AppTextStyles.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: SafeText('Voltar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: SafeText('Confirmar', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    setState(() => _isProcessingPurchase = true);
+    try {
+      final result = await RevenueCatService.instance.cancelSubscription();
+      
+      if (!mounted) return;
+
+      final refundEligible = result['refundEligible'] as bool;
+      final daysFromPurchase = result['daysFromPurchase'] as int;
+      final appUserId = result['appUserId'] as String?;
+      final productId = result['productId'] as String?;
+      final purchaseDate = result['purchaseDate'] as String?;
+
+      if (refundEligible) {
+        // Redirecionar para solicitar reembolso no Google Play
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppColors.surfaceDark,
+            title: SafeText('Reembolso Disponível', style: AppTextStyles.headlineSmall),
+            content: SafeText(
+              'Sua compra foi feita há $daysFromPurchase dias. Você pode solicitar reembolso abrindo o Google Play Store:\n\n'
+              '1. Abra o Google Play Store\n'
+              '2. Menu → Assinaturas\n'
+              '3. Selecione RollFlix\n'
+              '4. Toque em "Cancelar assinatura"\n'
+              '5. Selecione "Solicitar reembolso"\n\n'
+              '📋 Informações para suporte:\n'
+              'ID do Usuário: ${appUserId ?? 'N/A'}\n'
+              'Produto: ${productId ?? 'N/A'}\n'
+              'Data da compra: ${purchaseDate ?? 'N/A'}',
+              style: AppTextStyles.bodyMedium,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  // Copiar ID do usuário para clipboard
+                  if (appUserId != null) {
+                    // TODO: Implementar clipboard copy se necessário
+                  }
+                  Navigator.of(context).pop();
+                },
+                child: SafeText('Entendi'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        // Apenas cancelar recorrência
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppColors.surfaceDark,
+            title: SafeText('Cancelar Recorrência', style: AppTextStyles.headlineSmall),
+            content: SafeText(
+              'Sua compra foi feita há $daysFromPurchase dias (prazo de reembolso expirado).\n\n'
+              'Para cancelar a renovação automática, abra o Google Play Store:\n\n'
+              '1. Abra o Google Play Store\n'
+              '2. Menu → Assinaturas\n'
+              '3. Selecione RollFlix\n'
+              '4. Toque em "Cancelar assinatura"\n\n'
+              'Seu plano permanecerá ativo até o fim do período pago.\n\n'
+              '📋 Informações para suporte:\n'
+              'ID do Usuário: ${appUserId ?? 'N/A'}\n'
+              'Produto: ${productId ?? 'N/A'}\n'
+              'Data da compra: ${purchaseDate ?? 'N/A'}',
+              style: AppTextStyles.bodyMedium,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: SafeText('Entendi'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao verificar assinatura: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessingPurchase = false);
+    }
+  }
+
   String _getPriceLabel(String productId, String defaultLabel) {
     try {
       if (_offerings == null) return defaultLabel;
@@ -436,6 +550,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           ),
                                         ],
                                       ),
+                    if (active && plan != Plan.free)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: OutlinedButton.icon(
+                          onPressed: _isProcessingPurchase ? null : _cancelSubscription,
+                          icon: Icon(Icons.cancel, size: 18),
+                          label: SafeText('Cancelar Assinatura'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red,
+                            side: BorderSide(color: Colors.red.withAlpha(150)),
+                          ),
+                        ),
+                      ),
                   ],
                 );
               },
