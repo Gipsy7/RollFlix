@@ -88,183 +88,208 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
     return Dialog(
       backgroundColor: AppColors.surfaceDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 400),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Botão fechar
-            Align(
-              alignment: Alignment.topRight,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: AppColors.textSecondary),
-                onPressed: _isProcessing ? null : () => Navigator.of(context).pop(false),
-              ),
-            ),
-            
-            // Ícone premium
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.amber.withAlpha(50),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.workspace_premium,
-                size: 64,
-                color: Colors.amber,
-              ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Título
-            Text(
-              'Desbloqueie o Premium!',
-              style: AppTextStyles.headlineMedium.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Subtítulo
-            Text(
-              'Aproveite recursos ilimitados e sem anúncios',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Benefícios
-            _buildBenefit(Icons.movie_filter, 'Acesso ilimitado a filmes e séries'),
-            _buildBenefit(Icons.block, 'Sem anúncios'),
-            _buildBenefit(Icons.favorite, 'Favoritos ilimitados'),
-            _buildBenefit(Icons.download, 'Novos recursos primeiro'),
-            
-            const SizedBox(height: 24),
-            
-            // Botão plano mensal
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isProcessing ? null : () => _purchase(Plan.monthly),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: _isProcessing
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation(Colors.black),
-                        ),
-                      )
-                    : Column(
-                        children: [
-                          Text(
-                            'Plano Mensal',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            monthlyPrice,
-                            style: const TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-              ),
-            ),
-            
-            const SizedBox(height: 12),
-            
-            // Botão plano anual (com badge de economia)
-            SizedBox(
-              width: double.infinity,
-              child: Stack(
-                clipBehavior: Clip.none,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final maxWidth = constraints.maxWidth > 480 ? 440.0 : constraints.maxWidth - 24.0;
+          final maxHeight = MediaQuery.of(context).size.height * 0.85;
+
+          return ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  OutlinedButton(
-                    onPressed: _isProcessing ? null : () => _purchase(Plan.annual),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.amber,
-                      side: const BorderSide(color: Colors.amber, width: 2),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  // Botão fechar alinhado certo
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.close, color: AppColors.textSecondary),
+                        onPressed: _isProcessing ? null : () => Navigator.of(context).pop(false),
                       ),
+                    ],
+                  ),
+
+                  // Ícone premium reduzido para caber em telas pequenas
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withAlpha(50),
+                      shape: BoxShape.circle,
                     ),
-                    child: Column(
+                    child: const Icon(
+                      Icons.workspace_premium,
+                      size: 48,
+                      color: Colors.amber,
+                    ),
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // Título
+                  Text(
+                    'Desbloqueie o Premium!',
+                    style: AppTextStyles.headlineMedium.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // Subtítulo
+                  Text(
+                    'Aproveite recursos ilimitados e sem anúncios',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // Benefícios
+                  _buildBenefit(Icons.movie_filter, 'Acesso ilimitado a filmes e séries'),
+                  _buildBenefit(Icons.block, 'Sem anúncios'),
+                  _buildBenefit(Icons.favorite, 'Favoritos ilimitados'),
+                  _buildBenefit(Icons.download, 'Novos recursos primeiro'),
+
+                  const SizedBox(height: 18),
+
+                  // Botão plano mensal (titulo e preço alinhados em linha)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isProcessing ? null : () => _purchase(Plan.monthly),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: _isProcessing
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation(Colors.black),
+                              ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Plano Mensal',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                Text(
+                                  monthlyPrice,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Botão plano anual (com badge de economia)
+                  SizedBox(
+                    width: double.infinity,
+                    child: Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        Text(
-                          'Plano Anual',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        OutlinedButton(
+                          onPressed: _isProcessing ? null : () => _purchase(Plan.annual),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.amber,
+                            side: const BorderSide(color: Colors.amber, width: 2),
+                            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Plano Anual',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Flexible(
+                                child: Text(
+                                  '$annualPrice/ano',
+                                  textAlign: TextAlign.end,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Text(
-                          '$annualPrice/ano',
-                          style: const TextStyle(
-                            fontSize: 14,
+
+                        // Badge de economia — evita overflow usando constraints
+                        Positioned(
+                          top: -10,
+                          right: 12,
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 120),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'ECONOMIZE',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  
-                  // Badge de economia
-                  Positioned(
-                    top: -10,
-                    right: 20,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'ECONOMIZE',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+
+                  const SizedBox(height: 14),
+
+                  // Texto pequeno
+                  Text(
+                    'Cancele a qualquer momento',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
-            
-            const SizedBox(height: 16),
-            
-            // Texto pequeno
-            Text(
-              'Cancele a qualquer momento',
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
