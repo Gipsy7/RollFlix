@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'package:rollflix/l10n/app_localizations.dart';
 import '../services/subscription_service.dart';
 import '../config/revenuecat_config.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -62,7 +63,7 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
         Navigator.of(context).pop(true); // Fecha o dialog com sucesso
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✅ Assinatura ativada: ${SubscriptionService.planLabel(plan)}'),
+            content: Text('✅ ${AppLocalizations.of(context)!.subscriptionActivated(SubscriptionService.planLabel(plan))}'),
             backgroundColor: Colors.green,
           ),
         );
@@ -72,7 +73,7 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
         setState(() => _isProcessing = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erro ao processar assinatura: ${e.toString()}'),
+            content: Text(AppLocalizations.of(context)!.subscriptionError(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -84,6 +85,7 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
   Widget build(BuildContext context) {
     final monthlyPrice = _getPriceLabel(RevenueCatConfig.monthlyProductId, 'R\$ 0,99');
     final annualPrice = _getPriceLabel(RevenueCatConfig.annualProductId, 'R\$ 7,00');
+    final loc = AppLocalizations.of(context)!;
 
     return Dialog(
       backgroundColor: AppColors.surfaceDark,
@@ -130,7 +132,7 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
 
                   // Título
                   Text(
-                    'Desbloqueie o Premium!',
+                    loc.subscriptionOfferTitle,
                     style: AppTextStyles.headlineMedium.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
@@ -142,7 +144,7 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
 
                   // Subtítulo
                   Text(
-                    'Aproveite recursos ilimitados e sem anúncios',
+                    loc.subscriptionOfferSubtitle,
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -152,10 +154,10 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
                   const SizedBox(height: 18),
 
                   // Benefícios
-                  _buildBenefit(Icons.movie_filter, 'Acesso ilimitado a filmes e séries'),
-                  _buildBenefit(Icons.block, 'Sem anúncios'),
-                  _buildBenefit(Icons.favorite, 'Favoritos ilimitados'),
-                  _buildBenefit(Icons.download, 'Novos recursos primeiro'),
+                  _buildBenefit(Icons.movie_filter, loc.benefitUnlimitedAccess),
+                  _buildBenefit(Icons.block, loc.benefitNoAds),
+                  _buildBenefit(Icons.favorite, loc.benefitUnlimitedFavorites),
+                  _buildBenefit(Icons.download, loc.benefitEarlyAccess),
 
                   const SizedBox(height: 18),
 
@@ -185,7 +187,7 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Plano Mensal',
+                                  loc.planMonthly,
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
@@ -225,7 +227,7 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Plano Anual',
+                                loc.planAnnual,
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
@@ -257,10 +259,10 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
                                 color: Colors.red,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const FittedBox(
+                              child: FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: Text(
-                                  'ECONOMIZE',
+                                  loc.economize,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
@@ -279,7 +281,7 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
 
                   // Texto pequeno
                   Text(
-                    'Cancele a qualquer momento',
+                    loc.cancelAnytime,
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.textSecondary,
                     ),

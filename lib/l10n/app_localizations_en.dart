@@ -644,6 +644,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get availableFeatures => 'Available Features';
 
   @override
+  String get subscriptionOfferTitle => 'Unlock Premium!';
+
+  @override
+  String get subscriptionOfferSubtitle => 'Enjoy unlimited features and no ads';
+
+  @override
+  String get benefitUnlimitedAccess => 'Unlimited access to movies and series';
+
+  @override
+  String get benefitNoAds => 'No ads';
+
+  @override
+  String get benefitUnlimitedFavorites => 'Unlimited favorites';
+
+  @override
+  String get benefitEarlyAccess => 'Early access to new features';
+
+  @override
+  String get planMonthly => 'Monthly Plan';
+
+  @override
+  String get planAnnual => 'Annual Plan';
+
+  @override
+  String get economize => 'SAVE';
+
+  @override
+  String get cancelAnytime => 'Cancel anytime';
+
+  @override
+  String subscriptionActivated(Object plan) {
+    return 'Subscription activated: $plan';
+  }
+
+  @override
+  String subscriptionError(Object error) {
+    return 'Error processing subscription: $error';
+  }
+
+  @override
   String get movieSeriesRoller => 'Movie & Series Roller';
 
   @override

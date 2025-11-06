@@ -466,41 +466,113 @@ abstract class AppLocalizations {
   String get notAvailableShort;
 
   /// No description provided for @dateNightShareHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'🎬✨ PERFECT DATE PLAN ✨🍽️'**
   String get dateNightShareHeader;
 
+  /// No description provided for @dateNightShareSectionMovie.
+  ///
+  /// In en, this message translates to:
+  /// **'MOVIE'**
   String get dateNightShareSectionMovie;
 
+  /// No description provided for @labelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
   String get labelTitle;
 
+  /// No description provided for @labelYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
   String get labelYear;
 
+  /// No description provided for @labelRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
   String get labelRating;
 
+  /// No description provided for @labelGenres.
+  ///
+  /// In en, this message translates to:
+  /// **'Genres'**
   String get labelGenres;
 
+  /// No description provided for @labelDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
   String get labelDuration;
 
+  /// No description provided for @labelPoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster'**
   String get labelPoster;
 
+  /// No description provided for @labelTrailer.
+  ///
+  /// In en, this message translates to:
+  /// **'Trailer'**
   String get labelTrailer;
 
+  /// No description provided for @dateNightShareSectionMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'MENU'**
   String get dateNightShareSectionMenu;
 
+  /// No description provided for @labelMainDish.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Dish'**
   String get labelMainDish;
 
+  /// No description provided for @labelDessert.
+  ///
+  /// In en, this message translates to:
+  /// **'Dessert'**
   String get labelDessert;
 
+  /// No description provided for @labelDrink.
+  ///
+  /// In en, this message translates to:
+  /// **'Drink'**
   String get labelDrink;
 
+  /// No description provided for @labelSnacks.
+  ///
+  /// In en, this message translates to:
+  /// **'Snacks'**
   String get labelSnacks;
 
+  /// No description provided for @createdWithRollflix.
+  ///
+  /// In en, this message translates to:
+  /// **'Created with Rollflix 🎬🍿'**
   String get createdWithRollflix;
 
+  /// No description provided for @labelAppetizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Appetizer'**
   String get labelAppetizer;
 
+  /// No description provided for @labelSideDish.
+  ///
+  /// In en, this message translates to:
+  /// **'Side Dish'**
   String get labelSideDish;
 
+  /// No description provided for @viewRecipe.
+  ///
+  /// In en, this message translates to:
+  /// **'View recipe'**
   String get viewRecipe;
+
   /// No description provided for @direction.
   ///
   /// In en, this message translates to:
@@ -1244,6 +1316,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available Features'**
   String get availableFeatures;
+
+  /// No description provided for @subscriptionOfferTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Premium!'**
+  String get subscriptionOfferTitle;
+
+  /// No description provided for @subscriptionOfferSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enjoy unlimited features and no ads'**
+  String get subscriptionOfferSubtitle;
+
+  /// No description provided for @benefitUnlimitedAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited access to movies and series'**
+  String get benefitUnlimitedAccess;
+
+  /// No description provided for @benefitNoAds.
+  ///
+  /// In en, this message translates to:
+  /// **'No ads'**
+  String get benefitNoAds;
+
+  /// No description provided for @benefitUnlimitedFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited favorites'**
+  String get benefitUnlimitedFavorites;
+
+  /// No description provided for @benefitEarlyAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Early access to new features'**
+  String get benefitEarlyAccess;
+
+  /// No description provided for @planMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Plan'**
+  String get planMonthly;
+
+  /// No description provided for @planAnnual.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual Plan'**
+  String get planAnnual;
+
+  /// No description provided for @economize.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVE'**
+  String get economize;
+
+  /// No description provided for @cancelAnytime.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel anytime'**
+  String get cancelAnytime;
+
+  /// No description provided for @subscriptionActivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription activated: {plan}'**
+  String subscriptionActivated(Object plan);
+
+  /// No description provided for @subscriptionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error processing subscription: {error}'**
+  String subscriptionError(Object error);
 
   /// No description provided for @movieSeriesRoller.
   ///

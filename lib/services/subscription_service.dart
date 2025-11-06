@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
 import 'revenuecat_service.dart';
+import 'prefs_service.dart';
 import '../config/revenuecat_config.dart';
 
 /// Serviço para gerenciar assinaturas do usuário (mensal / anual)
@@ -33,9 +34,94 @@ class SubscriptionService {
       if (user == null) {
         _setFreeLocally();
       } else {
-        loadSubscription();
+        // Carrega do Firestore primeiro (rápido) e depois tenta um refresh
+        // a partir do RevenueCat (somente quando necessário).
+        loadSubscription().then((_) => _maybeRefreshFromRevenueCat(user.uid));
       }
     });
+  }
+
+  /// Verifica com o RevenueCat informações mais recentes da conta do usuário
+  /// e atualiza o Firestore caso encontre assinaturas ativas.
+  ///
+  /// Esta chamada é rate-limited via SharedPreferences (evita chamadas excessivas).
+  static Future<void> _maybeRefreshFromRevenueCat(String userId) async {
+    try {
+      final key = 'subscription_last_refresh_$userId';
+      final lastStr = PrefsService.getString(key);
+      DateTime? last;
+      if (lastStr != null) {
+        try {
+          last = DateTime.parse(lastStr);
+        } catch (_) {
+          last = null;
+        }
+      }
+
+      // Se já checamos nas últimas 12 horas, não checar de novo
+      if (last != null && DateTime.now().difference(last) < const Duration(hours: 12)) {
+        debugPrint('🔁 Subscription refresh skipped (last checked: $last)');
+        return;
+      }
+
+      debugPrint('🔄 Refreshing subscription from RevenueCat for user $userId');
+      final info = await RevenueCatService.instance.getCustomerInfo();
+      if (info == null) {
+        debugPrint('⚠️ No customer info returned from RevenueCat');
+        await PrefsService.setString(key, DateTime.now().toUtc().toIso8601String());
+        return;
+      }
+
+      final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
+      if (ent != null && ent.isActive) {
+        // Parsear datas
+        DateTime now = DateTime.now().toUtc();
+        DateTime expiry = now.add(const Duration(days: 365));
+        DateTime start = now;
+
+        DateTime? _tryParse(dynamic v) {
+          if (v == null) return null;
+          if (v is DateTime) return v.toUtc();
+          if (v is String) {
+            try {
+              return DateTime.parse(v).toUtc();
+            } catch (_) {
+              return null;
+            }
+          }
+          return null;
+        }
+
+  final parsedExp = _tryParse(ent.expirationDate);
+  final parsedLatest = _tryParse(ent.latestPurchaseDate);
+        if (parsedExp != null) expiry = parsedExp;
+        if (parsedLatest != null) start = parsedLatest;
+
+        final purchaseInfo = {
+          'appUserId': info.originalAppUserId,
+          'productId': ent.productIdentifier,
+          'purchaseDate': ent.latestPurchaseDate,
+          'originalPurchaseDate': ent.originalPurchaseDate,
+          'expirationDate': ent.expirationDate,
+          'willRenew': ent.willRenew,
+          'store': ent.store.toString(),
+          'periodType': ent.periodType.toString(),
+          'timestamp': DateTime.now().toUtc().toIso8601String(),
+        };
+
+  final plan = ent.productIdentifier.contains('annual') ? Plan.annual : Plan.monthly;
+
+        // Atualiza Firestore com as informações obtidas
+        await setSubscription(plan, start, expiry, purchaseInfo: purchaseInfo);
+        debugPrint('✅ Subscription refreshed from RevenueCat and saved to Firestore');
+      } else {
+        debugPrint('ℹ️ No active entitlement found on RevenueCat for user $userId');
+      }
+
+      await PrefsService.setString(key, DateTime.now().toUtc().toIso8601String());
+    } catch (e) {
+      debugPrint('❌ Error refreshing subscription from RevenueCat: $e');
+    }
   }
 
   static void _setFreeLocally() {

@@ -644,6 +644,46 @@ class AppLocalizationsFr extends AppLocalizations {
   String get availableFeatures => 'Fonctionnalités Disponibles';
 
   @override
+  String get subscriptionOfferTitle => 'Débloquez le Premium!';
+
+  @override
+  String get subscriptionOfferSubtitle => 'Profitez de fonctionnalités illimitées et sans publicité';
+
+  @override
+  String get benefitUnlimitedAccess => 'Accès illimité aux films et séries';
+
+  @override
+  String get benefitNoAds => 'Sans publicités';
+
+  @override
+  String get benefitUnlimitedFavorites => 'Favoris illimités';
+
+  @override
+  String get benefitEarlyAccess => 'Accès anticipé aux nouvelles fonctionnalités';
+
+  @override
+  String get planMonthly => 'Forfait Mensuel';
+
+  @override
+  String get planAnnual => 'Forfait Annuel';
+
+  @override
+  String get economize => 'ÉCONOMISEZ';
+
+  @override
+  String get cancelAnytime => 'Annulez à tout moment';
+
+  @override
+  String subscriptionActivated(Object plan) {
+    return 'Abonnement activé : $plan';
+  }
+
+  @override
+  String subscriptionError(Object error) {
+    return 'Erreur lors du traitement de l\'abonnement : $error';
+  }
+
+  @override
   String get movieSeriesRoller => 'Tireur de Films et Séries';
 
   @override
