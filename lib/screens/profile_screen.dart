@@ -60,29 +60,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  Future<void> _restorePurchases() async {
-    if (_isProcessingPurchase) return;
-    setState(() => _isProcessingPurchase = true);
-    try {
-      final ok = await RevenueCatService.instance.restorePurchases();
-      // Refresh subscription info from RevenueCat/Firestore
-      await SubscriptionService.loadSubscription();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(ok ? 'Compras restauradas' : 'Nenhuma compra encontrada')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao restaurar compras: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isProcessingPurchase = false);
-    }
-  }
+  // Restore purchases feature removed — app now auto-refreshes subscription
+  // status on login/app-start via SubscriptionService.
 
   void _onDataChanged() {
     if (mounted) {
@@ -544,10 +523,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
                                             child: SafeText(_getPriceLabel(RevenueCatConfig.annualProductId, 'Assinar Anual (R\$7)')),
                                           ),
-                                          OutlinedButton(
-                                            onPressed: _isProcessingPurchase ? null : () async => await _restorePurchases(),
-                                            child: SafeText('Restaurar compras'),
-                                          ),
+                                          // Restore button removed: subscription state is
+                                          // automatically refreshed on login/app-start.
                                         ],
                                       ),
                     if (active && plan != Plan.free)
