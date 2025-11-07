@@ -279,7 +279,7 @@ class _IngredientsChecklistWidgetState extends State<IngredientsChecklistWidget>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${_checkedItems.length}/${_totalIngredients} itens ($_completionPercentage.toStringAsFixed(0)%)',
+                      '${_checkedItems.length}/$_totalIngredients itens ($_completionPercentage.toStringAsFixed(0)%)',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,

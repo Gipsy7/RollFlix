@@ -324,7 +324,7 @@ class _GenreWheelState extends State<GenreWheel>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 200,
       width: double.infinity,
       child: Stack(

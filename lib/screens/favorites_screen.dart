@@ -7,7 +7,6 @@ import '../constants/app_constants.dart';
 import '../utils/page_transitions.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/error_widgets.dart';
-import '../widgets/ux_components.dart';
 import 'movie_details_screen.dart';
 import 'tv_show_details_screen.dart';
 import 'package:rollflix/l10n/app_localizations.dart';

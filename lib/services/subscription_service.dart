@@ -104,7 +104,7 @@ class SubscriptionService {
         DateTime expiry = now.add(const Duration(days: 365));
         DateTime start = now;
 
-        DateTime? _tryParse(dynamic v) {
+        DateTime? tryParse(dynamic v) {
           if (v == null) return null;
           if (v is DateTime) return v.toUtc();
           if (v is String) {
@@ -117,8 +117,8 @@ class SubscriptionService {
           return null;
         }
 
-  final parsedExp = _tryParse(ent.expirationDate);
-  final parsedLatest = _tryParse(ent.latestPurchaseDate);
+  final parsedExp = tryParse(ent.expirationDate);
+  final parsedLatest = tryParse(ent.latestPurchaseDate);
         if (parsedExp != null) expiry = parsedExp;
         if (parsedLatest != null) start = parsedLatest;
 
@@ -308,7 +308,7 @@ class SubscriptionService {
           final latestVal = ent.latestPurchaseDate;
           final originalPurchaseVal = ent.originalPurchaseDate;
           
-          DateTime? _tryParse(dynamic v) {
+          DateTime? tryParse(dynamic v) {
             if (v == null) return null;
             if (v is DateTime) return v.toUtc();
             if (v is String) {
@@ -321,8 +321,8 @@ class SubscriptionService {
             return null;
           }
 
-          parsedExp = _tryParse(expVal);
-          parsedLatest = _tryParse(latestVal);
+          parsedExp = tryParse(expVal);
+          parsedLatest = tryParse(latestVal);
           if (parsedExp != null) expiry = parsedExp;
           if (parsedLatest != null) now = parsedLatest;
           
@@ -370,7 +370,7 @@ class SubscriptionService {
           final latestVal = ent.latestPurchaseDate;
           final originalPurchaseVal = ent.originalPurchaseDate;
           
-          DateTime? _tryParse(dynamic v) {
+          DateTime? tryParse(dynamic v) {
             if (v == null) return null;
             if (v is DateTime) return v.toUtc();
             if (v is String) {
@@ -383,8 +383,8 @@ class SubscriptionService {
             return null;
           }
 
-          parsedExp = _tryParse(expVal);
-          parsedLatest = _tryParse(latestVal);
+          parsedExp = tryParse(expVal);
+          parsedLatest = tryParse(latestVal);
           if (parsedExp != null) expiry = parsedExp;
           if (parsedLatest != null) now = parsedLatest;
           

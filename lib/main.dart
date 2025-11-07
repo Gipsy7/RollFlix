@@ -8,7 +8,8 @@ import 'package:rollflix/l10n/app_localizations.dart';
 import 'constants/app_constants.dart';
 import 'dart:convert';
 // SharedPreferences is accessed via PrefsService which is initialized in main()
-import 'config/secure_config.dart'; // ⬅️ NOVO: Configuração segura
+import 'config/secure_config.dart';
+import 'config/revenuecat_config.dart';
 import 'models/movie.dart';
 import 'models/tv_show.dart';
 import 'models/roll_preferences.dart';
@@ -49,7 +50,7 @@ import 'widgets/subscription_offer_dialog.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // ✅ NOVO: Validar configurações de segurança
+  // ✅ Validar configurações de segurança
   SecureConfig.validate();
   
   // Inicializar Firebase
@@ -77,6 +78,8 @@ void main() async {
   // Inicializa subscription service (escuta mudanças de auth)
   // Inicializa RevenueCat (opcional - configure keys in lib/config/revenuecat_config.dart)
   try {
+    // ✅ Validar configurações do RevenueCat antes de inicializar
+    RevenueCatConfig.validate();
     await RevenueCatService.instance.init();
   } catch (e) {
     debugPrint('⚠️ RevenueCat init failed (continuing): $e');
@@ -1549,7 +1552,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           children: [
             Text(
               // Use localized string with placeholders (or infinity when subscribed)
-              isSubscribed ? '∞ ${resourceName}' : AppLocalizations.of(context)!.resourceCount(uses, maxUses, resourceName),
+              isSubscribed ? '∞ $resourceName' : AppLocalizations.of(context)!.resourceCount(uses, maxUses, resourceName),
               style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
             const SizedBox(height: 16),

@@ -30,7 +30,7 @@ class MovieService {
 
     if (country != null && country.isNotEmpty) {
       // Formato esperado pelo TMDB: language-REGION (ex: pt-BR, en-US)
-      return '${lang}-${country.toUpperCase()}';
+      return '$lang-${country.toUpperCase()}';
     }
 
     switch (lang) {
@@ -144,7 +144,7 @@ class MovieService {
 
         // Constrói a URL base
     var urlString =
-      '$_baseUrl/discover/movie?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=${_tmdbLanguageCode}&sort_by=popularity.desc&page=$randomPage';
+      '$_baseUrl/discover/movie?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=$_tmdbLanguageCode&sort_by=popularity.desc&page=$randomPage';
 
         // Adiciona filtro de classificação indicativa
         // Se NÃO permite adulto (allowAdult=false), exclui conteúdo adulto
@@ -217,7 +217,7 @@ class MovieService {
 
         // Usa now_playing sem filtros (mais rápido)
     var urlString =
-      '$_baseUrl/movie/now_playing?api_key=$_apiKey&language=${_tmdbLanguageCode}&page=$randomPage&region=${_tmdbRegion}';
+      '$_baseUrl/movie/now_playing?api_key=$_apiKey&language=$_tmdbLanguageCode&page=$randomPage&region=$_tmdbRegion';
 
         // Adiciona filtro de classificação indicativa
         if (allowAdult != null && !allowAdult) {
@@ -278,7 +278,7 @@ class MovieService {
       final randomPage = Random().nextInt(3) + 1;
 
       final url = Uri.parse(
-        '$_baseUrl/discover/movie?api_key=$_apiKey&language=${_tmdbLanguageCode}&sort_by=popularity.desc&primary_release_year=$currentYear&page=$randomPage',
+        '$_baseUrl/discover/movie?api_key=$_apiKey&language=$_tmdbLanguageCode&sort_by=popularity.desc&primary_release_year=$currentYear&page=$randomPage',
       );
 
       final response = await http.get(url);
@@ -323,7 +323,7 @@ class MovieService {
   static Future<Movie> getMovieDetails(int movieId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/$movieId?api_key=$_apiKey&language=${_tmdbLanguageCode}',
+        '$_baseUrl/movie/$movieId?api_key=$_apiKey&language=$_tmdbLanguageCode',
       );
 
       final response = await http.get(url);
@@ -405,7 +405,7 @@ class MovieService {
   static Future<MovieVideos?> getMovieVideos(int movieId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/$movieId/videos?api_key=$_apiKey&language=${_tmdbLanguageCode}',
+        '$_baseUrl/movie/$movieId/videos?api_key=$_apiKey&language=$_tmdbLanguageCode',
       );
 
       final response = await http.get(url);
@@ -677,7 +677,7 @@ class MovieService {
   static Future<ActorDetails> getActorDetails(int actorId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/person/$actorId?api_key=$_apiKey&language=${_tmdbLanguageCode}',
+        '$_baseUrl/person/$actorId?api_key=$_apiKey&language=$_tmdbLanguageCode',
       );
 
       final response = await http.get(url);
@@ -713,7 +713,7 @@ class MovieService {
   static Future<List<ActorMovie>> getActorMovies(int actorId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/person/$actorId/movie_credits?api_key=$_apiKey&language=${_tmdbLanguageCode}',
+        '$_baseUrl/person/$actorId/movie_credits?api_key=$_apiKey&language=$_tmdbLanguageCode',
       );
 
       final response = await http.get(url);
@@ -754,7 +754,7 @@ class MovieService {
   static Future<List<ActorMovie>> getDirectorMovies(int directorId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/person/$directorId/movie_credits?api_key=$_apiKey&language=${_tmdbLanguageCode}',
+        '$_baseUrl/person/$directorId/movie_credits?api_key=$_apiKey&language=$_tmdbLanguageCode',
       );
 
       final response = await http.get(url);
@@ -796,7 +796,7 @@ class MovieService {
   static Future<List<Movie>?> getPopularMovies({int page = 1}) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/popular?api_key=$_apiKey&language=${_tmdbLanguageCode}&page=$page',
+        '$_baseUrl/movie/popular?api_key=$_apiKey&language=$_tmdbLanguageCode&page=$page',
       );
 
       final response = await http.get(url);
@@ -823,7 +823,7 @@ class MovieService {
   static Future<List<Movie>?> getTopRatedMovies({int page = 1}) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/top_rated?api_key=$_apiKey&language=${_tmdbLanguageCode}&page=$page',
+        '$_baseUrl/movie/top_rated?api_key=$_apiKey&language=$_tmdbLanguageCode&page=$page',
       );
 
       final response = await http.get(url);
@@ -850,7 +850,7 @@ class MovieService {
   static Future<List<Movie>?> getUpcomingMovies({int page = 1}) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/movie/upcoming?api_key=$_apiKey&language=${_tmdbLanguageCode}&page=$page',
+        '$_baseUrl/movie/upcoming?api_key=$_apiKey&language=$_tmdbLanguageCode&page=$page',
       );
 
       final response = await http.get(url);
@@ -878,7 +878,7 @@ class MovieService {
   }) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/discover/movie?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=${_tmdbLanguageCode}&sort_by=popularity.desc&page=$page',
+        '$_baseUrl/discover/movie?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=$_tmdbLanguageCode&sort_by=popularity.desc&page=$page',
       );
 
       final response = await http.get(url);
@@ -907,7 +907,7 @@ class MovieService {
 
     try {
       final url = Uri.parse(
-        '$_baseUrl/search/movie?api_key=$_apiKey&language=${_tmdbLanguageCode}&query=${Uri.encodeComponent(query)}&page=$page',
+        '$_baseUrl/search/movie?api_key=$_apiKey&language=$_tmdbLanguageCode&query=${Uri.encodeComponent(query)}&page=$page',
       );
 
       final response = await http.get(url);
@@ -963,7 +963,7 @@ class MovieService {
 
         // Constrói a URL base
     var urlString =
-      '$_baseUrl/discover/tv?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=${_tmdbLanguageCode}&sort_by=popularity.desc&page=$randomPage';
+      '$_baseUrl/discover/tv?api_key=$_apiKey&with_genres=${genreIds.join(',')}&language=$_tmdbLanguageCode&sort_by=popularity.desc&page=$randomPage';
 
         // Adiciona filtro de classificação indicativa
         if (allowAdult != null && !allowAdult) {
@@ -1037,7 +1037,7 @@ class MovieService {
 
         // Constrói a URL base com discover (suporta filtros de nota)
         var urlString =
-            '$_baseUrl/discover/tv?api_key=$_apiKey&language=${_tmdbLanguageCode}&sort_by=popularity.desc&first_air_date.gte=$lastYear-01-01&page=$randomPage';
+            '$_baseUrl/discover/tv?api_key=$_apiKey&language=$_tmdbLanguageCode&sort_by=popularity.desc&first_air_date.gte=$lastYear-01-01&page=$randomPage';
 
         // Adiciona filtro de classificação indicativa
         if (allowAdult != null && !allowAdult) {
@@ -1105,7 +1105,7 @@ class MovieService {
 
       // Busca séries que estrearam nos últimos 2 anos
         final url = Uri.parse(
-        '$_baseUrl/discover/tv?api_key=$_apiKey&language=${_tmdbLanguageCode}&sort_by=popularity.desc&first_air_date.gte=$lastYear-01-01&vote_count.gte=10&page=$randomPage',
+        '$_baseUrl/discover/tv?api_key=$_apiKey&language=$_tmdbLanguageCode&sort_by=popularity.desc&first_air_date.gte=$lastYear-01-01&vote_count.gte=10&page=$randomPage',
       );
 
       final response = await http.get(url);
@@ -1301,7 +1301,7 @@ class MovieService {
   static Future<TVShow> getTVShowDetails(int tvShowId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/tv/$tvShowId?api_key=$_apiKey&language=${_tmdbLanguageCode}',
+        '$_baseUrl/tv/$tvShowId?api_key=$_apiKey&language=$_tmdbLanguageCode',
       );
 
       final response = await http.get(url);
@@ -1383,7 +1383,7 @@ class MovieService {
   static Future<MovieVideos?> getTVShowVideos(int tvShowId) async {
     try {
       final url = Uri.parse(
-        '$_baseUrl/tv/$tvShowId/videos?api_key=$_apiKey&language=${_tmdbLanguageCode}',
+        '$_baseUrl/tv/$tvShowId/videos?api_key=$_apiKey&language=$_tmdbLanguageCode',
       );
 
       final response = await http.get(url);

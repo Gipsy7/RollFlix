@@ -31,7 +31,7 @@ class MovieCard extends StatelessWidget {
     return AppCard(
       onTap: onTap,
       padding: EdgeInsets.zero,
-      child: Container(
+      child: SizedBox(
         width: cardWidth,
         height: cardHeight,
         child: Column(
