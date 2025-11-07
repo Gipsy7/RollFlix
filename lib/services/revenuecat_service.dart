@@ -24,7 +24,7 @@ class RevenueCatService {
     }
 
     try {
-      await Purchases.setDebugLogsEnabled(true);
+      await Purchases.setLogLevel(LogLevel.debug);
       await Purchases.configure(PurchasesConfiguration(key));
       _initialized = true;
       debugPrint('✅ RevenueCat initialized');
@@ -88,7 +88,7 @@ class RevenueCatService {
       
       // Comprar usando o Package (método recomendado pelo RevenueCat)
       debugPrint('💳 Purchasing package: ${targetPackage.identifier}');
-      await Purchases.purchasePackage(targetPackage);
+      await Purchases.purchase(PurchaseParams.package(targetPackage));
       
       debugPrint('✅ Purchase API call completed for $productIdentifier');
       debugPrint('📡 Fetching customer info to check entitlements...');

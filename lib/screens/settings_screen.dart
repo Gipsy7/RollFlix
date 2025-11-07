@@ -140,20 +140,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     final selected = await showDialog<String>(
       context: context,
-        builder: (context) => AlertDialog(
+        builder: (dialogContext) => AlertDialog(
           title: Text(AppLocalizations.of(context)!.selectLanguage),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: languages.entries.map((entry) => RadioListTile<String>(
-              title: Text(entry.value),
-              value: entry.key,
-              groupValue: _selectedLanguage,
-              onChanged: (value) => Navigator.pop(context, value),
-            )).toList(),
+          content: RadioGroup<String>(
+            onChanged: (value) {
+              Navigator.pop(dialogContext, value);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: languages.entries.map((entry) => ListTile(
+                title: Text(entry.value),
+                leading: Radio<String>(
+                  value: entry.key,
+                ),
+                onTap: () {
+                  Navigator.pop(dialogContext, entry.key);
+                },
+              )).toList(),
+            ),
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(dialogContext),
               child: Text(AppLocalizations.of(context)!.cancel),
             ),
           ],
