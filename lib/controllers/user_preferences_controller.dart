@@ -523,18 +523,8 @@ class UserPreferencesController extends ChangeNotifier {
   ) async {
     final resourceName = _getResourceName(type);
     final cooldown = getResourceCooldown(type);
+    final accentColor = _getAdAccentColor();
     
-    // Detecta o modo atual (série ou filme)
-    final appModeController = AppModeController.instance;
-    final isSeriesMode = appModeController.isSeriesMode;
-    
-    // Define cores baseadas no modo
-    final accentColor = isSeriesMode 
-        ? const Color.fromARGB(255, 240, 43, 109) // Roxo/Rosa vibrante para séries
-        : AppColors.primary; // Dourado para filmes
-    
-    // cooldown handled below in the content section
-
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -542,106 +532,140 @@ class UserPreferencesController extends ChangeNotifier {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: Row(
-          children: [
-            Icon(Icons.videocam, color: accentColor, size: 28),
-            const SizedBox(width: 12),
-            // Protege título longo com Expanded para evitar overflow
-            Expanded(
-              child: Text(
-                AppLocalizations.of(context)!.earnExtraResource,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
+        title: _buildAdOfferDialogTitle(context, accentColor),
+        content: _buildAdOfferDialogContent(context, resourceName, cooldown, accentColor),
+        actions: _buildAdOfferDialogActions(context, accentColor),
+      ),
+    );
+
+    if (result != true) return false;
+    if (!context.mounted) return false;
+
+    return await _showAdAndReward(context, type);
+  }
+
+  /// Obtém cor de destaque para diálogos de anúncio
+  Color _getAdAccentColor() {
+    final appModeController = AppModeController.instance;
+    final isSeriesMode = appModeController.isSeriesMode;
+    
+    return isSeriesMode 
+        ? const Color.fromARGB(255, 240, 43, 109)
+        : AppColors.primary;
+  }
+
+  /// Constrói título do diálogo de oferta de anúncio
+  Widget _buildAdOfferDialogTitle(BuildContext context, Color accentColor) {
+    return Row(
+      children: [
+        Icon(Icons.videocam, color: accentColor, size: 28),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            AppLocalizations.of(context)!.earnExtraResource,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Constrói conteúdo do diálogo de oferta de anúncio
+  Widget _buildAdOfferDialogContent(
+    BuildContext context,
+    String resourceName,
+    Duration? cooldown,
+    Color accentColor,
+  ) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 120, maxWidth: 560),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Flexible(
+            child: Text(
+              AppLocalizations.of(context)!.noResourceAvailable(resourceName),
+              style: const TextStyle(color: Colors.white70, fontSize: 16),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (cooldown != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              '⏱️ ${cooldown.inHours.toString().padLeft(2, '0')}:${cooldown.inMinutes.remainder(60).toString().padLeft(2, '0')}h ${AppLocalizations.of(context)!.reloading}',
+              style: const TextStyle(color: Colors.white54, fontSize: 13),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
-        ),
-        content: ConstrainedBox(
-          constraints: const BoxConstraints(minWidth: 120, maxWidth: 560),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Main message - usa Flexible para truncar corretamente em telas pequenas
-              Flexible(
-                child: Text(
-                  AppLocalizations.of(context)!.noResourceAvailable(resourceName),
-                  style: const TextStyle(color: Colors.white70, fontSize: 16),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
+          const SizedBox(height: 12),
+          _buildAdOfferBadge(context, resourceName, accentColor),
+        ],
+      ),
+    );
+  }
+
+  /// Constrói badge de oferta de anúncio
+  Widget _buildAdOfferBadge(BuildContext context, String resourceName, Color accentColor) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: accentColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: accentColor, width: 1),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.card_giftcard, color: accentColor, size: 24),
+          const SizedBox(width: 12),
+          Flexible(
+            child: Text(
+              AppLocalizations.of(context)!.watchAdForExtraResource(resourceName),
+              style: TextStyle(
+                color: accentColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
               ),
-              // Mostra cooldown em linha separada, se houver
-              if (cooldown != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  '⏱️ ${cooldown.inHours.toString().padLeft(2, '0')}:${cooldown.inMinutes.remainder(60).toString().padLeft(2, '0')}h ${AppLocalizations.of(context)!.reloading}',
-                  style: const TextStyle(color: Colors.white54, fontSize: 13),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: accentColor, width: 1),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.card_giftcard, color: accentColor, size: 24),
-                    const SizedBox(width: 12),
-                    // Usa Flexible para evitar overflow do texto localizado
-                    Flexible(
-                      child: Text(
-                        AppLocalizations.of(context)!.watchAdForExtraResource(resourceName),
-                        style: TextStyle(
-                          color: accentColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: Colors.white54)),
-          ),
-          ElevatedButton.icon(
-            onPressed: () => Navigator.of(context).pop(true),
-            icon: const Icon(Icons.play_circle_filled),
-            label: Text(AppLocalizations.of(context)!.watchAd),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: accentColor,
-              foregroundColor: isSeriesMode ? Colors.white : Colors.black,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
       ),
     );
+  }
 
-    if (result != true) return false;
-
-    // Check if context is still valid before using it
-    if (!context.mounted) return false;
-
-    // Usuário aceitou - mostra o anúncio
-    return await _showAdAndReward(context, type);
+  /// Constrói botões de ação do diálogo de oferta de anúncio
+  List<Widget> _buildAdOfferDialogActions(BuildContext context, Color accentColor) {
+    final appModeController = AppModeController.instance;
+    final isSeriesMode = appModeController.isSeriesMode;
+    
+    return [
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(false),
+        child: Text(
+          AppLocalizations.of(context)!.cancel,
+          style: TextStyle(color: Colors.white54),
+        ),
+      ),
+      ElevatedButton.icon(
+        onPressed: () => Navigator.of(context).pop(true),
+        icon: const Icon(Icons.play_circle_filled),
+        label: Text(AppLocalizations.of(context)!.watchAd),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: accentColor,
+          foregroundColor: isSeriesMode ? Colors.white : Colors.black,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    ];
   }
 
   /// Mostra anúncio e concede recompensa se assistir completamente
@@ -650,15 +674,8 @@ class UserPreferencesController extends ChangeNotifier {
     ResourceType type,
   ) async {
     bool rewardGranted = false;
+    final accentColor = _getAdAccentColor();
 
-    // Detecta o modo atual para cores
-    final appModeController = AppModeController.instance;
-    final isSeriesMode = appModeController.isSeriesMode;
-    final accentColor = isSeriesMode 
-        ? const Color.fromARGB(255, 240, 43, 109) 
-        : AppColors.primary;
-
-    // Configura callback para quando o anúncio for assistido
     _adService.onAdWatched = (rewardType) {
       if (rewardType == _mapResourceTypeToAdReward(type)) {
         _grantAdReward(type);
@@ -666,14 +683,37 @@ class UserPreferencesController extends ChangeNotifier {
       }
     };
 
-    // Se o usuário tem assinatura ativa, conceda a recompensa sem mostrar anúncios
     if (SubscriptionService.isSubscribedCached) {
       debugPrint('🔁 Usuário assinante - concedendo recompensa sem ad');
       _grantAdReward(type);
       return true;
     }
 
-    // Mostra loading personalizado
+    _showAdLoadingDialog(context, accentColor);
+
+    final adRewardType = _mapResourceTypeToAdReward(type);
+    final shown = await _adService.showRewardedAd(adRewardType);
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
+    }
+
+    if (!shown) {
+      if (context.mounted) {
+        _showAdNotAvailableSnackbar(context);
+      }
+      return false;
+    }
+
+    if (rewardGranted && context.mounted) {
+      _showRewardGrantedSnackbar(context, type);
+    }
+
+    return rewardGranted;
+  }
+
+  /// Exibe diálogo de carregamento enquanto anúncio é preparado
+  void _showAdLoadingDialog(BuildContext context, Color accentColor) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -722,69 +762,57 @@ class UserPreferencesController extends ChangeNotifier {
         ),
       ),
     );
+  }
 
-    // Mostra o anúncio
-    final adRewardType = _mapResourceTypeToAdReward(type);
-    final shown = await _adService.showRewardedAd(adRewardType);
+  /// Exibe snackbar informando que o anúncio não está disponível
+  void _showAdNotAvailableSnackbar(BuildContext context) {
+    if (!context.mounted) return;
 
-    // Remove loading
-    if (context.mounted) {
-      Navigator.of(context).pop();
-    }
-
-    if (!shown) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.warning_amber, color: Colors.orange),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(AppLocalizations.of(context)!.adNotAvailable),
-                ),
-              ],
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.warning_amber, color: Colors.orange),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(AppLocalizations.of(context)!.adNotAvailable),
             ),
-            backgroundColor: AppColors.backgroundDark,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
-      }
-      return false;
-    }
-
-    // The AdService now completes only after the reward/dismiss events,
-    // so when this line runs the rewardGranted flag is already accurate.
-    if (rewardGranted && context.mounted) {
-      final resourceName = _getResourceName(type);
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.green),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  '🎁 Você ganhou 1 $resourceName extra!',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: AppColors.backgroundDark,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          ],
         ),
-      );
-    }
+        backgroundColor: AppColors.backgroundDark,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+  }
 
-    return rewardGranted;
+  /// Exibe snackbar informando que a recompensa foi concedida
+  void _showRewardGrantedSnackbar(BuildContext context, ResourceType type) {
+    final resourceName = _getResourceName(type);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                '🎁 Você ganhou 1 $resourceName extra!',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: AppColors.backgroundDark,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
   }
 
   /// Concede recompensa do anúncio (adiciona 1 recurso extra)

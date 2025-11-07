@@ -276,9 +276,6 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   
   /// Recarrega preferências do Firebase (para evitar usar dados antigos do singleton)
   void _reloadPreferencesFromCloud() {
-    // Executa a sincronização logo após o frame atual. Mantemos uma flag
-    // `_isSyncing` para bloquear interações até que a carga inicial do
-    // usuário a partir do Firebase seja concluída ou após timeout.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       setState(() {
@@ -286,83 +283,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       });
 
       try {
-        // Defensive: sometimes auth state may still be settling even though
-        // AuthWrapper showed the app. Wait briefly for currentUser to be
-        // available before attempting cloud reads.
-        int waitAttempts = 0;
-        String? uid = AuthService.currentUser?.uid;
-        while (uid == null && waitAttempts < 10) {
-          await Future.delayed(AppDurations.fast);
-          uid = AuthService.currentUser?.uid;
-          waitAttempts++;
-          debugPrint('⏳ Waiting for Auth currentUser... attempt=$waitAttempts, uid=$uid');
-        }
-        debugPrint('🔄 _reloadPreferencesFromCloud -> starting sync (uid=$uid, waited=$waitAttempts)');
-        // Timeout defensivo para não travar UI indefinidamente
-        const syncTimeout = AppDurations.syncTimeout;
-
-        // Primeiro: execute um sync central que mescla os caches locais
-        // com o Firebase. Isso garante que um login em outro dispositivo
-        // respeite os dados presentes na nuvem quando existirem.
-          try {
-          // Use cached PrefsService instance (initialized in main)
-          final prefs = PrefsService.prefs;
-          final localFavJson = prefs.getString('rollflix_favorites');
-          final localWatchedJson = prefs.getString('rollflix_watched');
-
-          final localFavorites = <FavoriteItem>[];
-          final localWatched = <WatchedItem>[];
-
-          if (localFavJson != null) {
-            try {
-              final decoded = jsonDecode(localFavJson) as List<dynamic>;
-              localFavorites.addAll(decoded.map((j) => FavoriteItem.fromJson(j as Map<String, dynamic>)).toList());
-            } catch (e) {
-              debugPrint('⚠️ Erro ao decodificar favoritos locais para sync central: $e');
-            }
-          }
-
-          if (localWatchedJson != null) {
-            try {
-              final decoded = jsonDecode(localWatchedJson) as List<dynamic>;
-              localWatched.addAll(decoded.map((j) => WatchedItem.fromJson(j as Map<String, dynamic>)).toList());
-            } catch (e) {
-              debugPrint('⚠️ Erro ao decodificar assistidos locais para sync central: $e');
-            }
-          }
-
-          // Chama o sync central do UserDataService para mesclar e garantir
-          // que a nuvem tenha prioridade quando apropriado.
-          await UserDataService.syncAfterLogin(
-            localFavorites: localFavorites,
-            localWatched: localWatched,
-          );
-
-          // Marca que a sincronização inicial foi concluída — a partir daqui
-          // os controllers podem gravar no Firestore. Antes disso, qualquer
-          // gravação na nuvem será potencialmente perigosa (pode sobrescrever).
-          SessionService.initialCloudSyncCompleted = true;
-        } catch (e) {
-          debugPrint('⚠️ Sync central falhou (continuando com sync individual): $e');
-        }
-
-        // Em seguida, solicita que cada controller recarregue/sincronize sua
-        // visão interna — eles irão preferir os dados da nuvem quando presentes.
-        await Future.any([
-          Future.wait([
-            FavoritesController.instance.syncAfterLogin(),
-            WatchedController.instance.syncAfterLogin(),
-            _userPreferencesController.syncAfterLogin(),
-          ]),
-          Future.delayed(syncTimeout),
-        ]);
-
+        await _waitForAuthUser();
+        await _performCentralSync();
+        await _syncControllers();
         debugPrint('✅ Preferências, favoritos e assistidos recarregados do Firebase no initState (ou timeout atingido)');
       } catch (e) {
         debugPrint('❌ Erro ao recarregar preferências: $e');
       } finally {
-        // Evita usar 'return' dentro de finally (lint). Apenas atualiza o estado
-        // se o widget ainda estiver montado.
         if (mounted) {
           setState(() {
             _isSyncing = false;
@@ -370,6 +297,92 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         }
       }
     });
+  }
+
+  /// Aguarda até que o usuário autenticado esteja disponível
+  Future<void> _waitForAuthUser() async {
+    int waitAttempts = 0;
+    String? uid = AuthService.currentUser?.uid;
+    
+    while (uid == null && waitAttempts < 10) {
+      await Future.delayed(AppDurations.fast);
+      uid = AuthService.currentUser?.uid;
+      waitAttempts++;
+      debugPrint('⏳ Waiting for Auth currentUser... attempt=$waitAttempts, uid=$uid');
+    }
+    
+    debugPrint('🔄 _reloadPreferencesFromCloud -> starting sync (uid=$uid, waited=$waitAttempts)');
+  }
+
+  /// Realiza sincronização central de dados locais com Firebase
+  Future<void> _performCentralSync() async {
+    try {
+      final localFavorites = await _loadLocalFavorites();
+      final localWatched = await _loadLocalWatched();
+
+      await UserDataService.syncAfterLogin(
+        localFavorites: localFavorites,
+        localWatched: localWatched,
+      );
+
+      SessionService.initialCloudSyncCompleted = true;
+    } catch (e) {
+      debugPrint('⚠️ Sync central falhou (continuando com sync individual): $e');
+    }
+  }
+
+  /// Carrega favoritos locais do cache
+  Future<List<FavoriteItem>> _loadLocalFavorites() async {
+    final prefs = PrefsService.prefs;
+    final localFavJson = prefs.getString('rollflix_favorites');
+    final localFavorites = <FavoriteItem>[];
+
+    if (localFavJson != null) {
+      try {
+        final decoded = jsonDecode(localFavJson) as List<dynamic>;
+        localFavorites.addAll(
+          decoded.map((j) => FavoriteItem.fromJson(j as Map<String, dynamic>)).toList(),
+        );
+      } catch (e) {
+        debugPrint('⚠️ Erro ao decodificar favoritos locais para sync central: $e');
+      }
+    }
+
+    return localFavorites;
+  }
+
+  /// Carrega itens assistidos locais do cache
+  Future<List<WatchedItem>> _loadLocalWatched() async {
+    final prefs = PrefsService.prefs;
+    final localWatchedJson = prefs.getString('rollflix_watched');
+    final localWatched = <WatchedItem>[];
+
+    if (localWatchedJson != null) {
+      try {
+        final decoded = jsonDecode(localWatchedJson) as List<dynamic>;
+        localWatched.addAll(
+          decoded.map((j) => WatchedItem.fromJson(j as Map<String, dynamic>)).toList(),
+        );
+      } catch (e) {
+        debugPrint('⚠️ Erro ao decodificar assistidos locais para sync central: $e');
+      }
+    }
+
+    return localWatched;
+  }
+
+  /// Sincroniza controllers individuais com timeout de segurança
+  Future<void> _syncControllers() async {
+    const syncTimeout = AppDurations.syncTimeout;
+    
+    await Future.any([
+      Future.wait([
+        FavoritesController.instance.syncAfterLogin(),
+        WatchedController.instance.syncAfterLogin(),
+        _userPreferencesController.syncAfterLogin(),
+      ]),
+      Future.delayed(syncTimeout),
+    ]);
   }
   
   /// Configura listeners de forma segura
@@ -939,102 +952,11 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
 
   /// Mostra anúncio para recarregar recurso
   Future<void> _showAdToRechargeResource(ResourceType resourceType, String resourceName) async {
-  final uses = _userPreferencesController.userResources.getUses(resourceType);
-  final maxUses = UserResources.maxUses;
-  final isSubscribed = SubscriptionService.isSubscribedCached;
-
-    // Define cores baseadas no modo
-    final accentColor = _appModeController.isSeriesMode 
-        ? const Color.fromARGB(255, 240, 43, 109) // Roxo/Rosa vibrante para séries
-        : AppColors.primary; // Dourado para filmes
-
-    // Confirmação amigável
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.backgroundDark,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Row(
-          children: [
-            Icon(Icons.videocam, color: accentColor, size: 28),
-            const SizedBox(width: 12),
-            // Constrain the title text so it can't force the Row to overflow.
-            Expanded(
-              child: Text(
-                AppLocalizations.of(context)!.watchAdConfirmTitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              // Use localized string with placeholders (or infinity when subscribed)
-              isSubscribed ? '∞ $resourceName' : AppLocalizations.of(context)!.resourceCount(uses, maxUses, resourceName),
-              style: const TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-            SizedBox(height: AppNumbers.spacingMedium + 4),
-            Container(
-              padding: EdgeInsets.all(AppNumbers.spacingSmall + 4),
-              decoration: BoxDecoration(
-                color: accentColor.withValues(alpha: AppNumbers.highlightOpacity),
-                borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
-                border: Border.all(color: accentColor, width: AppNumbers.borderWidth / 1.5),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.card_giftcard, color: accentColor, size: 24),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context)!.watchAdForExtraResource(resourceName),
-                      style: TextStyle(
-                        color: accentColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: Colors.white54)),
-          ),
-          ElevatedButton.icon(
-            onPressed: () => Navigator.of(context).pop(true),
-            icon: const Icon(Icons.play_circle_filled),
-            label: Text(AppLocalizations.of(context)!.watchAd),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: accentColor,
-              foregroundColor: _appModeController.isSeriesMode ? Colors.white : Colors.black,
-              padding: EdgeInsets.symmetric(
-                horizontal: AppNumbers.paddingMobile, 
-                vertical: AppNumbers.spacingSmall + 4
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-
+    final accentColor = _getAccentColor();
+    final confirm = await _showAdConfirmDialog(resourceType, resourceName, accentColor);
+    
     if (confirm != true) return;
 
-    // Mostra anúncio e concede recompensa
     if (!mounted) return;
     final success = await _userPreferencesController.watchAdForResource(
       resourceType,
@@ -1042,7 +964,138 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     );
 
     if (success && mounted) {
-      setState(() {}); // Atualiza o contador visual
+      setState(() {});
     }
+  }
+
+  /// Obtém cor de destaque baseada no modo atual (séries ou filmes)
+  Color _getAccentColor() {
+    return _appModeController.isSeriesMode 
+        ? const Color.fromARGB(255, 240, 43, 109)
+        : AppColors.primary;
+  }
+
+  /// Exibe diálogo de confirmação para assistir anúncio
+  Future<bool?> _showAdConfirmDialog(
+    ResourceType resourceType,
+    String resourceName,
+    Color accentColor,
+  ) async {
+    final uses = _userPreferencesController.userResources.getUses(resourceType);
+    final maxUses = UserResources.maxUses;
+    final isSubscribed = SubscriptionService.isSubscribedCached;
+
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.backgroundDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: _buildAdDialogTitle(accentColor),
+        content: _buildAdDialogContent(
+          uses: uses,
+          maxUses: maxUses,
+          isSubscribed: isSubscribed,
+          resourceName: resourceName,
+          accentColor: accentColor,
+        ),
+        actions: _buildAdDialogActions(accentColor),
+      ),
+    );
+  }
+
+  /// Constrói título do diálogo de anúncio
+  Widget _buildAdDialogTitle(Color accentColor) {
+    return Row(
+      children: [
+        Icon(Icons.videocam, color: accentColor, size: 28),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            AppLocalizations.of(context)!.watchAdConfirmTitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Constrói conteúdo do diálogo de anúncio
+  Widget _buildAdDialogContent({
+    required int uses,
+    required int maxUses,
+    required bool isSubscribed,
+    required String resourceName,
+    required Color accentColor,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          isSubscribed 
+              ? '∞ $resourceName' 
+              : AppLocalizations.of(context)!.resourceCount(uses, maxUses, resourceName),
+          style: const TextStyle(color: Colors.white70, fontSize: 16),
+        ),
+        SizedBox(height: AppNumbers.spacingMedium + 4),
+        Container(
+          padding: EdgeInsets.all(AppNumbers.spacingSmall + 4),
+          decoration: BoxDecoration(
+            color: accentColor.withValues(alpha: AppNumbers.highlightOpacity),
+            borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
+            border: Border.all(color: accentColor, width: AppNumbers.borderWidth / 1.5),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.card_giftcard, color: accentColor, size: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context)!.watchAdForExtraResource(resourceName),
+                  style: TextStyle(
+                    color: accentColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Constrói botões de ação do diálogo de anúncio
+  List<Widget> _buildAdDialogActions(Color accentColor) {
+    return [
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(false),
+        child: Text(
+          AppLocalizations.of(context)!.cancel,
+          style: TextStyle(color: Colors.white54),
+        ),
+      ),
+      ElevatedButton.icon(
+        onPressed: () => Navigator.of(context).pop(true),
+        icon: const Icon(Icons.play_circle_filled),
+        label: Text(AppLocalizations.of(context)!.watchAd),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: accentColor,
+          foregroundColor: _appModeController.isSeriesMode ? Colors.white : Colors.black,
+          padding: EdgeInsets.symmetric(
+            horizontal: AppNumbers.paddingMobile, 
+            vertical: AppNumbers.spacingSmall + 4
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
+          ),
+        ),
+      ),
+    ];
   }
 }

@@ -270,63 +270,78 @@ class FavoritesController extends ChangeNotifier {
     try {
       debugPrint('🔄 Sincronizando favoritos após login...');
       
-      // Carrega dados locais atuais
-  final prefs = PrefsService.prefs;
-  final localJson = prefs.getString(_favoritesKey);
-      final List<FavoriteItem> localFavorites = [];
-      
-      if (localJson != null) {
-        try {
-          final List<dynamic> decoded = jsonDecode(localJson);
-          localFavorites.addAll(
-            decoded.map((json) => FavoriteItem.fromJson(json)).toList(),
-          );
-        } catch (e) {
-          debugPrint('⚠️ Erro ao decodificar favoritos locais, ignorando: $e');
-        }
-      }
-      
-      // Carrega dados do Firebase (prioridade) — null indica doc/field ausente
-      List<FavoriteItem>? cloudFavorites;
-      try {
-        cloudFavorites = await UserDataService.loadFavorites();
-      } catch (e) {
-        debugPrint('⚠️ Erro ao carregar favoritos do Firebase, usando apenas dados locais: $e');
-        cloudFavorites = null;
-      }
+      final localFavorites = await _loadLocalFavoritesCache();
+      final cloudFavorites = await _loadCloudFavorites();
 
       if (cloudFavorites != null) {
-        // Cloud has authoritative data (may be empty) — prefer it.
-        _favorites.clear();
-        _favorites.addAll(cloudFavorites);
-        debugPrint('✅ Favoritos substituídos pelos dados da nuvem (count=${_favorites.length})');
-        // Persist authoritative cloud content locally
-        await _saveFavorites();
+        await _applyCloudData(cloudFavorites);
       } else {
-        // No cloud data present — keep local and push to cloud to create doc
-        debugPrint('ℹ️ Nenhum dado de favoritos no Firebase (document/field ausente) - preservando cache local e subindo para nuvem');
-        await _saveFavorites();
-        if (AuthService.isUserLoggedIn()) {
-          if (!SessionService.initialCloudSyncCompleted) {
-            debugPrint('⏳ Sincronização inicial não concluída - adiando criação de documento de favoritos na nuvem');
-          } else {
-            try {
-              await UserDataService.saveFavorites(_favorites);
-              debugPrint('✅ Favoritos locais enviados para o Firebase (criação de documento)');
-            } catch (e) {
-              debugPrint('⚠️ Erro ao criar favoritos no Firebase após sync: $e');
-            }
-          }
-        }
+        await _preserveLocalDataAndUpload(localFavorites);
       }
       
       notifyListeners();
       debugPrint('✅ Favoritos sincronizados: ${_favorites.length} itens');
     } catch (e) {
       debugPrint('❌ Erro crítico na sincronização de favoritos: $e');
-      // Em caso de erro crítico, pelo menos carrega dados locais
       await _loadFavorites();
       notifyListeners();
+    }
+  }
+
+  /// Carrega favoritos do cache local
+  Future<List<FavoriteItem>> _loadLocalFavoritesCache() async {
+  final prefs = PrefsService.prefs;
+  final localJson = prefs.getString(_favoritesKey);
+    final List<FavoriteItem> localFavorites = [];
+    
+    if (localJson != null) {
+      try {
+        final List<dynamic> decoded = jsonDecode(localJson);
+        localFavorites.addAll(
+          decoded.map((json) => FavoriteItem.fromJson(json)).toList(),
+        );
+      } catch (e) {
+        debugPrint('⚠️ Erro ao decodificar favoritos locais, ignorando: $e');
+      }
+    }
+    
+    return localFavorites;
+  }
+
+  /// Carrega favoritos da nuvem (Firebase)
+  Future<List<FavoriteItem>?> _loadCloudFavorites() async {
+    try {
+      return await UserDataService.loadFavorites();
+    } catch (e) {
+      debugPrint('⚠️ Erro ao carregar favoritos do Firebase, usando apenas dados locais: $e');
+      return null;
+    }
+  }
+
+  /// Aplica dados da nuvem como autoridade
+  Future<void> _applyCloudData(List<FavoriteItem> cloudFavorites) async {
+    _favorites.clear();
+    _favorites.addAll(cloudFavorites);
+    debugPrint('✅ Favoritos substituídos pelos dados da nuvem (count=${_favorites.length})');
+    await _saveFavorites();
+  }
+
+  /// Preserva dados locais e faz upload para a nuvem
+  Future<void> _preserveLocalDataAndUpload(List<FavoriteItem> localFavorites) async {
+    debugPrint('ℹ️ Nenhum dado de favoritos no Firebase (document/field ausente) - preservando cache local e subindo para nuvem');
+    await _saveFavorites();
+    
+    if (AuthService.isUserLoggedIn()) {
+      if (!SessionService.initialCloudSyncCompleted) {
+        debugPrint('⏳ Sincronização inicial não concluída - adiando criação de documento de favoritos na nuvem');
+      } else {
+        try {
+          await UserDataService.saveFavorites(_favorites);
+          debugPrint('✅ Favoritos locais enviados para o Firebase (criação de documento)');
+        } catch (e) {
+          debugPrint('⚠️ Erro ao criar favoritos no Firebase após sync: $e');
+        }
+      }
     }
   }
 
