@@ -122,11 +122,14 @@ class _NotificationSettingsDialogState extends State<NotificationSettingsDialog>
               child: ElevatedButton.icon(
                 onPressed: _notificationController.notificationsEnabled
                     ? () async {
+                        // Cache localization before async operation
+                        final loc = AppLocalizations.of(context)!;
+                        
                         await _notificationController.testNotification();
-                        if (mounted) {
+                        if (mounted && context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(AppLocalizations.of(context)!.testNotificationSent),
+                              content: Text(loc.testNotificationSent),
                               duration: Duration(seconds: 2),
                             ),
                           );

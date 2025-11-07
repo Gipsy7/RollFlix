@@ -178,6 +178,9 @@ class _DateNightScreenState extends State<DateNightScreen> {
           recipeMenu = null; // Usar dados estáticos se a API falhar
         }
         
+        // Verificar se o widget ainda está montado após operações assíncronas
+        if (!mounted) return;
+        
         // Criar combo de encontro com informações completas
         final combo = DateNightCombo.fromMovie(
       movieId: detailedMovie.id,
@@ -270,10 +273,14 @@ class _DateNightScreenState extends State<DateNightScreen> {
         }
 
       } else {
-        _showError(AppLocalizations.of(context)!.noMoviesForDateNight);
+        if (mounted) {
+          _showError(AppLocalizations.of(context)!.noMoviesForDateNight);
+        }
       }
     } catch (e) {
-      _showError(AppLocalizations.of(context)!.errorGeneratingDateNight(e.toString()));
+      if (mounted) {
+        _showError(AppLocalizations.of(context)!.errorGeneratingDateNight(e.toString()));
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

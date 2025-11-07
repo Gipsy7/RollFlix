@@ -637,6 +637,9 @@ class UserPreferencesController extends ChangeNotifier {
 
     if (result != true) return false;
 
+    // Check if context is still valid before using it
+    if (!context.mounted) return false;
+
     // Usuário aceitou - mostra o anúncio
     return await _showAdAndReward(context, type);
   }
@@ -735,7 +738,7 @@ class UserPreferencesController extends ChangeNotifier {
           SnackBar(
             content: Row(
               children: [
-                Icon(Icons.warning_amber, color: Colors.orange),
+                const Icon(Icons.warning_amber, color: Colors.orange),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(AppLocalizations.of(context)!.adNotAvailable),

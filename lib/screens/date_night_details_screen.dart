@@ -1128,6 +1128,11 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       // Buscar detalhes completos do filme
       final movieDetails = await MovieService.getMovieDetails(newMovie.id);
       
+      if (!mounted) return;
+      
+      // Cache localization strings
+      final loc = AppLocalizations.of(context)!;
+      
       // Atualizar combo com novo filme mantendo os dados da refeição
   _currentCombo = DateNightCombo(
         // Dados do novo filme
@@ -1135,13 +1140,13 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
         movieTitle: movieDetails.title,
     movieYear: movieDetails.releaseDate.isNotEmpty 
       ? movieDetails.releaseDate.split('-')[0] 
-      : AppLocalizations.of(context)!.notAvailableShort,
+      : loc.notAvailableShort,
         moviePosterPath: movieDetails.posterPath,
         movieBackdropPath: movieDetails.backdropPath,
         movieRating: movieDetails.voteAverage,
         movieOverview: movieDetails.overview,
         movieGenres: movieDetails.genres.map((g) => g.name).toList(),
-  movieRuntime: movieDetails.runtime > 0 ? '${movieDetails.runtime} ${AppLocalizations.of(context)!.minutes}' : AppLocalizations.of(context)!.notAvailableShort,
+  movieRuntime: movieDetails.runtime > 0 ? '${movieDetails.runtime} ${loc.minutes}' : loc.notAvailableShort,
         movieReleaseDate: movieDetails.releaseDate,
         movieOriginalLanguage: movieDetails.originalLanguage,
         movieProductionCompanies: movieDetails.productionCompanies,
@@ -1208,6 +1213,11 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       final mainCourse = menu['mainCourse']!;
       final dessert = menu['dessert']!;
       
+      if (!mounted) return;
+      
+      // Cache localization strings
+      final loc = AppLocalizations.of(context)!;
+      
       // Atualizar combo com nova refeição mantendo os dados do filme
       _currentCombo = DateNightCombo(
         // Manter dados do filme atual
@@ -1232,14 +1242,14 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
         snacks: ['Petiscos variados'],
         atmosphere: 'Ambiente acolhedor',
         preparationTime: '${mainCourse.readyInMinutes} min',
-        difficulty: mainCourse.vegetarian == true ? AppLocalizations.of(context)!.easy : AppLocalizations.of(context)!.medium,
+        difficulty: mainCourse.vegetarian == true ? loc.easy : loc.medium,
         ingredients: mainCourse.extendedIngredients
             ?.map((i) => i.original)
             .take(8)
             .toList() ?? ['Ingredientes variados'],
         cookingTips: 'Siga as instruções da receita',
         theme: 'Noite romântica',
-        playlistSuggestions: [AppLocalizations.of(context)!.jazzSmooth, AppLocalizations.of(context)!.bossaNova, AppLocalizations.of(context)!.romanticMusic],
+        playlistSuggestions: [loc.jazzSmooth, loc.bossaNova, loc.romanticMusic],
         ambientLighting: 'Luzes suaves',
         estimatedCost: 'R\$ 80-120',
         mainCourseRecipeId: mainCourse.id,
@@ -1279,6 +1289,9 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
     try {
       // Buscar informações do trailer
       final videos = await MovieService.getMovieVideos(_currentCombo.movieId);
+      
+      if (!mounted) return;
+      
       String? trailerUrl;
       
       if (videos != null && videos.trailers.isNotEmpty) {
@@ -1290,10 +1303,11 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
         trailerUrl = officialTrailer.youtubeUrl;
       }
       
+      // Cache localization strings
+      final loc = AppLocalizations.of(context)!;
+      
       // Criar texto formatado com os detalhes do encontro
       final StringBuffer message = StringBuffer();
-      
-      final loc = AppLocalizations.of(context)!;
       message.writeln(loc.dateNightShareHeader);
       message.writeln('');
       message.writeln('═══════════════════════════');
@@ -1342,11 +1356,14 @@ class _DateNightDetailsScreenState extends State<DateNightDetailsScreen> with Ti
       message.writeln('');
       message.writeln(loc.createdWithRollflix);
       
+      // Cache subject for share before async operation
+      final shareSubject = loc.dateNightShareHeader;
+      
       // Compartilhar o texto
       await SharePlus.instance.share(
         ShareParams(
           text: message.toString(),
-          subject: AppLocalizations.of(context)!.dateNightShareHeader,
+          subject: shareSubject,
         ),
       );
     } catch (e) {
