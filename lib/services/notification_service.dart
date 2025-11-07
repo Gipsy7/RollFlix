@@ -148,8 +148,10 @@ class NotificationService {
 
     if (response.payload != null) {
       try {
-        final data = jsonDecode(response.payload!);
-        // TODO: Navegar para a tela apropriada baseada nos dados
+        // TODO: Implementar navegação baseada no payload
+        // final data = jsonDecode(response.payload!);
+        // Navegar para a tela apropriada baseada nos dados
+        jsonDecode(response.payload!); // Parse para validar JSON
       } catch (e) {
         debugPrint('Erro ao processar payload da notificação: $e');
       }

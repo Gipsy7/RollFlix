@@ -102,42 +102,34 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    // ✅ OTIMIZADO: Single ValueListenableBuilder instead of triple nested
+    // Evita rebuilds desnecessários e melhora performance
     return ValueListenableBuilder<Locale?>(
       valueListenable: LocaleController.instance,
       builder: (context, locale, child) {
         debugPrint('🏗️ MaterialApp rebuilding with locale: $locale');
-        return ValueListenableBuilder<Locale?>(
-          valueListenable: LocaleController.instance,
-          builder: (context, locale, child) {
-            return MaterialApp(
-              title: AppConstants.appName,
-              // Localization
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: AppLocalizations.supportedLocales,
-              locale: locale,
-              localeResolutionCallback: (locale, supportedLocales) {
-                // Fallback to first supported locale if none match
-                if (locale == null) return supportedLocales.first;
-                for (var supported in supportedLocales) {
-                  if (supported.languageCode == locale.languageCode) return supported;
-                }
-                return supportedLocales.first;
-              },
-              debugShowCheckedModeBanner: false,
-              theme: AppTheme.darkCinemaTheme,
-              home: ValueListenableBuilder<Locale?>(
-                valueListenable: LocaleController.instance,
-                builder: (context, locale, child) {
-                  return const AuthWrapper();
-                },
-              ),
-            );
+        return MaterialApp(
+          title: AppConstants.appName,
+          // Localization
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: locale,
+          localeResolutionCallback: (locale, supportedLocales) {
+            // Fallback to first supported locale if none match
+            if (locale == null) return supportedLocales.first;
+            for (var supported in supportedLocales) {
+              if (supported.languageCode == locale.languageCode) return supported;
+            }
+            return supportedLocales.first;
           },
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.darkCinemaTheme,
+          home: const AuthWrapper(),
         );
       },
     );
@@ -846,8 +838,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: _appModeController.isSeriesMode
-              ? AppColors.secondary.withOpacity(0.4)
-              : AppColors.primary.withOpacity(0.4),
+              ? AppColors.secondary.withValues(alpha: 0.4)
+              : AppColors.primary.withValues(alpha: 0.4),
           width: 1.5,
         ),
       ),
@@ -856,8 +848,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: _openRollPreferences,
-          splashColor: currentAccentColor.withOpacity(0.2),
-          highlightColor: currentAccentColor.withOpacity(0.1),
+          splashColor: currentAccentColor.withValues(alpha: 0.2),
+          highlightColor: currentAccentColor.withValues(alpha: 0.1),
           child: AnimatedPadding(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeOutCubic,
@@ -909,7 +901,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                               color: (!_appModeController.isSeriesMode
                                       ? Colors.black
                                       : AppColors.textPrimary)
-                                  .withOpacity(0.4),
+                                  .withValues(alpha: 0.4),
                               blurRadius: 6,
                               offset: const Offset(0, 2),
                             ),
@@ -945,8 +937,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
           color: _appModeController.isSeriesMode
-              ? AppColors.secondary.withOpacity(0.4)
-              : AppColors.primary.withOpacity(0.4),
+              ? AppColors.secondary.withValues(alpha: 0.4)
+              : AppColors.primary.withValues(alpha: 0.4),
           width: 1.5,
         ),
         // Removido boxShadow para eliminar a borda iluminada retangular
@@ -956,8 +948,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         child: InkWell(
           borderRadius: BorderRadius.circular(30),
           onTap: _toggleContentMode,
-          splashColor: currentAccentColor.withOpacity(0.2),
-          highlightColor: currentAccentColor.withOpacity(0.1),
+          splashColor: currentAccentColor.withValues(alpha: 0.2),
+          highlightColor: currentAccentColor.withValues(alpha: 0.1),
           child: AnimatedPadding(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeOutCubic,
@@ -1018,7 +1010,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                       letterSpacing: 1.5,
                       shadows: [
                         Shadow(
-                          color: AppColors.backgroundDark.withOpacity(0.3),
+                          color: AppColors.backgroundDark.withValues(alpha: 0.3),
                           blurRadius: 4,
                           offset: const Offset(0, 1),
                         ),
@@ -1270,10 +1262,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.1), // Corrigido para withOpacity
+        color: Colors.red.withValues(alpha: 0.1), // Corrigido para withOpacity
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.red.withOpacity(0.3), // Corrigido para withOpacity
+          color: Colors.red.withValues(alpha: 0.3), // Corrigido para withOpacity
           width: 1,
         ),
       ),
@@ -1346,10 +1338,10 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               width: 1,
             ),
           ),
@@ -1457,7 +1449,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: canUse ? Colors.white.withOpacity(0.7) : Colors.red.withOpacity(0.7),
+                  color: canUse ? Colors.white.withValues(alpha: 0.7) : Colors.red.withValues(alpha: 0.7),
                   fontSize: isMobile ? 10 : 12,
                 ),
               ),
@@ -1472,7 +1464,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                     Icon(
                       Icons.videocam,
                       size: isMobile ? 12 : 14,
-                      color: AppColors.primary.withOpacity(0.9),
+                      color: AppColors.primary.withValues(alpha: 0.9),
                     ),
                     const SizedBox(width: 6),
                     Flexible(
@@ -1482,7 +1474,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: isMobile ? 10 : 12,
-                          color: AppColors.primary.withOpacity(0.9),
+                          color: AppColors.primary.withValues(alpha: 0.9),
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -1559,7 +1551,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: accentColor.withOpacity(0.1),
+                color: accentColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: accentColor, width: 1),
               ),

@@ -218,13 +218,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _changeLanguage(String languageCode) {
-    setState(() {
-      _selectedLanguage = languageCode;
-      LocaleController.instance.setLocale(languageCode); // Corrigido para passar apenas a string
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -308,7 +301,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         trailing: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.2),
+                            color: Colors.green.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Text(

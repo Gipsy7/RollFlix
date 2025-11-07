@@ -292,7 +292,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               width: width,
               height: height,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => _buildPosterPlaceholder(isMobile),
+              errorBuilder: (context, error, stackTrace) => _buildPosterPlaceholder(isMobile),
             )
           : _buildPosterPlaceholder(isMobile),
     );

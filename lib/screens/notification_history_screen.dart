@@ -148,7 +148,7 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       leading: CircleAvatar(
-        backgroundColor: _getTypeColor(item.type).withOpacity(0.2),
+        backgroundColor: _getTypeColor(item.type).withValues(alpha: 0.2),
         child: Text(
           item.icon,
           style: const TextStyle(fontSize: 24),
@@ -196,7 +196,7 @@ class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: _getTypeColor(item.type).withOpacity(0.2),
+                  color: _getTypeColor(item.type).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(

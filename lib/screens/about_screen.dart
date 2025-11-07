@@ -98,7 +98,7 @@ class _AboutScreenState extends State<AboutScreen> {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: primaryColor.withOpacity(0.3),
+                              color: primaryColor.withValues(alpha: 0.3),
                               blurRadius: 20,
                               spreadRadius: 2,
                             ),
@@ -320,10 +320,10 @@ class _AboutScreenState extends State<AboutScreen> {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: featureColor.withOpacity(0.1),
+            color: featureColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: featureColor.withOpacity(0.3),
+              color: featureColor.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -357,10 +357,10 @@ class _AboutScreenState extends State<AboutScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.2),
+                        color: Colors.orange.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: Colors.orange.withOpacity(0.5),
+                          color: Colors.orange.withValues(alpha: 0.5),
                           width: 1,
                         ),
                       ),
