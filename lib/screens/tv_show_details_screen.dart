@@ -7,6 +7,7 @@ import '../models/watch_providers.dart';
 import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
+import '../core/constants/constants.dart';
 import '../utils/page_transitions.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/watched_controller.dart';
@@ -203,7 +204,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(AppLocalizations.of(context)!.removedFromWatched),
-                      duration: Duration(seconds: 2),
+                      duration: AppDurations.snackBarShort,
                       behavior: SnackBarBehavior.floating,
                     ),
                   );
@@ -222,7 +223,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(AppLocalizations.of(context)!.markedAsWatched),
-                          duration: const Duration(seconds: 2),
+                          duration: AppDurations.snackBarShort,
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -242,7 +243,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(AppLocalizations.of(context)!.markedAsWatched),
-                        duration: const Duration(seconds: 2),
+                        duration: AppDurations.snackBarShort,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -270,7 +271,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(AppLocalizations.of(context)!.removedFromFavorites),
-                      duration: Duration(seconds: 2),
+                      duration: AppDurations.snackBarShort,
                       behavior: SnackBarBehavior.floating,
                     ),
                   );
@@ -289,7 +290,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(AppLocalizations.of(context)!.addedToFavorites(widget.tvShow.name)),
-                          duration: const Duration(seconds: 2),
+                          duration: AppDurations.snackBarShort,
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -309,7 +310,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(AppLocalizations.of(context)!.addedToFavorites(widget.tvShow.name)),
-                        duration: const Duration(seconds: 2),
+                        duration: AppDurations.snackBarShort,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -369,7 +370,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
 
   Widget _buildTVShowInfo() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -507,7 +508,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
 
   Widget _buildOverview() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingMedium + 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -539,7 +540,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingMedium + 4),
           child: Text(
             AppLocalizations.of(context)!.cast,
             style: const TextStyle(
@@ -554,7 +555,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           height: 200,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingMedium + 4),
             itemCount: credits!.cast.length > 10 ? 10 : credits!.cast.length,
             itemBuilder: (context, index) {
               final actor = credits!.cast[index];
@@ -578,7 +579,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
     if (directors.isEmpty && writers.isEmpty) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingMedium + 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -621,7 +622,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(AppNumbers.paddingMobile),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -650,7 +651,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(AppNumbers.spacingSmall),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Colors.purple, Colors.purple.shade600],
@@ -704,7 +705,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                     // TODO: Implementar abertura do provedor
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingSmall + 4, vertical: AppNumbers.spacingSmall),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -792,7 +793,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                     // TODO: Implementar abertura do provedor
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingSmall + 4, vertical: AppNumbers.spacingSmall),
                     decoration: BoxDecoration(
                       color: Colors.grey[800],
                       borderRadius: BorderRadius.circular(12),
@@ -873,7 +874,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                     // TODO: Implementar abertura do provedor
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingSmall + 4, vertical: AppNumbers.spacingSmall),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -956,7 +957,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingMedium + 4),
           child: Text(
             AppLocalizations.of(context)!.trailers,
             style: const TextStyle(
@@ -971,7 +972,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           height: 120,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingMedium + 4),
             itemCount: trailers.length,
             itemBuilder: (context, index) {
               final video = trailers[index];
@@ -987,7 +988,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
   Widget _buildActorCard(CastMember actor) {
     return Container(
       width: 100,
-      margin: const EdgeInsets.only(right: 12),
+      margin: EdgeInsets.only(right: AppNumbers.spacingSmall + 4),
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).pushDetails(
@@ -1063,7 +1064,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
   Widget _buildVideoCard(MovieVideo video) {
     return Container(
       width: 200,
-      margin: const EdgeInsets.only(right: 12),
+      margin: EdgeInsets.only(right: AppNumbers.spacingSmall + 4),
       child: GestureDetector(
         onTap: () => _launchYouTube(video.key),
         child: Container(
@@ -1125,7 +1126,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
     if (soundtrackInfo == null) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingMedium + 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1142,7 +1143,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
           // Música Tema em Destaque
           if (soundtrackInfo!.themeSongTitle != null) ...[
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
               decoration: BoxDecoration(
                 color: Colors.grey[900],
                 borderRadius: BorderRadius.circular(12),
@@ -1262,7 +1263,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                     },
                     borderRadius: BorderRadius.circular(8),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
                       child: Column(
                         children: [
                           Icon(
@@ -1308,7 +1309,7 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
                     },
                     borderRadius: BorderRadius.circular(8),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
                       child: Column(
                         children: [
                           Icon(
@@ -1362,3 +1363,8 @@ class _TVShowDetailsScreenState extends State<TVShowDetailsScreen> {
     }
   }
 }
+
+
+
+
+

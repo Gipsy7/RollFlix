@@ -8,6 +8,7 @@ import '../models/movie_videos.dart';
 import '../models/soundtrack.dart';
 import '../services/movie_service.dart';
 import '../theme/app_theme.dart';
+import '../core/constants/constants.dart';
 import '../utils/app_logger.dart';
 import '../utils/page_transitions.dart';
 import '../controllers/favorites_controller.dart';
@@ -296,7 +297,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(AppLocalizations.of(context)!.removedFromWatched),
-                            duration: Duration(seconds: 2),
+                            duration: AppDurations.snackBarShort,
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
@@ -315,7 +316,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(AppLocalizations.of(context)!.markedAsWatched),
-                                duration: const Duration(seconds: 2),
+                                duration: AppDurations.snackBarShort,
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );
@@ -335,7 +336,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(AppLocalizations.of(context)!.markedAsWatched),
-                              duration: const Duration(seconds: 2),
+                              duration: AppDurations.snackBarShort,
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -363,7 +364,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(AppLocalizations.of(context)!.removedFromFavorites),
-                            duration: const Duration(seconds: 2),
+                            duration: AppDurations.snackBarShort,
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
@@ -382,7 +383,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(AppLocalizations.of(context)!.addedToFavorites(widget.movie.title)),
-                                duration: const Duration(seconds: 2),
+                                duration: AppDurations.snackBarShort,
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );
@@ -402,7 +403,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(AppLocalizations.of(context)!.addedToFavorites(widget.movie.title)),
-                              duration: const Duration(seconds: 2),
+                              duration: AppDurations.snackBarShort,
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -415,7 +416,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             ],
             flexibleSpace: FlexibleSpaceBar(
               title: AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 500),
+                duration: AppDurations.slow,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -474,7 +475,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -622,7 +623,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   
                   // Sinopse
                   AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 500),
+                    duration: AppDurations.slow,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -644,7 +645,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   // Diretor
                   if (credits?.directors.isNotEmpty == true) ...[
                     AnimatedDefaultTextStyle(
-                      duration: const Duration(milliseconds: 500),
+                      duration: AppDurations.slow,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -691,7 +692,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   // Elenco principal
                   if (credits?.cast.isNotEmpty == true) ...[
                     AnimatedDefaultTextStyle(
-                      duration: const Duration(milliseconds: 500),
+                      duration: AppDurations.slow,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -878,8 +879,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   // Onde assistir
                   if (watchProviders?.hasProviders == true) ...[
                     Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      padding: const EdgeInsets.all(20),
+                      margin: EdgeInsets.symmetric(vertical: AppNumbers.spacingSmall),
+                      padding: EdgeInsets.all(AppNumbers.paddingMobile),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -908,7 +909,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(8),
+                                padding: EdgeInsets.all(AppNumbers.spacingSmall),
                                 decoration: BoxDecoration(
                                   gradient: AppColors.primaryGradient,
                                   borderRadius: BorderRadius.circular(12),
@@ -928,7 +929,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                               ),
                               const SizedBox(width: 12),
                               AnimatedDefaultTextStyle(
-                                duration: const Duration(milliseconds: 500),
+                                duration: AppDurations.slow,
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -1194,8 +1195,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ),
                   ] else ...[
                     Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      padding: const EdgeInsets.all(20),
+                      margin: EdgeInsets.symmetric(vertical: AppNumbers.spacingSmall),
+                      padding: EdgeInsets.all(AppNumbers.paddingMobile),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -1224,7 +1225,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(8),
+                                padding: EdgeInsets.all(AppNumbers.spacingSmall),
                                 decoration: BoxDecoration(
                                   color: AppColors.surfaceVariantDark,
                                   borderRadius: BorderRadius.circular(12),
@@ -1252,7 +1253,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           ),
                           const SizedBox(height: 16),
                           Container(
-                            padding: const EdgeInsets.all(16),
+                            padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
                             decoration: BoxDecoration(
                               color: AppColors.backgroundDark.withValues(alpha:0.5),
                               borderRadius: BorderRadius.circular(12),
@@ -1303,7 +1304,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     // Música Tema em Destaque
                     if (soundtrackInfo!.themeSongTitle != null) ...[
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
                         decoration: BoxDecoration(
                           color: AppColors.surfaceDark,
                           borderRadius: BorderRadius.circular(12),
@@ -1421,7 +1422,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                               },
                               borderRadius: BorderRadius.circular(8),
                               child: Padding(
-                                padding: const EdgeInsets.all(16),
+                                padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
                                 child: Column(
                                   children: [
                                     Icon(
@@ -1465,7 +1466,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                               },
                               borderRadius: BorderRadius.circular(8),
                               child: Padding(
-                                padding: const EdgeInsets.all(16),
+                                padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
                                 child: Column(
                                   children: [
                                     Icon(
@@ -1510,3 +1511,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     );
   }
 }
+
+
+
+

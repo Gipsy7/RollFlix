@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import '../theme/app_theme.dart';
+import '../core/constants/constants.dart';
 
 class ProjectorAnimation extends StatefulWidget {
   final double size;
@@ -28,12 +29,12 @@ class _ProjectorAnimationState extends State<ProjectorAnimation>
     super.initState();
     
     _rotationController = AnimationController(
-      duration: const Duration(seconds: 4), // Mais lento para suavidade
+      duration: AppDurations.cinemaLong, // Mais lento para suavidade
       vsync: this,
     );
 
     _lightController = AnimationController(
-      duration: const Duration(seconds: 3), // Mais lento
+      duration: AppDurations.cinemaMedium, // Mais lento
       vsync: this,
     );
 
@@ -229,7 +230,7 @@ class _PopcornAnimationState extends State<PopcornAnimation>
     super.initState();
     
     _bounceController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: AppDurations.veryLong,
       vsync: this,
     );
     
@@ -455,7 +456,7 @@ class _CurtainAnimationState extends State<CurtainAnimation>
     super.initState();
     
     _curtainController = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: AppDurations.cinemaShort,
       vsync: this,
     );
     

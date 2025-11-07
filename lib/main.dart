@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
 import 'constants/app_constants.dart';
 import 'dart:convert';
+import 'core/constants/constants.dart';
 // SharedPreferences is accessed via PrefsService which is initialized in main()
 import 'config/secure_config.dart';
 import 'config/revenuecat_config.dart';
@@ -19,12 +20,10 @@ import 'services/auth_service.dart';
 import 'services/background_service.dart';
 import 'services/prefs_service.dart';
 import 'utils/page_transitions.dart';
-import 'widgets/genre_wheel.dart';
 import 'widgets/error_widgets.dart';
 import 'widgets/responsive_widgets.dart';
 import 'utils/localized_genres.dart';
 import 'widgets/app_drawer.dart';
-import 'widgets/content_widgets.dart';
 import 'widgets/roll_preferences_dialog.dart';
 import 'controllers/movie_controller.dart';
 import 'controllers/tv_show_controller.dart';
@@ -46,6 +45,11 @@ import 'services/session_service.dart';
 import 'services/subscription_service.dart';
 import 'services/revenuecat_service.dart';
 import 'widgets/subscription_offer_dialog.dart';
+import 'screens/home/widgets/home_app_bar.dart';
+import 'screens/home/widgets/home_header.dart';
+import 'screens/home/widgets/genre_section.dart';
+import 'screens/home/widgets/content_card_section.dart';
+import 'screens/home/widgets/quick_stats_section.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -288,14 +292,14 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
         int waitAttempts = 0;
         String? uid = AuthService.currentUser?.uid;
         while (uid == null && waitAttempts < 10) {
-          await Future.delayed(const Duration(milliseconds: 200));
+          await Future.delayed(AppDurations.fast);
           uid = AuthService.currentUser?.uid;
           waitAttempts++;
           debugPrint('⏳ Waiting for Auth currentUser... attempt=$waitAttempts, uid=$uid');
         }
         debugPrint('🔄 _reloadPreferencesFromCloud -> starting sync (uid=$uid, waited=$waitAttempts)');
         // Timeout defensivo para não travar UI indefinidamente
-        const syncTimeout = Duration(seconds: 12);
+        const syncTimeout = AppDurations.syncTimeout;
 
         // Primeiro: execute um sync central que mescla os caches locais
         // com o Firebase. Isso garante que um login em outro dispositivo
@@ -377,7 +381,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   /// Mostra oferta de assinatura se usuário não tiver plano premium
   void _showSubscriptionOfferIfNeeded() {
     // Aguardar um pouco para garantir que o app carregou completamente
-    Future.delayed(const Duration(seconds: 2), () async {
+    Future.delayed(AppDurations.snackBarShort, () async {
       if (!mounted) return;
       
       // Verificar se usuário está logado
@@ -785,272 +789,15 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildAppBar(bool isMobile) {
-    return SliverAppBar(
-      expandedHeight: isMobile ? 200 : 250,
-      floating: true,
-      pinned: true,
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      leading: Builder(
-        builder: (context) => IconButton(
-          icon: Icon(
-            Icons.menu,
-            color: AppColors.textPrimary,
-            size: 28,
-          ),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-          tooltip: AppLocalizations.of(context)!.menu,
-        ),
-      ),
-      actions: [
-        _buildPreferencesButton(isMobile),
-        SizedBox(width: isMobile ? 8 : 12),
-        _buildSwapButton(isMobile),
-        SizedBox(width: isMobile ? 8 : 16),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: currentGradient,
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.all(isMobile ? 20 : 32),
-              child: _buildHeader(isMobile),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPreferencesButton(bool isMobile) {
-    final hasFilters = _userPreferencesController.rollPreferences.hasFilters;
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeOutCubic,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        gradient: _appModeController.isSeriesMode
-            ? AppColors.secondaryGradient
-            : AppColors.primaryGradient,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _appModeController.isSeriesMode
-              ? AppColors.secondary.withValues(alpha: 0.4)
-              : AppColors.primary.withValues(alpha: 0.4),
-          width: 1.5,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: _openRollPreferences,
-          splashColor: currentAccentColor.withValues(alpha: 0.2),
-          highlightColor: currentAccentColor.withValues(alpha: 0.1),
-          child: AnimatedPadding(
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeOutCubic,
-            padding: EdgeInsets.all(isMobile ? 12 : 14),
-            child: Center(
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    transitionBuilder: (child, animation) => ScaleTransition(
-                      scale: animation,
-                      child: FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.tune,
-                      key: ValueKey(hasFilters),
-                      color: !_appModeController.isSeriesMode
-                          ? Colors.black
-                          : AppColors.textPrimary,
-                      size: isMobile ? 22 : 24,
-                    ),
-                  ),
-                  if (hasFilters)
-                    Positioned(
-                      top: -2,
-                      right: -2,
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeOutBack,
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: !_appModeController.isSeriesMode
-                              ? Colors.black
-                              : AppColors.textPrimary,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: _appModeController.isSeriesMode
-                                ? AppColors.secondary
-                                : AppColors.primary,
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: (!_appModeController.isSeriesMode
-                                      ? Colors.black
-                                      : AppColors.textPrimary)
-                                  .withValues(alpha: 0.4),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.filter_list,
-                          color: !_appModeController.isSeriesMode
-                              ? AppColors.primary
-                              : AppColors.secondary,
-                          size: 6,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSwapButton(bool isMobile) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeOutCubic,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        gradient: _appModeController.isSeriesMode
-            ? AppColors.secondaryGradient
-            : AppColors.primaryGradient,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: _appModeController.isSeriesMode
-              ? AppColors.secondary.withValues(alpha: 0.4)
-              : AppColors.primary.withValues(alpha: 0.4),
-          width: 1.5,
-        ),
-        // Removido boxShadow para eliminar a borda iluminada retangular
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(30),
-          onTap: _toggleContentMode,
-          splashColor: currentAccentColor.withValues(alpha: 0.2),
-          highlightColor: currentAccentColor.withValues(alpha: 0.1),
-          child: AnimatedPadding(
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeOutCubic,
-            padding: EdgeInsets.symmetric(
-              horizontal: isMobile ? 14 : 18,
-              vertical: 10,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) => RotationTransition(
-                    turns: animation,
-                    child: ScaleTransition(
-                      scale: animation,
-                      child: FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      ),
-                    ),
-                  ),
-                  child: Icon(
-                    _appModeController.isSeriesMode ? Icons.tv : Icons.movie,
-                    key: ValueKey(_appModeController.isSeriesMode),
-                    color: !_appModeController.isSeriesMode 
-                        ? Colors.black 
-                        : AppColors.textPrimary,
-                    size: isMobile ? 20 : 22,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) => SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.2, 0),
-                      end: Offset.zero,
-                    ).animate(CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeOutCubic,
-                    )),
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    ),
-                  ),
-                  child: SafeText(
-                    _appModeController.isSeriesMode ? AppLocalizations.of(context)!.seriesUpper : AppLocalizations.of(context)!.moviesUpper,
-                    key: ValueKey(_appModeController.isSeriesMode),
-                    style: (isMobile
-                        ? AppTextStyles.labelMedium
-                        : AppTextStyles.labelLarge).copyWith(
-                      color: !_appModeController.isSeriesMode 
-                          ? Colors.black 
-                          : AppColors.textPrimary,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.5,
-                      shadows: [
-                        Shadow(
-                          color: AppColors.backgroundDark.withValues(alpha: 0.3),
-                          blurRadius: 4,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) => RotationTransition(
-                    turns: Tween<double>(
-                      begin: 0.25,
-                      end: 0,
-                    ).animate(CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.elasticOut,
-                    )),
-                    child: ScaleTransition(
-                      scale: animation,
-                      child: FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      ),
-                    ),
-                  ),
-                  child: Icon(
-                    Icons.swap_horiz,
-                    key: ValueKey('swap_${_appModeController.isSeriesMode}'),
-                    color: !_appModeController.isSeriesMode 
-                          ? Colors.black 
-                          : AppColors.textPrimary,
-                    size: isMobile ? 20 : 22,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+    return HomeAppBar(
+      isMobile: isMobile,
+      currentGradient: currentGradient,
+      currentAccentColor: currentAccentColor,
+      appModeController: _appModeController,
+      userPreferencesController: _userPreferencesController,
+      onToggleContentMode: _toggleContentMode,
+      onOpenPreferences: _openRollPreferences,
+      buildHeader: () => _buildHeader(isMobile),
     );
   }
 
@@ -1064,87 +811,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildHeader(bool isMobile) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
-          children: [
-            _buildLogo(isMobile),
-            const SizedBox(width: 20),
-            Expanded(child: _buildTitleSection(isMobile)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLogo(bool isMobile) {
-    return Container(
-      width: isMobile ? 60 : 70,
-      height: isMobile ? 60 : 70,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        gradient: AppColors.glassGradient,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.3),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Icon(
-        Icons.local_movies,
-        color: AppColors.textPrimary,
-        size: isMobile ? 40 : 48,
-      ),
-    );
-  }
-
-  Widget _buildTitleSection(bool isMobile) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SafeText(
-          AppConstants.appName,
-          style: AppTextStyles.headlineLarge.copyWith(
-            fontSize: isMobile ? 28 : 36,
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w700,
-            shadows: [
-              Shadow(
-                color: AppColors.backgroundDark.withValues(alpha: 0.5),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-              
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        SafeText(
-          AppLocalizations.of(context)!.rollAndChillWithMode(currentModeLabel),
-          style: AppTextStyles.bodyLarge.copyWith(
-            color: AppColors.textPrimary.withValues(alpha: 0.9),
-            fontWeight: FontWeight.w400,
-            fontStyle: FontStyle.italic,
-            fontSize: isMobile ? 14 : 16,
-            shadows: [
-              Shadow(
-                color: AppColors.backgroundDark.withValues(alpha: 0.3),
-                blurRadius: 4,
-                offset: const Offset(1, 1),
-              ),
-            ],
-          ),
-        ),
-      ],
+    return HomeHeader(
+      isMobile: isMobile,
+      currentModeLabel: currentModeLabel,
     );
   }
 
@@ -1188,85 +857,31 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   }
 
   Widget _buildGenreSelection(bool isMobile) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Espaçamento superior reduzido
-        SizedBox(height: isMobile ? 16 : 20),
-        
-        // Header com padding apenas nas laterais
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
-          child: _buildGenreHeader(isMobile),
-        ),
-        
-        const SizedBox(height: 20),
-        
-        // GenreWheel otimizado - altura reduzida
-        SizedBox(
-          height: isMobile ? 350 : 400,
-          width: double.infinity,
-          child: GenreWheel(
-            genres: localizedGenres,
-            selectedGenre: getLocalizedSelectedGenre(),
-            onGenreSelected: (localizedGenre) {
-              final originalGenre = mapLocalizedToOriginal(localizedGenre);
-              _appModeController.selectGenre(originalGenre);
-            },
-            onRandomSpin: () {},
-            onRollContent: _handleRollContent,
-            isLoadingContent: _isLoading,
-            accentColor: _appModeController.isSeriesMode ? currentAccentColor : null,
-            isSeriesMode: _appModeController.isSeriesMode,
-          ),
-        ),
-        
-        // Espaçamento inferior reduzido
-        SizedBox(height: isMobile ? 16 : 20),
-      ],
-    );
-  }
-
-  Widget _buildGenreHeader(bool isMobile) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Icon(
-            Icons.casino,
-            color: currentAccentColor,
-            size: 24,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Flexible(
-          child: SafeText(
-            '${AppLocalizations.of(context)!.chooseGenreOf} $currentContentType',
-            style: (isMobile 
-              ? AppTextStyles.headlineSmall
-              : AppTextStyles.headlineMedium).copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-          ),
-        ),
-      ],
+    return GenreSection(
+      isMobile: isMobile,
+      localizedGenres: localizedGenres,
+      selectedGenre: getLocalizedSelectedGenre(),
+      isLoadingContent: _isLoading,
+      currentAccentColor: currentAccentColor,
+      isSeriesMode: _appModeController.isSeriesMode,
+      currentContentType: currentContentType,
+      onGenreSelected: (localizedGenre) {
+        final originalGenre = mapLocalizedToOriginal(localizedGenre);
+        _appModeController.selectGenre(originalGenre);
+      },
+      onRollContent: _handleRollContent,
     );
   }
 
   Widget _buildErrorMessage() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.1), // Corrigido para withOpacity
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.red.withValues(alpha: AppNumbers.highlightOpacity),
+        borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
         border: Border.all(
-          color: Colors.red.withValues(alpha: 0.3), // Corrigido para withOpacity
-          width: 1,
+          color: Colors.red.withValues(alpha: AppNumbers.glassOpacity),
+          width: AppNumbers.borderWidth / 1.5,
         ),
       ),
       child: Row(
@@ -1298,210 +913,28 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     debugPrint('movieController.selectedMovie: ${_movieController.selectedMovie?.title}');
     debugPrint('tvShowController.selectedShow: ${_tvShowController.selectedShow?.name}');
     
-    return Column(
-      children: [
-        // Contador unificado
-        ContentCounter(
-          count: _appModeController.isSeriesMode 
-              ? _tvShowController.showCount 
-              : _movieController.movieCount,
-          isSeriesMode: _appModeController.isSeriesMode,
-        ),
-        const SizedBox(height: 12),
-        // Card do filme ou série
-        if (_appModeController.isSeriesMode && _selectedTVShow != null)
-          ContentCard(
-            tvShow: _selectedTVShow,
-            animation: movieCardAnimation,
-            currentGradient: currentGradient,
-            accentColor: currentAccentColor,
-            isMobile: isMobile,
-          )
-        else if (!_appModeController.isSeriesMode && _selectedMovie != null)
-          ContentCard(
-            movie: _selectedMovie,
-            animation: movieCardAnimation,
-            currentGradient: currentGradient,
-            accentColor: AppColors.primary,
-            isMobile: isMobile,
-          )
-        else
-          const SizedBox.shrink(),
-      ],
+    return ContentCardSection(
+      isMobile: isMobile,
+      isSeriesMode: _appModeController.isSeriesMode,
+      selectedMovie: _selectedMovie,
+      selectedTVShow: _selectedTVShow,
+      movieCardAnimation: movieCardAnimation,
+      currentGradient: currentGradient,
+      currentAccentColor: currentAccentColor,
+      primaryColor: AppColors.primary,
+      movieCount: _movieController.movieCount,
+      tvShowCount: _tvShowController.showCount,
     );
   }
 
   Widget _buildQuickStats(bool isMobile) {
-    return ListenableBuilder(
-      listenable: _userPreferencesController,
-      builder: (context, _) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.1),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildResourceItem(
-                icon: Icons.play_circle_filled,
-                label: AppLocalizations.of(context)!.rolls,
-                resourceType: ResourceType.roll,
-                color: Colors.blue,
-                isMobile: isMobile,
-              ),
-              _buildResourceItem(
-                icon: Icons.favorite,
-                label: AppLocalizations.of(context)!.favorites,
-                resourceType: ResourceType.favorite,
-                color: Colors.red,
-                isMobile: isMobile,
-              ),
-              _buildResourceItem(
-                icon: Icons.check_circle,
-                label: AppLocalizations.of(context)!.watched,
-                resourceType: ResourceType.watched,
-                color: Colors.green,
-                isMobile: isMobile,
-              ),
-            ],
-          ),
-        );
-      },
+    return QuickStatsSection(
+      isMobile: isMobile,
+      userPreferencesController: _userPreferencesController,
+      isSeriesMode: _appModeController.isSeriesMode,
+      currentAccentColor: currentAccentColor,
+      onAdTapped: _showAdToRechargeResource,
     );
-  }
-
-  Widget _buildResourceItem({
-    required IconData icon,
-    required String label,
-    required ResourceType resourceType,
-    required Color color,
-    required bool isMobile,
-  }) {
-  final uses = _userPreferencesController.userResources.getUses(resourceType);
-  final canUse = _userPreferencesController.canUseResource(resourceType);
-  final isSubscribed = SubscriptionService.isSubscribedCached;
-    final cooldown = _userPreferencesController.getResourceCooldown(resourceType);
-    final maxUses = UserResources.maxUses;
-
-    String displayValue;
-    Color displayColor = color;
-    String? subtitle;
-    bool canWatchAd = uses < maxUses; // Pode assistir anúncio se tiver menos de 5
-
-    if (isSubscribed) {
-      // Usuário assinante: exibe infinito e não permite ver anúncios para recarregar
-      displayValue = '∞';
-      subtitle = 'Ilimitado';
-      canWatchAd = false;
-      displayColor = color;
-    } else {
-      if (canUse) {
-        displayValue = uses.toString();
-        subtitle = AppLocalizations.of(context)!.available;
-      } else if (cooldown != null) {
-        // Formatar tempo restante
-        final hours = cooldown.inHours;
-        final minutes = cooldown.inMinutes.remainder(60);
-        displayValue = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
-        displayColor = Colors.grey;
-        subtitle = AppLocalizations.of(context)!.reloading;
-      } else {
-        displayValue = '0';
-        displayColor = Colors.grey;
-        subtitle = AppLocalizations.of(context)!.unavailable;
-      }
-    }
-
-    // Widget base: usa constraints para manter boa responsividade e área de toque
-    final minWidth = isMobile ? 72.0 : 110.0;
-    final minHeight = isMobile ? 64.0 : 80.0;
-
-    final content = ConstrainedBox(
-      constraints: BoxConstraints(minWidth: minWidth, minHeight: minHeight),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: displayColor, size: isMobile ? 20 : 24),
-            const SizedBox(height: 6),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                displayValue,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: (isMobile ? AppTextStyles.labelLarge : AppTextStyles.headlineSmall).copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 2),
-            Flexible(
-              child: Text(
-                subtitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: canUse ? Colors.white.withValues(alpha: 0.7) : Colors.red.withValues(alpha: 0.7),
-                  fontSize: isMobile ? 10 : 12,
-                ),
-              ),
-            ),
-            // Indicador visual de que pode assistir anúncio
-            if (canWatchAd)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.videocam,
-                      size: isMobile ? 12 : 14,
-                      color: AppColors.primary.withValues(alpha: 0.9),
-                    ),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        AppLocalizations.of(context)!.tapPlusOne,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: isMobile ? 10 : 12,
-                          color: AppColors.primary.withValues(alpha: 0.9),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-
-    // Envolve num Material para garantir efeito ripple correto e área de toque maior
-    final wrapped = Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: canWatchAd ? () => _showAdToRechargeResource(resourceType, label) : null,
-        borderRadius: BorderRadius.circular(12),
-        splashFactory: InkRipple.splashFactory,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          child: content,
-        ),
-      ),
-    );
-
-    return wrapped;
   }
 
   /// Mostra anúncio para recarregar recurso
@@ -1547,13 +980,13 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
               isSubscribed ? '∞ $resourceName' : AppLocalizations.of(context)!.resourceCount(uses, maxUses, resourceName),
               style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: AppNumbers.spacingMedium + 4),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(AppNumbers.spacingSmall + 4),
               decoration: BoxDecoration(
-                color: accentColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: accentColor, width: 1),
+                color: accentColor.withValues(alpha: AppNumbers.highlightOpacity),
+                borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
+                border: Border.all(color: accentColor, width: AppNumbers.borderWidth / 1.5),
               ),
               child: Row(
                 children: [
@@ -1586,9 +1019,12 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
             style: ElevatedButton.styleFrom(
               backgroundColor: accentColor,
               foregroundColor: _appModeController.isSeriesMode ? Colors.white : Colors.black,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: EdgeInsets.symmetric(
+                horizontal: AppNumbers.paddingMobile, 
+                vertical: AppNumbers.spacingSmall + 4
+              ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
               ),
             ),
           ),

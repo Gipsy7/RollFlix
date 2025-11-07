@@ -4,6 +4,7 @@ import '../models/actor_details.dart';
 import '../models/movie.dart';
 import '../services/movie_service.dart';
 import '../theme/app_theme.dart';
+import '../core/constants/constants.dart';
 import '../utils/page_transitions.dart';
 import 'movie_details_screen.dart';
 
@@ -89,7 +90,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 500),
+      duration: AppDurations.slow,
       color: AppColors.backgroundDark,
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -102,7 +103,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
               foregroundColor: AppColors.textPrimary,
               flexibleSpace: FlexibleSpaceBar(
                 title: AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 500),
+                  duration: AppDurations.slow,
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
@@ -162,7 +163,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
             if (isLoading)
               const SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.all(32.0),
+                  padding: EdgeInsets.all(AppNumbers.paddingDesktop),
                   child: Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -171,7 +172,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
             else
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -180,7 +181,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                         elevation: 2,
                         color: AppColors.surfaceDark,
                         child: Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -189,7 +190,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                                   Icon(Icons.info, color: AppColors.primary),
                                   const SizedBox(width: 8),
                                   AnimatedDefaultTextStyle(
-                                    duration: const Duration(milliseconds: 500),
+                                    duration: AppDurations.slow,
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -243,7 +244,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                           elevation: 2,
                           color: AppColors.surfaceDark,
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -252,7 +253,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                                     Icon(Icons.description, color: AppColors.primary),
                                     const SizedBox(width: 8),
                                     AnimatedDefaultTextStyle(
-                                      duration: const Duration(milliseconds: 500),
+                                      duration: AppDurations.slow,
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -284,7 +285,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                           elevation: 2,
                           color: AppColors.surfaceDark,
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -293,7 +294,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                                     Icon(Icons.movie, color: AppColors.primary),
                                     const SizedBox(width: 8),
                                     AnimatedDefaultTextStyle(
-                                      duration: const Duration(milliseconds: 500),
+                                      duration: AppDurations.slow,
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -315,7 +316,7 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
                                         onTap: () => _navigateToMovieDetails(movie),
                                         child: Container(
                                           width: 120,
-                                          margin: const EdgeInsets.only(right: 12),
+                                          margin: EdgeInsets.only(right: AppNumbers.spacingSmall + 4),
                                           child: Column(
                                             children: [
                                               Expanded(
@@ -383,3 +384,5 @@ class _ActorDetailsScreenState extends State<ActorDetailsScreen> {
     );
   }
 }
+
+

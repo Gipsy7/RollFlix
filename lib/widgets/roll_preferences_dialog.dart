@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/roll_preferences.dart';
 import '../theme/app_theme.dart';
+import '../core/constants/constants.dart';
 import '../controllers/user_preferences_controller.dart';
 import '../controllers/locale_controller.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
@@ -93,7 +94,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height * 0.8,
             ),
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(AppNumbers.spacingLarge + 4),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,7 +169,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                         style: OutlinedButton.styleFrom(
                           foregroundColor: _secondaryTextColor,
                           side: BorderSide(color: _secondaryTextColor.withValues(alpha: 0.3)),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: AppNumbers.spacingMedium + 4),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -184,7 +185,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _accentColor,
                           foregroundColor: AppColors.backgroundDark,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: AppNumbers.spacingMedium + 4),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -218,7 +219,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
 
   Widget _buildYearRangePicker() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
       decoration: BoxDecoration(
         color: _surfaceOverlayColor,
         borderRadius: BorderRadius.circular(12),
@@ -243,7 +244,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                     InkWell(
                       onTap: () => _selectYear(true),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingSmall + 4, vertical: AppNumbers.buttonPaddingVertical),
                         decoration: BoxDecoration(
                           color: _surfaceColor,
                           borderRadius: BorderRadius.circular(8),
@@ -279,7 +280,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
                     InkWell(
                       onTap: () => _selectYear(false),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        padding: EdgeInsets.symmetric(horizontal: AppNumbers.spacingSmall + 4, vertical: AppNumbers.buttonPaddingVertical),
                         decoration: BoxDecoration(
                           color: _surfaceColor,
                           borderRadius: BorderRadius.circular(8),
@@ -333,7 +334,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
       builder: (context) => Dialog(
         backgroundColor: _backgroundColor,
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(AppNumbers.spacingLarge + 4),
           constraints: const BoxConstraints(maxHeight: 400, maxWidth: 300),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -427,7 +428,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
       },
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(AppNumbers.spacingSmall + 4),
         decoration: BoxDecoration(
           color: isSelected 
               ? _accentColor.withValues(alpha: widget.isSeriesMode ? 0.25 : 0.2)
@@ -484,7 +485,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
 
   Widget _buildAdultContentToggle() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
       decoration: BoxDecoration(
         color: _surfaceOverlayColor,
         borderRadius: BorderRadius.circular(12),
@@ -562,7 +563,7 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
         decoration: BoxDecoration(
           color: _surfaceOverlayColor,
           borderRadius: BorderRadius.circular(12),
@@ -640,3 +641,5 @@ class _RollPreferencesDialogState extends State<RollPreferencesDialog> {
     }
   }
 }
+
+

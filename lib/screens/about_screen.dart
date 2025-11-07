@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../core/constants/constants.dart';
 import '../widgets/responsive_widgets.dart';
 import '../controllers/app_mode_controller.dart';
 import '../controllers/locale_controller.dart';
@@ -66,7 +67,7 @@ class _AboutScreenState extends State<AboutScreen> {
             elevation: 0,
           ),
           body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -318,7 +319,7 @@ class _AboutScreenState extends State<AboutScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
+          padding: EdgeInsets.all(AppNumbers.buttonPaddingVertical),
           decoration: BoxDecoration(
             color: featureColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
@@ -412,3 +413,4 @@ class _AboutScreenState extends State<AboutScreen> {
     );
   }
 }
+

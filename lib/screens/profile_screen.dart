@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import '../services/session_service.dart';
 import '../theme/app_theme.dart';
+import '../core/constants/constants.dart';
 import '../widgets/responsive_widgets.dart';
 import '../widgets/ux_components.dart';
 import '../controllers/favorites_controller.dart';
@@ -133,7 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ? '✅ Assinatura ativa: ${SubscriptionService.planLabel(plan)}'
                 : '❌ Nenhuma assinatura ativa encontrada'
             ),
-            duration: const Duration(seconds: 3),
+            duration: AppDurations.snackBarMedium,
           ),
         );
       }
@@ -405,7 +406,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         : AppColors.cinemaGradient;  // Gradiente dourado para filmes
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(AppNumbers.spacingLarge + 4),
       decoration: BoxDecoration(
         gradient: gradient,
         borderRadius: BorderRadius.circular(16),
@@ -475,7 +476,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -555,7 +556,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Botão de verificação manual (para debug/troubleshooting)
                     if (!active)
                       Padding(
-                        padding: const EdgeInsets.only(top: 8),
+                        padding: EdgeInsets.only(top: AppNumbers.spacingSmall),
                         child: OutlinedButton.icon(
                           onPressed: _isProcessingPurchase ? null : _forceCheckSubscription,
                           icon: Icon(Icons.refresh, size: 18),
@@ -568,7 +569,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     if (active && plan != Plan.free)
                       Padding(
-                        padding: const EdgeInsets.only(top: 8),
+                        padding: EdgeInsets.only(top: AppNumbers.spacingSmall),
                         child: OutlinedButton.icon(
                           onPressed: _isProcessingPurchase ? null : _cancelSubscription,
                           icon: Icon(Icons.cancel, size: 18),
@@ -591,7 +592,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildInfoRow(IconData icon, String label, String value, Color primaryColor) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: AppNumbers.spacingSmall),
       child: Row(
         children: [
           Icon(icon, color: primaryColor, size: 24),
@@ -640,7 +641,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppNumbers.spacingMedium + 4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -768,3 +769,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+
+
+

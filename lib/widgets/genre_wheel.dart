@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../core/constants/constants.dart';
 import 'package:rollflix/l10n/app_localizations.dart';
 
 class GenreWheel extends StatefulWidget {
@@ -58,12 +59,12 @@ class _GenreWheelState extends State<GenreWheel>
     super.initState();
     
     _scrollController = AnimationController(
-      duration: const Duration(milliseconds: 1600),
+      duration: AppDurations.wheel,
       vsync: this,
     );
     
     _pendulumController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: AppDurations.slow,
       vsync: this,
     );
     
