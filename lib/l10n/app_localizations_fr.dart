@@ -668,6 +668,24 @@ class AppLocalizationsFr extends AppLocalizations {
   String get planAnnual => 'Forfait Annuel';
 
   @override
+  String get plan => 'Forfait';
+
+  @override
+  String get freePlan => 'Gratuit';
+
+  @override
+  String get connectedVia => 'Connecté via';
+
+  @override
+  String get emailVerified => 'Correo electrónico verificado';
+
+  @override
+  String get cancelSubscription => 'Annuler l\'abonnement';
+
+  @override
+  String get inactive => 'Inactif';
+
+  @override
   String get economize => 'ÉCONOMISEZ';
 
   @override
@@ -681,6 +699,25 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String subscriptionError(Object error) {
     return 'Erreur lors du traitement de l\'abonnement : $error';
+  }
+
+  @override
+  String get cancelSubscriptionConfirmMessage => 'Voulez-vous annuler votre abonnement ? Si l\'achat a été effectué il y a moins de 5 jours, vous pouvez demander un remboursement.';
+
+  @override
+  String get refundAvailableTitle => 'Remboursement Disponible';
+
+  @override
+  String refundAvailableContent(Object days, Object appUserId, Object productId, Object purchaseDate) {
+    return 'Votre achat a été effectué il y a $days jours. Vous pouvez demander un remboursement en ouvrant le Google Play Store :\n\n1. Ouvrez Google Play Store\n2. Menu → Abonnements\n3. Sélectionnez RollFlix\n4. Appuyez sur \"Annuler l\'abonnement\"\n5. Sélectionnez \"Demander un remboursement\"\n\nInfos support :\nID utilisateur : $appUserId\nProduit : $productId\nDate d\'achat : $purchaseDate';
+  }
+
+  @override
+  String get cancelRecurrenceTitle => 'Annuler le renouvellement';
+
+  @override
+  String cancelRecurrenceContent(Object days, Object appUserId, Object productId, Object purchaseDate) {
+    return 'Votre achat a été effectué il y a $days jours (période de remboursement expirée).\n\nPour annuler le renouvellement automatique, ouvrez le Google Play Store :\n\n1. Ouvrez Google Play Store\n2. Menu → Abonnements\n3. Sélectionnez RollFlix\n4. Appuyez sur \"Annuler l\'abonnement\"\n\nVotre plan restera actif jusqu\'à la fin de la période payée.\n\nInfos support :\nID utilisateur : $appUserId\nProduit : $productId\nDate d\'achat : $purchaseDate';
   }
 
   @override

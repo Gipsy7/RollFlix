@@ -668,6 +668,24 @@ class AppLocalizationsPt extends AppLocalizations {
   String get planAnnual => 'Plano Anual';
 
   @override
+  String get plan => 'Plano';
+
+  @override
+  String get freePlan => 'Grátis';
+
+  @override
+  String get connectedVia => 'Conectado via';
+
+  @override
+  String get emailVerified => 'Email verificado';
+
+  @override
+  String get cancelSubscription => 'Cancelar Assinatura';
+
+  @override
+  String get inactive => 'Inativo';
+
+  @override
   String get economize => 'ECONOMIZE';
 
   @override
@@ -681,6 +699,25 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String subscriptionError(Object error) {
     return 'Erro ao processar assinatura: $error';
+  }
+
+  @override
+  String get cancelSubscriptionConfirmMessage => 'Deseja cancelar sua assinatura? Se a compra foi há menos de 5 dias, você poderá solicitar reembolso.';
+
+  @override
+  String get refundAvailableTitle => 'Reembolso Disponível';
+
+  @override
+  String refundAvailableContent(Object days, Object appUserId, Object productId, Object purchaseDate) {
+    return 'Sua compra foi feita há $days dias. Você pode solicitar reembolso abrindo o Google Play Store:\n\n1. Abra o Google Play Store\n2. Menu → Assinaturas\n3. Selecione RollFlix\n4. Toque em \"Cancelar assinatura\"\n5. Selecione \"Solicitar reembolso\"\n\n📋 Informações para suporte:\nID do Usuário: $appUserId\nProduto: $productId\nData da compra: $purchaseDate';
+  }
+
+  @override
+  String get cancelRecurrenceTitle => 'Cancelar Recorrência';
+
+  @override
+  String cancelRecurrenceContent(Object days, Object appUserId, Object productId, Object purchaseDate) {
+    return 'Sua compra foi feita há $days dias (prazo de reembolso expirado).\n\nPara cancelar a renovação automática, abra o Google Play Store:\n\n1. Abra o Google Play Store\n2. Menu → Assinaturas\n3. Selecione RollFlix\n4. Toque em \"Cancelar assinatura\"\n\nSeu plano permanecerá ativo até o fim do período pago.\n\n📋 Informações para suporte:\nID do Usuário: $appUserId\nProduto: $productId\nData da compra: $purchaseDate';
   }
 
   @override

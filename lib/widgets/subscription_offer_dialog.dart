@@ -61,9 +61,11 @@ class _SubscriptionOfferDialogState extends State<SubscriptionOfferDialog> {
 
       if (mounted) {
         Navigator.of(context).pop(true); // Fecha o dialog com sucesso
+        final loc = AppLocalizations.of(context)!;
+        final planLabel = plan == Plan.monthly ? loc.planMonthly : plan == Plan.annual ? loc.planAnnual : loc.freePlan;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✅ ${AppLocalizations.of(context)!.subscriptionActivated(SubscriptionService.planLabel(plan))}'),
+            content: Text('✅ ${loc.subscriptionActivated(planLabel)}'),
             backgroundColor: Colors.green,
           ),
         );

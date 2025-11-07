@@ -668,6 +668,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get planAnnual => 'Annual Plan';
 
   @override
+  String get plan => 'Plan';
+
+  @override
+  String get freePlan => 'Free';
+
+  @override
+  String get connectedVia => 'Connected via';
+
+  @override
+  String get emailVerified => 'Email verified';
+
+  @override
+  String get cancelSubscription => 'Cancel Subscription';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
   String get economize => 'SAVE';
 
   @override
@@ -681,6 +699,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String subscriptionError(Object error) {
     return 'Error processing subscription: $error';
+  }
+
+  @override
+  String get cancelSubscriptionConfirmMessage => 'Do you want to cancel your subscription? If the purchase was made less than 5 days ago, you may request a refund.';
+
+  @override
+  String get refundAvailableTitle => 'Refund Available';
+
+  @override
+  String refundAvailableContent(Object days, Object appUserId, Object productId, Object purchaseDate) {
+    return 'Your purchase was made $days days ago. You can request a refund by opening the Google Play Store:\n\n1. Open the Google Play Store\n2. Menu → Subscriptions\n3. Select RollFlix\n4. Tap \"Cancel subscription\"\n5. Select \"Request a refund\"\n\nSupport info:\nUser ID: $appUserId\nProduct: $productId\nPurchase date: $purchaseDate';
+  }
+
+  @override
+  String get cancelRecurrenceTitle => 'Cancel Recurrence';
+
+  @override
+  String cancelRecurrenceContent(Object days, Object appUserId, Object productId, Object purchaseDate) {
+    return 'Your purchase was made $days days ago (refund window expired).\n\nTo cancel auto-renewal, open the Google Play Store:\n\n1. Open the Google Play Store\n2. Menu → Subscriptions\n3. Select RollFlix\n4. Tap \"Cancel subscription\"\n\nYour plan will remain active until the end of the paid period.\n\nSupport info:\nUser ID: $appUserId\nProduct: $productId\nPurchase date: $purchaseDate';
   }
 
   @override

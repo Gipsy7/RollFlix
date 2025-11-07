@@ -1365,6 +1365,42 @@ abstract class AppLocalizations {
   /// **'Annual Plan'**
   String get planAnnual;
 
+  /// No description provided for @plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get plan;
+
+  /// No description provided for @freePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get freePlan;
+
+  /// No description provided for @connectedVia.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected via'**
+  String get connectedVia;
+
+  /// No description provided for @emailVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Email verified'**
+  String get emailVerified;
+
+  /// No description provided for @cancelSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Subscription'**
+  String get cancelSubscription;
+
+  /// No description provided for @inactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get inactive;
+
   /// No description provided for @economize.
   ///
   /// In en, this message translates to:
@@ -1388,6 +1424,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error processing subscription: {error}'**
   String subscriptionError(Object error);
+
+  /// No description provided for @cancelSubscriptionConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to cancel your subscription? If the purchase was made less than 5 days ago, you may request a refund.'**
+  String get cancelSubscriptionConfirmMessage;
+
+  /// No description provided for @refundAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund Available'**
+  String get refundAvailableTitle;
+
+  /// No description provided for @refundAvailableContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Your purchase was made {days} days ago. You can request a refund by opening the Google Play Store:\n\n1. Open the Google Play Store\n2. Menu → Subscriptions\n3. Select RollFlix\n4. Tap \"Cancel subscription\"\n5. Select \"Request a refund\"\n\nSupport info:\nUser ID: {appUserId}\nProduct: {productId}\nPurchase date: {purchaseDate}'**
+  String refundAvailableContent(Object days, Object appUserId, Object productId, Object purchaseDate);
+
+  /// No description provided for @cancelRecurrenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Recurrence'**
+  String get cancelRecurrenceTitle;
+
+  /// No description provided for @cancelRecurrenceContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Your purchase was made {days} days ago (refund window expired).\n\nTo cancel auto-renewal, open the Google Play Store:\n\n1. Open the Google Play Store\n2. Menu → Subscriptions\n3. Select RollFlix\n4. Tap \"Cancel subscription\"\n\nYour plan will remain active until the end of the paid period.\n\nSupport info:\nUser ID: {appUserId}\nProduct: {productId}\nPurchase date: {purchaseDate}'**
+  String cancelRecurrenceContent(Object days, Object appUserId, Object productId, Object purchaseDate);
 
   /// No description provided for @movieSeriesRoller.
   ///

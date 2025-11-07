@@ -140,11 +140,56 @@ class RevenueCatService {
   /// Returns whether the configured premium entitlement is active
   bool _isPremiumActive(CustomerInfo info) {
     try {
-      final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
-      if (ent == null) return false;
-      return ent.isActive;
+      return RevenueCatService.isPremiumActiveFromInfo(info);
     } catch (e) {
       debugPrint('⚠️ Error checking entitlement: $e');
+      return false;
+    }
+  }
+
+  /// Public helper to evaluate entitlement info with stricter rules.
+  ///
+  /// This checks multiple signals (isActive, expirationDate, willRenew and
+  /// latestPurchaseDate) to avoid treating cancelled/refunded purchases as
+  /// active in edge cases.
+  static bool isPremiumActiveFromInfo(CustomerInfo info) {
+    try {
+      final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
+      if (ent == null) return false;
+
+      // Basic check
+      if (!ent.isActive) return false;
+
+      final now = DateTime.now().toUtc();
+
+      // Parse expiration date if present
+      DateTime? expiration;
+      if (ent.expirationDate != null) {
+        try {
+          expiration = DateTime.parse(ent.expirationDate!).toUtc();
+        } catch (_) {
+          expiration = null;
+        }
+      }
+
+      // If we have an expiration that is already past, it's not active
+      if (expiration != null && expiration.isBefore(now)) return false;
+
+      // If willRenew is false (user cancelled), be conservative: only treat
+      // as active if the latest purchase is recent (e.g. within 365 days)
+      if (ent.willRenew == false) {
+        try {
+          final latest = DateTime.parse(ent.latestPurchaseDate).toUtc();
+          if (now.difference(latest) > const Duration(days: 365)) return false;
+        } catch (_) {
+          return false;
+        }
+      }
+
+      // Passed all heuristics — consider premium active
+      return true;
+    } catch (e) {
+      debugPrint('⚠️ Error evaluating premium entitlement heuristics: $e');
       return false;
     }
   }

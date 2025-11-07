@@ -217,6 +217,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
   bool _shouldAnimateCard = false;
   bool _showResultCard = false;
 
+  // Controla se a oferta de assinatura já foi mostrada nesta sessão
+  bool _subscriptionOfferShownThisSession = false;
+
   // Getters para acessar estado dos controllers
   Movie? get _selectedMovie => _movieController.selectedMovie;
   TVShow? get _selectedTVShow => _tvShowController.selectedShow;
@@ -389,17 +392,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
       // Verificar se tem plano ativo
       final isActive = await SubscriptionService.isSubscriptionActive();
       if (isActive) return; // Não mostrar se já tem plano
-      
-      // Verificar se já mostrou recentemente (evitar spam)
-      final lastShownStr = PrefsService.getString('subscription_offer_last_shown');
-      final now = DateTime.now().millisecondsSinceEpoch;
-      if (lastShownStr != null) {
-        try {
-          final lastShown = int.parse(lastShownStr);
-          final daysSinceLastShown = (now - lastShown) ~/ (1000 * 60 * 60 * 24);
-          if (daysSinceLastShown < 3) return; // Mostrar apenas a cada 3 dias
-        } catch (_) {}
-      }
+
+      // Mostrar sempre para contas FREE quando abrirem o app (uma vez por sessão)
+      if (_subscriptionOfferShownThisSession) return;
       
       // Mostrar dialog
       if (mounted) {
@@ -409,8 +404,8 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           builder: (context) => const SubscriptionOfferDialog(),
         );
         
-        // Salvar timestamp
-        await PrefsService.setString('subscription_offer_last_shown', now.toString());
+        // Marca como mostrada para esta sessão para evitar múltiplas aparições
+        _subscriptionOfferShownThisSession = true;
       }
     });
   }

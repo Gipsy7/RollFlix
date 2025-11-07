@@ -43,6 +43,9 @@ class SubscriptionService {
 
   /// Verifica com o RevenueCat informações mais recentes da conta do usuário
   /// e atualiza o Firestore caso encontre assinaturas ativas.
+  /// 
+  /// IMPORTANTE: Esta função sempre consulta o RevenueCat para detectar
+  /// cancelamentos/estornos recentes. Rate-limit de 1 hora.
   ///
   /// Esta chamada é rate-limited via SharedPreferences (evita chamadas excessivas).
   static Future<void> _maybeRefreshFromRevenueCat(String userId) async {
@@ -58,13 +61,16 @@ class SubscriptionService {
         }
       }
 
-      // Se já checamos nas últimas 12 horas, não checar de novo
-      if (last != null && DateTime.now().difference(last) < const Duration(hours: 12)) {
+      // Se já checamos na última hora, não checar de novo
+      // (Reduzido de 12h para 1h para detectar cancelamentos mais rapidamente)
+      if (last != null && DateTime.now().difference(last) < const Duration(hours: 1)) {
         debugPrint('🔁 Subscription refresh skipped (last checked: $last)');
         return;
       }
 
       debugPrint('🔄 Refreshing subscription from RevenueCat for user $userId');
+      debugPrint('📊 Checking for active entitlements, cancellations, and refunds...');
+      
       final info = await RevenueCatService.instance.getCustomerInfo();
       if (info == null) {
         debugPrint('⚠️ No customer info returned from RevenueCat');
@@ -72,8 +78,27 @@ class SubscriptionService {
         return;
       }
 
-      final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
-      if (ent != null && ent.isActive) {
+      debugPrint('📋 CustomerInfo received: ${info.entitlements.all.length} entitlement(s)');
+      
+      // Use RevenueCatService's heuristics to determine if user is premium
+      final isPremium = RevenueCatService.isPremiumActiveFromInfo(info);
+      debugPrint('💎 Premium status from RevenueCat: $isPremium');
+      
+      if (isPremium) {
+        final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
+        if (ent == null) {
+          debugPrint('⚠️ Entitlement expected but not found in info');
+          await PrefsService.setString(key, DateTime.now().toUtc().toIso8601String());
+          return;
+        }
+        
+        debugPrint('✅ Active entitlement found:');
+        debugPrint('   - Product: ${ent.productIdentifier}');
+        debugPrint('   - Active: ${ent.isActive}');
+        debugPrint('   - Will renew: ${ent.willRenew}');
+        debugPrint('   - Expiry: ${ent.expirationDate}');
+        debugPrint('   - Latest purchase: ${ent.latestPurchaseDate}');
+        
         // Parsear datas
         DateTime now = DateTime.now().toUtc();
         DateTime expiry = now.add(const Duration(days: 365));
@@ -114,8 +139,47 @@ class SubscriptionService {
         // Atualiza Firestore com as informações obtidas
         await setSubscription(plan, start, expiry, purchaseInfo: purchaseInfo);
         debugPrint('✅ Subscription refreshed from RevenueCat and saved to Firestore');
+        debugPrint('   - Plan: $plan');
+        debugPrint('   - Start: $start');
+        debugPrint('   - Expiry: $expiry');
       } else {
-        debugPrint('ℹ️ No active entitlement found on RevenueCat for user $userId');
+        // Nenhuma assinatura ativa encontrada - pode ser cancelamento/estorno
+        debugPrint('⚠️ No active entitlement found on RevenueCat for user $userId');
+        debugPrint('🔍 This may indicate:');
+        debugPrint('   - User never subscribed');
+        debugPrint('   - Subscription was cancelled and expired');
+        debugPrint('   - Purchase was refunded');
+        debugPrint('   - Subscription period ended without renewal');
+        
+        // Verifica se há plano ativo no Firestore mas não no RevenueCat
+        final currentSnapshot = await _currentUserDoc?.get();
+        if (currentSnapshot != null && currentSnapshot.exists) {
+          final data = currentSnapshot.data() as Map<String, dynamic>?;
+          if (data != null && data.containsKey('subscription')) {
+            final sub = data['subscription'] as Map<String, dynamic>;
+            final planStr = sub['plan'] as String?;
+            if (planStr != null && planStr != 'free') {
+              debugPrint('🚨 MISMATCH DETECTED:');
+              debugPrint('   - Firestore shows active plan: $planStr');
+              debugPrint('   - RevenueCat shows no active entitlement');
+              debugPrint('   - Setting subscription to FREE to sync state');
+              
+              // Remove assinatura do Firestore já que RevenueCat não tem entitlement ativo
+              await _currentUserDoc?.set({
+                'subscription': {
+                  'plan': 'free',
+                  'startDate': DateTime.now().toUtc().toIso8601String(),
+                  'expiryDate': DateTime.now().toUtc().toIso8601String(),
+                  'syncedFromRevenueCat': true,
+                  'syncTimestamp': DateTime.now().toUtc().toIso8601String(),
+                }
+              }, SetOptions(merge: true));
+              
+              // Atualiza cache local
+              _setFreeLocally();
+            }
+          }
+        }
       }
 
       await PrefsService.setString(key, DateTime.now().toUtc().toIso8601String());
@@ -355,6 +419,25 @@ class SubscriptionService {
 
   /// Getter síncrono para uso rápido (pode ser desatualizado)
   static bool get isSubscribedCached => _cachedIsActive;
+
+  /// Força verificação imediata do status da assinatura no RevenueCat
+  /// (ignora rate-limit). Útil para debug ou quando o usuário reporta problema.
+  static Future<void> forceRefreshSubscription() async {
+    final user = AuthService.currentUser;
+    if (user == null) {
+      debugPrint('⚠️ forceRefreshSubscription: No user logged in');
+      return;
+    }
+    
+    // Limpa o timestamp de última verificação para forçar refresh
+    final key = 'subscription_last_refresh_${user.uid}';
+    await PrefsService.remove(key);
+    
+    debugPrint('🔄 Force refreshing subscription status...');
+    await _maybeRefreshFromRevenueCat(user.uid);
+    await loadSubscription();
+    debugPrint('✅ Force refresh completed');
+  }
 
   /// Retorna label legível do plano (em PT-BR)
   static String planLabel(Plan plan) {

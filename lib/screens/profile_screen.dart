@@ -91,8 +91,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
 
       if (mounted) {
+        final loc = AppLocalizations.of(context)!;
+        final planLabel = plan == Plan.monthly ? loc.planMonthly : plan == Plan.annual ? loc.planAnnual : loc.freePlan;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Assinatura ativada: ${SubscriptionService.planLabel(plan)}')),
+          SnackBar(content: Text(loc.subscriptionActivated(planLabel))),
         );
       }
     } catch (e) {
@@ -106,26 +108,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  /// Força verificação imediata da assinatura com o RevenueCat
+  Future<void> _forceCheckSubscription() async {
+    if (_isProcessingPurchase) return;
+    setState(() => _isProcessingPurchase = true);
+    
+    try {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('🔄 Verificando assinatura...')),
+        );
+      }
+      
+      await SubscriptionService.forceRefreshSubscription();
+      
+      if (mounted) {
+        final active = SubscriptionService.isActive.value;
+        final plan = SubscriptionService.currentPlan.value;
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              active 
+                ? '✅ Assinatura ativa: ${SubscriptionService.planLabel(plan)}'
+                : '❌ Nenhuma assinatura ativa encontrada'
+            ),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Erro ao verificar: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessingPurchase = false);
+    }
+  }
+
   Future<void> _cancelSubscription() async {
     if (_isProcessingPurchase) return;
     
+    final loc = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surfaceDark,
-        title: SafeText('Cancelar Assinatura', style: AppTextStyles.headlineSmall),
+        title: SafeText(loc.cancelSubscription, style: AppTextStyles.headlineSmall),
         content: SafeText(
-          'Deseja cancelar sua assinatura? Se a compra foi há menos de 5 dias, você poderá solicitar reembolso.',
+          loc.cancelSubscriptionConfirmMessage,
           style: AppTextStyles.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: SafeText('Voltar'),
+            child: SafeText(loc.no),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: SafeText('Confirmar', style: TextStyle(color: Colors.red)),
+            child: SafeText(loc.yes, style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -151,18 +194,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           context: context,
           builder: (context) => AlertDialog(
             backgroundColor: AppColors.surfaceDark,
-            title: SafeText('Reembolso Disponível', style: AppTextStyles.headlineSmall),
+            title: SafeText(loc.refundAvailableTitle, style: AppTextStyles.headlineSmall),
             content: SafeText(
-              'Sua compra foi feita há $daysFromPurchase dias. Você pode solicitar reembolso abrindo o Google Play Store:\n\n'
-              '1. Abra o Google Play Store\n'
-              '2. Menu → Assinaturas\n'
-              '3. Selecione RollFlix\n'
-              '4. Toque em "Cancelar assinatura"\n'
-              '5. Selecione "Solicitar reembolso"\n\n'
-              '📋 Informações para suporte:\n'
-              'ID do Usuário: ${appUserId ?? 'N/A'}\n'
-              'Produto: ${productId ?? 'N/A'}\n'
-              'Data da compra: ${purchaseDate ?? 'N/A'}',
+              loc.refundAvailableContent(daysFromPurchase.toString(), appUserId ?? 'N/A', productId ?? 'N/A', purchaseDate ?? 'N/A'),
               style: AppTextStyles.bodyMedium,
             ),
             actions: [
@@ -174,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   }
                   Navigator.of(context).pop();
                 },
-                child: SafeText('Entendi'),
+                child: SafeText(loc.yes),
               ),
             ],
           ),
@@ -185,25 +219,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           context: context,
           builder: (context) => AlertDialog(
             backgroundColor: AppColors.surfaceDark,
-            title: SafeText('Cancelar Recorrência', style: AppTextStyles.headlineSmall),
+            title: SafeText(loc.cancelRecurrenceTitle, style: AppTextStyles.headlineSmall),
             content: SafeText(
-              'Sua compra foi feita há $daysFromPurchase dias (prazo de reembolso expirado).\n\n'
-              'Para cancelar a renovação automática, abra o Google Play Store:\n\n'
-              '1. Abra o Google Play Store\n'
-              '2. Menu → Assinaturas\n'
-              '3. Selecione RollFlix\n'
-              '4. Toque em "Cancelar assinatura"\n\n'
-              'Seu plano permanecerá ativo até o fim do período pago.\n\n'
-              '📋 Informações para suporte:\n'
-              'ID do Usuário: ${appUserId ?? 'N/A'}\n'
-              'Produto: ${productId ?? 'N/A'}\n'
-              'Data da compra: ${purchaseDate ?? 'N/A'}',
+              loc.cancelRecurrenceContent(daysFromPurchase.toString(), appUserId ?? 'N/A', productId ?? 'N/A', purchaseDate ?? 'N/A'),
               style: AppTextStyles.bodyMedium,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: SafeText('Entendi'),
+                child: SafeText(loc.yes),
               ),
             ],
           ),
@@ -212,7 +236,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao verificar assinatura: ${e.toString()}')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.subscriptionError(e.toString()))),
         );
       }
     } finally {
@@ -475,7 +499,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (provider != null)
               _buildInfoRow(
                 provider == 'Google' ? Icons.g_mobiledata : Icons.facebook,
-                'Conectado via',
+                AppLocalizations.of(context)!.connectedVia,
                 provider,
                 primaryColor,
               ),
@@ -484,7 +508,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             
             _buildInfoRow(
               _user?.emailVerified == true ? Icons.verified : Icons.email,
-              'Email verificado',
+              AppLocalizations.of(context)!.emailVerified,
               _user?.emailVerified == true ? AppLocalizations.of(context)!.yes : AppLocalizations.of(context)!.no,
               primaryColor,
             ),
@@ -495,15 +519,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               valueListenable: SubscriptionService.isActive,
               builder: (context, active, _) {
                 final plan = SubscriptionService.currentPlan.value;
-                final planLabel = SubscriptionService.planLabel(plan);
-                final statusText = active ? '$planLabel (ativo)' : planLabel == 'Free' ? 'Free' : '$planLabel (inativo)';
+                final loc = AppLocalizations.of(context)!;
+                final planLabel = plan == Plan.monthly ? loc.planMonthly : plan == Plan.annual ? loc.planAnnual : loc.freePlan;
+                final statusText = active ? '$planLabel (${loc.active.toLowerCase()})' : plan == Plan.free ? loc.freePlan : '$planLabel (${loc.inactive})';
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildInfoRow(
                       Icons.workspace_premium,
-                      'Plano',
+                      loc.plan,
                       statusText,
                       primaryColor,
                     ),
@@ -516,24 +541,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           ElevatedButton(
                                             onPressed: _isProcessingPurchase ? null : () => _purchasePlan(Plan.monthly),
                                             style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-                                            child: SafeText(_getPriceLabel(RevenueCatConfig.monthlyProductId, 'Assinar Mensal (R\$1)')),
+                                            child: SafeText(_getPriceLabel(RevenueCatConfig.monthlyProductId, '${AppLocalizations.of(context)!.planMonthly} (R\$1)')),
                                           ),
                                           ElevatedButton(
                                             onPressed: _isProcessingPurchase ? null : () => _purchasePlan(Plan.annual),
                                             style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
-                                            child: SafeText(_getPriceLabel(RevenueCatConfig.annualProductId, 'Assinar Anual (R\$7)')),
+                                            child: SafeText(_getPriceLabel(RevenueCatConfig.annualProductId, '${AppLocalizations.of(context)!.planAnnual} (R\$7)')),
                                           ),
                                           // Restore button removed: subscription state is
                                           // automatically refreshed on login/app-start.
                                         ],
                                       ),
+                    // Botão de verificação manual (para debug/troubleshooting)
+                    if (!active)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: OutlinedButton.icon(
+                          onPressed: _isProcessingPurchase ? null : _forceCheckSubscription,
+                          icon: Icon(Icons.refresh, size: 18),
+                          label: SafeText('Verificar Assinatura'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: primaryColor,
+                            side: BorderSide(color: primaryColor.withAlpha(150)),
+                          ),
+                        ),
+                      ),
                     if (active && plan != Plan.free)
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
                         child: OutlinedButton.icon(
                           onPressed: _isProcessingPurchase ? null : _cancelSubscription,
                           icon: Icon(Icons.cancel, size: 18),
-                          label: SafeText('Cancelar Assinatura'),
+                          label: SafeText(loc.cancelSubscription),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.red,
                             side: BorderSide(color: Colors.red.withAlpha(150)),
