@@ -196,9 +196,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           builder: (context) => AlertDialog(
             backgroundColor: AppColors.surfaceDark,
             title: SafeText(loc.refundAvailableTitle, style: AppTextStyles.headlineSmall),
-            content: SafeText(
-              loc.refundAvailableContent(daysFromPurchase.toString(), appUserId ?? 'N/A', productId ?? 'N/A', purchaseDate ?? 'N/A'),
-              style: AppTextStyles.bodyMedium,
+            content: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.6,
+              ),
+              child: SingleChildScrollView(
+                child: SafeText(
+                  loc.refundAvailableContent(daysFromPurchase.toString(), appUserId ?? 'N/A', productId ?? 'N/A', purchaseDate ?? 'N/A'),
+                  style: AppTextStyles.bodyMedium,
+                ),
+              ),
             ),
             actions: [
               TextButton(
@@ -221,9 +228,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           builder: (context) => AlertDialog(
             backgroundColor: AppColors.surfaceDark,
             title: SafeText(loc.cancelRecurrenceTitle, style: AppTextStyles.headlineSmall),
-            content: SafeText(
-              loc.cancelRecurrenceContent(daysFromPurchase.toString(), appUserId ?? 'N/A', productId ?? 'N/A', purchaseDate ?? 'N/A'),
-              style: AppTextStyles.bodyMedium,
+            content: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.6,
+              ),
+              child: SingleChildScrollView(
+                child: SafeText(
+                  loc.cancelRecurrenceContent(daysFromPurchase.toString(), appUserId ?? 'N/A', productId ?? 'N/A', purchaseDate ?? 'N/A'),
+                  style: AppTextStyles.bodyMedium,
+                ),
+              ),
             ),
             actions: [
               TextButton(

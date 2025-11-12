@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import '../config/revenuecat_config.dart';
+import 'auth_service.dart';
 
 /// Simple wrapper around RevenueCat's purchases_flutter SDK.
 ///
@@ -28,8 +29,47 @@ class RevenueCatService {
       await Purchases.configure(PurchasesConfiguration(key));
       _initialized = true;
       debugPrint('✅ RevenueCat initialized');
+      
+      // Identificar usuário se já estiver logado
+      await identifyUser();
     } catch (e) {
       debugPrint('❌ RevenueCat initialization failed: $e');
+    }
+  }
+
+  /// Identifica o usuário atual no RevenueCat (vincula Firebase UID)
+  /// DEVE ser chamado após login para associar compras ao usuário correto
+  Future<void> identifyUser() async {
+    if (!_initialized) {
+      debugPrint('⚠️ RevenueCat not initialized, cannot identify user');
+      return;
+    }
+
+    final user = AuthService.currentUser;
+    if (user == null) {
+      debugPrint('⚠️ No user logged in, skipping RevenueCat identification');
+      return;
+    }
+
+    try {
+      debugPrint('🔐 Identifying user in RevenueCat: ${user.uid}');
+      await Purchases.logIn(user.uid);
+      debugPrint('✅ User identified in RevenueCat successfully');
+    } catch (e) {
+      debugPrint('❌ Error identifying user in RevenueCat: $e');
+    }
+  }
+
+  /// Remove identificação do usuário (chamado ao fazer logout)
+  Future<void> resetUser() async {
+    if (!_initialized) return;
+    
+    try {
+      debugPrint('🔄 Resetting RevenueCat user identification');
+      await Purchases.logOut();
+      debugPrint('✅ RevenueCat user reset');
+    } catch (e) {
+      debugPrint('❌ Error resetting RevenueCat user: $e');
     }
   }
 
@@ -155,38 +195,40 @@ class RevenueCatService {
   static bool isPremiumActiveFromInfo(CustomerInfo info) {
     try {
       final ent = info.entitlements.all[RevenueCatConfig.premiumEntitlementId];
-      if (ent == null) return false;
-
-      // Basic check
-      if (!ent.isActive) return false;
-
-      final now = DateTime.now().toUtc();
-
-      // Parse expiration date if present
-      DateTime? expiration;
-      if (ent.expirationDate != null) {
-        try {
-          expiration = DateTime.parse(ent.expirationDate!).toUtc();
-        } catch (_) {
-          expiration = null;
-        }
+      if (ent == null) {
+        debugPrint('⚠️ No premium entitlement found');
+        return false;
       }
 
-      // If we have an expiration that is already past, it's not active
-      if (expiration != null && expiration.isBefore(now)) return false;
+      debugPrint('📊 Checking premium status:');
+      debugPrint('   - isActive: ${ent.isActive}');
+      debugPrint('   - willRenew: ${ent.willRenew}');
+      debugPrint('   - expirationDate: ${ent.expirationDate}');
+      debugPrint('   - latestPurchaseDate: ${ent.latestPurchaseDate}');
 
-      // If willRenew is false (user cancelled), be conservative: only treat
-      // as active if the latest purchase is recent (e.g. within 365 days)
+      // Fonte de verdade: O que RevenueCat/Google Play reporta
+      // Se isActive = false, assinatura NÃO está ativa (cancelada, expirada, estornada, etc)
+      if (!ent.isActive) {
+        debugPrint('❌ Entitlement is not active (isActive=false)');
+        debugPrint('   Possíveis razões: cancelada, expirada, estornada, ou sem compra válida');
+        return false;
+      }
+
+      // Se chegou aqui: isActive = true
+      // Mas ainda precisamos verificar se willRenew = false (foi cancelada)
       if (ent.willRenew == false) {
-        try {
-          final latest = DateTime.parse(ent.latestPurchaseDate).toUtc();
-          if (now.difference(latest) > const Duration(days: 365)) return false;
-        } catch (_) {
-          return false;
-        }
+        debugPrint('⚠️ Subscription was CANCELLED (willRenew=false)');
+        debugPrint('   - isActive=true + willRenew=false = Período de acesso pago ainda ativo');
+        debugPrint('   - Quando chegar à data de expiração, acesso será removido');
+        
+        // Isto é raro, mas pode acontecer: usuário cancelou mas ainda tem dias pagos
+        // Confiamos em isActive=true e deixamos a expiração natural acontecer
+        debugPrint('✅ Premium is ACTIVE (até expiração)');
+        return true;
       }
 
-      // Passed all heuristics — consider premium active
+      // isActive = true + willRenew = true = Subscription normal ativa com renovação
+      debugPrint('✅ Premium is ACTIVE (with auto-renewal)');
       return true;
     } catch (e) {
       debugPrint('⚠️ Error evaluating premium entitlement heuristics: $e');

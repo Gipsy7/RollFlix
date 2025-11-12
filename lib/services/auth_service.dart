@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../utils/app_logger.dart';
+import 'revenuecat_service.dart';
 
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -34,7 +35,12 @@ class AuthService {
       );
 
       // Sign in to Firebase with the Google credential
-      return await _auth.signInWithCredential(credential);
+      final userCredential = await _auth.signInWithCredential(credential);
+      
+      // CRÍTICO: Identificar usuário no RevenueCat para vincular compras
+      await RevenueCatService.instance.identifyUser();
+      
+      return userCredential;
     } catch (e, stack) {
       AppLogger.error('Erro ao fazer login com Google', error: e, stackTrace: stack);
       rethrow;
@@ -42,6 +48,9 @@ class AuthService {
   }  // Logout
   static Future<void> signOut() async {
     try {
+      // CRÍTICO: Resetar identificação do RevenueCat antes do logout
+      await RevenueCatService.instance.resetUser();
+      
       // Logout do Google
       await _googleSignIn.signOut();
       

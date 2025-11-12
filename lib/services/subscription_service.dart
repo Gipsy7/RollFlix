@@ -36,7 +36,8 @@ class SubscriptionService {
       } else {
         // Carrega do Firestore primeiro (rápido) e depois tenta um refresh
         // a partir do RevenueCat (somente quando necessário).
-        loadSubscription().then((_) => _maybeRefreshFromRevenueCat(user.uid));
+        // FORÇAR verificação ao logar (ignorar rate limit)
+        loadSubscription().then((_) => _maybeRefreshFromRevenueCat(user.uid, forceRefresh: true));
       }
     });
   }
@@ -48,7 +49,7 @@ class SubscriptionService {
   /// cancelamentos/estornos recentes. Rate-limit de 1 hora.
   ///
   /// Esta chamada é rate-limited via SharedPreferences (evita chamadas excessivas).
-  static Future<void> _maybeRefreshFromRevenueCat(String userId) async {
+  static Future<void> _maybeRefreshFromRevenueCat(String userId, {bool forceRefresh = false}) async {
     try {
       final key = 'subscription_last_refresh_$userId';
       final lastStr = PrefsService.getString(key);
@@ -61,14 +62,14 @@ class SubscriptionService {
         }
       }
 
-      // Se já checamos na última hora, não checar de novo
+      // Se já checamos na última hora, não checar de novo (exceto se forceRefresh)
       // (Reduzido de 12h para 1h para detectar cancelamentos mais rapidamente)
-      if (last != null && DateTime.now().difference(last) < const Duration(hours: 1)) {
+      if (!forceRefresh && last != null && DateTime.now().difference(last) < const Duration(hours: 1)) {
         debugPrint('🔁 Subscription refresh skipped (last checked: $last)');
         return;
       }
 
-      debugPrint('🔄 Refreshing subscription from RevenueCat for user $userId');
+      debugPrint('🔄 Refreshing subscription from RevenueCat for user $userId ${forceRefresh ? "(FORCED)" : ""}');
       debugPrint('📊 Checking for active entitlements, cancellations, and refunds...');
       
       final info = await RevenueCatService.instance.getCustomerInfo();
@@ -429,12 +430,8 @@ class SubscriptionService {
       return;
     }
     
-    // Limpa o timestamp de última verificação para forçar refresh
-    final key = 'subscription_last_refresh_${user.uid}';
-    await PrefsService.remove(key);
-    
     debugPrint('🔄 Force refreshing subscription status...');
-    await _maybeRefreshFromRevenueCat(user.uid);
+    await _maybeRefreshFromRevenueCat(user.uid, forceRefresh: true);
     await loadSubscription();
     debugPrint('✅ Force refresh completed');
   }
