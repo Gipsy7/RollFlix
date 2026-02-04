@@ -88,6 +88,7 @@ RollFlix é um aplicativo Flutter moderno que ajuda você a descobrir conteúdo 
   - Authentication (Google Sign-In)
   - Cloud Firestore (sincronização de dados)
   - Cloud Messaging (notificações push)
+  - ⚠️ **CONFIGURAÇÃO OBRIGATÓRIA**: Siga o guia [FIREBASE_CONFIGURATION.md](FIREBASE_CONFIGURATION.md)
 - **RevenueCat**: Gerenciamento de assinaturas
 - **Google Mobile Ads**: Sistema de anúncios recompensados
 - **The Movie Database (TMDb)**: API de filmes e séries
@@ -158,8 +159,11 @@ class SecureConfig {
 ```
 
 4. **Configure Firebase**
-- Adicione `google-services.json` em `android/app/`
-- Adicione `GoogleService-Info.plist` em `ios/Runner/`
+- **OBRIGATÓRIO**: Siga o guia completo [FIREBASE_CONFIGURATION.md](FIREBASE_CONFIGURATION.md)
+- Execute `flutterfire configure` para gerar `firebase_options.dart`
+- Adicione restrições nas API Keys no Google Cloud Console
+- Baixe `google-services.json` e `GoogleService-Info.plist`
+- **⚠️ NUNCA commite os arquivos com as API keys reais**
 
 5. **Configure RevenueCat** (opcional)
 - Edite `lib/config/revenuecat_config.dart` com sua API key
