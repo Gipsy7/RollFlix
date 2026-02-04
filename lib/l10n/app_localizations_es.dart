@@ -1085,6 +1085,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get adNotAvailable => 'Anuncio no disponible en este momento. Inténtalo de nuevo en unos momentos.';
 
   @override
+  String get unlimitedResourcesWithPlan => '¡Obtén recursos ilimitados con un plan premium!';
+
+  @override
+  String get seePlans => 'Ver Planes';
+
+  @override
   String get preferencesCleared => 'Preferencias limpiadas';
 
   @override

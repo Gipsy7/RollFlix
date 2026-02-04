@@ -489,6 +489,8 @@
   "recipeLoadError": "Não foi possível carregar a receita. Tente novamente.",
   "aboutTheDish": "Sobre o Prato",
   "adNotAvailable": "Anúncio não disponível no momento. Tente novamente em instantes.",
+  "unlimitedResourcesWithPlan": "Obtenha recursos ilimitados com um plano premium!",
+  "seePlans": "Ver Planos",
   "preferencesCleared": "Preferências limpas",
   "shareSeries": "Compartilhar série",
   "preferences": "Preferências",

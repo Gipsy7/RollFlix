@@ -2127,6 +2127,18 @@ abstract class AppLocalizations {
   /// **'Ad not available at the moment. Please try again in a few moments.'**
   String get adNotAvailable;
 
+  /// No description provided for @unlimitedResourcesWithPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Get unlimited resources with a premium plan!'**
+  String get unlimitedResourcesWithPlan;
+
+  /// No description provided for @seePlans.
+  ///
+  /// In en, this message translates to:
+  /// **'See Plans'**
+  String get seePlans;
+
   /// No description provided for @preferencesCleared.
   ///
   /// In en, this message translates to:

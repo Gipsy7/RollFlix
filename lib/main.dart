@@ -984,6 +984,7 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     final uses = _userPreferencesController.userResources.getUses(resourceType);
     final maxUses = UserResources.maxUses;
     final isSubscribed = SubscriptionService.isSubscribedCached;
+    final adReady = AdService().isAdReady;
 
     return showDialog<bool>(
       context: context,
@@ -999,8 +1000,9 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
           isSubscribed: isSubscribed,
           resourceName: resourceName,
           accentColor: accentColor,
+          adReady: adReady,
         ),
-        actions: _buildAdDialogActions(accentColor),
+        actions: _buildAdDialogActions(accentColor, adReady),
       ),
     );
   }
@@ -1030,72 +1032,159 @@ class _MovieSorterAppState extends State<MovieSorterApp> with TickerProviderStat
     required bool isSubscribed,
     required String resourceName,
     required Color accentColor,
+    required bool adReady,
   }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          isSubscribed 
-              ? '∞ $resourceName' 
-              : AppLocalizations.of(context)!.resourceCount(uses, maxUses, resourceName),
-          style: const TextStyle(color: Colors.white70, fontSize: 16),
-        ),
-        SizedBox(height: AppNumbers.spacingMedium + 4),
-        Container(
-          padding: EdgeInsets.all(AppNumbers.spacingSmall + 4),
-          decoration: BoxDecoration(
-            color: accentColor.withValues(alpha: AppNumbers.highlightOpacity),
-            borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
-            border: Border.all(color: accentColor, width: AppNumbers.borderWidth / 1.5),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            isSubscribed 
+                ? '∞ $resourceName' 
+                : AppLocalizations.of(context)!.resourceCount(uses, maxUses, resourceName),
+            style: const TextStyle(color: Colors.white70, fontSize: 16),
           ),
-          child: Row(
-            children: [
-              Icon(Icons.card_giftcard, color: accentColor, size: 24),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  AppLocalizations.of(context)!.watchAdForExtraResource(resourceName),
-                  style: TextStyle(
-                    color: accentColor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+          SizedBox(height: AppNumbers.spacingMedium + 4),
+          
+          // Opção 1: Assistir anúncio (se disponível)
+          if (adReady)
+            Container(
+              padding: EdgeInsets.all(AppNumbers.spacingSmall + 4),
+              decoration: BoxDecoration(
+                color: accentColor.withValues(alpha: AppNumbers.highlightOpacity),
+                borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
+                border: Border.all(color: accentColor, width: AppNumbers.borderWidth / 1.5),
               ),
-            ],
-          ),
-        ),
-      ],
+              child: Row(
+                children: [
+                  Icon(Icons.card_giftcard, color: accentColor, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.of(context)!.watchAdForExtraResource(resourceName),
+                      style: TextStyle(
+                        color: accentColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            // Opção 2: Oferecer plano se anúncio não disponível
+            Container(
+              padding: EdgeInsets.all(AppNumbers.spacingSmall + 4),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: AppNumbers.highlightOpacity),
+                borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
+                border: Border.all(color: Colors.blue, width: AppNumbers.borderWidth / 1.5),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.workspace_premium, color: Colors.blue, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.adNotAvailable,
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          AppLocalizations.of(context)!.unlimitedResourcesWithPlan,
+                          style: TextStyle(
+                            color: Colors.blue.shade200,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 
   /// Constrói botões de ação do diálogo de anúncio
-  List<Widget> _buildAdDialogActions(Color accentColor) {
-    return [
-      TextButton(
-        onPressed: () => Navigator.of(context).pop(false),
-        child: Text(
-          AppLocalizations.of(context)!.cancel,
-          style: TextStyle(color: Colors.white54),
-        ),
-      ),
-      ElevatedButton.icon(
-        onPressed: () => Navigator.of(context).pop(true),
-        icon: const Icon(Icons.play_circle_filled),
-        label: Text(AppLocalizations.of(context)!.watchAd),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: accentColor,
-          foregroundColor: _appModeController.isSeriesMode ? Colors.white : Colors.black,
-          padding: EdgeInsets.symmetric(
-            horizontal: AppNumbers.paddingMobile, 
-            vertical: AppNumbers.spacingSmall + 4
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
+  List<Widget> _buildAdDialogActions(Color accentColor, bool adReady) {
+    if (adReady) {
+      // Opção 1: Assistir anúncio
+      return [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(
+            AppLocalizations.of(context)!.cancel,
+            style: TextStyle(color: Colors.white54),
           ),
         ),
-      ),
-    ];
+        ElevatedButton.icon(
+          onPressed: () => Navigator.of(context).pop(true),
+          icon: const Icon(Icons.play_circle_filled),
+          label: Text(AppLocalizations.of(context)!.watchAd),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: accentColor,
+            foregroundColor: _appModeController.isSeriesMode ? Colors.white : Colors.black,
+            padding: EdgeInsets.symmetric(
+              horizontal: AppNumbers.paddingMobile, 
+              vertical: AppNumbers.spacingSmall + 4
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
+            ),
+          ),
+        ),
+      ];
+    } else {
+      // Opção 2: Oferecer plano quando anúncio não está disponível
+      return [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(
+            AppLocalizations.of(context)!.cancel,
+            style: TextStyle(color: Colors.white54),
+          ),
+        ),
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.of(context).pop(false);
+            // Navegar para planos
+            _navigateToSubscriptionPlans();
+          },
+          icon: const Icon(Icons.workspace_premium),
+          label: Text(AppLocalizations.of(context)!.seePlans),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(
+              horizontal: AppNumbers.paddingMobile, 
+              vertical: AppNumbers.spacingSmall + 4
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppNumbers.borderRadiusSmall),
+            ),
+          ),
+        ),
+      ];
+    }
+  }
+
+  /// Navega para a seção de planos de assinatura
+  void _navigateToSubscriptionPlans() {
+    // Usar o mesmo método que o botão de preferências usa
+    // Assumindo que há uma forma de navegar para a tela de planos
+    // Você pode implementar navegação para o perfil ou criar uma rota específica
+    debugPrint('📱 Navegando para planos de assinatura');
   }
 }

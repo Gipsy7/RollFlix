@@ -489,6 +489,8 @@
   "recipeLoadError": "Impossible de charger la recette. Veuillez réessayer.",
   "aboutTheDish": "À propos du Plat",
   "adNotAvailable": "Annonce non disponible pour le moment. Veuillez réessayer dans quelques instants.",
+  "unlimitedResourcesWithPlan": "Obtenez des ressources illimitées avec un plan premium !",
+  "seePlans": "Voir les Plans",
   "preferencesCleared": "Préférences effacées",
   "shareSeries": "Partager la série",
   "preferences": "Préférences",

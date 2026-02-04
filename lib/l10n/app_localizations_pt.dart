@@ -1085,6 +1085,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get adNotAvailable => 'Anúncio não disponível no momento. Tente novamente em instantes.';
 
   @override
+  String get unlimitedResourcesWithPlan => 'Obtenha recursos ilimitados com um plano premium!';
+
+  @override
+  String get seePlans => 'Ver Planos';
+
+  @override
   String get preferencesCleared => 'Preferências limpas';
 
   @override

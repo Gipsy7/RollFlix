@@ -489,6 +489,8 @@
   "recipeLoadError": "Could not load the recipe. Please try again.",
   "aboutTheDish": "About the Dish",
   "adNotAvailable": "Ad not available at the moment. Please try again in a few moments.",
+  "unlimitedResourcesWithPlan": "Get unlimited resources with a premium plan!",
+  "seePlans": "See Plans",
   "preferencesCleared": "Preferences cleared",
   "shareSeries": "Share series",
   "preferences": "Preferences",
