@@ -32,10 +32,10 @@
             android:name="flutterEmbedding"
             android:value="2" />
         
-        <!-- AdMob App ID (TESTE - substitua pelo seu ID de produção) -->
+        <!-- AdMob App ID - Configurado via gradle.properties -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-8627801071005444~5894654302"/>
+            android:value="@string/admob_app_id"/>
         
         <!-- WorkManager - Execução em Background -->
         <provider

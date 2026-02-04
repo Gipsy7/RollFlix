@@ -1,10 +1,19 @@
 # build_android.ps1
+# SEGURANÇA: Não commite este arquivo com chaves reais!
+# Use variáveis de ambiente ou passe via parâmetros
 param(
-    [string]$TmdbApiKey = "4e44d9029b1270a757cddc766a1bcb63",
-    [string]$AdmobAndroidAppId = "ca-app-pub-8627801071005444~5894654302",
-    [string]$AdmobIosAppId = "ca-app-pub-xxxxxxxxxxxxxxxx~xxxxxxxxxx",
-    [string]$AdmobAndroidRewardedId = "ca-app-pub-8627801071005444/4888694395",
-    [string]$AdmobIosRewardedId = "ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx"
+    [Parameter(Mandatory=$true)]
+    [string]$TmdbApiKey,
+    
+    [Parameter(Mandatory=$true)]
+    [string]$AdmobAndroidAppId,
+    
+    [string]$AdmobIosAppId = "",
+    
+    [Parameter(Mandatory=$true)]
+    [string]$AdmobAndroidRewardedId,
+    
+    [string]$AdmobIosRewardedId = ""
 )
 
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AdMob App ID - Configure via gradle.properties ou variáveis de ambiente -->
+    <!-- IMPORTANTE: Nunca commite IDs reais neste arquivo -->
+    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
+    <!-- ID acima é o ID de TESTE do Google AdMob. Substitua por seu ID real em produção -->
+</resources>
