@@ -283,4 +283,13 @@ Este projeto é privado e proprietário.
 
 ---
 
+## 👤 Autor
+
+**Mikael Francisco** — Desenvolvedor Backend .NET
+
+- 🌐 Portfólio e case study completo: [mikaelfrancisco.vercel.app/rollflix](https://mikaelfrancisco.vercel.app/rollflix)
+- 💼 [LinkedIn](https://www.linkedin.com/in/mikael-francisco-a4300b180) · 🐙 [GitHub](https://github.com/Gipsy7)
+
+---
+
 **Desenvolvido com ❤️ usando Flutter**
